@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>cook — iPhone 와이어프레임 초안</title>
+  <style>
+    /* ===== 와이어프레임 변수 ===== */
+    :root {
+      --line: #9aa0a6;
+      --line-strong: #5f6368;
+      --fill: #e8eaed;
+      --fill-2: #d2d5da;
+      --text: #5f6368;
+      --bg: #eceef0;
+      --accent: #9aa0a6;   /* 와이어프레임이라 강조색도 회색 톤 */
+      --radius: 6px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Comic Sans MS', 'Segoe Print', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 32px;
+    }
+    h1.page-title {
+      text-align: center; color: var(--line-strong);
+      margin-bottom: 4px; font-size: 24px;
+    }
+    p.page-sub {
+      text-align: center; color: var(--text);
+      margin-bottom: 32px; font-size: 13px;
+    }
+
+    /* 폰 나열 */
+    .phones {
+      display: flex; flex-wrap: wrap; gap: 40px;
+      justify-content: center; align-items: flex-start;
+    }
+    .phone-wrap { width: 300px; }
+    .phone-label {
+      text-align: center; font-weight: bold;
+      color: var(--line-strong); margin-bottom: 10px; font-size: 15px;
+    }
+    .phone-caption {
+      text-align: center; font-size: 11px; color: var(--text);
+      margin-top: 8px; line-height: 1.5;
+    }
+
+    /* iPhone 프레임 */
+    .phone {
+      width: 300px; height: 620px;
+      border: 3px solid var(--line-strong);
+      border-radius: 40px;
+      background: #fff;
+      padding: 12px;
+      position: relative;
+      box-shadow: 0 6px 20px rgba(0,0,0,.08);
+    }
+    .screen {
+      width: 100%; height: 100%;
+      border: 1.5px solid var(--line);
+      border-radius: 28px;
+      overflow: hidden;
+      display: flex; flex-direction: column;
+      position: relative;
+      background: #fff;
+    }
+    /* 노치 */
+    .notch {
+      position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: 110px; height: 22px;
+      background: var(--line-strong);
+      border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;
+      z-index: 5;
+    }
+    /* 상태바 */
+    .statusbar {
+      height: 30px; flex: none;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 18px; font-size: 10px; color: var(--line-strong);
+    }
+    /* 화면 본문 */
+    .content { flex: 1; overflow: hidden; padding: 10px 14px; }
+    .content.dark { background: #2f3033; }
+    .content.dark * { color: #d2d5da; }
+
+    /* ===== 공통 컴포넌트 ===== */
+    .row { display: flex; gap: 8px; align-items: center; }
+    .col { flex: 1; }
+    .box {
+      border: 1.5px solid var(--line); background: var(--fill);
+      border-radius: var(--radius); padding: 8px; font-size: 11px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .img {
+      border: 1.5px solid var(--line); border-radius: var(--radius);
+      background:
+        linear-gradient(to top right, transparent calc(50% - .8px), var(--line), transparent calc(50% + .8px)),
+        linear-gradient(to top left, transparent calc(50% - .8px), var(--line), transparent calc(50% + .8px)),
+        var(--fill-2);
+    }
+    .tline { height: 9px; background: var(--line); border-radius: 5px; margin: 5px 0; }
+    .tline.s { width: 40%; } .tline.m { width: 65%; } .tline.l { width: 100%; }
+    .title-l { height: 14px; width: 55%; background: var(--line-strong); border-radius: 4px; margin: 6px 0 8px; }
+    .btn {
+      border: 1.5px solid var(--line); background: var(--fill);
+      border-radius: 20px; padding: 9px 0; text-align: center;
+      font-size: 12px; width: 100%; color: var(--text);
+    }
+    .btn.primary { background: var(--line-strong); color: #fff; border-color: var(--line-strong); }
+    .input {
+      border: 1.5px solid var(--line); background: #fff; border-radius: var(--radius);
+      height: 34px; display: flex; align-items: center; padding: 0 10px;
+      font-size: 11px; color: var(--line);
+    }
+    .pill {
+      border: 1.5px solid var(--line); border-radius: 14px;
+      padding: 5px 10px; font-size: 10px; background: var(--fill);
+    }
+    .circle {
+      border: 1.5px solid var(--line); border-radius: 50%;
+      background: var(--fill); display: flex; align-items: center; justify-content: center;
+      font-size: 11px;
+    }
+    .label-note {
+      font-size: 9px; color: #b0651a; border: 1px dashed #d8a866;
+      background: #fdf6ec; padding: 1px 5px; border-radius: 4px; display: inline-block;
+    }
+    .header-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding-bottom: 8px; border-bottom: 1.5px solid var(--line); margin-bottom: 10px;
+      font-size: 13px; font-weight: bold; color: var(--line-strong);
+    }
+    /* 하단 탭/컨트롤 바 */
+    .bottom-bar {
+      flex: none; border-top: 1.5px solid var(--line);
+      display: flex; align-items: center; justify-content: space-around;
+      padding: 10px 0; background: #fafafa;
+    }
+    .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .grid2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    /* 모달/시트 */
+    .sheet {
+      position: absolute; left: 8px; right: 8px; bottom: 8px;
+      background: #fff; border: 1.5px solid var(--line-strong);
+      border-radius: 16px; padding: 12px;
+      box-shadow: 0 -4px 16px rgba(0,0,0,.12);
+    }
+    .modal {
+      position: absolute; inset: 0; background: rgba(0,0,0,.45);
+      display: flex; align-items: center; justify-content: center; padding: 16px;
+    }
+    .modal-card {
+      width: 100%; background: #fff; border: 1.5px solid var(--line-strong);
+      border-radius: 16px; padding: 12px;
+    }
+    .list-item {
+      display: flex; gap: 8px; align-items: flex-start;
+      padding: 7px 0; border-bottom: 1px solid var(--fill);
+    }
+  </style>
+</head>
+<body>
+
+  <h1 class="page-title">cook — iPhone 와이어프레임 초안</h1>
+  <p class="page-sub">쉐프토리 참고 · 핸즈프리 요리 어시스턴트 · 4개 핵심 화면</p>
+
+  <div class="phones">
+
+    <!-- ========== 화면 1: 홈 / 레시피 등록 ========== -->
+    <div class="phone-wrap">
+      <div class="phone-label">① 홈 · 레시피 등록</div>
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="screen">
+          <div class="statusbar"><span>9:41</span><span>● ● ●  ▮▮</span></div>
+          <div class="content">
+            <!-- 앱 헤더 -->
+            <div class="header-bar">
+              <span>🍳 cook</span>
+              <span style="font-size:11px;">🔔 268  ＋  ⊙</span>
+            </div>
+            <!-- 검색바 -->
+            <div class="input" style="margin-bottom:10px;">검색어를 입력해주세요 🔍</div>
+            <!-- 카테고리 -->
+            <div class="tline s" style="background:var(--line-strong);height:8px;margin-bottom:6px;"></div>
+            <div class="grid3" style="margin-bottom:4px;">
+              <div class="circle" style="height:40px;">쉐프</div>
+              <div class="circle" style="height:40px;">한식</div>
+              <div class="circle" style="height:40px;">분식</div>
+            </div>
+            <div class="grid3" style="margin-bottom:10px;">
+              <div class="circle" style="height:40px;">일식</div>
+              <div class="circle" style="height:40px;">양식</div>
+              <div class="circle" style="height:40px;">간편</div>
+            </div>
+            <!-- 나의 레시피 -->
+            <div class="tline s" style="background:var(--line-strong);height:8px;"></div>
+            <div class="grid3">
+              <div class="img" style="height:46px;"></div>
+              <div class="img" style="height:46px;"></div>
+              <div class="img" style="height:46px;"></div>
+            </div>
+          </div>
+          <!-- 레시피 등록 시트 -->
+          <div class="sheet">
+            <div style="font-size:12px;font-weight:bold;color:var(--line-strong);margin-bottom:8px;">레시피 등록하기</div>
+            <div class="input" style="margin-bottom:8px;">https://youtube.com/watch?v=...</div>
+            <span class="label-note">URL 모르면 → YouTube에서 찾기</span>
+            <div class="btn primary" style="margin-top:10px;">입력 완료</div>
+          </div>
+        </div>
+      </div>
+      <div class="phone-caption">유튜브 링크 붙여넣기 → AI가 단계 레시피로 변환<br>(Phase A-1 · 🟢 터치)</div>
+    </div>
+
+    <!-- ========== 화면 2: 레시피 상세 ========== -->
+    <div class="phone-wrap">
+      <div class="phone-label">② 레시피 상세 (요리 전)</div>
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="screen">
+          <div class="statusbar"><span>9:41</span><span>● ● ●  ▮▮</span></div>
+          <div class="content">
+            <div class="header-bar"><span>←</span><span style="font-size:12px;">레시피</span><span>⋯</span></div>
+            <!-- 영상 -->
+            <div class="img" style="height:90px;position:relative;margin-bottom:8px;">
+              <span style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:18px;">▶</span>
+            </div>
+            <div class="title-l"></div>
+            <div class="tline m"></div>
+            <!-- 요리시간 / 인분 -->
+            <div class="row" style="margin:8px 0;">
+              <div class="pill col" style="text-align:center;">⏱ 30분 이내</div>
+              <div class="pill col" style="text-align:center;">👥 2인분</div>
+            </div>
+            <!-- 재료 -->
+            <div class="tline s" style="background:var(--line-strong);height:8px;"></div>
+            <div class="grid3" style="margin-bottom:8px;">
+              <div class="box" style="height:30px;">재료</div>
+              <div class="box" style="height:30px;">재료</div>
+              <div class="box" style="height:30px;">재료</div>
+              <div class="box" style="height:30px;">재료</div>
+              <div class="box" style="height:30px;">재료</div>
+              <div class="box" style="height:30px;">＋8</div>
+            </div>
+            <!-- 후기 -->
+            <div class="tline s" style="background:var(--line-strong);height:8px;"></div>
+            <div class="tline l"></div>
+            <div class="tline m"></div>
+          </div>
+          <!-- 요리하기 버튼 (고정) -->
+          <div style="flex:none;padding:10px 14px;border-top:1.5px solid var(--line);">
+            <div class="btn primary">🍳 요리하기</div>
+          </div>
+        </div>
+      </div>
+      <div class="phone-caption">재료·분량·시간·후기 확인 → '요리하기'(마지막 터치)<br>(Phase A-2~3 · 🟢 터치)</div>
+    </div>
+
+    <!-- ========== 화면 3: 핸즈프리 조리 ========== -->
+    <div class="phone-wrap">
+      <div class="phone-label">③ 핸즈프리 조리</div>
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="screen">
+          <div class="statusbar"><span>9:41</span><span>● ● ●  ▮▮</span></div>
+          <div class="content dark">
+            <div class="header-bar" style="border-color:#555;color:#d2d5da;">
+              <span>←</span><span style="font-size:11px;">내가 정착한 순두부찌개</span><span></span>
+            </div>
+            <!-- 영상 -->
+            <div class="img" style="height:90px;background-color:#444;margin-bottom:6px;"></div>
+            <!-- 단계 진행바 -->
+            <div class="row" style="gap:3px;margin-bottom:10px;">
+              <div style="flex:1;height:4px;background:#888;border-radius:2px;"></div>
+              <div style="flex:1;height:4px;background:#888;border-radius:2px;"></div>
+              <div style="flex:1;height:4px;background:#ccc;border-radius:2px;"></div>
+              <div style="flex:1;height:4px;background:#555;border-radius:2px;"></div>
+              <div style="flex:1;height:4px;background:#555;border-radius:2px;"></div>
+            </div>
+            <!-- 현재 단계 (강조) -->
+            <div style="font-size:9px;color:#e8915a;margin-bottom:4px;">D. 육수와 양념 넣기</div>
+            <div style="border:1.5px solid #888;border-radius:8px;padding:10px;margin-bottom:10px;background:#3a3b3e;">
+              <div style="font-size:13px;color:#fff;line-height:1.5;font-weight:bold;">1. 물 250ml와 코인 육수 하나를 넣어주세요</div>
+            </div>
+            <!-- 다음 단계들 -->
+            <div style="font-size:11px;color:#aaa;margin-bottom:6px;">2. 진간장, 멸치액젓, 다진마늘을 넣어주세요</div>
+            <div style="font-size:9px;color:#e8915a;margin:8px 0 4px;">E. 채소와 순두부 끓이기</div>
+            <div style="font-size:11px;color:#aaa;">1. 양파와 애호박을 넣어주세요</div>
+          </div>
+          <!-- 하단 컨트롤 3개 -->
+          <div class="bottom-bar" style="background:#2f3033;border-color:#555;">
+            <div class="circle" style="width:42px;height:42px;background:#e8915a;border-color:#e8915a;color:#fff;">⏱</div>
+            <div class="circle" style="width:42px;height:42px;background:#555;border-color:#777;color:#fff;">🎤<br></div>
+            <div class="circle" style="width:42px;height:42px;background:#e8915a;border-color:#e8915a;color:#fff;">🔍</div>
+          </div>
+        </div>
+      </div>
+      <div class="phone-caption">"다음 단계" 음성 → 자동 진행 · 타이머 · 장면 검색<br>(Phase B · 🔴 음성)</div>
+    </div>
+
+    <!-- ========== 화면 4: 음성 명령 가이드 ========== -->
+    <div class="phone-wrap">
+      <div class="phone-label">④ 음성 명령 가이드</div>
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="screen">
+          <div class="statusbar"><span>9:41</span><span>● ● ●  ▮▮</span></div>
+          <div class="content dark" style="position:relative;">
+            <div style="text-align:center;margin-top:10px;">
+              <div style="font-size:15px;color:#fff;font-weight:bold;line-height:1.5;">다른 명령어들도<br>시도해보세요</div>
+            </div>
+            <!-- 모달 -->
+            <div class="modal" style="border-radius:28px;">
+              <div class="modal-card">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                  <span style="font-size:12px;font-weight:bold;color:var(--line-strong);">음성 명령 가이드</span>
+                  <span style="font-size:12px;">✕</span>
+                </div>
+                <div class="list-item"><span>➡️</span><div><b style="font-size:10px;">"다음 단계"</b><div class="tline l" style="height:5px;margin:3px 0 0;"></div></div></div>
+                <div class="list-item"><span>⬅️</span><div><b style="font-size:10px;">"이전 단계"</b><div class="tline m" style="height:5px;margin:3px 0 0;"></div></div></div>
+                <div class="list-item"><span>📋</span><div><b style="font-size:10px;">"세 번째 단계로 가줘"</b><div class="tline l" style="height:5px;margin:3px 0 0;"></div></div></div>
+                <div class="list-item"><span>🔪</span><div><b style="font-size:10px;">"양파 썰는 장면으로 가줘"</b><div class="tline l" style="height:5px;margin:3px 0 0;"></div></div></div>
+                <div class="list-item"><span>⏱</span><div><b style="font-size:10px;">"타이머 3분 시작/정지"</b><div class="tline m" style="height:5px;margin:3px 0 0;"></div></div></div>
+                <div class="list-item" style="border:none;"><span>⏯</span><div><b style="font-size:10px;">"동영상 정지/재생"</b><div class="tline m" style="height:5px;margin:3px 0 0;"></div></div></div>
+                <div class="btn primary" style="margin-top:10px;background:#e8915a;border-color:#e8915a;">알겠어요!</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="phone-caption">사용 가능한 음성 명령 온보딩 모달<br>(조리 화면 위 오버레이)</div>
+    </div>
+
+  </div>
+
+</body>
+</html>

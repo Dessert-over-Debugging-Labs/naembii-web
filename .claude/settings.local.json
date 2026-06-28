@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(open *)",
+      "WebFetch(domain:www.cheftories.com)",
+      "WebSearch",
+      "Bash(claude plugin *)",
+      "Bash(awk '/<script>/{f=1;next}/<\\\\/script>/{f=0}f' app.html)",
+      "Bash(node --check /tmp/cook_check.js)",
+      "Bash(awk '/<script>/{f=1;next}/<\\\\/script>/{f=0}f' /Users/eunsung/Documents/Soma/cook/app.html)"
+    ]
+  }
+}

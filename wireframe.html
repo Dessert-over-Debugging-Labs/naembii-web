@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wireframe Canvas</title>
+  <style>
+    /* ===== 와이어프레임 기본 스타일 ===== */
+    :root {
+      --wf-line: #9aa0a6;        /* 외곽선 회색 */
+      --wf-fill: #e8eaed;        /* 박스 채움 회색 */
+      --wf-fill-dark: #d2d5da;   /* 진한 회색 (이미지 등) */
+      --wf-text: #5f6368;        /* 텍스트 회색 */
+      --wf-bg: #f5f6f7;          /* 캔버스 배경 */
+      --wf-radius: 4px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      /* 손그림 느낌의 와이어프레임 폰트 → 없으면 기본 산세리프 */
+      font-family: 'Comic Sans MS', 'Segoe Print', system-ui, sans-serif;
+      background: var(--wf-bg);
+      color: var(--wf-text);
+      padding: 24px;
+    }
+
+    /* 캔버스: 자유 배치 영역 */
+    .wf-canvas {
+      max-width: 1100px;
+      margin: 0 auto;
+      background: #fff;
+      border: 2px dashed var(--wf-line);
+      border-radius: var(--wf-radius);
+      min-height: 600px;
+      padding: 16px;
+    }
+
+    /* ===== 재사용 컴포넌트 ===== */
+
+    /* 박스 (컨테이너/패널) */
+    .wf-box {
+      border: 2px solid var(--wf-line);
+      background: var(--wf-fill);
+      border-radius: var(--wf-radius);
+      padding: 16px;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* 헤더 영역 */
+    .wf-header {
+      border: 2px solid var(--wf-line);
+      background: var(--wf-fill-dark);
+      border-radius: var(--wf-radius);
+      height: 64px;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      font-weight: bold;
+      margin-bottom: 16px;
+    }
+
+    /* 이미지 플레이스홀더 (대각선 X 표시) */
+    .wf-img {
+      border: 2px solid var(--wf-line);
+      background:
+        linear-gradient(to top right,
+          transparent calc(50% - 1px), var(--wf-line),
+          transparent calc(50% + 1px)),
+        linear-gradient(to top left,
+          transparent calc(50% - 1px), var(--wf-line),
+          transparent calc(50% + 1px)),
+        var(--wf-fill-dark);
+      border-radius: var(--wf-radius);
+      min-height: 120px;
+    }
+
+    /* 텍스트 라인 (회색 막대) */
+    .wf-text-line {
+      height: 12px;
+      background: var(--wf-line);
+      border-radius: 6px;
+      margin: 8px 0;
+    }
+    .wf-text-line.short { width: 40%; }
+    .wf-text-line.medium { width: 70%; }
+    .wf-text-line.long { width: 100%; }
+
+    /* 제목 라인 (더 굵게) */
+    .wf-title-line {
+      height: 20px;
+      width: 50%;
+      background: var(--wf-text);
+      border-radius: 4px;
+      margin: 8px 0 12px;
+    }
+
+    /* 버튼 */
+    .wf-btn {
+      display: inline-block;
+      border: 2px solid var(--wf-line);
+      background: var(--wf-fill);
+      border-radius: var(--wf-radius);
+      padding: 10px 24px;
+      font: inherit;
+      color: var(--wf-text);
+      cursor: pointer;
+    }
+    .wf-btn.primary {
+      background: var(--wf-text);
+      color: #fff;
+      border-color: var(--wf-text);
+    }
+
+    /* 입력창 */
+    .wf-input {
+      border: 2px solid var(--wf-line);
+      background: #fff;
+      border-radius: var(--wf-radius);
+      height: 40px;
+      width: 100%;
+      padding: 0 12px;
+      font: inherit;
+      color: var(--wf-text);
+    }
+
+    /* 레이아웃 헬퍼 */
+    .wf-row {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .wf-col { flex: 1; min-width: 120px; }
+
+    /* 주석 라벨 (와이어프레임 메모) */
+    .wf-note {
+      font-size: 12px;
+      color: #b0651a;
+      border: 1px dashed #d8a866;
+      background: #fdf6ec;
+      padding: 2px 8px;
+      border-radius: 4px;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 캔버스 시작: 이 안에서 컴포넌트를 자유롭게 배치/복사하세요 -->
+  <div class="wf-canvas">
+
+    <!-- 헤더 영역 -->
+    <div class="wf-header">[ 헤더 영역 ]</div>
+
+    <!-- 예시: 2칼럼 박스 행 -->
+    <div class="wf-row">
+      <div class="wf-col wf-box">▢ 박스</div>
+      <div class="wf-col wf-box">▢ 박스</div>
+    </div>
+
+    <!-- 예시: 텍스트 블록 -->
+    <div class="wf-title-line"></div>
+    <div class="wf-text-line long"></div>
+    <div class="wf-text-line medium"></div>
+    <div class="wf-text-line short"></div>
+
+    <!-- 예시: 이미지 + 본문 2칼럼 -->
+    <div class="wf-row" style="margin-top:16px;">
+      <div class="wf-col wf-img"></div>
+      <div class="wf-col">
+        <div class="wf-text-line long"></div>
+        <div class="wf-text-line long"></div>
+        <div class="wf-text-line medium"></div>
+      </div>
+    </div>
+
+    <!-- 예시: 입력창 + 버튼 -->
+    <div class="wf-row" style="align-items:center;">
+      <div class="wf-col"><input class="wf-input" placeholder="입력창"></div>
+      <button class="wf-btn primary">버튼</button>
+      <button class="wf-btn">보조 버튼</button>
+    </div>
+
+    <!-- 메모 예시 -->
+    <span class="wf-note">📝 여기에 설명/주석을 달 수 있어요</span>
+
+  </div>
+  <!-- 캔버스 끝 -->
+
+</body>
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>cook — 화면 플로우 보드</title>
+<style>
+  :root{
+    --green:#46B581;
+    --green-soft:#E7F6EE;
+    --ink:#1A1A1C;
+    --gray:#8A8A8E;
+    --line:#E4E4E8;
+    --bg:#F0F1F3;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Pretendard","Segoe UI",sans-serif;
+    background:var(--bg);color:var(--ink);padding:40px 32px 80px;
+  }
+  .board-head{max-width:1400px;margin:0 auto 36px;}
+  .board-head h1{font-size:30px;font-weight:800;letter-spacing:-.5px;display:flex;align-items:center;gap:10px;}
+  .board-head .logo-dot{color:var(--green);}
+  .board-head p{color:var(--gray);font-size:15px;margin-top:8px;line-height:1.6;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:16px;font-size:13px;color:var(--gray);}
+  .legend span{display:flex;align-items:center;gap:6px;}
+  .dot{width:10px;height:10px;border-radius:50%;}
+  .dot.scr{background:var(--green);}
+  .dot.ov{background:#C9A227;}
+
+  .grid{
+    max-width:1400px;margin:0 auto;
+    display:grid;grid-template-columns:repeat(auto-fill,234px);justify-content:center;gap:30px 26px;
+  }
+  .card{display:flex;flex-direction:column;width:234px;}
+  .frame{
+    width:234px;height:476px;border-radius:26px;overflow:hidden;
+    background:#2a2a2e;box-shadow:0 10px 30px rgba(0,0,0,.16);position:relative;
+  }
+  .frame iframe{
+    width:438px;height:892px;border:0;position:absolute;top:0;left:0;
+    transform:scale(.5365);transform-origin:top left;
+  }
+  /* 프레임 위 클릭 가드 (썸네일 내부 조작 막고 보드 스크롤 유지) */
+  .frame .guard{position:absolute;inset:0;z-index:2;}
+
+  .meta{display:flex;align-items:center;gap:9px;margin:14px 2px 9px;}
+  .meta .num{
+    width:26px;height:26px;border-radius:50%;background:var(--green);color:#fff;
+    font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;flex:none;
+  }
+  .meta .num.ov{background:#C9A227;}
+  .meta .name{font-size:16px;font-weight:800;}
+  .meta .tag{font-size:11px;color:var(--gray);font-weight:600;margin-left:auto;
+    border:1px solid var(--line);padding:2px 8px;border-radius:8px;}
+
+  .flow{list-style:none;display:flex;flex-direction:column;gap:7px;}
+  .flow li{
+    font-size:12.5px;color:#444;line-height:1.45;display:flex;gap:7px;align-items:baseline;
+    background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 10px;
+  }
+  .flow li b{color:var(--ink);font-weight:700;white-space:nowrap;}
+  .flow li .to{color:var(--green);font-weight:800;}
+  .flow li.self .to{color:var(--gray);}
+  .flow .arrow{color:var(--gray);}
+
+  .section-label{
+    max-width:1400px;margin:44px auto 4px;font-size:13px;font-weight:800;color:var(--gray);
+    letter-spacing:1px;text-transform:uppercase;grid-column:1/-1;
+  }
+</style>
+</head>
+<body>
+
+  <div class="board-head">
+    <h1><span class="logo-dot">🍳</span> cook — 화면 플로우 보드</h1>
+    <p>유튜브 레시피를 핸즈프리로 따라 하는 요리 어시스턴트 · 전체 화면과 화면 간 이동 흐름 정리</p>
+    <div class="legend">
+      <span><span class="dot scr"></span> 화면 (Screen)</span>
+      <span><span class="dot ov"></span> 오버레이 / 모달 (Overlay)</span>
+      <span>→ <span style="color:var(--green);font-weight:700;">초록</span> = 이동할 화면</span>
+    </div>
+  </div>
+
+  <div class="grid">
+
+    <!-- 1. 홈 -->
+    <div class="card">
+      <div class="frame"><iframe src="app.html#home" loading="lazy"></iframe><div class="guard"></div></div>
+      <div class="meta"><div class="num">1</div><div class="name">홈</div><div class="tag">Screen</div></div>
+      <ul class="flow">
+        <li><b>＋ 버튼</b><span class="arrow">→</span><span class="to">② 레시피 등록</span></li>
+        <li><b>레시피 카드</b><span class="arrow">→</span><span class="to">④ 레시피 상세</span></li>
+      </ul>
+    </div>
+
+    <!-- 2. 레시피 등록 -->
+    <div class="card">
+      <div class="frame"><iframe src="app.html#sheet" loading="lazy"></iframe><div class="guard"></div></div>
+      <div class="meta"><div class="num ov">2</div><div class="name">레시피 등록</div><div class="tag">Overlay</div></div>
+      <ul class="flow">
+        <li><b>입력 완료</b><span class="arrow">→</span><span class="to">③ 분석 로딩</span></li>
+        <li><b>취소 · 배경</b><span class="arrow">→</span><span class="to">① 홈</span></li>
+      </ul>
+    </div>
+
+    <!-- 3. 분석 로딩 -->
+    <div class="card">
+      <div class="frame"><iframe src="app.html#loading" loading="lazy"></iframe><div class="guard"></div></div>
+      <div class="meta"><div class="num">3</div><div class="name">분석 로딩</div><div class="tag">Screen</div></div>
+      <ul class="flow">
+        <li><b>분석 완료 (자동)</b><span class="arrow">→</span><span class="to">④ 레시피 상세</span></li>
+      </ul>
+    </div>
+
+    <!-- 4. 레시피 상세 -->
+    <div class="card">
+      <div class="frame"><iframe src="app.html#detail" loading="lazy"></iframe><div class="guard"></div></div>
+      <div class="meta"><div class="num">4</div><div class="name">레시피 상세</div><div class="tag">Screen</div></div>
+      <ul class="flow">
+        <li><b>요리 시작하기</b><span class="arrow">→</span><span class="to">⑤ 기본 조리 모드</span></li>
+        <li><b>‹ 뒤로</b><span class="arrow">→</span><span class="to">① 홈</span></li>
+      </ul>
+    </div>
+
+    <!-- 5. 기본 조리 모드 -->
+    <div class="card">
+      <div class="frame"><iframe src="app.html#cook" loading="lazy"></iframe><div class="guard"></div></div>
+      <div class="meta"><div class="num">5</div><div class="name">기본 조리 모드</div><div class="tag">Screen</div></div>
+      <ul class="flow">
+        <li class="self"><b>스크롤 · 스와이프 · 카드</b><span class="arrow">→</span><span class="to">단계 전환(같은 화면)</span></li>
+        <li><b>타이머</b><span class="arrow">→</span><span class="to">⑦ 타이머 설정</span></li>
+        <li><b>재료 보기</b><span class="arrow">→</span><span class="to">⑥ 재료 시트</span></li>
+        <li><b>상단 ? </b><span class="arrow">→</span><span class="to">⑧ 음성 명령 가이드</span></li>
+        <li><b>마지막 단계 다음</b><span class="arrow">→</span><span class="to">⑩ 완료</span></li>
+      </ul>
+    </div>
+
+    <!-- 6. 재료 시트 -->
+    <div class="card">
+      <div class="frame"><iframe src="app.html#ingredients" loading="lazy"></iframe><div class="guard"></div></div>
+      <div class="meta"><div class="num ov">6</div><div class="name">재료 시트</div><div class="tag">Overlay</div></div>
+      <ul class="flow">
+        <li><b>✕ · 배경</b><span class="arrow">→</span><span class="to">⑤ 기본 조리 모드</span></li>
+      </ul>
+    </div>
+
+    <!-- 7. 타이머 설정 -->
+    <div class="card">
+      <div class="frame"><iframe src="app.html#timer" loading="lazy"></iframe><div class="guard"></div></div>
+      <div class="meta"><div class="num ov">7</div><div class="name">타이머 설정</div><div class="tag">Overlay</div></div>
+      <ul class="flow">
+        <li><b>시작</b><span class="arrow">→</span><span class="to">⑤ 조리(타이머 작동)</span></li>
+        <li><b>✕ · 배경</b><span class="arrow">→</span><span class="to">⑤ 기본 조리 모드</span></li>
+      </ul>
+    </div>
+
+    <!-- 8. 음성 명령 가이드 -->
+    <div class="card">
+      <div class="frame"><iframe src="app.html#voice" loading="lazy"></iframe><div class="guard"></div></div>
+      <div class="meta"><div class="num ov">8</div><div class="name">음성 명령 가이드</div><div class="tag">Overlay</div></div>
+      <ul class="flow">
+        <li><b>알겠어요 · ✕</b><span class="arrow">→</span><span class="to">⑤ 기본 조리 모드</span></li>
+      </ul>
+    </div>
+
+    <!-- 9. 핸즈프리 모드 -->
+    <div class="card">
+      <div class="frame"><iframe src="app.html#cook2" loading="lazy"></iframe><div class="guard"></div></div>
+      <div class="meta"><div class="num">9</div><div class="name">핸즈프리 모드</div><div class="tag">Screen</div></div>
+      <ul class="flow">
+        <li class="self"><b>음성 대화</b><span class="arrow">→</span><span class="to">AI 응답 · 단계 진행</span></li>
+        <li><b>핸즈프리 종료</b><span class="arrow">→</span><span class="to">⑤ 기본 조리 모드</span></li>
+      </ul>
+    </div>
+
+    <!-- 10. 완료 -->
+    <div class="card">
+      <div class="frame"><iframe src="app.html#complete" loading="lazy"></iframe><div class="guard"></div></div>
+      <div class="meta"><div class="num">10</div><div class="name">완료</div><div class="tag">Screen</div></div>
+      <ul class="flow">
+        <li><b>홈으로</b><span class="arrow">→</span><span class="to">① 홈</span></li>
+        <li><b>다시 요리하기</b><span class="arrow">→</span><span class="to">⑤ 기본 조리 모드</span></li>
+      </ul>
+    </div>
+
+    <!-- 11. 후기 전체 -->
+    <div class="card">
+      <div class="frame"><iframe src="app.html#reviews" loading="lazy"></iframe><div class="guard"></div></div>
+      <div class="meta"><div class="num">11</div><div class="name">후기 전체</div><div class="tag">Screen</div></div>
+      <ul class="flow">
+        <li class="self"><b>상세 · 후기 전체보기</b><span class="arrow">→</span><span class="to">진입</span></li>
+        <li><b>후기 쓰기</b><span class="arrow">→</span><span class="to">후기 작성 시트(오버레이)</span></li>
+        <li><b>‹ 뒤로</b><span class="arrow">→</span><span class="to">④ 레시피 상세</span></li>
+      </ul>
+    </div>
+
+  </div>
+
+</body>
+</html>
