@@ -212,12 +212,13 @@
       "title": "fan-out 적대적 검증 라운드 + 보정",
       "description": "VERIFICATION_REGIME §1 렌즈(디자인·모든버튼·핸즈프리정직성·접근성·카피)로 적대적 검증 → 확정 결함 보정 스토리(FIX-n) 주입.",
       "priority": 13,
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "docs/progress/FANOUT_ROUND_1_ko.md에 렌즈별 발견점·skeptic 판정 정리.",
         "확정 결함을 FIX 스토리로 prd.json에 주입(또는 즉시 보정).",
         "REPORT_ko.md 기록 후 한글 커밋."
-      ]
+      ],
+      "notes": "2026-06-29 fan-out 4렌즈 검증 완료. 자동 데모 전진, 오버레이 잔존, 48px 미달, 완료 소셜 갭, 별점/카드 접근성 등 확정 결함을 즉시 보정하고 docs/progress/FANOUT_ROUND_1_ko.md에 기록했다. node --check와 W3-1 스크린샷 통과."
     },
     {
       "id": "W3-2",

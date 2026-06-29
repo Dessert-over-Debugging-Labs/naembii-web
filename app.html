@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>cook — 인터랙티브 프로토타입</title>
+<title>쿡 — 인터랙티브 프로토타입</title>
 <script src="https://unpkg.com/lucide@latest"></script>
 <style>
   :root{
@@ -21,6 +21,7 @@
     --dark2:#161616;
     --dark3:#242424;
     --warn:#FBBF24;
+    --on-green:#06120A;
   }
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   body{
@@ -71,6 +72,7 @@
   .view.dark{background:var(--dark);}
   .body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
   .body::-webkit-scrollbar{display:none;}
+  #home .body{padding-bottom:112px;}
 
   .nav{display:flex;align-items:center;justify-content:space-between;padding:8px 16px 12px;flex:none;}
   .nav .ic-btn{min-width:48px;height:48px;display:flex;align-items:center;justify-content:center;color:var(--ink);cursor:pointer;border-radius:16px;}
@@ -153,7 +155,7 @@
   /* FAB */
   .fab{
     position:absolute;right:20px;bottom:24px;width:60px;height:60px;border-radius:20px;
-    background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;
+    background:var(--green);color:var(--on-green);display:flex;align-items:center;justify-content:center;
     box-shadow:0 8px 24px rgba(70,181,129,.45);z-index:40;cursor:pointer;border:none;transition:transform .15s;
     background:linear-gradient(135deg,var(--green-l),var(--green));
   }
@@ -176,11 +178,12 @@
     height:54px;background:var(--surface2);border:1px solid var(--line);border-radius:12px;display:flex;align-items:center;
     padding:0 16px;gap:10px;font-size:15px;color:var(--gray);
   }
+  .field input{flex:1;min-width:0;border:0;background:transparent;color:var(--ink);font:inherit;outline:none;}
   .field svg{width:20px;height:20px;color:#FF0000;}
   .btn{
-    width:100%;height:54px;background:linear-gradient(135deg,var(--green-l),var(--green));color:#fff;border:none;border-radius:16px;
+    width:100%;height:48px;background:linear-gradient(135deg,var(--green-l),var(--green));color:var(--on-green);border:none;border-radius:16px;
     box-shadow:0 6px 18px rgba(70,181,129,.32);
-    font-size:17px;font-weight:700;margin-top:16px;cursor:pointer;transition:transform .12s,opacity .2s;
+    font-size:16px;font-weight:800;margin-top:16px;cursor:pointer;transition:transform .12s,opacity .2s;
     font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;
   }
   .btn svg{width:20px;height:20px;}
@@ -239,7 +242,7 @@
   .cta-bar{flex:none;padding:16px;background:rgba(10,10,10,.9);backdrop-filter:blur(12px);border-top:1px solid var(--line);}
 
   /* ===== 조리 (다크) ===== */
-  .cook-video{width:100%;height:200px;position:relative;background:#000;}
+  .cook-video{width:100%;height:260px;position:relative;background:#000;}
   .cook-progress{display:flex;gap:4px;padding:16px 16px 8px;}
   .cook-progress .seg{flex:1;height:4px;border-radius:2px;background:var(--dark3);}
   .cook-progress .seg.done{background:#fff;}
@@ -251,7 +254,7 @@
   .cook-track{position:relative;width:100%;height:100%;}
   .scard{
     position:absolute;left:0;right:0;top:50%;
-    background:#34343a;border:1.5px solid transparent;border-radius:16px;padding:16px;
+    background:var(--surface2);border:1.5px solid transparent;border-radius:16px;padding:16px;
     transform:translateY(-50%);transform-origin:center;
     transition:transform .42s cubic-bezier(.32,.72,0,1),opacity .35s ease;
     cursor:pointer;
@@ -294,7 +297,7 @@
   .phase-label{font-size:12px;font-weight:700;color:var(--green);margin:14px 0 8px;letter-spacing:.3px;}
   .step-cur{background:var(--dark2);border:1.5px solid var(--green);border-radius:18px;padding:18px;margin-bottom:14px;}
   .step-cur .num{font-size:12px;color:var(--green);font-weight:700;margin-bottom:8px;}
-  .step-cur .tx{font-size:21px;font-weight:800;color:#fff;line-height:1.45;}
+  .step-cur .tx{font-size:16px;font-weight:800;color:#fff;line-height:1.55;}
   .step-next{display:flex;gap:12px;padding:13px 4px;color:#9a9a9e;font-size:15px;line-height:1.4;border-bottom:1px solid var(--dark3);}
   .step-next .n{color:#666;font-weight:700;flex:none;}
   /* 조리 단계 텍스트 */
@@ -320,6 +323,7 @@
   .cbtn{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;border:none;background:none;font-family:inherit;}
   .cbtn .cic{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
   .cbtn .cic svg{width:22px;height:22px;color:#fff;}
+  .cbtn .cic.o svg{color:var(--on-green);}
   .cbtn .cic.o{background:var(--green);}
   .cbtn .cic.d{background:var(--dark3);}
   .cbtn .cic.mic{width:64px;height:64px;animation:pulse 2s infinite;}
@@ -362,10 +366,10 @@
   .vp-close{position:absolute;top:8px;right:12px;z-index:2;width:48px;height:48px;border:none;background:none;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;}
   .vp-close svg{width:16px;height:16px;}
   .vp-user{position:relative;z-index:1;flex:none;width:100%;font-size:14px;font-weight:700;color:#fff;margin-bottom:8px;min-height:18px;letter-spacing:.2px;text-shadow:0 1px 4px rgba(0,0,0,.3);}
-  .vp-ai{position:relative;z-index:1;flex:none;width:100%;font-size:17px;font-weight:600;color:#fff;line-height:1.5;min-height:50px;text-shadow:0 1px 6px rgba(0,0,0,.4);}
+  .vp-ai{position:relative;z-index:1;flex:none;width:100%;font-size:16px;font-weight:600;color:#fff;line-height:1.5;min-height:50px;text-shadow:0 1px 6px rgba(0,0,0,.4);}
   /* 대기(듣는 중): 가운데 크게 */
   .vpanel.idle{justify-content:center;align-items:center;}
-  .vpanel.idle .vp-user{font-size:23px;font-weight:800;color:#fff;text-align:center;margin:0;min-height:0;letter-spacing:0;text-shadow:0 1px 8px rgba(0,0,0,.22);}
+  .vpanel.idle .vp-user{font-size:18px;font-weight:800;color:#fff;text-align:center;margin:0;min-height:0;letter-spacing:0;text-shadow:0 1px 8px rgba(0,0,0,.22);}
   .vpanel.idle .vp-ai{display:none;}
   .vp-wave{display:none;}
   .vpanel.idle .vp-wave{display:flex;justify-content:center;margin-bottom:16px;transform:scale(1.2);}
@@ -392,7 +396,7 @@
   .ing-grab{width:38px;height:5px;background:var(--gray2);border-radius:3px;margin:0 auto 16px;}
   .ing-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
   .ing-h b{font-size:20px;font-weight:800;color:var(--ink);}
-  .ing-h span{cursor:pointer;color:var(--gray);display:flex;}
+  .ing-h span{cursor:pointer;color:var(--gray);display:flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:16px;}
   .ing-h span svg{width:20px;height:20px;}
   .ing-sheet .ings{margin-bottom:0;}
   /* 타이머 시트 */
@@ -404,7 +408,7 @@
   .ts-num b{font-size:48px;font-weight:800;color:var(--ink);line-height:1;}
   .ts-num span{font-size:16px;color:var(--gray);font-weight:700;}
   .ts-presets{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:4px;}
-  .ts-presets button{height:40px;border:none;border-radius:12px;background:var(--green-soft);color:var(--green);font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;}
+  .ts-presets button{height:48px;border:none;border-radius:12px;background:var(--green-soft);color:var(--green);font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;}
   .ts-presets button:active{transform:scale(.96);}
   /* 카운트다운 중인 타이머 버튼 */
   .cbtn small.trun{color:var(--green);font-weight:800;}
@@ -416,12 +420,12 @@
   #cook.voice-open .cook-ctrl{opacity:0;pointer-events:none;}
   .vmodal .vtop{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:16px;}
   .vmodal .vtop h2{color:#fff;font-size:24px;font-weight:800;text-align:center;line-height:1.4;}
-  .vmodal .vclose{position:absolute;top:60px;right:24px;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.2);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .vmodal .vclose{position:absolute;top:60px;right:24px;width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.2);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;}
   .vmodal .vclose svg{width:18px;height:18px;}
   .vcard{background:var(--surface);border-top:1px solid var(--line);border-radius:24px 24px 0 0;padding:24px 24px 32px;}
   .vcard .vh{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
   .vcard .vh b{font-size:18px;font-weight:800;}
-  .vcard .vh .x{cursor:pointer;color:var(--gray);display:flex;}
+  .vcard .vh .x{cursor:pointer;color:var(--gray);display:flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:16px;}
   .vcard .vh .x svg{width:20px;height:20px;}
   .vcmd{display:flex;gap:14px;align-items:center;padding:13px 0;border-bottom:1px solid var(--line);}
   .vcmd .ve{width:42px;height:42px;border-radius:13px;background:var(--green-soft);display:flex;align-items:center;justify-content:center;color:var(--green);flex:none;}
@@ -435,7 +439,7 @@
   .vci{width:26px;height:26px;border-radius:8px;background:var(--green-soft);color:var(--green);display:flex;align-items:center;justify-content:center;flex:none;}
   .vci svg{width:15px;height:15px;}
   .vchips{display:flex;flex-wrap:wrap;gap:8px;}
-  .vchips span{background:var(--green-soft);color:#2C7D58;font-size:13px;font-weight:600;padding:8px 12px;border-radius:12px;}
+  .vchips span{background:var(--green-soft);color:var(--green);font-size:13px;font-weight:700;padding:8px 12px;border-radius:12px;}
 
   /* ===== 완료 ===== */
   .done-view{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:40px;text-align:center;}
@@ -448,6 +452,11 @@
   .done-stat .s{text-align:center;}
   .done-stat .s b{font-size:24px;font-weight:800;color:var(--green);display:block;}
   .done-stat .s small{font-size:13px;color:var(--gray);}
+  .done-actions{width:100%;max-width:280px;display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:4px 0;}
+  .done-actions button{min-height:48px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:14px;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer;}
+  .done-card{width:100%;max-width:280px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;text-align:left;}
+  .done-card b{display:block;font-size:15px;margin-bottom:8px;}
+  .done-card p{font-size:13px;line-height:1.55;margin:0;color:var(--gray);}
 
   .toast{
     position:absolute;left:50%;bottom:120px;transform:translateX(-50%) translateY(20px);
@@ -485,7 +494,7 @@
   .drating .rc{font-size:13px;font-weight:600;color:var(--gray);margin-left:2px;}
   /* 상세 섹션 탭바 (스티키) */
   .dtabs{position:sticky;top:0;z-index:5;display:flex;gap:4px;background:var(--bg);padding:6px 0 10px;margin-bottom:8px;border-bottom:1px solid var(--line);}
-  .dtab{flex:1;border:none;background:none;font-family:inherit;font-size:14px;font-weight:700;color:#9a9aa0;padding:9px 0;cursor:pointer;position:relative;}
+  .dtab{flex:1;border:none;background:none;font-family:inherit;font-size:14px;font-weight:700;color:#9a9aa0;min-height:48px;padding:8px;cursor:pointer;position:relative;display:flex;align-items:center;justify-content:center;}
   .dtab.active{color:var(--ink);}
   .dtab.active::after{content:"";position:absolute;left:50%;bottom:-11px;transform:translateX(-50%);width:64%;height:3px;background:var(--green);border-radius:2px;}
   /* 평점 요약 */
@@ -559,7 +568,7 @@
     <!-- 1. 홈 -->
     <div class="view active" id="home">
       <div class="statusbar"><span>9:41</span><span class="icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
-      <div class="nav"><div class="logo"><i data-lucide="chef-hat"></i>cook</div><div class="hd-right"><div class="noti" role="status" aria-label="알림 268개"><i data-lucide="bell"></i>268</div><div class="ic-btn" role="button" tabindex="0" aria-label="내 설정 보기" onclick="toast('내 설정 화면은 다음 버전에서 열려요','circle-user-round')"><i data-lucide="circle-user-round"></i></div></div></div>
+      <div class="nav"><div class="logo"><i data-lucide="chef-hat"></i>쿡</div><div class="hd-right"><div class="noti" role="status" aria-label="알림 268개"><i data-lucide="bell"></i>268</div><div class="ic-btn" role="button" tabindex="0" aria-label="내 설정 보기" onclick="toast('내 설정 화면은 다음 버전에서 열려요','circle-user-round')"><i data-lucide="circle-user-round"></i></div></div></div>
       <div class="body">
         <div class="search" role="button" tabindex="0" aria-label="요리 검색" onclick="toast('검색은 프로토타입에서 생략했어요','search')"><i data-lucide="search"></i>먹고 싶은 요리를 검색해보세요</div>
         <div class="cats">
@@ -697,8 +706,8 @@
     <!-- 4. 조리 -->
     <div class="view dark" id="cook">
       <div class="statusbar dark"><span>9:41</span><span class="icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
-      <div class="nav dark"><div class="ic-btn" onclick="show('detail')"><i data-lucide="chevron-left"></i></div><div class="title" style="font-size:14px;">기본 조리 모드</div><div class="ic-btn" onclick="openVoice()"><i data-lucide="help-circle"></i></div></div>
-      <div class="cook-video"><img src="https://i.ytimg.com/vi/21j8SASqLJU/mqdefault.jpg" onerror="this.style.display='none'"></div>
+      <div class="nav dark"><div class="ic-btn" role="button" tabindex="0" aria-label="레시피 상세로 돌아가기" onclick="show('detail')"><i data-lucide="chevron-left"></i></div><div class="title" style="font-size:14px;">기본 조리 모드</div><div class="ic-btn" role="button" tabindex="0" aria-label="핸즈프리 명령 가이드 열기" onclick="openVoice()"><i data-lucide="help-circle"></i></div></div>
+      <div class="cook-video" role="button" tabindex="0" aria-label="영상 상태 안내" onclick="videoFallback()"><img src="https://i.ytimg.com/vi/21j8SASqLJU/mqdefault.jpg" onerror="this.style.display='none'"></div>
       <div class="cook-progress">
         <div class="seg done"></div><div class="seg done"></div><div class="seg cur"></div><div class="seg"></div><div class="seg"></div>
       </div>
@@ -706,24 +715,24 @@
         <div class="cook-track" id="cookTrack"></div>
       </div>
       <div class="cook-ctrl">
-        <button class="cbtn" onclick="openTimer()"><div class="cic o js-timer-btn" id="timerBtn"><i data-lucide="timer"></i></div><small class="js-timer-label" id="timerLabel">타이머</small></button>
-        <button class="cbtn" onclick="toggleHandsfree()"><div class="cic o mic" id="hfBtn"><i data-lucide="mic"></i></div><small>핸즈프리 모드</small></button>
-        <button class="cbtn" onclick="openIngredients()"><div class="cic d"><i data-lucide="carrot"></i></div><small>재료 보기</small></button>
+        <button class="cbtn" onclick="openTimer()" aria-label="타이머 열기"><div class="cic o js-timer-btn" id="timerBtn"><i data-lucide="timer"></i></div><small class="js-timer-label" id="timerLabel">타이머</small></button>
+        <button class="cbtn" onclick="toggleHandsfree()" aria-label="핸즈프리 모드 전환"><div class="cic o mic" id="hfBtn"><i data-lucide="mic"></i></div><small>핸즈프리 모드</small></button>
+        <button class="cbtn" onclick="openIngredients()" aria-label="재료 보기"><div class="cic d"><i data-lucide="carrot"></i></div><small>재료 보기</small></button>
       </div>
     </div>
 
     <!-- 4-B. 조리 (보관용 스냅샷) -->
     <div class="view dark" id="cook2">
       <div class="statusbar dark"><span>9:41</span><span class="icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
-      <div class="nav dark"><div class="ic-btn" onclick="show('detail')"><i data-lucide="chevron-left"></i></div><div class="title" style="font-size:14px;">핸즈프리 모드</div><div class="ic-btn" onclick="openVoice()"><i data-lucide="help-circle"></i></div></div>
-      <div class="cook-video"><img src="https://i.ytimg.com/vi/21j8SASqLJU/mqdefault.jpg" onerror="this.style.display='none'"></div>
+      <div class="nav dark"><div class="ic-btn" role="button" tabindex="0" aria-label="레시피 상세로 돌아가기" onclick="show('detail')"><i data-lucide="chevron-left"></i></div><div class="title" style="font-size:14px;">핸즈프리 모드</div><div class="ic-btn" role="button" tabindex="0" aria-label="핸즈프리 명령 가이드 열기" onclick="openVoice()"><i data-lucide="help-circle"></i></div></div>
+      <div class="cook-video" role="button" tabindex="0" aria-label="영상 상태 안내" onclick="videoFallback()"><img src="https://i.ytimg.com/vi/21j8SASqLJU/mqdefault.jpg" onerror="this.style.display='none'"></div>
       <div class="cook-progress">
         <div class="seg done"></div><div class="seg done"></div><div class="seg cur"></div><div class="seg"></div><div class="seg"></div>
       </div>
       <div class="cook-body">
         <div class="scard active static">
           <div class="sc-head">
-            <div class="sc-title"><span class="pl-letter">C.</span> 채소 익히기</div>
+          <div class="sc-title"><span class="pl-letter">3단계.</span> 채소 익히기</div>
             <div class="step-badge">3 / 5</div>
           </div>
           <ul class="sub-list">
@@ -761,6 +770,16 @@
           <div class="s"><b>5단계</b><small>음성 진행</small></div>
           <div class="s"><b>30분</b><small>조리 시간</small></div>
         </div>
+        <div class="done-actions">
+          <button type="button" onclick="toast('레시피가 저장되었어요','bookmark')">저장 완료</button>
+          <button type="button" onclick="openReviewSheet()">별점 남기기</button>
+          <button type="button" onclick="toast('사진 메모는 앱 버전에서 연결돼요','camera')">사진 메모</button>
+          <button type="button" onclick="toast('공유 링크가 복사되었어요','share-2')">친구 공유</button>
+        </div>
+        <div class="done-card">
+          <b>다른 사용자의 팁</b>
+          <p>청양고추는 반만 넣어도 충분히 칼칼해요. 남은 국물에는 밥을 넣어 마무리해도 좋아요.</p>
+        </div>
         <button class="btn" style="max-width:280px;" onclick="show('home')">홈으로</button>
         <button class="btn ghost" style="max-width:280px;margin-top:10px;" onclick="startCook()">다시 요리하기</button>
       </div>
@@ -772,7 +791,7 @@
       <div class="grabber"></div>
       <h3>레시피 등록하기</h3>
       <p class="sub">유튜브 링크만 붙여넣으면 단계별 레시피로 만들어드려요</p>
-      <div class="field"><i data-lucide="youtube"></i>영상 링크를 붙여넣으세요</div>
+      <label class="field" for="recipeUrl"><i data-lucide="youtube"></i><input id="recipeUrl" type="url" value="https://youtu.be/21j8SASqLJU" aria-label="영상 링크"></label>
       <button class="btn" onclick="analyze()">입력 완료</button>
       <button class="btn ghost" onclick="closeSheet()">취소</button>
     </div>
@@ -804,9 +823,9 @@
         <div class="ing-grab"></div>
         <div class="ing-h"><b>타이머 설정</b><span onclick="closeTimer()"><i data-lucide="x"></i></span></div>
         <div class="ts-row">
-          <button class="ts-pm" onclick="tsAdjust(-1)"><i data-lucide="minus"></i></button>
+          <button class="ts-pm" onclick="tsAdjust(-1)" aria-label="1분 줄이기"><i data-lucide="minus"></i></button>
           <div class="ts-num"><b id="tsMin">3</b><span>분</span></div>
-          <button class="ts-pm" onclick="tsAdjust(1)"><i data-lucide="plus"></i></button>
+          <button class="ts-pm" onclick="tsAdjust(1)" aria-label="1분 늘리기"><i data-lucide="plus"></i></button>
         </div>
         <div class="ts-presets">
           <button onclick="tsSet(1)">1분</button>
@@ -823,9 +842,10 @@
     <!-- 전역 핸즈프리 명령 가이드 모달 (어느 화면에서든 표시) -->
     <div class="vmodal" id="voiceModal">
       <div class="vclose" onclick="closeVoice()"><i data-lucide="x"></i></div>
-      <div class="vtop"><h2>핸즈프리로<br>편하게 말해보세요</h2></div>
+      <div class="vtop"><h2>핸즈프리 예시 명령</h2></div>
       <div class="vcard">
         <div class="vh"><b>핸즈프리 모드 명령 가이드</b><span class="x" onclick="closeVoice()"><i data-lucide="x"></i></span></div>
+        <p class="sub" style="font-size:13px;color:var(--gray);line-height:1.5;margin-bottom:16px;">프로토타입 예시예요. 실제 음성 인식은 아직 연결되어 있지 않아요.</p>
         <div class="vcats">
           <div class="vcat">
             <div class="vcat-h"><div class="vci"><i data-lucide="list-ordered"></i></div>단계 이동</div>
@@ -859,17 +879,17 @@
         <div class="ing-grab"></div>
         <div class="ing-h"><b>후기 쓰기</b><span onclick="closeReviewSheet()"><i data-lucide="x"></i></span></div>
         <div class="rv-label">맛은 어땠나요?</div>
-        <div class="star-input" id="starInput">
-          <button type="button" onclick="setStars(1)" aria-label="1점 선택"><i data-lucide="star"></i></button>
-          <button type="button" onclick="setStars(2)" aria-label="2점 선택"><i data-lucide="star"></i></button>
-          <button type="button" onclick="setStars(3)" aria-label="3점 선택"><i data-lucide="star"></i></button>
-          <button type="button" onclick="setStars(4)" aria-label="4점 선택"><i data-lucide="star"></i></button>
-          <button type="button" onclick="setStars(5)" aria-label="5점 선택"><i data-lucide="star"></i></button>
+        <div class="star-input" id="starInput" role="radiogroup" aria-label="별점 선택">
+          <button type="button" role="radio" onclick="setStars(1)" aria-label="5점 만점에 1점"><i data-lucide="star"></i></button>
+          <button type="button" role="radio" onclick="setStars(2)" aria-label="5점 만점에 2점"><i data-lucide="star"></i></button>
+          <button type="button" role="radio" onclick="setStars(3)" aria-label="5점 만점에 3점"><i data-lucide="star"></i></button>
+          <button type="button" role="radio" onclick="setStars(4)" aria-label="5점 만점에 4점"><i data-lucide="star"></i></button>
+          <button type="button" role="radio" onclick="setStars(5)" aria-label="5점 만점에 5점"><i data-lucide="star"></i></button>
         </div>
         <div class="rv-label">한 줄 후기</div>
         <textarea class="rv-text" id="rvText" placeholder="레시피는 어땠나요? 팁이 있다면 남겨주세요"></textarea>
         <div class="rv-photo">
-          <label for="rvPhotoInput"><i data-lucide="camera"></i></label>
+          <label for="rvPhotoInput" role="button" tabindex="0" aria-label="후기 사진 추가"><i data-lucide="camera"></i></label>
           <input type="file" id="rvPhotoInput" accept="image/*" onchange="onReviewPhoto(this)">
           <img class="prev" id="rvPhotoPrev" style="display:none;">
         </div>
@@ -903,6 +923,7 @@
   }
   function nav(key){
     hf3Reset();
+    closeIngredients();closeTimer();closeReviewSheet();
     switch(key){
       case 'home': closeSheet();closeVoice();show('home');break;
       case 'sheet': closeVoice();show('home');openSheet();break;
@@ -925,17 +946,20 @@
     else if(id==='reviews')renderReviewsScreen();
     else if(id==='home')hydrateHome();
   }
+  function currentViewId(){const v=document.querySelector('.view.active');return v?v.id:'home';}
   function openSheet(){document.getElementById('scrim').classList.add('show');document.getElementById('sheet').classList.add('show');setActiveNav('sheet');}
-  function closeSheet(){document.getElementById('scrim').classList.remove('show');document.getElementById('sheet').classList.remove('show');}
+  function closeSheet(){document.getElementById('scrim').classList.remove('show');document.getElementById('sheet').classList.remove('show');setActiveNav(currentViewId());}
 
   function analyze(){
+    const input=document.getElementById('recipeUrl');
+    if(input&&!input.value.trim()){toast('영상 링크를 먼저 입력해주세요','link');input.focus();return;}
     closeSheet();show('loading');
     const logs=['lg1','lg2','lg3','lg4'];
     logs.forEach(id=>document.getElementById(id).classList.remove('done'));
     logs.forEach((id,i)=>setTimeout(()=>document.getElementById(id).classList.add('done'),500+i*550));
     setTimeout(()=>show('detail'),500+logs.length*550+400);
   }
-  function goDetail(){show('detail');}
+  function goDetail(vid){if(vid&&vid!==DVID)toast('이 프로토타입은 순두부 상세만 연결되어요','info');show('detail');}
   function homeCategory(name){toast(name+' 레시피만 모아볼게요','filter');}
   function homeMore(name){toast(name+' 전체 목록은 프로토타입에서 안내만 제공해요','chevron-right');}
   function videoFallback(){toast('이 화면은 정적 미리보기예요. 실제 영상 재생은 실기기 검증이 필요해요','info');}
@@ -961,18 +985,18 @@
   function seedSocial(){loadSocial();let ch=false;for(const k in SEED){if(!social[k]){social[k]=JSON.parse(JSON.stringify(SEED[k]));ch=true;}}if(ch)saveSocial();}
   function getS(vid){return social[vid]||(social[vid]={likes:0,liked:false,reviews:[]});}
   function esc(s){return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
-  function stars(n){let h='';for(let i=0;i<n;i++)h+='<i data-lucide="star"></i>';return h;}
+  function stars(n){let h='';for(let i=0;i<n;i++)h+='<i data-lucide="star" aria-hidden="true"></i>';return h;}
 
   function reviewsHTML(arr){
     if(!arr.length)return '<div class="rev-empty">아직 후기가 없어요. 첫 후기를 남겨보세요!</div>';
-    return arr.map(r=>'<div class="r"><div class="av"><i data-lucide="user"></i></div><div class="txt"><div class="rh"><b>'+esc(r.user)+'</b><span class="stars">'+stars(r.rating)+'</span></div>'+esc(r.text)+(r.photo?'<img class="rphoto" src="'+r.photo+'">':'')+'</div></div>').join('');
+    return arr.map(r=>'<div class="r"><div class="av"><i data-lucide="user"></i></div><div class="txt"><div class="rh"><b>'+esc(r.user)+'</b><span class="stars" aria-label="5점 만점에 '+r.rating+'점">'+stars(r.rating)+'</span></div>'+esc(r.text)+(r.photo?'<img class="rphoto" src="'+r.photo+'" alt="후기 사진">':'')+'</div></div>').join('');
   }
   function summaryHTML(arr){
     if(!arr.length)return '';
     const n=arr.length,sum=arr.reduce((a,r)=>a+r.rating,0),avg=sum/n,dist=[0,0,0,0,0];
     arr.forEach(r=>dist[r.rating-1]++);
     let rows='';for(let s=5;s>=1;s--){const pct=Math.round(dist[s-1]/n*100);rows+='<div class="drow"><span class="lab">'+s+'★</span><span class="bar"><i style="width:'+pct+'%"></i></span><span class="num">'+dist[s-1]+'</span></div>';}
-    return '<div class="rsum"><div class="avg"><div class="n">'+avg.toFixed(1)+'</div><div class="st">'+stars(Math.round(avg))+'</div><div class="cnt">'+n+'개 후기</div></div><div class="dist">'+rows+'</div></div>';
+    return '<div class="rsum"><div class="avg"><div class="n">'+avg.toFixed(1)+'</div><div class="st" aria-label="5점 만점에 '+avg.toFixed(1)+'점">'+stars(Math.round(avg))+'</div><div class="cnt">'+n+'개 후기</div></div><div class="dist">'+rows+'</div></div>';
   }
 
   function hydrateHome(){
@@ -991,7 +1015,7 @@
     {vid:'vHU4_QbslRA',name:'명란 파스타',src:'유튜브 · 1인분',time:'10분',food:'food6'},
   ];
   function cardHTML(r){
-    return '<div class="rcard" data-vid="'+r.vid+'" role="button" tabindex="0" aria-label="'+esc(r.name)+' 상세 보기" onclick="goDetail()">'+
+    return '<div class="rcard" data-vid="'+r.vid+'" role="button" tabindex="0" aria-label="'+esc(r.name)+' 상세 보기" onclick="goDetail(\''+r.vid+'\')">'+
       '<div class="thumb '+r.food+'"><img src="https://i.ytimg.com/vi/'+r.vid+'/mqdefault.jpg" onerror="this.style.display=\'none\'">'+
         '<span class="badge"><i data-lucide="clock"></i>'+r.time+'</span>'+
         '<button class="savebtn like" aria-label="'+esc(r.name)+' 저장" onclick="toggleLike(event,\''+r.vid+'\')"><i data-lucide="bookmark"></i></button>'+
@@ -1023,7 +1047,7 @@
   }
   function renderSteps(){
     const el=document.getElementById('detSteps');if(!el)return;
-    el.innerHTML=steps.map(s=>'<div class="rstep"><div class="rstep-h"><span class="rstep-no">'+s.letter+'</span><b>'+esc(s.title)+'</b>'+(s.time?'<span class="rstep-time"><i data-lucide="play"></i>'+esc(s.time)+'</span>':'')+'</div><ul class="rstep-subs">'+s.subs.map(t=>'<li>'+esc(t)+'</li>').join('')+'</ul></div>').join('');
+    el.innerHTML=steps.map((s,i)=>'<div class="rstep"><div class="rstep-h"><span class="rstep-no">'+(i+1)+'</span><b>'+esc(s.title)+'</b>'+(s.time?'<span class="rstep-time"><i data-lucide="play"></i>'+esc(s.time)+'</span>':'')+'</div><ul class="rstep-subs">'+s.subs.map(t=>'<li>'+esc(t)+'</li>').join('')+'</ul></div>').join('');
   }
   const DET_SECS=['sec-ing','sec-steps','detRevTitle'];
   let tabLock=0;
@@ -1072,7 +1096,8 @@
     document.querySelectorAll('#starInput button').forEach((sp,i)=>{
       const on=i<n;
       sp.classList.toggle('on',on);
-      sp.setAttribute('aria-pressed',on?'true':'false');
+      sp.setAttribute('aria-checked',i===n-1?'true':'false');
+      sp.setAttribute('tabindex',i===n-1||(!n&&i===0)?'0':'-1');
     });
   }
   function onReviewPhoto(input){
@@ -1115,11 +1140,12 @@
       trackEl.innerHTML=steps.map((s,i)=>
         '<div class="scard" data-i="'+i+'">'+
           '<div class="sc-side-label"></div>'+
-          '<div class="sc-head"><div class="sc-title"><span class="pl-letter">'+s.letter+'.</span> '+s.title+'</div>'+
+          '<div class="sc-head"><div class="sc-title"><span class="pl-letter">'+(i+1)+'단계.</span> '+s.title+'</div>'+
           '<div class="step-badge">'+(i+1)+' / '+steps.length+'</div></div>'+
           '<ul class="sub-list">'+s.subs.map(t=>'<li>'+t+'</li>').join('')+'</ul>'+
           '<div class="sc-arrow"><span class="ar-up"><i data-lucide="chevron-up"></i></span><span class="ar-down"><i data-lucide="chevron-down"></i></span></div>'+
         '</div>').join('');
+      trackEl.querySelectorAll('.scard').forEach(card=>{card.setAttribute('role','button');card.setAttribute('tabindex','0');card.setAttribute('aria-label',(Number(card.dataset.i)+1)+'단계 보기');});
     }
     function layout(){
       trackEl.querySelectorAll('.scard').forEach(card=>{
@@ -1135,8 +1161,8 @@
       });
       viewEl.querySelectorAll('.cook-progress .seg').forEach((seg,i)=>{seg.className='seg'+(i<cur?' done':i===cur?' cur':'');});
     }
-    function next(){ if(cur<steps.length-1){cur++;layout();toast('"다음 단계" 인식됨','check');} else show('complete'); }
-    function prev(){ if(cur>0){cur--;layout();toast('이전 단계','arrow-left');} }
+    function next(){ if(cur<steps.length-1){cur++;layout();toast('다음 단계로 이동했어요','chevron-down');} else show('complete'); }
+    function prev(){ if(cur>0){cur--;layout();toast('이전 단계로 이동했어요','chevron-up');} else toast('첫 단계예요','info'); }
     trackEl.addEventListener('click',e=>{ if(dragMoved)return; const c=e.target.closest('.scard'); if(!c)return; const i=+c.dataset.i; if(i!==cur){cur=i;layout();} });
     viewEl.addEventListener('wheel',e=>{ if(!viewEl.classList.contains('active')||scrollLock)return; if(e.deltaY>12){scrollLock=true;next();setTimeout(()=>scrollLock=false,650);} else if(e.deltaY<-12){scrollLock=true;prev();setTimeout(()=>scrollLock=false,650);} },{passive:true});
     viewEl.addEventListener('pointerdown',e=>{dragY=e.clientY;dragMoved=false;});
@@ -1145,7 +1171,7 @@
     viewEl.addEventListener('pointercancel',()=>{dragY=null;});
     document.addEventListener('keydown',e=>{ if(!viewEl.classList.contains('active'))return; if(e.code==='Space'||e.code==='ArrowRight'||e.code==='ArrowDown'){e.preventDefault();next();} else if(e.code==='ArrowUp'||e.code==='ArrowLeft'){e.preventDefault();prev();} });
     build();layout();
-    return {reset(){cur=0;layout();}, layout, next, prev, advance(){cur=(cur+1)%steps.length;layout();}};
+    return {reset(){cur=0;layout();}, layout, next, prev, advance(){next();}};
   }
   const cookCar=makeCarousel('cook','cookTrack');
   const cook3Car=makeCarousel('cook3','cookTrack3');
@@ -1188,10 +1214,10 @@
   /* 조리 모드(신) 실시간 음성 패널 — 자동 데모 */
   let hf3On=false, vpi=0, vpTimers=[], vpTimerId=null;
   const vpScript=[
-    {u:'양파 얼마나 익혀야 해?', a:'투명해질 때까지 중불에서 2분 정도면 충분해요.'},
-    {u:'다음 단계로 넘어가줘', a:'네, 다음 단계로 넘어갈게요. 이어서 진행해주세요.', next:true},
-    {u:'간장 없는데 대체할 거 있어?', a:'멸치액젓이나 소금으로 대신해도 돼요. 액젓은 비슷한 양, 소금은 조금씩 넣어보세요.'},
-    {u:'타이머 3분 맞춰줘', a:'3분 타이머를 시작했어요. 그동안 대파를 썰어두면 좋아요.', timer:180},
+    {u:'예시 질문: 양파 얼마나 익혀야 해?', a:'예시 답변: 투명해질 때까지 중불에서 2분 정도면 충분해요.'},
+    {u:'예시 명령: 다음 단계로 넘어가줘', a:'예시 답변: 실제 단계 이동은 아래 다음 버튼으로 진행해주세요.'},
+    {u:'예시 질문: 간장 없는데 대체할 거 있어?', a:'예시 답변: 멸치액젓이나 소금으로 대신해도 돼요. 소금은 조금씩 넣어보세요.'},
+    {u:'예시 명령: 타이머 3분 맞춰줘', a:'예시 답변: 실제 타이머는 타이머 버튼에서 시작할 수 있어요.'},
   ];
   function vpClear(){vpTimers.forEach(t=>clearTimeout(t));vpTimers=[];}
   function vpType(el,text,speed,done){
@@ -1219,8 +1245,7 @@
         vpType(a,ex.a,28,()=>{                     // ③ 답변 스트리밍
           if(!hf3On)return;
           panel.classList.remove('answering');panel.classList.add('listening');
-          if(ex.timer)startVpTimer(ex.timer);        // 타이머 설정 발화면 타이머 패널 시작
-          if(ex.next)cook3Car.advance();             // "다음 단계" 발화면 실제 카드 전진
+          if(ex.timer)toast('타이머 명령 예시예요. 실제 시작은 타이머 버튼을 눌러주세요','timer');
           vpi++;                                    // ④ 답변 유지 후 다음 발화로
           vpTimers.push(setTimeout(()=>{ if(hf3On){u.textContent='듣고 있어요…';runVp();} },5000));
         });
@@ -1251,12 +1276,18 @@
       document.getElementById('vpUser').textContent='듣고 있어요';
       document.getElementById('vpAi').textContent='';
       panel.classList.remove('thinking','answering','listening');panel.classList.add('open','idle');
-      document.getElementById('hf3').setAttribute('aria-label','핸즈프리 데모 끄기');
+      const btn=document.getElementById('hf3');
+      btn.setAttribute('aria-label','핸즈프리 데모 끄기');btn.setAttribute('aria-pressed','true');
+      btn.innerHTML='<div class="cic o mic"><i data-lucide="mic"></i></div><small>시뮬레이션 켜짐</small>';
+      lucide.createIcons();
       vpi=0;
       vpTimers.push(setTimeout(runVp,1500));      // 잠시 뒤 대화 데모 시작
     }else{
       panel.classList.remove('open','idle','listening','thinking','answering');
-      document.getElementById('hf3').setAttribute('aria-label','핸즈프리 데모 켜기');
+      const btn=document.getElementById('hf3');
+      btn.setAttribute('aria-label','핸즈프리 데모 켜기');btn.setAttribute('aria-pressed','false');
+      btn.innerHTML='<div class="cic o mic off"><i data-lucide="mic-off"></i></div><small>핸즈프리 꺼짐</small>';
+      lucide.createIcons();
       vpTimerStop();
     }
   }
@@ -1293,6 +1324,7 @@
   function applyAccessibilityLabels(){
     document.querySelectorAll('.ing-h span').forEach(el=>{el.setAttribute('role','button');el.setAttribute('tabindex','0');el.setAttribute('aria-label','시트 닫기');});
     document.querySelectorAll('.vclose,.vcard .x').forEach(el=>{el.setAttribute('role','button');el.setAttribute('tabindex','0');el.setAttribute('aria-label','명령 가이드 닫기');});
+    document.querySelectorAll('.rv-photo label').forEach(el=>{el.setAttribute('role','button');el.setAttribute('tabindex','0');el.setAttribute('aria-label','후기 사진 추가');});
     document.querySelectorAll('.rcard,[role="button"]').forEach(el=>{
       if(el.dataset.keybound)return;
       el.dataset.keybound='true';
@@ -1318,7 +1350,7 @@
   function applyHash(){
     const h=location.hash.replace('#','');
     if(!h)return;
-    closeSheet();closeVoice();closeIngredients();closeTimer();hf3Reset();
+    closeSheet();closeVoice();closeIngredients();closeTimer();closeReviewSheet();hf3Reset();
     switch(h){
       case 'home': show('home');break;
       case 'sheet': show('home');openSheet();break;
