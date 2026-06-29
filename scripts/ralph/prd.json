@@ -8,7 +8,8 @@
       "title": "감사 — app.html 화면 인벤토리·라우팅·상태 + 상속 자료 갭 분석",
       "description": "app.html의 화면(view) 목록·라우팅(nav/show/applyHash)·cook3/vpanel/소셜 구조를 파악하고, docs/_inherited(UI_FEEDBACK/FANOUT/FINAL)와 대조해 적용할 개선 후보·결함을 docs/AUDIT_ko.md로 정리한다. cheftory_image·WIREFRAME.md도 대조.",
       "priority": 1,
-      "passes": false,
+      "passes": true,
+      "notes": "2026-06-29 W0 감사 완료. docs/AUDIT_ko.md에 화면 인벤토리, 라우팅 3중 동기, cook3/vpanel, 소셜 localStorage 구조, 상속 학습 대비 갭과 후속 후보를 정리했다. 발견 결함은 FIX-W0-1~4로 idempotent 추가.",
       "acceptanceCriteria": [
         "docs/AUDIT_ko.md에 화면 인벤토리(각 view id/역할)와 라우팅 규칙 요약이 있다.",
         "상속 학습(타이포/8px/48px/모든버튼/영상정직성/색토큰) 대비 갭과 화면별 적용 후보가 정리된다.",
@@ -39,6 +40,18 @@
         "홈의 모든 탭 요소가 이동 또는 안내로 반응한다(무반응 0).",
         "다크/타이포/여백 UI_FEEDBACK 준수.",
         "헤드리스 스크린샷 콘솔에러 0, REPORT_ko.md 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "FIX-W0-1",
+      "title": "홈 장식성 탭 요소 dead UI 제거",
+      "description": "W0 감사 후속: 홈 카테고리, 섹션 '전체', 프로필 아이콘처럼 탭 가능해 보이는 요소를 실제 필터/이동 또는 토스트 안내로 연결한다.",
+      "priority": 3.1,
+      "passes": false,
+      "acceptanceCriteria": [
+        "홈 카테고리/전체/프로필 탭 요소가 무반응으로 남지 않는다.",
+        "동적 안내 후 lucide.createIcons 재호출이 필요한 경우 누락하지 않는다.",
+        "콘솔에러 0 + REPORT_ko.md 기록 후 한글 커밋."
       ]
     },
     {
@@ -76,6 +89,18 @@
       ]
     },
     {
+      "id": "FIX-W0-2",
+      "title": "상세 CTA와 voice 진입을 cook3 기준으로 정합",
+      "description": "W0 감사 후속: 주력 조리 모드가 cook3인데 상세 '요리 시작하기'와 사이드바 voice가 cook 구버전으로 진입하는 불일치를 정리한다.",
+      "priority": 6.1,
+      "passes": false,
+      "acceptanceCriteria": [
+        "상세 CTA가 주력 cook3 흐름으로 진입한다.",
+        "사이드바 voice 또는 명령 가이드 진입 후 active nav가 cook3 기준으로 일관된다.",
+        "라우팅 3중 동기(nav/show/applyHash)를 깨지 않고 콘솔에러 0."
+      ]
+    },
+    {
       "id": "W1-6",
       "title": "cook3 영상/음성패널 정직성 (거짓 재생중 금지·폴백·상태기반)",
       "description": "FANOUT/FINAL 교훈 적용: 영상 실제재생을 단정하지 않고 상태기반/폴백 표기. vpanel 음성 데모는 정직하게(시뮬레이션 명시). 합성-클립 함정 회피.",
@@ -84,6 +109,18 @@
       "acceptanceCriteria": [
         "영상이 실제 재생되지 않는 경우 '재생 중' 거짓 표기 없이 상태/폴백을 보인다.",
         "vpanel 음성 대화가 시뮬레이션임이 드러나고 패널 모서리 클립이 없다.",
+        "콘솔에러 0 + 스크린샷 + REPORT_ko.md 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "FIX-W0-3",
+      "title": "상세·cook3 영상 썸네일 상태 안내",
+      "description": "W0 감사 후속: 실제 재생 검증 없는 정적 썸네일/재생 아이콘이 재생 가능처럼 보이는 문제를 상태 기반 안내 또는 폴백 토스트로 정직화한다.",
+      "priority": 7.1,
+      "passes": false,
+      "acceptanceCriteria": [
+        "상세 히어로와 cook3 영상 영역이 실제 재생 중임을 단정하지 않는다.",
+        "재생 아이콘 또는 영상 영역 탭 시 현재 프로토타입 한계를 한국어로 안내한다.",
         "콘솔에러 0 + 스크린샷 + REPORT_ko.md 기록 후 한글 커밋."
       ]
     },
@@ -140,6 +177,18 @@
       "passes": false,
       "acceptanceCriteria": [
         "주요 컨트롤 라벨·대비·48px 터치 충족.",
+        "콘솔에러 0 + REPORT_ko.md 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "FIX-W0-4",
+      "title": "아이콘 버튼과 별점 aria 라벨 보강",
+      "description": "W0 감사 후속: 빈 ic-btn, 닫기 아이콘, 별점 선택, 패널 닫기 등 시각 아이콘 중심 컨트롤에 aria-label/상태 라벨을 보강한다.",
+      "priority": 12.1,
+      "passes": false,
+      "acceptanceCriteria": [
+        "주요 아이콘 버튼에 한국어 aria-label이 있다.",
+        "별점 선택 상태가 보조기술에 전달된다.",
         "콘솔에러 0 + REPORT_ko.md 기록 후 한글 커밋."
       ]
     },
