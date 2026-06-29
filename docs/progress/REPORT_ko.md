@@ -62,3 +62,21 @@
 
 #### 다음
 - `W3-2` 전 화면 E2E 스크린샷과 `docs/FINAL_REPORT_ko.md` 작성.
+
+### W3-2 통합 E2E + 한글 최종 리포트 · 2026-06-29
+
+#### 무엇을
+- 사이드바 기준 10개 진입점 전 화면을 headless Chrome으로 캡처했다.
+- `docs/FINAL_REPORT_ko.md`를 작성했다.
+
+#### 어떻게
+- `home`, `sheet`, `loading`, `detail`, `cook3`, `cook`, `cook2`, `voice`, `complete`, `reviews` 해시로 직접 진입해 스크린샷을 생성했다.
+- PRD의 마지막 `W3-2`를 완료 처리했다.
+
+#### 확인
+- `<script>` 추출 `node --check` 통과.
+- `scripts/ralph/screenshots/W3-2-*.png` 10장 생성.
+- Chrome 로그 앱 오류 패턴(`Uncaught`, `ReferenceError`, `TypeError`, `SyntaxError`, `ERR_FILE_NOT_FOUND`) 0.
+
+#### 다음
+- PRD 전 스토리 완료.

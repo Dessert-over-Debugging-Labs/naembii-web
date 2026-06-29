@@ -225,12 +225,13 @@
       "title": "통합 E2E + 한글 최종 리포트",
       "description": "헤드리스로 전 화면 스크린샷 + 흐름 점검, docs/FINAL_REPORT_ko.md에 타임라인·화면목록·검증결과·남은 백로그 정리.",
       "priority": 14,
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "전 화면 스크린샷이 scripts/ralph/screenshots에 있고 콘솔에러 0.",
         "docs/FINAL_REPORT_ko.md 한글 최종 리포트 작성.",
         "REPORT_ko.md 기록 후 한글 커밋."
-      ]
+      ],
+      "notes": "2026-06-29 통합 E2E 완료. W3-2 10개 진입점 스크린샷 생성, node --check 통과, 앱 오류 패턴 0, docs/FINAL_REPORT_ko.md 작성."
     }
   ]
 }

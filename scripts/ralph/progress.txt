@@ -30,3 +30,10 @@ Branch: main
 - 검증: `<script>` 추출 `node --check` 통과, Chrome 헤드리스 스크린샷 `W3-1-cook3-fixed`, `W3-1-complete-fixed`, `W3-1-sheet-fixed` 생성, 사용자 노출 카피 스캔 통과.
 - 학습: vpanel 데모는 실제 상태 전이를 만들면 페이싱 위반이다. 시뮬레이션은 화면/문구로만 보여주고 단계 전진은 사용자 조작 버튼에만 연결한다.
 ---
+
+## 2026-06-29 - W3-2 / 구현 / 변경파일 / 검증 / 학습
+- 구현: 전 화면 E2E 스크린샷과 `docs/FINAL_REPORT_ko.md` 최종 리포트 작성.
+- 변경파일: `docs/FINAL_REPORT_ko.md`, `docs/progress/REPORT_ko.md`, `docs/progress/ACTIVITY_LOG_ko.md`, `scripts/ralph/prd.json`, `scripts/ralph/progress.txt`.
+- 검증: `<script>` 추출 `node --check` 통과, `W3-2-*.png` 10장 생성, Chrome 로그 앱 오류 패턴 0.
+- 학습: `sheet`와 `voice`는 `.view`가 아닌 오버레이지만 사용자 진입점이므로 최종 E2E 캡처에 포함해야 한다.
+---
