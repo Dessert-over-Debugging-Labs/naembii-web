@@ -57,6 +57,15 @@
 
 Chrome headless는 이 머신에서 GPU/Google 프로필 관련 로그를 출력한다. 앱 JS 오류와 무관한 실행환경 노이즈로 분리했다.
 
+## 후속 앱 형태 검증
+
+- 2026-06-30에 브라우저가 아닌 Android 런처 앱 형태 검증을 위해 `android-wrapper/`를 추가했다.
+- `./android-wrapper/build-apk.sh`는 Android SDK 도구만 사용해 `app.html`과 `cheftory_image/`를 asset으로 포함한 debug APK를 만든다.
+- `Pixel_5_API_31` 에뮬레이터에 APK 설치 후 런처 앱 실행으로 홈 화면을 확인했다.
+- 실제 WebView에서 원격 썸네일 실패 시 카드가 검게 남는 결함을 발견했고, 로컬 이미지 폴백을 `app.html`에 추가했다.
+- 검증 스크린샷: `scripts/ralph/screenshots/emulator-app-home.png`
+- 사용자 지시에 따라 에뮬레이터는 기본적으로 꺼둔다. 이후 앱 검증이 필요할 때만 켜서 설치/실행/캡처한다.
+
 ## 남은 백로그
 
 - 실제 유튜브 임베드 재생, 구간 seek, 오디오 더킹은 이 HTML 프로토타입 범위 밖이다. 실기기/네이티브 앱에서 별도 검증해야 한다.
@@ -69,3 +78,4 @@ Chrome headless는 이 머신에서 GPU/Google 프로필 관련 로그를 출력
 - fan-out: `docs/progress/FANOUT_ROUND_1_ko.md`
 - 진행: `docs/progress/REPORT_ko.md`, `docs/progress/ACTIVITY_LOG_ko.md`, `scripts/ralph/progress.txt`
 - 최종: `docs/FINAL_REPORT_ko.md`
+- 앱 래퍼: `android-wrapper/`

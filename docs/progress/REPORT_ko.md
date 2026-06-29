@@ -80,3 +80,24 @@
 
 #### 다음
 - PRD 전 스토리 완료.
+
+### 후속 앱 형태 검증 — Android WebView APK 래퍼 · 2026-06-30
+
+#### 무엇을
+- 브라우저 Chrome이 아니라 런처 앱 형태로 `app.html`을 띄우기 위해 `android-wrapper/`를 추가했다.
+- Android SDK만으로 빌드 가능한 최소 WebView APK 경로를 만들었다.
+
+#### 어떻게
+- `android-wrapper/build-apk.sh`가 `app.html`과 `cheftory_image/`를 Android asset으로 복사하고 `aapt`/`javac`/`d8`/`zipalign`/`apksigner` 순서로 debug APK를 만든다.
+- `MainActivity`는 `file:///android_asset/app.html#home`을 전체 화면 WebView로 로드한다.
+- Android의 암묵 권한 화면을 막기 위해 `minSdkVersion=23`, `targetSdkVersion=34`를 manifest에 명시했다.
+- 실제 앱 실행에서 원격 유튜브 썸네일 실패 시 홈 카드가 검게 남는 결함을 발견해, 로컬 `cheftory_image` 폴백으로 보정했다.
+
+#### 확인
+- `<script>` 추출 `node --check` 통과.
+- `./android-wrapper/build-apk.sh` 빌드 및 APK 서명 검증 통과.
+- Android Emulator `Pixel_5_API_31`에 설치 후 런처 앱 형태로 홈 화면 렌더링 확인: `scripts/ralph/screenshots/emulator-app-home.png`.
+- 사용자 지시에 따라 에뮬레이터는 검증 후 종료했고, 이후 기본 상태는 꺼둔 상태로 둔다.
+
+#### 다음
+- 다음 실제 앱 검증이 필요할 때만 에뮬레이터를 켜서 APK 설치/실행/캡처를 다시 수행한다.

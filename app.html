@@ -611,7 +611,7 @@
       <div class="nav"><div class="ic-btn" role="button" tabindex="0" aria-label="홈으로 돌아가기" onclick="show('home')"><i data-lucide="chevron-left"></i></div><div class="title">레시피</div><div class="ic-btn" role="button" tabindex="0" aria-label="레시피 공유하기" onclick="toast('공유 링크가 복사되었어요','share-2')"><i data-lucide="share-2"></i></div></div>
       <div class="body">
         <div class="hero" role="button" tabindex="0" aria-label="영상 상태 안내" onclick="videoFallback()">
-          <img src="https://i.ytimg.com/vi/21j8SASqLJU/mqdefault.jpg" onerror="this.style.display='none'">
+          <img src="https://i.ytimg.com/vi/21j8SASqLJU/mqdefault.jpg" data-fallback="food1" onerror="useImageFallback(this,'food1')">
           <div class="play"><i data-lucide="play"></i></div>
           <div class="video-honesty"><i data-lucide="info"></i>정적 미리보기</div>
           <div class="yt-badge"><i data-lucide="youtube"></i>유튜브</div>
@@ -676,7 +676,7 @@
     <div class="view dark" id="cook3">
       <div class="statusbar dark"><span>9:41</span><span class="icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
       <div class="nav dark"><div class="ic-btn" role="button" tabindex="0" aria-label="레시피 상세로 돌아가기" onclick="show('detail')"><i data-lucide="chevron-left"></i></div><div class="title" style="font-size:14px;">조리 모드</div><div class="ic-btn" role="button" tabindex="0" aria-label="핸즈프리 명령 가이드 열기" onclick="openVoice()"><i data-lucide="help-circle"></i></div></div>
-      <div class="cook-video" role="button" tabindex="0" aria-label="영상 상태 안내" onclick="videoFallback()"><img src="https://i.ytimg.com/vi/21j8SASqLJU/mqdefault.jpg" onerror="this.style.display='none'"></div>
+      <div class="cook-video" role="button" tabindex="0" aria-label="영상 상태 안내" onclick="videoFallback()"><img src="https://i.ytimg.com/vi/21j8SASqLJU/mqdefault.jpg" data-fallback="food1" onerror="useImageFallback(this,'food1')"></div>
       <div class="cook-progress">
         <div class="seg done"></div><div class="seg done"></div><div class="seg cur"></div><div class="seg"></div><div class="seg"></div>
       </div>
@@ -707,7 +707,7 @@
     <div class="view dark" id="cook">
       <div class="statusbar dark"><span>9:41</span><span class="icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
       <div class="nav dark"><div class="ic-btn" role="button" tabindex="0" aria-label="레시피 상세로 돌아가기" onclick="show('detail')"><i data-lucide="chevron-left"></i></div><div class="title" style="font-size:14px;">기본 조리 모드</div><div class="ic-btn" role="button" tabindex="0" aria-label="핸즈프리 명령 가이드 열기" onclick="openVoice()"><i data-lucide="help-circle"></i></div></div>
-      <div class="cook-video" role="button" tabindex="0" aria-label="영상 상태 안내" onclick="videoFallback()"><img src="https://i.ytimg.com/vi/21j8SASqLJU/mqdefault.jpg" onerror="this.style.display='none'"></div>
+      <div class="cook-video" role="button" tabindex="0" aria-label="영상 상태 안내" onclick="videoFallback()"><img src="https://i.ytimg.com/vi/21j8SASqLJU/mqdefault.jpg" data-fallback="food1" onerror="useImageFallback(this,'food1')"></div>
       <div class="cook-progress">
         <div class="seg done"></div><div class="seg done"></div><div class="seg cur"></div><div class="seg"></div><div class="seg"></div>
       </div>
@@ -725,7 +725,7 @@
     <div class="view dark" id="cook2">
       <div class="statusbar dark"><span>9:41</span><span class="icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
       <div class="nav dark"><div class="ic-btn" role="button" tabindex="0" aria-label="레시피 상세로 돌아가기" onclick="show('detail')"><i data-lucide="chevron-left"></i></div><div class="title" style="font-size:14px;">핸즈프리 모드</div><div class="ic-btn" role="button" tabindex="0" aria-label="핸즈프리 명령 가이드 열기" onclick="openVoice()"><i data-lucide="help-circle"></i></div></div>
-      <div class="cook-video" role="button" tabindex="0" aria-label="영상 상태 안내" onclick="videoFallback()"><img src="https://i.ytimg.com/vi/21j8SASqLJU/mqdefault.jpg" onerror="this.style.display='none'"></div>
+      <div class="cook-video" role="button" tabindex="0" aria-label="영상 상태 안내" onclick="videoFallback()"><img src="https://i.ytimg.com/vi/21j8SASqLJU/mqdefault.jpg" data-fallback="food1" onerror="useImageFallback(this,'food1')"></div>
       <div class="cook-progress">
         <div class="seg done"></div><div class="seg done"></div><div class="seg cur"></div><div class="seg"></div><div class="seg"></div>
       </div>
@@ -963,6 +963,26 @@
   function homeCategory(name){toast(name+' 레시피만 모아볼게요','filter');}
   function homeMore(name){toast(name+' 전체 목록은 프로토타입에서 안내만 제공해요','chevron-right');}
   function videoFallback(){toast('이 화면은 정적 미리보기예요. 실제 영상 재생은 실기기 검증이 필요해요','info');}
+  const FALLBACK_IMAGES={
+    food1:'cheftory_image/IMG_3028.PNG',
+    food2:'cheftory_image/IMG_3029.PNG',
+    food3:'cheftory_image/IMG_3030.PNG',
+    food4:'cheftory_image/IMG_3031.PNG',
+    food5:'cheftory_image/IMG_3027.PNG',
+    food6:'cheftory_image/IMG_3028.PNG'
+  };
+  function useImageFallback(img,key){
+    if(!img||img.dataset.fallbackApplied)return;
+    img.dataset.fallbackApplied='true';
+    img.src=FALLBACK_IMAGES[key]||FALLBACK_IMAGES.food1;
+  }
+  function settleImageFallbacks(){
+    setTimeout(()=>{
+      document.querySelectorAll('img[data-fallback]').forEach(img=>{
+        if(!img.complete||img.naturalWidth===0)useImageFallback(img,img.dataset.fallback);
+      });
+    },1800);
+  }
 
   /* ===== 소셜: 좋아요 · 후기 (localStorage) ===== */
   const DVID='21j8SASqLJU';                 // 상세는 순두부에 바인딩
@@ -1016,7 +1036,7 @@
   ];
   function cardHTML(r){
     return '<div class="rcard" data-vid="'+r.vid+'" role="button" tabindex="0" aria-label="'+esc(r.name)+' 상세 보기" onclick="goDetail(\''+r.vid+'\')">'+
-      '<div class="thumb '+r.food+'"><img src="https://i.ytimg.com/vi/'+r.vid+'/mqdefault.jpg" onerror="this.style.display=\'none\'">'+
+      '<div class="thumb '+r.food+'"><img src="https://i.ytimg.com/vi/'+r.vid+'/mqdefault.jpg" data-fallback="'+r.food+'" onerror="useImageFallback(this,\''+r.food+'\')">'+
         '<span class="badge"><i data-lucide="clock"></i>'+r.time+'</span>'+
         '<button class="savebtn like" aria-label="'+esc(r.name)+' 저장" onclick="toggleLike(event,\''+r.vid+'\')"><i data-lucide="bookmark"></i></button>'+
         '<span class="play"><i data-lucide="play"></i></span></div>'+
@@ -1030,6 +1050,7 @@
     document.getElementById('recScroll').innerHTML=RECIPES.filter(r=>recIds.includes(r.vid)).map(cardHTML).join('');
     lucide.createIcons();
     applyAccessibilityLabels();
+    settleImageFallbacks();
   }
   function renderDetailSocial(){
     const s=getS(DVID);
@@ -1339,6 +1360,7 @@
   renderHomeSections();
   hydrateHome();
   renderDetailSocial();
+  settleImageFallbacks();
   {const db=document.querySelector('#detail .body');if(db)db.addEventListener('scroll',updateDetailTab);}
 
   // 플로우 보드(iframe)에서 특정 화면을 바로 표시하기 위한 해시 처리
