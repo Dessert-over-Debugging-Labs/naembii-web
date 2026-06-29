@@ -1,0 +1,11 @@
+# Ralph Progress Log — cook 와이어프레임 고도화
+Started: 2026-06-29
+Branch: main
+
+## Codebase Patterns
+- 대상: app.html(단일 HTML 인터랙티브 프로토타입). 라우팅 3중 동기(nav/show/applyHash). cook3 주력 + vpanel.
+- green-gate: <script> 추출 node --check + 시스템 Chrome 헤드리스 스크린샷 + 콘솔에러 0. 패널 합성-클립 함정 주의(CLAUDE.md).
+- 우선 읽기: HANDOFF_ko.md → CLAUDE.md → WIREFRAME.md → docs/_inherited/*.
+- 원칙: 모든 버튼 동작(없으면 안내)·모바일 타이포 14~16px·8px·48px·영상 정직성(거짓 재생중 금지).
+- lucide.createIcons() 동적 주입 후 재호출 필수.
+---
