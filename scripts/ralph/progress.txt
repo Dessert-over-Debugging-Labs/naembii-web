@@ -16,3 +16,10 @@ Branch: main
 - 검증: `<script>` 추출 `node --check` 통과, Chrome 헤드리스 `app.html#cook3` 스크린샷 생성(`scripts/ralph/screenshots/W0-1-cook3.png`), 앱 JS 오류 패턴 0.
 - 학습: 상세 CTA와 voice 진입이 주력 `cook3`가 아니라 `cook`으로 흐르는 불일치, 홈 장식성 탭 요소, 영상 썸네일 정직성, aria 라벨 부족을 후속 FIX-W0 스토리로 분리.
 ---
+
+## 2026-06-29 - W1/W2/FIX-W0 통합 보정 / 구현 / 변경파일 / 검증 / 학습
+- 구현: 전역 다크 토큰·타이포·48px 터치, 홈 dead UI 제거, 링크 입력/상세/후기/완료 다크 폴리시, cook3 이전/다음 페이싱, 상세 CTA와 voice의 cook3 정합, 영상 정직 표기, 한국어 카피와 aria 라벨 보강.
+- 변경파일: `app.html`, `scripts/ralph/prd.json`, `scripts/ralph/progress.txt`, `docs/progress/REPORT_ko.md`, `docs/progress/ACTIVITY_LOG_ko.md`.
+- 검증: `<script>` 추출 `node --check` 통과, Chrome 헤드리스 스크린샷 `W1-home/detail/cook3`, `W2-complete/reviews` 생성, 사용자 노출 영어 누수 스캔 통과.
+- 학습: 이 레포의 Chrome headless는 앱과 무관한 GPU/Google 프로필 로그를 출력하므로 앱 검증은 캡처 성공과 JS 오류 패턴(`Uncaught`, `ReferenceError`, `TypeError`) 기준으로 분리 기록한다.
+---

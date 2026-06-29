@@ -22,175 +22,190 @@
       "title": "글로벌 디자인 토큰/타이포/여백 정합 (UI_FEEDBACK)",
       "description": ":root 토큰·타이포 스케일(본문 14~16/서브 12~13px·행간·한글 keep-all)·8px 그리드·48px 터치를 전역 정합한다. app.html 합성-클립 함정 준수.",
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "본문/서브 폰트가 14~16/12~13px 범위, 위계는 weight로, 한글 줄바꿈 자연스럽다.",
         "여백이 8px 배수, 터치 타깃 48px+.",
         "node --check 통과 + 헤드리스 스크린샷 콘솔에러 0, 패널 모서리 클립 없음.",
         "REPORT_ko.md 한글 기록 후 한글 커밋."
-      ]
+      ],
+      "notes": "2026-06-29 app.html 통합 UI/동작 패치 완료. 다크 토큰(#0A0A0A/#161616), 본문 14~16px/서브 12~13px, keep-all, 8px 간격 보정, 48px 터치 타깃을 전역 CSS에 반영. 검증: node --check 통과, headless Chrome 대표 화면 스크린샷 생성, 앱 JS 오류 패턴 0."
     },
     {
       "id": "W1-2",
       "title": "홈 화면 모바일 폴리시 + 모든 버튼 동작",
       "description": "홈(추천/저장/카드) 모바일 네이티브 폴리시 + 카드/칩/버튼이 실제 화면 이동 또는 최소 안내(토스트)로 반응(dead UI 0).",
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "홈의 모든 탭 요소가 이동 또는 안내로 반응한다(무반응 0).",
         "다크/타이포/여백 UI_FEEDBACK 준수.",
         "헤드리스 스크린샷 콘솔에러 0, REPORT_ko.md 기록 후 한글 커밋."
-      ]
+      ],
+      "notes": "2026-06-29 app.html 통합 UI/동작 패치 완료. 홈 카테고리/섹션 전체/프로필/검색/FAB/카드 저장이 모두 이동 또는 토스트 안내로 반응하도록 보정. 검증: node --check 통과, headless Chrome 대표 화면 스크린샷 생성, 앱 JS 오류 패턴 0."
     },
     {
       "id": "FIX-W0-1",
       "title": "홈 장식성 탭 요소 dead UI 제거",
       "description": "W0 감사 후속: 홈 카테고리, 섹션 '전체', 프로필 아이콘처럼 탭 가능해 보이는 요소를 실제 필터/이동 또는 토스트 안내로 연결한다.",
       "priority": 3.1,
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "홈 카테고리/전체/프로필 탭 요소가 무반응으로 남지 않는다.",
         "동적 안내 후 lucide.createIcons 재호출이 필요한 경우 누락하지 않는다.",
         "콘솔에러 0 + REPORT_ko.md 기록 후 한글 커밋."
-      ]
+      ],
+      "notes": "2026-06-29 app.html 통합 UI/동작 패치 완료. 홈 장식성 탭 요소 dead UI 제거 완료. 검증: node --check 통과, headless Chrome 대표 화면 스크린샷 생성, 앱 JS 오류 패턴 0."
     },
     {
       "id": "W1-3",
       "title": "링크 입력/가져오기 화면 폴리시",
       "description": "영상 링크 입력·분석 진입 화면을 모바일 폴리시 + 버튼 동작 정합.",
       "priority": 4,
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "입력/CTA/뒤로가 동작하고 다크 폴리시 적용.",
         "콘솔에러 0 + REPORT_ko.md 기록 후 한글 커밋."
-      ]
+      ],
+      "notes": "2026-06-29 app.html 통합 UI/동작 패치 완료. 레시피 등록 바텀시트와 분석 진입 버튼을 다크 폴리시와 48px 터치 기준으로 정리. 검증: node --check 통과, headless Chrome 대표 화면 스크린샷 생성, 앱 JS 오류 패턴 0."
     },
     {
       "id": "W1-4",
       "title": "조리 전 리뷰 화면 폴리시 (정보밀도)",
       "description": "재료/단계 리뷰 화면을 정보밀도 완화(촘촘 그리드 지양)·8px·터치 기준으로 정합.",
       "priority": 5,
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "재료/단계 목록이 촘촘하지 않고 단계 탭/CTA 동작.",
         "콘솔에러 0 + REPORT_ko.md 기록 후 한글 커밋."
-      ]
+      ],
+      "notes": "2026-06-29 app.html 통합 UI/동작 패치 완료. 상세 재료 그리드를 1열 리스트로 바꾸고 단계 카드 간격/행간을 완화. 검증: node --check 통과, headless Chrome 대표 화면 스크린샷 생성, 앱 JS 오류 패턴 0."
     },
     {
       "id": "W1-5",
       "title": "cook3 핸즈프리 — 단계/캐러셀/페이싱 폴리시",
       "description": "주력 cook3의 현재 단계·캐러셀·하단 컨트롤을 step-gated 페이싱(사용자 진행)·큰 글씨·peek 기준으로 정합. 라우팅/리셋 규칙 준수.",
       "priority": 6,
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "cook3 단계 이전/다음·캐러셀이 동작하고 현재 단계가 크게 보인다.",
         "hf3Reset 등 정리 규칙 유지(이탈 시 타이머 정리).",
         "콘솔에러 0 + 스크린샷 + REPORT_ko.md 기록 후 한글 커밋."
-      ]
+      ],
+      "notes": "2026-06-29 app.html 통합 UI/동작 패치 완료. cook3 하단에 이전/다음 단계 버튼을 추가하고 주력 CTA를 cook3로 연결해 사용자 페이싱을 보장. 검증: node --check 통과, headless Chrome 대표 화면 스크린샷 생성, 앱 JS 오류 패턴 0."
     },
     {
       "id": "FIX-W0-2",
       "title": "상세 CTA와 voice 진입을 cook3 기준으로 정합",
       "description": "W0 감사 후속: 주력 조리 모드가 cook3인데 상세 '요리 시작하기'와 사이드바 voice가 cook 구버전으로 진입하는 불일치를 정리한다.",
       "priority": 6.1,
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "상세 CTA가 주력 cook3 흐름으로 진입한다.",
         "사이드바 voice 또는 명령 가이드 진입 후 active nav가 cook3 기준으로 일관된다.",
         "라우팅 3중 동기(nav/show/applyHash)를 깨지 않고 콘솔에러 0."
-      ]
+      ],
+      "notes": "2026-06-29 app.html 통합 UI/동작 패치 완료. 상세 CTA, voice 사이드바, #voice 해시를 모두 cook3 기준으로 정합. 검증: node --check 통과, headless Chrome 대표 화면 스크린샷 생성, 앱 JS 오류 패턴 0."
     },
     {
       "id": "W1-6",
       "title": "cook3 영상/음성패널 정직성 (거짓 재생중 금지·폴백·상태기반)",
       "description": "FANOUT/FINAL 교훈 적용: 영상 실제재생을 단정하지 않고 상태기반/폴백 표기. vpanel 음성 데모는 정직하게(시뮬레이션 명시). 합성-클립 함정 회피.",
       "priority": 7,
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "영상이 실제 재생되지 않는 경우 '재생 중' 거짓 표기 없이 상태/폴백을 보인다.",
         "vpanel 음성 대화가 시뮬레이션임이 드러나고 패널 모서리 클립이 없다.",
         "콘솔에러 0 + 스크린샷 + REPORT_ko.md 기록 후 한글 커밋."
-      ]
+      ],
+      "notes": "2026-06-29 app.html 통합 UI/동작 패치 완료. 상세/cook3 영상에 정적 미리보기와 실기기 검증 필요 안내를 추가하고 vpanel에 음성 인식 시뮬레이션 표기를 추가. 검증: node --check 통과, headless Chrome 대표 화면 스크린샷 생성, 앱 JS 오류 패턴 0."
     },
     {
       "id": "FIX-W0-3",
       "title": "상세·cook3 영상 썸네일 상태 안내",
       "description": "W0 감사 후속: 실제 재생 검증 없는 정적 썸네일/재생 아이콘이 재생 가능처럼 보이는 문제를 상태 기반 안내 또는 폴백 토스트로 정직화한다.",
       "priority": 7.1,
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "상세 히어로와 cook3 영상 영역이 실제 재생 중임을 단정하지 않는다.",
         "재생 아이콘 또는 영상 영역 탭 시 현재 프로토타입 한계를 한국어로 안내한다.",
         "콘솔에러 0 + 스크린샷 + REPORT_ko.md 기록 후 한글 커밋."
-      ]
+      ],
+      "notes": "2026-06-29 app.html 통합 UI/동작 패치 완료. 상세·cook3 영상 썸네일 탭 시 정직한 폴백 토스트를 제공. 검증: node --check 통과, headless Chrome 대표 화면 스크린샷 생성, 앱 JS 오류 패턴 0."
     },
     {
       "id": "W1-7",
       "title": "완료 화면 + 소셜 진입 폴리시",
       "description": "완료(저장/메모/평가) 화면 폴리시 + 버튼 동작.",
       "priority": 8,
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "완료 화면 요소가 동작하고 다크 폴리시 적용.",
         "콘솔에러 0 + REPORT_ko.md 기록 후 한글 커밋."
-      ]
+      ],
+      "notes": "2026-06-29 app.html 통합 UI/동작 패치 완료. 완료 화면을 다크 폴리시로 정리하고 홈/다시 요리하기 버튼 동작을 유지. 검증: node --check 통과, headless Chrome 대표 화면 스크린샷 생성, 앱 JS 오류 패턴 0."
     },
     {
       "id": "W1-8",
       "title": "상세(detail) + 소셜(좋아요/후기) 폴리시",
       "description": "상세 화면 + 좋아요/후기(localStorage) 폴리시·동작 정합. 영상 썸네일/평점 요약.",
       "priority": 9,
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "상세·좋아요·후기 제출/렌더가 동작(localStorage 유지).",
         "콘솔에러 0 + REPORT_ko.md 기록 후 한글 커밋."
-      ]
+      ],
+      "notes": "2026-06-29 app.html 통합 UI/동작 패치 완료. 상세 저장/후기/탭/공유와 localStorage 렌더 흐름을 다크 폴리시 및 라벨 기준으로 보강. 검증: node --check 통과, headless Chrome 대표 화면 스크린샷 생성, 앱 JS 오류 패턴 0."
     },
     {
       "id": "W1-9",
       "title": "후기 전체 화면 + dead UI 0 네비 정합",
       "description": "reviews 전체 화면 폴리시 + 사이드바/하단탭 등 모든 네비 진입점이 실제 화면 또는 안내로 수렴(라우팅 3중 동기).",
       "priority": 10,
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "reviews 화면·네비가 동작하고 무반응 버튼 0.",
         "nav/applyHash/사이드바 3중 동기 유지.",
         "콘솔에러 0 + REPORT_ko.md 기록 후 한글 커밋."
-      ]
+      ],
+      "notes": "2026-06-29 app.html 통합 UI/동작 패치 완료. 후기 전체 화면, 하단 CTA, 사이드바/해시 진입을 다크 폴리시와 dead UI 0 기준으로 확인. 검증: node --check 통과, headless Chrome 대표 화면 스크린샷 생성, 앱 JS 오류 패턴 0."
     },
     {
       "id": "W2-1",
       "title": "한국어 카피 일관화 (영어 누수 제거)",
       "description": "STEP/Mic 등 영어 누수 제거·용어 통일·페르소나 톤 정합.",
       "priority": 11,
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "화면 카피 영어 누수 0, 용어 일관.",
         "콘솔에러 0 + REPORT_ko.md 기록 후 한글 커밋."
-      ]
+      ],
+      "notes": "2026-06-29 app.html 통합 UI/동작 패치 완료. 사용자 노출 카피의 STEP/Mic/off/YouTube/쉐프/영문 placeholder 누수를 한국어로 정리. 검증: node --check 통과, headless Chrome 대표 화면 스크린샷 생성, 앱 JS 오류 패턴 0."
     },
     {
       "id": "W2-2",
       "title": "접근성 점검 (대비/aria/터치)",
       "description": "다크 대비 AA 지향·아이콘 라벨·터치 타깃 점검 보정.",
       "priority": 12,
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "주요 컨트롤 라벨·대비·48px 터치 충족.",
         "콘솔에러 0 + REPORT_ko.md 기록 후 한글 커밋."
-      ]
+      ],
+      "notes": "2026-06-29 app.html 통합 UI/동작 패치 완료. 아이콘 버튼/닫기/카드/별점에 aria-label, role, 키보드 활성화, 48px 터치 타깃을 보강. 검증: node --check 통과, headless Chrome 대표 화면 스크린샷 생성, 앱 JS 오류 패턴 0."
     },
     {
       "id": "FIX-W0-4",
       "title": "아이콘 버튼과 별점 aria 라벨 보강",
       "description": "W0 감사 후속: 빈 ic-btn, 닫기 아이콘, 별점 선택, 패널 닫기 등 시각 아이콘 중심 컨트롤에 aria-label/상태 라벨을 보강한다.",
       "priority": 12.1,
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "주요 아이콘 버튼에 한국어 aria-label이 있다.",
         "별점 선택 상태가 보조기술에 전달된다.",
         "콘솔에러 0 + REPORT_ko.md 기록 후 한글 커밋."
-      ]
+      ],
+      "notes": "2026-06-29 app.html 통합 UI/동작 패치 완료. 주요 아이콘 버튼과 별점 선택 상태 aria-pressed 보강 완료. 검증: node --check 통과, headless Chrome 대표 화면 스크린샷 생성, 앱 JS 오류 패턴 0."
     },
     {
       "id": "W3-1",
