@@ -37,3 +37,10 @@ Branch: main
 - 검증: `<script>` 추출 `node --check` 통과, `W3-2-*.png` 10장 생성, Chrome 로그 앱 오류 패턴 0.
 - 학습: `sheet`와 `voice`는 `.view`가 아닌 오버레이지만 사용자 진입점이므로 최종 E2E 캡처에 포함해야 한다.
 ---
+
+## 2026-07-01 - MVP-01~05/08 / 구현 / 변경파일 / 검증 / 학습
+- 구현: 최신 대화 요구를 `docs/MVP_WIREFRAME_STORIES_ko.md`로 분리 저장하고 PRD에 `MVP-*` 스토리 등록. 상세 CTA 투명 플로팅, cook3 요리 완성 버튼/스와이프 힌트, 완료 화면 개편, 팁 남기기 화면, 최근 만든 요리 카피 정합, Figma/기술명세서 TODO 등록.
+- 변경파일: `app.html`, `WIREFRAME.md`, `docs/MVP_WIREFRAME_STORIES_ko.md`, `docs/progress/BUTTON_MATRIX_MVP_ko.md`, `scripts/ralph/prd.json`, `scripts/ralph/progress.txt`, `docs/progress/REPORT_ko.md`.
+- 검증: `<script>` 추출 `node --check` 통과, `validate-prd.sh` 통과, Chrome CDP 스크린샷 `mvp-detail-cta.png`, `mvp-cook3-complete.png`, `mvp-complete.png`, `mvp-tip-write.png` 생성, 핵심 버튼 8개 클릭 매트릭스 통과.
+- 학습: 완료 화면은 최종 상태와 후속 액션을 분리해야 한다. MVP 기능은 버튼만 두지 않고 연결 화면/시트가 있어야 하며, 전체 버튼 매트릭스는 `MVP-06`으로 별도 Ralph 스토리화한다.
+---

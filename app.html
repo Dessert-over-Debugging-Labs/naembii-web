@@ -283,7 +283,13 @@
   .hero .yt-badge{position:absolute;bottom:12px;right:16px;background:#FF0000;color:#fff;font-size:12px;font-weight:700;padding:4px 8px;border-radius:8px;display:flex;align-items:center;gap:4px;z-index:2;}
   .hero .yt-badge svg{width:14px;height:14px;}
   .detail-body{background:var(--bg);border-radius:24px 24px 0 0;margin-top:-24px;position:relative;padding:24px 16px 0;}
+  #detail .body{padding-bottom:96px;}
   .detail-body h2{font-size:22px;font-weight:800;line-height:1.35;margin-bottom:16px;}
+  .tip-strip{display:flex;gap:12px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;margin:0 0 18px;}
+  .tip-strip .ti{width:34px;height:34px;border-radius:10px;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;flex:none;}
+  .tip-strip .ti svg{width:18px;height:18px;}
+  .tip-strip b{display:block;font-size:14px;font-weight:900;margin-bottom:4px;}
+  .tip-strip p{font-size:13px;color:var(--gray);line-height:1.45;margin:0;}
   .extract-summary{display:flex;gap:8px;overflow-x:auto;margin:0 0 18px;padding-bottom:2px;}
   .extract-summary::-webkit-scrollbar{display:none;}
   .extract-summary span{display:inline-flex;align-items:center;gap:5px;flex:none;min-height:32px;padding:7px 10px;border-radius:10px;background:var(--surface);border:1px solid var(--line);color:#FFD9C8;font-size:12px;font-weight:800;}
@@ -311,8 +317,8 @@
   .reviews .stars svg{width:13px;height:13px;fill:var(--accent);}
   .cta-bar{flex:none;padding:16px;background:rgba(18,15,12,.92);backdrop-filter:blur(12px);border-top:1px solid var(--line);}
   .cta-bar.float-start{
-    position:relative;z-index:55;padding:8px 0 calc(18px + env(safe-area-inset-bottom));
-    background:transparent;border-top:0;backdrop-filter:none;
+    position:absolute;left:0;right:0;bottom:10px;z-index:55;padding:0 0 env(safe-area-inset-bottom);
+    background:transparent!important;border-top:0;backdrop-filter:none;
     pointer-events:none;
   }
   .cta-bar.float-start .btn{
@@ -358,7 +364,9 @@
   .scard.below .sc-arrow .ar-up{display:none;}
   .scard.static{position:static;transform:none;}
   #cook2 .cook-body{flex:none;overflow:visible;padding-top:6px;}
-  #cook3 .cook-body{justify-content:center;overflow:hidden;padding:0 16px;}
+  #cook3 .cook-body{justify-content:center;overflow:hidden;padding:0 16px;position:relative;}
+  .swipe-hint{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);z-index:120;display:flex;align-items:center;gap:6px;padding:7px 10px;border-radius:999px;background:rgba(0,0,0,.44);border:1px solid rgba(255,255,255,.12);color:#d8d8dc;font-size:12px;font-weight:800;pointer-events:none;}
+  .swipe-hint svg{width:14px;height:14px;color:var(--primary-l);}
   /* 핸즈프리 모드: 얇은 듣고있어요 바 + 대화창 */
   .hf-listen{margin:4px 16px 8px;background:var(--dark2);border-radius:12px;padding:8px 14px;display:flex;align-items:center;gap:10px;}
   .hf-listen .wave span{width:2.5px;}
@@ -413,6 +421,8 @@
   .cbtn .cic.o svg{color:var(--on-green);}
   .cbtn .cic.o{background:var(--green);}
   .cbtn .cic.d{background:var(--dark3);}
+  .cbtn .cic.finish{background:var(--fresh);color:#07130c;}
+  .cbtn .cic.finish svg{color:#07130c;}
   .cbtn .cic.mic{width:64px;height:64px;animation:pulse 2s infinite;}
   .cbtn .cic.mic svg{width:28px;height:28px;}
   @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(240,90,40,.5);}70%{box-shadow:0 0 0 16px rgba(240,90,40,0);}100%{box-shadow:0 0 0 0 rgba(240,90,40,0);}}
@@ -421,7 +431,7 @@
   /* 조리 모드(신) 실시간 음성 패널 */
   @property --vpang{syntax:"<angle>";inherits:false;initial-value:0deg;}
   #cook3 .cook-ctrl{display:block;padding:0;height:156px;box-sizing:border-box;position:relative;overflow:hidden;}
-  .ctrl-buttons{display:flex;align-items:center;justify-content:space-around;gap:4px;height:100%;box-sizing:border-box;padding:16px 12px 24px;}
+  .ctrl-buttons{display:grid;grid-template-columns:repeat(4,1fr);align-items:center;gap:4px;height:100%;box-sizing:border-box;padding:16px 12px 24px;}
   .vpanel{position:absolute;inset:0;z-index:3;box-sizing:border-box;padding:16px 18px 22px;
     display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;
     --vpang:0deg;
@@ -529,7 +539,8 @@
   .vchips span{background:var(--primary-soft);color:var(--primary-l);font-size:13px;font-weight:700;padding:8px 12px;border-radius:12px;}
 
   /* ===== 완료 ===== */
-  .done-view{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:40px;text-align:center;}
+  .done-view{flex:1;overflow-y:auto;display:flex;flex-direction:column;align-items:center;gap:16px;padding:48px 24px 28px;text-align:center;}
+  .done-view::-webkit-scrollbar{display:none;}
   .done-badge{width:96px;height:96px;border-radius:50%;background:var(--fresh-soft);color:var(--fresh-l);display:flex;align-items:center;justify-content:center;animation:pop .5s cubic-bezier(.18,.89,.32,1.28);}
   .done-badge svg{width:48px;height:48px;}
   @keyframes pop{from{transform:scale(0);}to{transform:scale(1);}}
@@ -539,11 +550,21 @@
   .done-stat .s{text-align:center;}
   .done-stat .s b{font-size:24px;font-weight:800;color:var(--fresh-l);display:block;}
   .done-stat .s small{font-size:13px;color:var(--gray);}
-  .done-actions{width:100%;max-width:280px;display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:4px 0;}
+  .done-actions{width:100%;max-width:320px;display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:4px 0;}
   .done-actions button{min-height:48px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:14px;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer;}
+  .done-actions button.primary{grid-column:1/-1;background:linear-gradient(135deg,var(--primary-l),var(--primary));color:var(--on-green);border-color:transparent;}
   .done-card{width:100%;max-width:280px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;text-align:left;}
   .done-card b{display:block;font-size:15px;margin-bottom:8px;}
   .done-card p{font-size:13px;line-height:1.55;margin:0;color:var(--gray);}
+  .tip-form{flex:1;display:flex;flex-direction:column;padding:0 16px 16px;}
+  .tip-hero{padding:10px 0 16px;}
+  .tip-hero h2{font-size:24px;font-weight:900;line-height:1.25;margin-bottom:8px;}
+  .tip-hero p{font-size:14px;color:var(--gray);line-height:1.55;}
+  .tip-box{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:14px;}
+  .tip-box textarea{width:100%;min-height:132px;border:0;outline:none;resize:none;background:transparent;color:var(--ink);font:inherit;font-size:15px;line-height:1.55;}
+  .tip-tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;}
+  .tip-tags button{min-height:40px;border:1px solid var(--line);background:var(--surface);border-radius:999px;color:var(--gray);font:inherit;font-size:13px;font-weight:800;padding:8px 12px;cursor:pointer;}
+  .tip-tags button.on{background:var(--primary-soft);border-color:rgba(240,90,40,.4);color:#FFD9C8;}
 
   .toast{
     position:absolute;left:50%;bottom:120px;transform:translateX(-50%) translateY(20px);
@@ -768,6 +789,10 @@
           </div>
           <div class="drating" id="detRating"></div>
           <p class="dsummary">칼칼한 국물에 몽글몽글한 순두부가 어우러지는 한 그릇 요리예요. 코인 육수로 감칠맛을 빠르게 잡고 고추기름을 내 깊은 맛을 더하면, 15분 만에 식당 부럽지 않은 순두부찌개가 완성됩니다.</p>
+          <div class="tip-strip">
+            <div class="ti"><i data-lucide="lightbulb"></i></div>
+            <div><b>먼저 만든 사람의 팁</b><p>청양고추는 반만 넣어도 충분히 칼칼해요. 남은 국물에는 밥을 넣어 마무리해도 좋아요.</p></div>
+          </div>
           <div class="extract-summary" aria-label="영상에서 추출한 조리 정보">
             <span><i data-lucide="list-checks"></i>5단계 추출</span>
             <span><i data-lucide="shopping-basket"></i>재료 9개</span>
@@ -832,15 +857,15 @@
       </div>
       <div class="cook-body">
         <div class="cook-track" id="cookTrack3"></div>
+        <div class="swipe-hint"><i data-lucide="chevrons-up-down"></i>단계 카드를 위아래로 스와이프</div>
       </div>
       <div class="vp-timer" id="vpTimer"><i data-lucide="timer"></i><div class="vt-txt"><b id="vpTimerTime">3:00</b><span>타이머</span></div></div>
       <div class="cook-ctrl" id="cook3Ctrl">
         <div class="ctrl-buttons">
-          <button class="cbtn" onclick="cook3Car.prev()" aria-label="이전 단계"><div class="cic d"><i data-lucide="chevron-up"></i></div><small>이전</small></button>
           <button class="cbtn" onclick="openTimer()" aria-label="타이머 열기"><div class="cic o js-timer-btn"><i data-lucide="timer"></i></div><small class="js-timer-label">타이머</small></button>
           <button class="cbtn" id="hf3" onclick="toggleHf3()" aria-label="핸즈프리 데모 켜기"><div class="cic o mic off"><i data-lucide="mic-off"></i></div><small>핸즈프리 꺼짐</small></button>
-          <button class="cbtn" onclick="cook3Car.next()" aria-label="다음 단계"><div class="cic o"><i data-lucide="chevron-down"></i></div><small>다음</small></button>
           <button class="cbtn" onclick="openIngredients()" aria-label="재료 보기"><div class="cic d"><i data-lucide="carrot"></i></div><small>재료</small></button>
+          <button class="cbtn" onclick="finishCooking()" aria-label="요리 완성하기"><div class="cic finish"><i data-lucide="check"></i></div><small>요리 완성</small></button>
         </div>
         <div class="vpanel" id="vpanel">
           <div class="vp-aurora"></div>
@@ -914,24 +939,40 @@
       <div class="done-view">
         <div class="done-badge"><i data-lucide="party-popper"></i></div>
         <h2>순두부찌개 완성!</h2>
-        <p>요리 내내 화면을 한 번도<br>만지지 않았어요. 맛있게 드세요.</p>
+        <p>방금 만든 요리 기록이 요리북에 추가됐어요. 다음에 다시 만들 때 오늘의 메모와 팁을 함께 볼 수 있어요.</p>
         <div class="done-stat">
-          <div class="s"><b>0회</b><small>화면 터치</small></div>
-          <div class="s"><b>5단계</b><small>음성 진행</small></div>
+          <div class="s"><b>완성</b><small>요리 기록</small></div>
+          <div class="s"><b>팁 1개</b><small>참고한 팁</small></div>
           <div class="s"><b>30분</b><small>조리 시간</small></div>
         </div>
-        <div class="done-actions">
-          <button type="button" onclick="toast('레시피가 저장되었어요','bookmark')">저장 완료</button>
-          <button type="button" onclick="openReviewSheet()">별점 남기기</button>
-          <button type="button" onclick="toast('사진 메모는 앱 버전에서 연결돼요','camera')">사진 메모</button>
-          <button type="button" onclick="toast('공유 링크가 복사되었어요','share-2')">친구 공유</button>
-        </div>
         <div class="done-card">
-          <b>다른 사용자의 팁</b>
+          <b>오늘 도움 된 팁</b>
           <p>청양고추는 반만 넣어도 충분히 칼칼해요. 남은 국물에는 밥을 넣어 마무리해도 좋아요.</p>
         </div>
-        <button class="btn" style="max-width:280px;" onclick="show('home')">홈으로</button>
-        <button class="btn ghost" style="max-width:280px;margin-top:10px;" onclick="startCook()">다시 요리하기</button>
+        <div class="done-actions">
+          <button class="primary" type="button" onclick="show('tipWrite')"><i data-lucide="lightbulb"></i>다른 사용자를 위한 팁 남기기</button>
+          <button type="button" onclick="openReviewSheet()"><i data-lucide="star"></i>후기 남기기</button>
+          <button type="button" onclick="toast('공유 기능은 다음 버전에서 지원해요','share-2')"><i data-lucide="share-2"></i>공유</button>
+        </div>
+        <button class="btn ghost" style="max-width:320px;margin-top:0;" onclick="show('home')">홈으로</button>
+      </div>
+    </div>
+
+    <!-- 6. 팁 남기기 -->
+    <div class="view" id="tipWrite">
+      <div class="statusbar"><span>9:41</span><span class="icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
+      <div class="nav"><div class="ic-btn" role="button" tabindex="0" aria-label="완료 화면으로 돌아가기" onclick="show('complete')"><i data-lucide="chevron-left"></i></div><div class="title">팁 남기기</div><div class="ic-btn" aria-hidden="true"></div></div>
+      <div class="tip-form">
+        <div class="tip-hero"><h2>다음 사람에게<br>어떤 팁을 남길까요?</h2><p>내가 실제로 만들어본 뒤 알게 된 조절 포인트를 남겨두면 같은 레시피를 보는 사람에게 보여줘요.</p></div>
+        <div class="tip-tags" aria-label="팁 유형">
+          <button type="button" class="on" onclick="selectTipTag(this)">맛 조절</button>
+          <button type="button" onclick="selectTipTag(this)">재료 대체</button>
+          <button type="button" onclick="selectTipTag(this)">불 조절</button>
+          <button type="button" onclick="selectTipTag(this)">보관</button>
+        </div>
+        <div class="tip-box"><textarea id="tipText" aria-label="다른 사용자를 위한 팁" placeholder="예: 청양고추는 반만 넣어도 충분히 칼칼했어요. 남은 국물에는 밥을 넣어 마무리하면 좋아요.">청양고추는 반만 넣어도 충분히 칼칼했어요. 남은 국물에는 밥을 넣어 마무리하면 좋아요.</textarea></div>
+        <button class="btn" onclick="submitTip()"><i data-lucide="send"></i>팁 등록</button>
+        <button class="btn ghost" onclick="show('complete')">나중에 하기</button>
       </div>
     </div>
 
@@ -1078,7 +1119,8 @@
   <button class="sn-item" data-screen="cook2" onclick="nav('cook2')"><span class="sn-num">7</span>핸즈프리 모드(구)</button>
   <button class="sn-item" data-screen="voice" onclick="nav('voice')"><span class="sn-num">8</span>핸즈프리 명령 가이드</button>
   <button class="sn-item" data-screen="complete" onclick="nav('complete')"><span class="sn-num">9</span>완료</button>
-  <button class="sn-item" data-screen="reviews" onclick="nav('reviews')"><span class="sn-num">10</span>후기 전체</button>
+  <button class="sn-item" data-screen="tipWrite" onclick="nav('tipWrite')"><span class="sn-num">10</span>팁 남기기</button>
+  <button class="sn-item" data-screen="reviews" onclick="nav('reviews')"><span class="sn-num">11</span>후기 전체</button>
   <div class="sn-sub">번호를 눌러 화면을 바로 이동할 수 있어요. 폰 안에서 직접 조작해도 현재 화면이 표시됩니다.</div>
 </div>
 </div>
@@ -1100,6 +1142,7 @@
       case 'cook2': closeSheet();closeVoice();show('cook2');break;
       case 'voice': closeSheet();cook3Car.reset();show('cook3');openVoice();break;
       case 'complete': closeSheet();closeVoice();show('complete');break;
+      case 'tipWrite': closeSheet();closeVoice();show('tipWrite');break;
       case 'reviews': closeSheet();closeVoice();show('reviews');break;
     }
   }
@@ -1163,6 +1206,17 @@
     }
   }
   function videoFallback(){toast('이 화면은 정적 미리보기예요. 실제 영상 재생은 실기기 검증이 필요해요','info');}
+  function finishCooking(){hf3Reset();closeTimer();closeIngredients();show('complete');toast('요리 기록이 요리북에 추가됐어요','check-circle-2');}
+  function selectTipTag(btn){
+    document.querySelectorAll('.tip-tags button').forEach(b=>b.classList.remove('on'));
+    btn.classList.add('on');
+  }
+  function submitTip(){
+    const text=document.getElementById('tipText').value.trim();
+    if(!text){toast('팁 내용을 입력해주세요','lightbulb');return;}
+    toast('팁이 등록됐어요','check-circle-2');
+    show('complete');
+  }
   const FALLBACK_IMAGES={
     food1:'cheftory_image/IMG_3028.PNG',
     food2:'cheftory_image/IMG_3029.PNG',
@@ -1246,8 +1300,8 @@
     {vid:'vHU4_QbslRA',name:'명란 파스타',channel:'혼밥 레시피',servings:'1인분',time:'10분',food:'food6',platform:'youtube'},
   ];
   const COOKED_RECIPES=[
-    {vid:'21j8SASqLJU',name:'순두부찌개',channel:'백종원',food:'food1',cookedAt:'어제 저녁',result:'성공',touches:'0회 터치'},
-    {vid:'VvM59BXz6Bw',name:'감바스 알 아히요',channel:'성시경',food:'food2',cookedAt:'지난 주말',result:'다시 만들기',touches:'25분'}
+    {vid:'21j8SASqLJU',name:'순두부찌개',channel:'백종원',food:'food1',cookedAt:'어제 저녁',reason:'완성 기록',memo:'팁 남김'},
+    {vid:'VvM59BXz6Bw',name:'감바스 알 아히요',channel:'성시경',food:'food2',cookedAt:'지난 주말',reason:'재조리 후보',memo:'소금 줄이기'}
   ];
   function cardHTML(r){
     const platformKey=normKey(r.platform,'youtube'),platform=PLATFORM_META[platformKey]||PLATFORM_META.youtube;
@@ -1266,7 +1320,7 @@
     return '<div class="cooked-card" role="button" tabindex="0" aria-label="'+escAttr(r.name)+' 요리 기록 보기" onclick="goDetail(\''+escAttr(vid)+'\')">'+
       '<div class="cooked-top"><div class="cooked-thumb '+food+'"><img src="'+thumb+'" data-fallback="'+food+'" onerror="useImageFallback(this,\''+food+'\')"></div>'+
       '<div class="cooked-info"><b>'+esc(r.name)+'</b><span>'+esc(r.channel)+' · '+esc(r.cookedAt)+'</span></div></div>'+
-      '<div class="cooked-meta"><span><i data-lucide="check-circle-2"></i>'+esc(r.result)+'</span><span><i data-lucide="hand"></i>'+esc(r.touches)+'</span></div></div>';
+      '<div class="cooked-meta"><span><i data-lucide="check-circle-2"></i>'+esc(r.reason)+'</span><span><i data-lucide="notebook-pen"></i>'+esc(r.memo)+'</span></div></div>';
   }
   function renderHomeSections(){
     document.getElementById('cookedScroll').innerHTML=COOKED_RECIPES.map(cookedHTML).join('');
@@ -1409,7 +1463,7 @@
       });
       viewEl.querySelectorAll('.cook-progress .seg').forEach((seg,i)=>{seg.className='seg'+(i<cur?' done':i===cur?' cur':'');});
     }
-    function next(){ if(cur<steps.length-1){cur++;layout();toast('다음 단계로 이동했어요','chevron-down');} else show('complete'); }
+    function next(){ if(cur<steps.length-1){cur++;layout();toast('다음 단계로 이동했어요','chevron-down');} else finishCooking(); }
     function prev(){ if(cur>0){cur--;layout();toast('이전 단계로 이동했어요','chevron-up');} else toast('첫 단계예요','info'); }
     trackEl.addEventListener('click',e=>{ if(dragMoved)return; const c=e.target.closest('.scard'); if(!c)return; const i=+c.dataset.i; if(i!==cur){cur=i;layout();} });
     viewEl.addEventListener('wheel',e=>{ if(!viewEl.classList.contains('active')||scrollLock)return; if(e.deltaY>12){scrollLock=true;next();setTimeout(()=>scrollLock=false,650);} else if(e.deltaY<-12){scrollLock=true;prev();setTimeout(()=>scrollLock=false,650);} },{passive:true});
@@ -1612,6 +1666,7 @@
       case 'cook3': cook3Car.reset();show('cook3');break;
       case 'cook2': show('cook2');break;
       case 'complete': show('complete');break;
+      case 'tipWrite': show('tipWrite');break;
       case 'reviews': show('reviews');break;
     }
   }

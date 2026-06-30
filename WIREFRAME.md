@@ -212,3 +212,5 @@
 - [ ] 영상 분석 실패/저품질 영상 대응
 - [ ] Phase A→B 전환 시점의 화면 상태 정의
 - [ ] 4개 화면 와이어프레임 `wireframe.html`에 작성
+- [ ] Figma MCP로 현재 MVP 와이어프레임을 Figma 파일로 제작
+- [ ] 기술명세서를 Notion 또는 Excel 형식으로 제작
