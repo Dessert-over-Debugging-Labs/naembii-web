@@ -556,9 +556,42 @@
   .sn-num{width:23px;height:23px;border-radius:50%;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex:none;}
   .sn-item.active .sn-num{background:rgba(255,255,255,.32);}
   .sn-sub{font-size:11px;color:#fff;opacity:.45;padding:6px 4px 0;line-height:1.5;}
+
+  /* Android WebView 앱 모드: 목업 프레임과 보드 네비게이터 제거 */
+  body.native-app{
+    background:var(--bg);
+    width:100vw;height:100vh;min-height:100vh;
+    overflow:hidden;
+  }
+  body.native-app .stage{
+    display:block;width:100vw;min-width:0;height:100vh;min-height:100vh;
+    padding:0;margin:0;
+  }
+  body.native-app .device{
+    width:100vw;height:100vh;padding:0;border-radius:0;
+    box-shadow:none;background:var(--bg);
+  }
+  body.native-app .screen{
+    width:100vw;height:100vh;border-radius:0;background:var(--bg);
+  }
+  body.native-app .island,
+  body.native-app .statusbar,
+  body.native-app .sidenav,
+  body.native-app .rainbow-toggle{
+    display:none!important;
+  }
+  body.native-app .view{
+    inset:0;
+  }
+  body.native-app .nav{
+    padding-top:12px;
+  }
 </style>
 </head>
 <body>
+<script>
+  if(new URLSearchParams(location.search).get('app')==='1')document.body.classList.add('native-app');
+</script>
 <button class="rainbow-toggle" id="rainbowToggle" onclick="toggleRainbow()">패널 색: 초록</button>
 <div class="stage">
 <div class="device">
