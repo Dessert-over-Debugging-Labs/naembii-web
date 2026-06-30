@@ -166,3 +166,21 @@
 
 #### 다음
 - 사람-눈 실브라우저 클릭 확인은 리뷰어가 수행해야 한다. 이번 검증은 headless 정적/DOM/브라우저 CDP 범위까지 수행했다.
+
+### OPS-C3 와이어프레임 결함 보정 검증 · 2026-07-01 03:13
+
+#### 무엇을
+- 홈/요리북/레시피 등록/핸즈프리 조리 화면의 최근 보정이 dead UI, 중복 ID, 콘솔 경고 없이 유지되는지 확인했다.
+
+#### 어떻게
+- `app.html`의 홈 브랜드 락업, 개인화 추천, 외부 영상 소스 테스트 케이스, 요리북 탭 카피, cook3 터치 스와이프 fallback 보정 상태를 기준으로 정적/DOM 검증을 다시 돌렸다.
+- 기존 `127.0.0.1:8899` 정적 서버를 재사용하고 Chrome headless `--dump-dom`으로 주요 해시 화면의 active view를 대조했다.
+
+#### 확인
+- 인라인 `<script>` 추출 `node --check` 통과.
+- `console.error|console.warn` grep 결과 없음.
+- 중복 ID 0, `onclick` 함수 누락 0, `getElementById` 대상 누락 0.
+- Chrome headless 라우팅: `#home → home`, `#cook → cook`, `#cook2 → cook2`, `#cook3 → cook3`.
+
+#### 다음
+- 사람-눈 실브라우저 클릭 확인은 리뷰어가 수행해야 한다. 이번 확인은 headless 정적/DOM/브라우저 로드 범위까지 수행했다.

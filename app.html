@@ -99,6 +99,13 @@
   .noti svg{width:15px;height:15px;}
   .home-nav{align-items:flex-start;padding:10px 16px 8px;}
   .home-title{min-width:0;padding-top:2px;}
+  .brand-lockup{display:flex;align-items:center;gap:9px;margin-bottom:8px;}
+  .app-mark{width:42px;height:42px;border-radius:14px;background:linear-gradient(145deg,var(--primary-l),var(--primary));position:relative;display:flex;align-items:center;justify-content:center;color:var(--on-green);box-shadow:0 10px 22px rgba(240,90,40,.28);}
+  .app-mark::before,.app-mark::after{content:"";position:absolute;top:8px;width:4px;height:12px;border-radius:999px;background:#FFF4E6;opacity:.95;}
+  .app-mark::before{left:12px;transform:rotate(-18deg);}
+  .app-mark::after{right:12px;transform:rotate(18deg);}
+  .app-mark svg{width:18px;height:18px;fill:currentColor;margin-top:8px;margin-left:2px;}
+  .brand-word{font-size:16px;font-weight:900;color:var(--ink);letter-spacing:0;}
   .home-eyebrow{display:block;color:var(--gray2);font-size:12px;font-weight:800;margin-bottom:4px;}
   .home-title h1{font-size:27px;line-height:1.15;font-weight:900;color:var(--ink);}
   .home-title h1 em{font-style:normal;color:var(--primary-l);}
@@ -174,6 +181,15 @@
   .book-note .bi svg{width:18px;height:18px;}
   .book-note b{font-size:14px;font-weight:900;display:block;margin-bottom:4px;}
   .book-note p{font-size:13px;color:var(--gray);line-height:1.45;margin:0;}
+  .personal-list{display:flex;flex-direction:column;gap:10px;padding:0 16px 24px;}
+  .personal-card{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:16px;padding:12px;display:flex;align-items:center;gap:12px;cursor:pointer;}
+  .personal-card:active{transform:scale(.99);}
+  .personal-thumb{width:62px;height:62px;border-radius:15px;overflow:hidden;position:relative;flex:none;background:var(--primary-soft);}
+  .personal-thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+  .personal-copy{min-width:0;flex:1;}
+  .personal-copy .reason{display:block;color:var(--primary-l);font-size:13px;font-weight:900;line-height:1.35;margin-bottom:4px;}
+  .personal-copy b{display:block;font-size:17px;font-weight:900;line-height:1.25;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .personal-copy .meta{display:block;color:var(--gray);font-size:13px;font-weight:800;margin-top:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 
   /* 레시피 그리드 */
   .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:0 16px 24px;}
@@ -239,7 +255,9 @@
     position:absolute;left:0;right:0;bottom:0;background:var(--surface);z-index:70;
     border-radius:24px 24px 0 0;padding:12px 24px 32px;
     transform:translateY(100%);transition:transform .36s cubic-bezier(.32,.72,0,1);
+    max-height:86%;overflow-y:auto;-webkit-overflow-scrolling:touch;
   }
+  .sheet::-webkit-scrollbar{display:none;}
   .sheet.show{transform:translateY(0);}
   .grabber{width:38px;height:5px;background:var(--gray2);border-radius:3px;margin:0 auto 16px;}
   .sheet h3{font-size:20px;font-weight:800;margin-bottom:8px;}
@@ -250,6 +268,11 @@
   }
   .field input{flex:1;min-width:0;border:0;background:transparent;color:var(--ink);font:inherit;outline:none;}
   .field svg{width:20px;height:20px;color:#FF0000;}
+  .source-cases{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0 2px;}
+  .source-case{min-height:68px;border:1px solid var(--line);background:var(--surface2);color:var(--ink);border-radius:14px;padding:10px;text-align:left;font-family:inherit;cursor:pointer;}
+  .source-case b{display:block;font-size:13px;font-weight:900;line-height:1.25;margin-bottom:5px;}
+  .source-case span{display:block;color:var(--gray);font-size:11px;font-weight:800;line-height:1.25;}
+  .source-case.active{border-color:rgba(240,90,40,.58);background:var(--primary-soft);box-shadow:0 0 0 1px rgba(240,90,40,.16) inset;}
   .import-preview{margin:14px 0 4px;background:var(--surface2);border:1px solid var(--line);border-radius:16px;padding:10px;display:flex;gap:12px;align-items:flex-start;}
   .import-thumb{width:82px;height:82px;border-radius:12px;overflow:hidden;position:relative;flex:none;background:var(--primary-soft);}
   .import-thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
@@ -260,6 +283,7 @@
   .import-status svg{width:14px;height:14px;}
   .import-title{font-size:14px;font-weight:800;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
   .import-meta{font-size:12px;color:var(--gray);margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .import-honesty{margin-top:7px;font-size:11px;font-weight:800;color:#FFD9C8;line-height:1.35;}
   .extract-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
   .extract-tags span{display:inline-flex;align-items:center;gap:4px;min-height:24px;padding:4px 7px;border-radius:8px;background:var(--primary-soft);color:#FFD9C8;font-size:11px;font-weight:800;}
   .extract-tags svg{width:12px;height:12px;}
@@ -382,6 +406,7 @@
   .scard.static{position:static;transform:none;}
   #cook2 .cook-body{flex:none;overflow:visible;padding-top:6px;}
   #cook3 .cook-body{justify-content:center;overflow:hidden;padding:0 16px;position:relative;}
+  #cook3 .cook-body,#cook3 .cook-track,#cook3 .scard{touch-action:none;}
   .swipe-hint{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);z-index:120;display:flex;align-items:center;gap:6px;padding:7px 10px;border-radius:999px;background:rgba(0,0,0,.44);border:1px solid rgba(255,255,255,.12);color:#d8d8dc;font-size:12px;font-weight:800;pointer-events:none;}
   .swipe-hint svg{width:14px;height:14px;color:var(--primary-l);}
   /* 핸즈프리 모드: 얇은 듣고있어요 바 + 대화창 */
@@ -728,7 +753,7 @@
       <div class="statusbar"><span>9:41</span><span class="icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
       <div class="nav home-nav">
         <div class="home-title">
-          <span class="home-eyebrow">영상 레시피 요리 도우미</span>
+          <div class="brand-lockup"><div class="app-mark" aria-hidden="true"><i data-lucide="play"></i></div><div><span class="brand-word">Cookflow</span><span class="home-eyebrow">영상 레시피 요리 도우미</span></div></div>
           <h1>오늘 뭐 만들까요<em>?</em></h1>
         </div>
         <div class="hd-right">
@@ -755,6 +780,8 @@
           <button class="cat" type="button" onclick="homeCategory('양식')"><div class="ic"><i data-lucide="pizza"></i></div><span>양식</span></button>
           <button class="cat" type="button" onclick="homeCategory('디저트')"><div class="ic"><i data-lucide="cake-slice"></i></div><span>디저트</span></button>
         </div>
+        <div class="section-t"><span class="st-l"><i data-lucide="sparkles"></i>당신만을 위한 추천</span><button class="more" type="button" onclick="homeMore('당신만을 위한 추천')">전체 <i data-lucide="chevron-right"></i></button></div>
+        <div class="personal-list" id="personalList"></div>
         <div class="section-t"><span class="st-l"><i data-lucide="flame"></i>인기 레시피</span><button class="more" type="button" onclick="homeMore('인기 레시피')">전체 <i data-lucide="chevron-right"></i></button></div>
         <div class="hscroll" id="popScroll"></div>
         <div class="section-t"><span class="st-l"><i data-lucide="sparkles"></i>오늘의 추천</span><button class="more" type="button" onclick="homeMore('오늘의 추천')">전체 <i data-lucide="chevron-right"></i></button></div>
@@ -784,14 +811,12 @@
           <button type="button" class="active" onclick="bookFilter(this,'전체')">전체</button>
           <button type="button" onclick="bookFilter(this,'최근 조리')">최근 조리</button>
           <button type="button" onclick="bookFilter(this,'저장한 레시피')">저장한 레시피</button>
-          <button type="button" onclick="bookFilter(this,'기록 기반 추천')">기록 기반 추천</button>
+          <button type="button" onclick="bookFilter(this,'남긴 팁')">남긴 팁</button>
         </div>
         <div class="section-t" id="cookedTitle"><span class="st-l"><i data-lucide="utensils"></i>최근 조리</span><button class="more" type="button" onclick="homeMore('최근 조리')">전체 <i data-lucide="chevron-right"></i></button></div>
         <div class="cooked-scroll" id="cookedScroll"></div>
         <div class="section-t saved-title" id="myRecipesTitle"><span class="st-l"><i data-lucide="bookmark"></i>저장한 레시피</span><button class="more" type="button" onclick="homeMore('저장한 레시피')">전체 <i data-lucide="chevron-right"></i></button></div>
         <div class="grid" id="gridMine"></div>
-        <div class="section-t"><span class="st-l"><i data-lucide="sparkles"></i>기록 기반 추천</span><button class="more" type="button" onclick="homeMore('기록 기반 추천')">전체 <i data-lucide="chevron-right"></i></button></div>
-        <div class="hscroll" id="bookRecScroll"></div>
         <div class="book-note"><div class="bi"><i data-lucide="notebook-pen"></i></div><div><b>최근 기록 메모</b><p>감바스는 소금을 줄여 다시 만들 후보로 저장됐어요. 다음 조리 때 메모가 먼저 표시됩니다.</p></div></div>
       </div>
       <div class="bottom-tabs" role="tablist" aria-label="하단 내비게이션">
@@ -1027,21 +1052,28 @@
     <div class="sheet" id="sheet">
       <div class="grabber"></div>
       <h3>레시피 등록하기</h3>
-      <p class="sub">YouTube 링크만 붙여넣으면 단계별 레시피로 만들어드려요</p>
+      <p class="sub">YouTube, Shorts, Instagram 링크를 단계별 레시피로 바꾸는 흐름을 확인해요. 앱 안 영상은 정적 미리보기로만 표시합니다.</p>
       <label class="field" for="recipeUrl"><i data-lucide="link"></i><input id="recipeUrl" type="url" value="https://youtu.be/21j8SASqLJU" aria-label="영상 링크"></label>
+      <div class="source-cases" aria-label="외부 영상 소스 테스트 케이스">
+        <button class="source-case active" type="button" data-source-case="ytLongChef" onclick="selectSourceCase('ytLongChef',this)"><b>YouTube</b><span>긴 영상 · 전문 요리사</span></button>
+        <button class="source-case" type="button" data-source-case="ytShortUser" onclick="selectSourceCase('ytShortUser',this)"><b>YouTube Shorts</b><span>짧은 영상 · 일반 사용자</span></button>
+        <button class="source-case" type="button" data-source-case="igChef" onclick="selectSourceCase('igChef',this)"><b>Instagram</b><span>Reels · 전문 요리사</span></button>
+        <button class="source-case" type="button" data-source-case="igUser" onclick="selectSourceCase('igUser',this)"><b>Instagram</b><span>Reels · 일반 사용자</span></button>
+      </div>
       <div class="import-preview" aria-label="가져온 영상 분석 미리보기">
         <div class="import-thumb">
-          <img src="https://i.ytimg.com/vi/21j8SASqLJU/mqdefault.jpg" data-fallback="food1" onerror="useImageFallback(this,'food1')" alt="">
+          <img id="importThumb" src="https://i.ytimg.com/vi/21j8SASqLJU/mqdefault.jpg" data-fallback="food1" onerror="useImageFallback(this,'food1')" alt="">
           <span class="play" aria-hidden="true"><i data-lucide="play"></i></span>
         </div>
         <div class="import-info">
-          <div class="import-status"><i data-lucide="check-circle-2"></i>분석 완료</div>
-          <div class="import-title">백종원이 알려주는 칼칼한 순두부찌개</div>
-          <div class="import-meta">백종원 · 조회수와 업로드일은 원본에서 확인</div>
+          <div class="import-status" id="importStatus"><i data-lucide="check-circle-2"></i>분석 완료</div>
+          <div class="import-title" id="importTitle">백종원이 알려주는 칼칼한 순두부찌개</div>
+          <div class="import-meta" id="importMeta">백종원 · YouTube · 긴 영상 · 전문 요리사</div>
+          <div class="import-honesty" id="importHonesty">정적 썸네일 미리보기 · 실제 재생은 원본 앱/실기기에서 확인</div>
           <div class="extract-tags">
-            <span><i data-lucide="list-checks"></i>5단계</span>
-            <span><i data-lucide="shopping-basket"></i>재료 9개</span>
-            <span><i data-lucide="timer"></i>구간 연결</span>
+            <span id="importSteps"><i data-lucide="list-checks"></i>5단계</span>
+            <span id="importIngredients"><i data-lucide="shopping-basket"></i>재료 9개</span>
+            <span id="importClip"><i data-lucide="timer"></i>구간 연결</span>
           </div>
         </div>
       </div>
@@ -1290,6 +1322,81 @@
       });
     },1800);
   }
+  const SOURCE_CASES={
+    ytLongChef:{
+      url:'https://youtu.be/21j8SASqLJU',
+      title:'백종원이 알려주는 칼칼한 순두부찌개',
+      meta:'백종원 · YouTube · 긴 영상 · 전문 요리사',
+      status:'분석 완료',
+      icon:'check-circle-2',
+      thumb:'https://i.ytimg.com/vi/21j8SASqLJU/mqdefault.jpg',
+      fallback:'food1',
+      steps:'5단계',
+      ingredients:'재료 9개',
+      clip:'구간 연결',
+      honesty:'정적 썸네일 미리보기 · 실제 재생은 원본 앱/실기기에서 확인'
+    },
+    ytShortUser:{
+      url:'https://youtube.com/shorts/eJekYxjFewM',
+      title:'아보카도 비빔밥 쇼츠 따라 만들기',
+      meta:'다이어터 레시피 · YouTube Shorts · 짧은 영상 · 일반 사용자',
+      status:'짧은 컷 분석',
+      icon:'scan-search',
+      thumb:'https://i.ytimg.com/vi/eJekYxjFewM/mqdefault.jpg',
+      fallback:'food3',
+      steps:'4단계 추정',
+      ingredients:'재료 6개',
+      clip:'컷 기준',
+      honesty:'쇼츠는 컷이 빨라 일부 분량은 사용자 확인이 필요해요'
+    },
+    igChef:{
+      url:'https://www.instagram.com/reel/ChefRecipeDemo/',
+      title:'전문 셰프의 원팬 파스타 Reels',
+      meta:'Chef Mama · Instagram Reels · 짧은 영상 · 전문 요리사',
+      status:'썸네일 대체',
+      icon:'image',
+      thumb:FALLBACK_IMAGES.food4,
+      fallback:'food4',
+      steps:'6단계 추정',
+      ingredients:'재료 8개',
+      clip:'원본 확인',
+      honesty:'Instagram 원본 임베드는 프로토타입에서 재생하지 않고 대체 썸네일만 보여요'
+    },
+    igUser:{
+      url:'https://www.instagram.com/reel/HomeCookDemo/',
+      title:'자취생 감바스 릴스 따라 만들기',
+      meta:'혼밥 레시피 · Instagram Reels · 짧은 영상 · 일반 사용자',
+      status:'검토 필요',
+      icon:'alert-circle',
+      thumb:FALLBACK_IMAGES.food2,
+      fallback:'food2',
+      steps:'5단계 후보',
+      ingredients:'재료 7개',
+      clip:'수동 확인',
+      honesty:'일반 사용자 영상은 분량 누락 가능성이 있어 조리 전 확인 상태로 표시해요'
+    }
+  };
+  function setIconText(id,icon,text){
+    const el=document.getElementById(id);
+    if(el)el.innerHTML='<i data-lucide="'+icon+'"></i>'+esc(text);
+  }
+  function selectSourceCase(key,btn){
+    const data=SOURCE_CASES[key]||SOURCE_CASES.ytLongChef;
+    document.querySelectorAll('.source-case').forEach(b=>b.classList.toggle('active',b===btn||b.dataset.sourceCase===key));
+    const input=document.getElementById('recipeUrl'),thumb=document.getElementById('importThumb');
+    if(input)input.value=data.url;
+    if(thumb){thumb.dataset.fallback=data.fallback;thumb.dataset.fallbackApplied='';thumb.src=data.thumb;}
+    setIconText('importStatus',data.icon,data.status);
+    const title=document.getElementById('importTitle'),meta=document.getElementById('importMeta'),honesty=document.getElementById('importHonesty');
+    if(title)title.textContent=data.title;
+    if(meta)meta.textContent=data.meta;
+    if(honesty)honesty.textContent=data.honesty;
+    setIconText('importSteps','list-checks',data.steps);
+    setIconText('importIngredients','shopping-basket',data.ingredients);
+    setIconText('importClip','timer',data.clip);
+    lucide.createIcons();
+    toast(data.meta,'video');
+  }
 
   /* ===== 소셜: 좋아요 · 후기 (localStorage) ===== */
   const DVID='21j8SASqLJU';                 // 상세는 순두부에 바인딩
@@ -1356,6 +1463,10 @@
     {vid:'21j8SASqLJU',name:'순두부찌개',channel:'백종원',food:'food1',cookedAt:'어제 저녁',reason:'완성 기록',memo:'팁 남김'},
     {vid:'VvM59BXz6Bw',name:'감바스 알 아히요',channel:'성시경',food:'food2',cookedAt:'지난 주말',reason:'재조리 후보',memo:'소금 줄이기'}
   ];
+  const PERSONAL_RECS=[
+    {vid:'21j8SASqLJU',reason:'뜨끈한 국물 요리를 요즘 많이 땡겨하시네요?'},
+    {vid:'VvM59BXz6Bw',reason:'새우 들어간 레시피를 자주 저장한 당신을 위한 추천'}
+  ];
   function cardHTML(r){
     const platformKey=normKey(r.platform,'youtube'),platform=PLATFORM_META[platformKey]||PLATFORM_META.youtube;
     const vid=safeToken(r.vid,'video'),food=safeToken(r.food,'food1'),thumb=escAttr(platform.thumb(r));
@@ -1375,14 +1486,22 @@
       '<div class="cooked-info"><b>'+esc(r.name)+'</b><span>'+esc(r.channel)+' · '+esc(r.cookedAt)+'</span></div></div>'+
       '<div class="cooked-meta"><span><i data-lucide="check-circle-2"></i>'+esc(r.reason)+'</span><span><i data-lucide="notebook-pen"></i>'+esc(r.memo)+'</span></div></div>';
   }
+  function personalHTML(item){
+    const base=RECIPES.find(x=>x.vid===item.vid)||RECIPES[0];
+    const platformKey=normKey(base.platform,'youtube'),platform=PLATFORM_META[platformKey]||PLATFORM_META.youtube;
+    const vid=safeToken(base.vid,'video'),food=safeToken(base.food,'food1'),thumb=escAttr(platform.thumb(base));
+    return '<div class="personal-card" role="button" tabindex="0" aria-label="'+escAttr(base.name)+' 기록 기반 추천 보기" onclick="goDetail(\''+escAttr(vid)+'\')">'+
+      '<div class="personal-thumb '+food+'"><img src="'+thumb+'" data-fallback="'+food+'" onerror="useImageFallback(this,\''+food+'\')"></div>'+
+      '<div class="personal-copy"><span class="reason">'+esc(item.reason)+'</span><b>'+esc(base.name)+'</b><span class="meta">'+esc(base.channel)+' · '+esc(base.servings)+' · '+esc(base.time)+' · 기록 기반</span></div></div>';
+  }
   function renderHomeSections(){
     document.getElementById('cookedScroll').innerHTML=COOKED_RECIPES.map(cookedHTML).join('');
     document.getElementById('gridMine').innerHTML=RECIPES.map(cardHTML).join('');
+    document.getElementById('personalList').innerHTML=PERSONAL_RECS.map(personalHTML).join('');
     const pop=[...RECIPES].sort((a,b)=>getS(b.vid).likes-getS(a.vid).likes);
     document.getElementById('popScroll').innerHTML=pop.map(cardHTML).join('');
     const recIds=['vHU4_QbslRA','eJekYxjFewM','sIBG0KjOcBs','VvM59BXz6Bw'];   // 빠르게 만드는 추천
     document.getElementById('recScroll').innerHTML=RECIPES.filter(r=>recIds.includes(r.vid)).map(cardHTML).join('');
-    document.getElementById('bookRecScroll').innerHTML=RECIPES.filter(r=>recIds.includes(r.vid)).map(cardHTML).join('');
     lucide.createIcons();
     applyAccessibilityLabels();
     settleImageFallbacks();
@@ -1521,13 +1640,23 @@
     function prev(){ if(cur>0){cur--;layout();toast('이전 단계로 이동했어요','chevron-up');} else toast('첫 단계예요','info'); }
     trackEl.addEventListener('click',e=>{ if(dragMoved)return; const c=e.target.closest('.scard'); if(!c)return; const i=+c.dataset.i; if(i!==cur){cur=i;layout();} });
     viewEl.addEventListener('wheel',e=>{ if(!viewEl.classList.contains('active')||scrollLock)return; if(e.deltaY>12){scrollLock=true;next();setTimeout(()=>scrollLock=false,650);} else if(e.deltaY<-12){scrollLock=true;prev();setTimeout(()=>scrollLock=false,650);} },{passive:true});
-    viewEl.addEventListener('pointerdown',e=>{dragY=e.clientY;dragMoved=false;});
-    viewEl.addEventListener('pointermove',e=>{if(dragY!==null&&Math.abs(e.clientY-dragY)>8)dragMoved=true;});
-    viewEl.addEventListener('pointerup',e=>{ if(dragY===null)return; const dy=e.clientY-dragY; dragY=null; if(Math.abs(dy)>=40){ if(dy<0)next(); else prev(); } });
+    function dragStart(y){dragY=y;dragMoved=false;}
+    function dragMove(y){if(dragY!==null&&Math.abs(y-dragY)>8)dragMoved=true;}
+    function dragEnd(y){
+      if(dragY===null)return;
+      const dy=y-dragY;dragY=null;
+      if(Math.abs(dy)>=40){ if(dy<0)next(); else prev(); }
+    }
+    viewEl.addEventListener('pointerdown',e=>{dragStart(e.clientY);});
+    viewEl.addEventListener('pointermove',e=>{dragMove(e.clientY);});
+    viewEl.addEventListener('pointerup',e=>{dragEnd(e.clientY);});
     viewEl.addEventListener('pointercancel',()=>{dragY=null;});
+    viewEl.addEventListener('touchstart',e=>{if(viewEl.classList.contains('active')&&e.touches[0])dragStart(e.touches[0].clientY);},{passive:true});
+    viewEl.addEventListener('touchmove',e=>{if(viewEl.classList.contains('active')&&e.touches[0]){dragMove(e.touches[0].clientY);if(dragMoved)e.preventDefault();}},{passive:false});
+    viewEl.addEventListener('touchend',e=>{if(viewEl.classList.contains('active'))dragEnd((e.changedTouches[0]||{}).clientY||dragY);},{passive:true});
     document.addEventListener('keydown',e=>{ if(!viewEl.classList.contains('active'))return; if(e.code==='Space'||e.code==='ArrowRight'||e.code==='ArrowDown'){e.preventDefault();next();} else if(e.code==='ArrowUp'||e.code==='ArrowLeft'){e.preventDefault();prev();} });
     build();layout();
-    return {reset(){cur=0;layout();}, layout, next, prev, advance(){next();}};
+    return {reset(){cur=0;layout();}, layout, next, prev, advance(){next();}, current(){return cur;}};
   }
   const cookCar=makeCarousel('cook','cookTrack');
   const cook3Car=makeCarousel('cook3','cookTrack3');
@@ -1571,7 +1700,7 @@
   let hf3On=false, vpi=0, vpTimers=[], vpTimerId=null;
   const vpScript=[
     {u:'예시 질문: 양파 얼마나 익혀야 해?', a:'예시 답변: 투명해질 때까지 중불에서 2분 정도면 충분해요.'},
-    {u:'예시 명령: 다음 단계로 넘어가줘', a:'예시 답변: 실제 단계 이동은 아래 다음 버튼으로 진행해주세요.'},
+    {u:'예시 명령: 다음 단계로 넘어가줘', a:'예시 답변: 실제 앱에서는 음성 명령 또는 단계 카드 스와이프로 진행해요.'},
     {u:'예시 질문: 간장 없는데 대체할 거 있어?', a:'예시 답변: 멸치액젓이나 소금으로 대신해도 돼요. 소금은 조금씩 넣어보세요.'},
     {u:'예시 명령: 타이머 3분 맞춰줘', a:'예시 답변: 실제 타이머는 타이머 버튼에서 시작할 수 있어요.'},
   ];
