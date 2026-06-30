@@ -144,3 +144,25 @@
 
 #### 다음
 - 다음 실제 앱 검증이 필요할 때만 에뮬레이터를 켜서 APK 설치/실행/캡처를 다시 수행한다.
+
+### OPS-C1 와이어프레임 home→cook3 흐름 검증 · 2026-07-01 02:49
+
+#### 무엇을
+- `app.html`의 홈에서 레시피 상세를 거쳐 주력 조리 모드 `cook3`까지 실제 브라우저 클릭 흐름으로 확인했다.
+- `cook3` 캐러셀 이동과 `#home`, `#cook`, `#cook2`, `#cook3` 해시 라우팅을 함께 점검했다.
+
+#### 어떻게
+- `python3 -m http.server 8899 --bind 127.0.0.1 --directory /Users/osein/cook-assistance-wireframe`로 정적 서버를 띄웠다.
+- 인라인 `<script>`를 `/private/tmp/cookflow-wireframe-inline.js`로 추출해 `node --check`를 실행했다.
+- Chrome headless + CDP로 첫 홈 카드 클릭, 상세 CTA 클릭, `ArrowDown` 키 입력, 해시 라우팅을 검증했다.
+- 콘솔 경고를 없애기 위해 Lucide 미지원 `youtube` 아이콘을 `play`로 바꾸고, `/favicon.ico` 404 방지를 위해 data favicon을 추가했다.
+
+#### 확인
+- `node --check /private/tmp/cookflow-wireframe-inline.js` 통과.
+- 중복 ID 0개, `onclick` 호출 함수 누락 0개, `getElementById` 대상 누락 0개.
+- `rg "console.error|console.warn" app.html` 결과 없음.
+- CDP 결과: `home → detail → cook3`, 캐러셀 `0 → 1`, 해시 라우팅 `home/cook/cook2/cook3` 모두 통과, `consoleIssues: []`.
+- 스크린샷: `/private/tmp/OPS-C1-cook3.png`.
+
+#### 다음
+- 사람-눈 실브라우저 클릭 확인은 리뷰어가 수행해야 한다. 이번 검증은 headless 정적/DOM/브라우저 CDP 범위까지 수행했다.
