@@ -148,11 +148,18 @@
     display:flex;align-items:center;justify-content:center;color:#fff;
   }
   .rcard .thumb .play svg{width:17px;height:17px;fill:#fff;color:#fff;margin-left:2px;}
+  .rcard .thumb .platform{
+    position:absolute;right:8px;bottom:8px;z-index:2;
+    min-height:24px;padding:4px 8px;border-radius:8px;
+    background:#FF0000;color:#fff;font-size:11px;font-weight:800;line-height:1;
+    display:flex;align-items:center;gap:4px;box-shadow:0 2px 8px rgba(0,0,0,.38);
+  }
+  .rcard .thumb .platform svg{width:12px;height:12px;}
   .rcard .cap{padding:8px 4px 0;}
   .rcard .cap b{font-size:15px;font-weight:700;display:block;line-height:1.3;}
   .rcard .cap small{font-size:13px;color:var(--gray);}
   .rcard .thumb .savebtn{position:absolute;top:4px;right:4px;z-index:2;width:48px;height:48px;background:transparent;border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;}
-  .rcard .thumb .savebtn svg{width:24px;height:24px;color:#FFF4E6;stroke-width:2.6;filter:drop-shadow(0 2px 5px rgba(0,0,0,.82)) drop-shadow(0 0 1px rgba(0,0,0,.7));transition:transform .2s,color .2s,fill .2s;}
+  .rcard .thumb .savebtn svg{width:24px;height:24px;color:#FFF4E6;stroke-width:2.7;filter:drop-shadow(0 1px 0 #050403) drop-shadow(1px 0 0 #050403) drop-shadow(0 -1px 0 #050403) drop-shadow(-1px 0 0 #050403) drop-shadow(0 2px 5px rgba(0,0,0,.86));transition:transform .2s,color .2s,fill .2s;}
   .rcard .thumb .savebtn:active svg{transform:scale(.88);}
   .rcard .thumb .savebtn.liked svg{color:var(--accent);fill:var(--accent);}
   .food1{background:linear-gradient(135deg,#FFB36B,#F15A24);}
@@ -250,6 +257,24 @@
   .reviews .stars{display:flex;gap:1px;color:var(--accent);}
   .reviews .stars svg{width:13px;height:13px;fill:var(--accent);}
   .cta-bar{flex:none;padding:16px;background:rgba(18,15,12,.92);backdrop-filter:blur(12px);border-top:1px solid var(--line);}
+  #detail .body{padding-bottom:104px;}
+  .cta-bar.float-start{
+    position:absolute;left:0;right:0;bottom:calc(30px + env(safe-area-inset-bottom));
+    z-index:55;padding:0;background:transparent;border-top:0;backdrop-filter:none;
+    pointer-events:none;
+  }
+  .cta-bar.float-start .btn{
+    width:min(286px,calc(100% - 64px));height:58px;margin:0 auto;border-radius:999px;pointer-events:auto;
+    box-shadow:0 18px 36px rgba(240,90,40,.42),0 6px 18px rgba(0,0,0,.42);
+    animation:floatStartCta 3.2s ease-in-out infinite;
+  }
+  @keyframes floatStartCta{
+    0%,100%{transform:translateY(0);}
+    50%{transform:translateY(-6px);}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .cta-bar.float-start .btn{animation:none;}
+  }
 
   /* ===== 조리 (다크) ===== */
   .cook-video{width:100%;height:260px;position:relative;background:#000;}
@@ -701,7 +726,7 @@
           <button class="btn ghost" onclick="openReviewSheet()" style="margin-bottom:8px;"><i data-lucide="pencil"></i>후기 쓰기</button>
         </div>
       </div>
-      <div class="cta-bar"><button class="btn" onclick="startCook()"><i data-lucide="chef-hat"></i>요리 시작하기</button></div>
+      <div class="cta-bar float-start"><button class="btn" onclick="startCook()"><i data-lucide="chef-hat"></i>요리 시작하기</button></div>
     </div>
 
     <!-- 후기 전체보기 -->
@@ -1072,17 +1097,18 @@
   const RECIPES=[
     {vid:'21j8SASqLJU',name:'순두부찌개',src:'백종원 · 2인분',time:'30분',food:'food1'},
     {vid:'VvM59BXz6Bw',name:'감바스 알 아히요',src:'성시경 · 2인분',time:'25분',food:'food2'},
-    {vid:'eJekYxjFewM',name:'아보카도 비빔밥',src:'유튜브 쇼츠 · 1인분',time:'15분',food:'food3'},
-    {vid:'V9KP9Qvb3lI',name:'까르보나라',src:'유튜브 · 2인분',time:'40분',food:'food4'},
+    {vid:'eJekYxjFewM',name:'아보카도 비빔밥',src:'다이어터 레시피 · 1인분',time:'15분',food:'food3'},
+    {vid:'V9KP9Qvb3lI',name:'까르보나라',src:'Chef Mama · 2인분',time:'40분',food:'food4'},
     {vid:'sIBG0KjOcBs',name:'딸기 티라미수',src:'쿠킹트리 · 4인분',time:'20분',food:'food5'},
-    {vid:'vHU4_QbslRA',name:'명란 파스타',src:'유튜브 · 1인분',time:'10분',food:'food6'},
+    {vid:'vHU4_QbslRA',name:'명란 파스타',src:'혼밥 레시피 · 1인분',time:'10분',food:'food6'},
   ];
   function cardHTML(r){
     return '<div class="rcard" data-vid="'+r.vid+'" role="button" tabindex="0" aria-label="'+esc(r.name)+' 상세 보기" onclick="goDetail(\''+r.vid+'\')">'+
       '<div class="thumb '+r.food+'"><img src="https://i.ytimg.com/vi/'+r.vid+'/mqdefault.jpg" data-fallback="'+r.food+'" onerror="useImageFallback(this,\''+r.food+'\')">'+
         '<span class="badge"><i data-lucide="clock"></i>'+r.time+'</span>'+
         '<button class="savebtn like" aria-label="'+esc(r.name)+' 저장" onclick="toggleLike(event,\''+r.vid+'\')"><i data-lucide="bookmark"></i></button>'+
-        '<span class="play"><i data-lucide="play"></i></span></div>'+
+        '<span class="play"><i data-lucide="play"></i></span>'+
+        '<span class="platform"><i data-lucide="youtube"></i>YouTube</span></div>'+
       '<div class="cap"><b>'+r.name+'</b><small>'+r.src+'</small></div></div>';
   }
   function renderHomeSections(){
