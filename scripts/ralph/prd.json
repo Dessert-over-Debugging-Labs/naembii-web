@@ -337,6 +337,20 @@
         "이번 구현 범위와 후속 범위가 구분된다."
       ],
       "notes": "2026-07-01 WIREFRAME.md TODO와 docs/MVP_WIREFRAME_STORIES_ko.md에 Figma MCP 와이어프레임 제작 및 Notion 또는 Excel 기술명세서 제작 백로그 등록."
+    },
+    {
+      "id": "MVP-09",
+      "title": "요리북 세부 페이지 분리",
+      "description": "홈은 추천/검색/영상 등록 중심으로 두고, 요리북은 별도 세부 페이지에서 최근 조리, 저장한 레시피, 기록 기반 추천, 기록 메모를 보여준다.",
+      "priority": 19.5,
+      "passes": true,
+      "notes": "2026-07-01 홈에서 최근 만든 요리/저장 레시피 섹션을 제거하고 cookbook 별도 view 추가. 하단 요리북 탭과 #cookbook 해시/사이드바 라우팅을 연결했다.",
+      "acceptanceCriteria": [
+        "홈에는 최근 만든 요리 섹션이 보이지 않는다.",
+        "하단 요리북 탭은 별도 cookbook view로 이동한다.",
+        "요리북에는 최근 조리, 저장한 레시피, 기록 기반 추천, 기록 메모가 보인다.",
+        "node --check, 헤드리스 Chrome 스크린샷, 콘솔에러 0 통과."
+      ]
     }
   ]
 }

@@ -157,6 +157,22 @@
   .cooked-meta span{min-height:32px;border-radius:10px;background:var(--surface2);color:#FFD9C8;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:4px;}
   .cooked-meta svg{width:13px;height:13px;color:var(--primary-l);}
   .section-t.saved-title{padding-top:2px;}
+  .book-head{padding:0 16px 14px;}
+  .book-head h1{font-size:28px;font-weight:900;line-height:1.15;margin-bottom:6px;}
+  .book-head p{font-size:14px;color:var(--gray);line-height:1.5;}
+  .book-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 16px 16px;}
+  .book-stat{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px;text-align:center;}
+  .book-stat b{display:block;font-size:19px;font-weight:900;color:var(--primary-l);line-height:1;}
+  .book-stat span{display:block;margin-top:5px;font-size:12px;font-weight:800;color:var(--gray);}
+  .book-filter{display:flex;gap:8px;overflow-x:auto;padding:0 16px 18px;}
+  .book-filter::-webkit-scrollbar{display:none;}
+  .book-filter button{flex:none;min-height:40px;border:1px solid var(--line);background:var(--surface);color:var(--gray);border-radius:999px;padding:8px 12px;font:inherit;font-size:13px;font-weight:900;cursor:pointer;}
+  .book-filter button.active{background:var(--primary-soft);border-color:rgba(240,90,40,.42);color:#FFD9C8;}
+  .book-note{margin:0 16px 132px;background:linear-gradient(135deg,rgba(63,167,111,.16),rgba(244,185,66,.08));border:1px solid rgba(63,167,111,.28);border-radius:16px;padding:14px;display:flex;gap:12px;align-items:flex-start;}
+  .book-note .bi{width:34px;height:34px;border-radius:10px;background:var(--fresh-soft);color:var(--fresh-l);display:flex;align-items:center;justify-content:center;flex:none;}
+  .book-note .bi svg{width:18px;height:18px;}
+  .book-note b{font-size:14px;font-weight:900;display:block;margin-bottom:4px;}
+  .book-note p{font-size:13px;color:var(--gray);line-height:1.45;margin:0;}
 
   /* 레시피 그리드 */
   .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:0 16px 24px;}
@@ -738,10 +754,6 @@
           <button class="cat" type="button" onclick="homeCategory('양식')"><div class="ic"><i data-lucide="pizza"></i></div><span>양식</span></button>
           <button class="cat" type="button" onclick="homeCategory('디저트')"><div class="ic"><i data-lucide="cake-slice"></i></div><span>디저트</span></button>
         </div>
-        <div class="section-t" id="cookedTitle"><span class="st-l"><i data-lucide="utensils"></i>최근 만든 요리</span><button class="more" type="button" onclick="homeMore('최근 만든 요리')">전체 <i data-lucide="chevron-right"></i></button></div>
-        <div class="cooked-scroll" id="cookedScroll"></div>
-        <div class="section-t saved-title" id="myRecipesTitle"><span class="st-l"><i data-lucide="bookmark"></i>저장한 레시피</span><button class="more" type="button" onclick="homeMore('저장한 레시피')">전체 <i data-lucide="chevron-right"></i></button></div>
-        <div class="grid" id="gridMine"></div>
         <div class="section-t"><span class="st-l"><i data-lucide="flame"></i>인기 레시피</span><button class="more" type="button" onclick="homeMore('인기 레시피')">전체 <i data-lucide="chevron-right"></i></button></div>
         <div class="hscroll" id="popScroll"></div>
         <div class="section-t"><span class="st-l"><i data-lucide="sparkles"></i>오늘의 추천</span><button class="more" type="button" onclick="homeMore('오늘의 추천')">전체 <i data-lucide="chevron-right"></i></button></div>
@@ -751,6 +763,39 @@
       <div class="bottom-tabs" role="tablist" aria-label="하단 내비게이션">
         <button class="active" type="button" data-app-tab="home" role="tab" aria-selected="true" onclick="appTab('home')"><i data-lucide="home"></i><span>홈</span></button>
         <button type="button" data-app-tab="book" role="tab" aria-selected="false" onclick="appTab('book')"><i data-lucide="book-open"></i><span>요리북</span></button>
+        <button class="tab-add" type="button" data-app-tab="add" role="tab" aria-selected="false" onclick="appTab('add')"><i data-lucide="plus"></i><span>등록</span></button>
+        <button type="button" data-app-tab="settings" role="tab" aria-selected="false" onclick="appTab('settings')"><i data-lucide="settings"></i><span>내설정</span></button>
+      </div>
+    </div>
+
+    <!-- 1-B. 요리북 -->
+    <div class="view" id="cookbook">
+      <div class="statusbar"><span>9:41</span><span class="icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
+      <div class="nav"><div class="title">요리북</div><div class="ic-btn" role="button" tabindex="0" aria-label="요리북 검색" onclick="toast('요리북 검색은 다음 버전에서 지원해요','search')"><i data-lucide="search"></i></div></div>
+      <div class="body" style="padding-bottom:128px;">
+        <div class="book-head"><h1>내가 만든 요리와<br>저장한 레시피</h1><p>완성 기록, 다시 만들고 싶은 메뉴, 저장해둔 영상 레시피를 한 곳에서 봅니다.</p></div>
+        <div class="book-stats">
+          <div class="book-stat"><b>2</b><span>최근 조리</span></div>
+          <div class="book-stat"><b>6</b><span>저장 레시피</span></div>
+          <div class="book-stat"><b>3</b><span>남긴 팁</span></div>
+        </div>
+        <div class="book-filter" aria-label="요리북 필터">
+          <button type="button" class="active" onclick="bookFilter(this,'전체')">전체</button>
+          <button type="button" onclick="bookFilter(this,'최근 조리')">최근 조리</button>
+          <button type="button" onclick="bookFilter(this,'저장한 레시피')">저장한 레시피</button>
+          <button type="button" onclick="bookFilter(this,'기록 기반 추천')">기록 기반 추천</button>
+        </div>
+        <div class="section-t" id="cookedTitle"><span class="st-l"><i data-lucide="utensils"></i>최근 조리</span><button class="more" type="button" onclick="homeMore('최근 조리')">전체 <i data-lucide="chevron-right"></i></button></div>
+        <div class="cooked-scroll" id="cookedScroll"></div>
+        <div class="section-t saved-title" id="myRecipesTitle"><span class="st-l"><i data-lucide="bookmark"></i>저장한 레시피</span><button class="more" type="button" onclick="homeMore('저장한 레시피')">전체 <i data-lucide="chevron-right"></i></button></div>
+        <div class="grid" id="gridMine"></div>
+        <div class="section-t"><span class="st-l"><i data-lucide="sparkles"></i>기록 기반 추천</span><button class="more" type="button" onclick="homeMore('기록 기반 추천')">전체 <i data-lucide="chevron-right"></i></button></div>
+        <div class="hscroll" id="bookRecScroll"></div>
+        <div class="book-note"><div class="bi"><i data-lucide="notebook-pen"></i></div><div><b>최근 기록 메모</b><p>감바스는 소금을 줄여 다시 만들 후보로 저장됐어요. 다음 조리 때 메모가 먼저 표시됩니다.</p></div></div>
+      </div>
+      <div class="bottom-tabs" role="tablist" aria-label="하단 내비게이션">
+        <button type="button" data-app-tab="home" role="tab" aria-selected="false" onclick="appTab('home')"><i data-lucide="home"></i><span>홈</span></button>
+        <button class="active" type="button" data-app-tab="book" role="tab" aria-selected="true" onclick="appTab('book')"><i data-lucide="book-open"></i><span>요리북</span></button>
         <button class="tab-add" type="button" data-app-tab="add" role="tab" aria-selected="false" onclick="appTab('add')"><i data-lucide="plus"></i><span>등록</span></button>
         <button type="button" data-app-tab="settings" role="tab" aria-selected="false" onclick="appTab('settings')"><i data-lucide="settings"></i><span>내설정</span></button>
       </div>
@@ -1111,16 +1156,17 @@
 <div class="sidenav">
   <div class="sn-title">화면 이동</div>
   <button class="sn-item" data-screen="home" onclick="nav('home')"><span class="sn-num">1</span>홈</button>
-  <button class="sn-item" data-screen="sheet" onclick="nav('sheet')"><span class="sn-num">2</span>레시피 등록</button>
-  <button class="sn-item" data-screen="loading" onclick="nav('loading')"><span class="sn-num">3</span>분석 로딩</button>
-  <button class="sn-item" data-screen="detail" onclick="nav('detail')"><span class="sn-num">4</span>레시피 상세</button>
-  <button class="sn-item" data-screen="cook3" onclick="nav('cook3')"><span class="sn-num">5</span>조리 모드(신)</button>
-  <button class="sn-item" data-screen="cook" onclick="nav('cook')"><span class="sn-num">6</span>기본 조리 모드(구)</button>
-  <button class="sn-item" data-screen="cook2" onclick="nav('cook2')"><span class="sn-num">7</span>핸즈프리 모드(구)</button>
-  <button class="sn-item" data-screen="voice" onclick="nav('voice')"><span class="sn-num">8</span>핸즈프리 명령 가이드</button>
-  <button class="sn-item" data-screen="complete" onclick="nav('complete')"><span class="sn-num">9</span>완료</button>
-  <button class="sn-item" data-screen="tipWrite" onclick="nav('tipWrite')"><span class="sn-num">10</span>팁 남기기</button>
-  <button class="sn-item" data-screen="reviews" onclick="nav('reviews')"><span class="sn-num">11</span>후기 전체</button>
+  <button class="sn-item" data-screen="cookbook" onclick="nav('cookbook')"><span class="sn-num">2</span>요리북</button>
+  <button class="sn-item" data-screen="sheet" onclick="nav('sheet')"><span class="sn-num">3</span>레시피 등록</button>
+  <button class="sn-item" data-screen="loading" onclick="nav('loading')"><span class="sn-num">4</span>분석 로딩</button>
+  <button class="sn-item" data-screen="detail" onclick="nav('detail')"><span class="sn-num">5</span>레시피 상세</button>
+  <button class="sn-item" data-screen="cook3" onclick="nav('cook3')"><span class="sn-num">6</span>조리 모드(신)</button>
+  <button class="sn-item" data-screen="cook" onclick="nav('cook')"><span class="sn-num">7</span>기본 조리 모드(구)</button>
+  <button class="sn-item" data-screen="cook2" onclick="nav('cook2')"><span class="sn-num">8</span>핸즈프리 모드(구)</button>
+  <button class="sn-item" data-screen="voice" onclick="nav('voice')"><span class="sn-num">9</span>핸즈프리 명령 가이드</button>
+  <button class="sn-item" data-screen="complete" onclick="nav('complete')"><span class="sn-num">10</span>완료</button>
+  <button class="sn-item" data-screen="tipWrite" onclick="nav('tipWrite')"><span class="sn-num">11</span>팁 남기기</button>
+  <button class="sn-item" data-screen="reviews" onclick="nav('reviews')"><span class="sn-num">12</span>후기 전체</button>
   <div class="sn-sub">번호를 눌러 화면을 바로 이동할 수 있어요. 폰 안에서 직접 조작해도 현재 화면이 표시됩니다.</div>
 </div>
 </div>
@@ -1134,6 +1180,7 @@
     closeIngredients();closeTimer();closeReviewSheet();
     switch(key){
       case 'home': closeSheet();closeVoice();show('home');break;
+      case 'cookbook': closeSheet();closeVoice();show('cookbook');break;
       case 'sheet': closeVoice();show('home');openSheet();break;
       case 'loading': closeSheet();closeVoice();show('loading');break;
       case 'detail': closeSheet();closeVoice();show('detail');break;
@@ -1154,10 +1201,11 @@
     if(id==='detail')renderDetailSocial();
     else if(id==='reviews')renderReviewsScreen();
     else if(id==='home'){hydrateHome();setAppTab('home');}
+    else if(id==='cookbook'){hydrateHome();setAppTab('book');}
   }
   function currentViewId(){const v=document.querySelector('.view.active');return v?v.id:'home';}
   function openSheet(){document.getElementById('scrim').classList.add('show');document.getElementById('sheet').classList.add('show');setActiveNav('sheet');setAppTab('add');}
-  function closeSheet(){document.getElementById('scrim').classList.remove('show');document.getElementById('sheet').classList.remove('show');setActiveNav(currentViewId());if(currentViewId()==='home')setAppTab('home');}
+  function closeSheet(){document.getElementById('scrim').classList.remove('show');document.getElementById('sheet').classList.remove('show');setActiveNav(currentViewId());if(currentViewId()==='home')setAppTab('home');if(currentViewId()==='cookbook')setAppTab('book');}
 
   function analyze(){
     const input=document.getElementById('recipeUrl');
@@ -1179,9 +1227,9 @@
     });
   }
   function appTab(key){
-    if(!document.getElementById('home').classList.contains('active'))show('home');
     if(key==='home'){
       closeSheet();
+      show('home');
       setAppTab('home');
       const body=document.querySelector('#home .body');
       if(body)body.scrollTo({top:0,behavior:'smooth'});
@@ -1189,21 +1237,25 @@
     }
     if(key==='book'){
       closeSheet();
+      show('cookbook');
       setAppTab('book');
-      const body=document.querySelector('#home .body'), target=document.getElementById('cookedTitle');
-      if(body&&target){
-        const top=body.scrollTop+target.getBoundingClientRect().top-body.getBoundingClientRect().top-10;
-        body.scrollTo({top:Math.max(0,top),behavior:'smooth'});
-      }
       toast('만든 요리 기록을 보여드려요','book-open');
       return;
     }
-    if(key==='add'){openSheet();return;}
+    if(key==='add'){
+      if(!document.getElementById('home').classList.contains('active')&&!document.getElementById('cookbook').classList.contains('active'))show('home');
+      openSheet();return;
+    }
     if(key==='settings'){
       closeSheet();
       setAppTab('settings');
       toast('내 설정 화면은 다음 버전에서 열려요','settings');
     }
+  }
+  function bookFilter(btn,name){
+    document.querySelectorAll('.book-filter button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    toast(name+'만 모아볼게요','filter');
   }
   function videoFallback(){toast('이 화면은 정적 미리보기예요. 실제 영상 재생은 실기기 검증이 필요해요','info');}
   function finishCooking(){hf3Reset();closeTimer();closeIngredients();show('complete');toast('요리 기록이 요리북에 추가됐어요','check-circle-2');}
@@ -1329,6 +1381,7 @@
     document.getElementById('popScroll').innerHTML=pop.map(cardHTML).join('');
     const recIds=['vHU4_QbslRA','eJekYxjFewM','sIBG0KjOcBs','VvM59BXz6Bw'];   // 빠르게 만드는 추천
     document.getElementById('recScroll').innerHTML=RECIPES.filter(r=>recIds.includes(r.vid)).map(cardHTML).join('');
+    document.getElementById('bookRecScroll').innerHTML=RECIPES.filter(r=>recIds.includes(r.vid)).map(cardHTML).join('');
     lucide.createIcons();
     applyAccessibilityLabels();
     settleImageFallbacks();
@@ -1656,6 +1709,7 @@
     closeSheet();closeVoice();closeIngredients();closeTimer();closeReviewSheet();hf3Reset();
     switch(h){
       case 'home': show('home');break;
+      case 'cookbook': show('cookbook');break;
       case 'sheet': show('home');openSheet();break;
       case 'loading': show('loading');break;
       case 'detail': show('detail');break;

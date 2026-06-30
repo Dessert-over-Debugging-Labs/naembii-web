@@ -44,3 +44,10 @@ Branch: main
 - 검증: `<script>` 추출 `node --check` 통과, `validate-prd.sh` 통과, Chrome CDP 스크린샷 `mvp-detail-cta.png`, `mvp-cook3-complete.png`, `mvp-complete.png`, `mvp-tip-write.png` 생성, 핵심 버튼 8개 클릭 매트릭스 통과.
 - 학습: 완료 화면은 최종 상태와 후속 액션을 분리해야 한다. MVP 기능은 버튼만 두지 않고 연결 화면/시트가 있어야 하며, 전체 버튼 매트릭스는 `MVP-06`으로 별도 Ralph 스토리화한다.
 ---
+
+## 2026-07-01 - MVP-09 / 구현 / 변경파일 / 검증 / 학습
+- 구현: 홈에서 최근 조리/저장 레시피 섹션을 제거하고, 하단 `요리북` 탭이 별도 `cookbook` 페이지로 이동하도록 분리. 요리북에는 최근 조리, 저장한 레시피, 기록 기반 추천, 기록 메모를 배치했다.
+- 변경파일: `app.html`, `docs/MVP_WIREFRAME_STORIES_ko.md`, `scripts/ralph/prd.json`, `scripts/ralph/progress.txt`, `docs/progress/REPORT_ko.md`.
+- 검증: `<script>` 추출 `node --check` 통과, `mvp-home-no-cooked.png`, `mvp-cookbook-page.png` 생성, 요리북 콘솔 에러 0.
+- 학습: 홈은 탐색/추천/영상 등록에 집중하고, 내가 만든 것·저장한 것·기록 기반 추천은 세부 요리북 페이지가 더 적합하다.
+---
