@@ -148,16 +148,15 @@
     display:flex;align-items:center;justify-content:center;color:#fff;
   }
   .rcard .thumb .play svg{width:17px;height:17px;fill:#fff;color:#fff;margin-left:2px;}
-  .rcard .thumb .platform{
-    position:absolute;right:8px;bottom:8px;z-index:2;
-    min-height:24px;padding:4px 8px;border-radius:8px;
-    background:#FF0000;color:#fff;font-size:11px;font-weight:800;line-height:1;
-    display:flex;align-items:center;gap:4px;box-shadow:0 2px 8px rgba(0,0,0,.38);
-  }
-  .rcard .thumb .platform svg{width:12px;height:12px;}
   .rcard .cap{padding:8px 4px 0;}
   .rcard .cap b{font-size:15px;font-weight:700;display:block;line-height:1.3;}
-  .rcard .cap small{font-size:13px;color:var(--gray);}
+  .rcard .meta-line{display:flex;flex-direction:column;align-items:flex-start;gap:5px;margin-top:2px;min-width:0;}
+  .rcard .source-row{display:flex;align-items:center;gap:6px;max-width:100%;min-width:0;color:var(--gray);font-size:13px;}
+  .rcard .channel{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .rcard .servings{flex:none;color:var(--gray2);}
+  .rcard .platform-chip{display:inline-flex;align-items:center;gap:4px;max-width:100%;padding:3px 6px;border-radius:7px;background:rgba(255,0,0,.12);color:#FFE5D8;border:1px solid rgba(255,42,42,.28);font-size:10px;font-weight:800;line-height:1;white-space:nowrap;}
+  .rcard .platform-chip svg{width:10px;height:10px;color:#FF2A2A;fill:#FF2A2A;}
+  .rcard .platform-chip em{font-style:normal;overflow:hidden;text-overflow:ellipsis;}
   .rcard .thumb .savebtn{position:absolute;top:4px;right:4px;z-index:2;width:48px;height:48px;background:transparent;border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;}
   .rcard .thumb .savebtn svg{width:24px;height:24px;color:#FFF4E6;stroke-width:2.7;filter:drop-shadow(0 1px 0 #050403) drop-shadow(1px 0 0 #050403) drop-shadow(0 -1px 0 #050403) drop-shadow(-1px 0 0 #050403) drop-shadow(0 2px 5px rgba(0,0,0,.86));transition:transform .2s,color .2s,fill .2s;}
   .rcard .thumb .savebtn:active svg{transform:scale(.88);}
@@ -171,8 +170,8 @@
 
   /* FAB */
   .fab{
-    position:absolute;right:20px;bottom:24px;width:60px;height:60px;border-radius:20px;
-    background:var(--green);color:var(--on-green);display:flex;align-items:center;justify-content:center;
+    display:none;position:relative;align-self:flex-end;margin:0 20px 20px;width:58px;height:58px;border-radius:20px;
+    background:var(--green);color:var(--on-green);align-items:center;justify-content:center;
     box-shadow:0 14px 30px rgba(240,90,40,.4);z-index:40;cursor:pointer;border:none;transition:transform .15s;
     background:linear-gradient(135deg,var(--green-l),var(--green));
   }
@@ -257,10 +256,9 @@
   .reviews .stars{display:flex;gap:1px;color:var(--accent);}
   .reviews .stars svg{width:13px;height:13px;fill:var(--accent);}
   .cta-bar{flex:none;padding:16px;background:rgba(18,15,12,.92);backdrop-filter:blur(12px);border-top:1px solid var(--line);}
-  #detail .body{padding-bottom:104px;}
   .cta-bar.float-start{
-    position:absolute;left:0;right:0;bottom:calc(30px + env(safe-area-inset-bottom));
-    z-index:55;padding:0;background:transparent;border-top:0;backdrop-filter:none;
+    position:relative;z-index:55;padding:8px 0 calc(18px + env(safe-area-inset-bottom));
+    background:transparent;border-top:0;backdrop-filter:none;
     pointer-events:none;
   }
   .cta-bar.float-start .btn{
@@ -636,7 +634,7 @@
     <!-- 1. 홈 -->
     <div class="view active" id="home">
       <div class="statusbar"><span>9:41</span><span class="icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
-      <div class="nav"><div class="logo"><i data-lucide="chef-hat"></i>쿡</div><div class="hd-right"><div class="noti" role="status" aria-label="알림 268개"><i data-lucide="bell"></i>268</div><div class="ic-btn" role="button" tabindex="0" aria-label="내 설정 보기" onclick="toast('내 설정 화면은 다음 버전에서 열려요','circle-user-round')"><i data-lucide="circle-user-round"></i></div></div></div>
+      <div class="nav"><div class="logo"><i data-lucide="chef-hat"></i>쿡</div><div class="hd-right"><div class="noti" role="status" aria-label="알림 268개"><i data-lucide="bell"></i>268</div><div class="ic-btn" role="button" tabindex="0" aria-label="레시피 등록하기" onclick="openSheet()"><i data-lucide="plus"></i></div><div class="ic-btn" role="button" tabindex="0" aria-label="내 설정 보기" onclick="toast('내 설정 화면은 다음 버전에서 열려요','circle-user-round')"><i data-lucide="circle-user-round"></i></div></div></div>
       <div class="body">
         <div class="search" role="button" tabindex="0" aria-label="요리 검색" onclick="toast('검색은 프로토타입에서 생략했어요','search')"><i data-lucide="search"></i>먹고 싶은 요리를 검색해보세요</div>
         <div class="cats">
@@ -682,7 +680,7 @@
           <img src="https://i.ytimg.com/vi/21j8SASqLJU/mqdefault.jpg" data-fallback="food1" onerror="useImageFallback(this,'food1')">
           <div class="play"><i data-lucide="play"></i></div>
           <div class="video-honesty"><i data-lucide="info"></i>정적 미리보기</div>
-          <div class="yt-badge"><i data-lucide="youtube"></i>유튜브</div>
+          <div class="yt-badge"><i data-lucide="youtube"></i>YouTube</div>
         </div>
         <div class="detail-body">
           <div class="dhead">
@@ -858,7 +856,7 @@
     <div class="sheet" id="sheet">
       <div class="grabber"></div>
       <h3>레시피 등록하기</h3>
-      <p class="sub">유튜브 링크만 붙여넣으면 단계별 레시피로 만들어드려요</p>
+      <p class="sub">YouTube 링크만 붙여넣으면 단계별 레시피로 만들어드려요</p>
       <label class="field" for="recipeUrl"><i data-lucide="youtube"></i><input id="recipeUrl" type="url" value="https://youtu.be/21j8SASqLJU" aria-label="영상 링크"></label>
       <button class="btn" onclick="analyze()">입력 완료</button>
       <button class="btn ghost" onclick="closeSheet()">취소</button>
@@ -1072,7 +1070,12 @@
   function saveSocial(){try{localStorage.setItem(SOCIAL_KEY,JSON.stringify(social));return true;}catch(e){return false;}}
   function seedSocial(){loadSocial();let ch=false;for(const k in SEED){if(!social[k]){social[k]=JSON.parse(JSON.stringify(SEED[k]));ch=true;}}if(ch)saveSocial();}
   function getS(vid){return social[vid]||(social[vid]={likes:0,liked:false,reviews:[]});}
-  function esc(s){return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+  function esc(s){return String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+  function escAttr(s){return esc(s).replace(/'/g,'&#39;');}
+  function safeToken(s,fallback){
+    const v=String(s||'').replace(/[^\w-]/g,'');
+    return v||fallback;
+  }
   function stars(n){let h='';for(let i=0;i<n;i++)h+='<i data-lucide="star" aria-hidden="true"></i>';return h;}
 
   function reviewsHTML(arr){
@@ -1094,22 +1097,31 @@
       if(like)like.classList.toggle('liked',!!s.liked);
     });
   }
+  const PLATFORM_META={
+    youtube:{label:'YouTube',icon:'youtube',thumb:r=>{const id=safeToken(r.vid,'');return id?'https://i.ytimg.com/vi/'+id+'/mqdefault.jpg':(r.thumb||FALLBACK_IMAGES[r.food]||FALLBACK_IMAGES.food1);}},
+    instagram:{label:'Instagram',icon:'instagram',thumb:r=>r.thumb||FALLBACK_IMAGES[r.food]||FALLBACK_IMAGES.food1},
+    tiktok:{label:'TikTok',icon:'music-2',thumb:r=>r.thumb||FALLBACK_IMAGES[r.food]||FALLBACK_IMAGES.food1}
+  };
+  const CONTENT_TYPE_LABELS={longform:'Longform',shorts:'Shorts',reels:'Reels',video:'Video'};
+  function normKey(s,fallback){return String(s||fallback).toLowerCase().replace(/[^a-z0-9]/g,'')||fallback;}
   const RECIPES=[
-    {vid:'21j8SASqLJU',name:'순두부찌개',src:'백종원 · 2인분',time:'30분',food:'food1'},
-    {vid:'VvM59BXz6Bw',name:'감바스 알 아히요',src:'성시경 · 2인분',time:'25분',food:'food2'},
-    {vid:'eJekYxjFewM',name:'아보카도 비빔밥',src:'다이어터 레시피 · 1인분',time:'15분',food:'food3'},
-    {vid:'V9KP9Qvb3lI',name:'까르보나라',src:'Chef Mama · 2인분',time:'40분',food:'food4'},
-    {vid:'sIBG0KjOcBs',name:'딸기 티라미수',src:'쿠킹트리 · 4인분',time:'20분',food:'food5'},
-    {vid:'vHU4_QbslRA',name:'명란 파스타',src:'혼밥 레시피 · 1인분',time:'10분',food:'food6'},
+    {vid:'21j8SASqLJU',name:'순두부찌개',channel:'백종원',servings:'2인분',time:'30분',food:'food1',platform:'youtube',contentType:'longform'},
+    {vid:'VvM59BXz6Bw',name:'감바스 알 아히요',channel:'성시경',servings:'2인분',time:'25분',food:'food2',platform:'youtube',contentType:'longform'},
+    {vid:'eJekYxjFewM',name:'아보카도 비빔밥',channel:'다이어터 레시피',servings:'1인분',time:'15분',food:'food3',platform:'youtube',contentType:'shorts'},
+    {vid:'V9KP9Qvb3lI',name:'까르보나라',channel:'Chef Mama',servings:'2인분',time:'40분',food:'food4',platform:'youtube',contentType:'longform'},
+    {vid:'sIBG0KjOcBs',name:'딸기 티라미수',channel:'쿠킹트리',servings:'4인분',time:'20분',food:'food5',platform:'youtube',contentType:'shorts'},
+    {vid:'vHU4_QbslRA',name:'명란 파스타',channel:'혼밥 레시피',servings:'1인분',time:'10분',food:'food6',platform:'youtube',contentType:'shorts'},
   ];
   function cardHTML(r){
-    return '<div class="rcard" data-vid="'+r.vid+'" role="button" tabindex="0" aria-label="'+esc(r.name)+' 상세 보기" onclick="goDetail(\''+r.vid+'\')">'+
-      '<div class="thumb '+r.food+'"><img src="https://i.ytimg.com/vi/'+r.vid+'/mqdefault.jpg" data-fallback="'+r.food+'" onerror="useImageFallback(this,\''+r.food+'\')">'+
-        '<span class="badge"><i data-lucide="clock"></i>'+r.time+'</span>'+
-        '<button class="savebtn like" aria-label="'+esc(r.name)+' 저장" onclick="toggleLike(event,\''+r.vid+'\')"><i data-lucide="bookmark"></i></button>'+
-        '<span class="play"><i data-lucide="play"></i></span>'+
-        '<span class="platform"><i data-lucide="youtube"></i>YouTube</span></div>'+
-      '<div class="cap"><b>'+r.name+'</b><small>'+r.src+'</small></div></div>';
+    const platformKey=normKey(r.platform,'youtube'),platform=PLATFORM_META[platformKey]||PLATFORM_META.youtube;
+    const typeKey=normKey(r.contentType,'video'),format=CONTENT_TYPE_LABELS[typeKey]||CONTENT_TYPE_LABELS.video;
+    const vid=safeToken(r.vid,'video'),food=safeToken(r.food,'food1'),thumb=escAttr(platform.thumb(r));
+    return '<div class="rcard" data-vid="'+escAttr(vid)+'" role="button" tabindex="0" aria-label="'+escAttr(r.name)+' 상세 보기" onclick="goDetail(\''+escAttr(vid)+'\')">'+
+      '<div class="thumb '+food+'"><img src="'+thumb+'" data-fallback="'+food+'" onerror="useImageFallback(this,\''+food+'\')">'+
+        '<span class="badge"><i data-lucide="clock"></i>'+esc(r.time)+'</span>'+
+        '<button class="savebtn like" aria-label="'+escAttr(r.name)+' 저장" onclick="toggleLike(event,\''+escAttr(vid)+'\')"><i data-lucide="bookmark"></i></button>'+
+        '<span class="play"><i data-lucide="play"></i></span></div>'+
+      '<div class="cap"><b>'+esc(r.name)+'</b><div class="meta-line"><div class="source-row"><small class="channel">'+esc(r.channel)+'</small><span class="servings">· '+esc(r.servings)+'</span></div><span class="platform-chip" aria-label="'+escAttr(platform.label)+' '+escAttr(format)+'"><i data-lucide="'+escAttr(platform.icon)+'"></i><em>'+esc(platform.label)+' · '+esc(format)+'</em></span></div></div></div>';
   }
   function renderHomeSections(){
     document.getElementById('gridMine').innerHTML=RECIPES.map(cardHTML).join('');
