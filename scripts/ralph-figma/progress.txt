@@ -18,6 +18,7 @@ Started: Wed Jul  1 15:53:56 KST 2026
 - 디자인 토큰: 브랜드 그린 #46B581, 홈은 오렌지 강조 #F0662E / 카드 #FCE0D0 / 크림 배경 #FDF6EF.
 - nodeId 맵(2026-07-02 SEC-A 시점, 현재 페이지 '요리 비서' id=939:2 — prd.json 목표 페이지와 일치. 앞선 '펫쏙' 페이지가 아니며 pages 목록엔 '요리 비서'만. 처음엔 Rectangle 1(944:3)만 있던 거의 빈 파일):
   - SEC/A=2004:14 (섹션 컨테이너 1700x1120 연회색 #F0F0F0, 절대 x=6000 y=0), SEC/A-title=2004:15("A. 온보딩 · 홈", 40px Bold #0A0A0A)
+  - cook/home=2006:16 (390x844 #FFF7F0, SEC/A 자식, 부모-상대 x=48 y=120 → 절대 x=6048 y=120). region 서브프레임: region/상태바=2006:17(y0-48), region/헤더=2006:18(y48-120), region/콘텐츠=2006:19(y120-780 h660), region/하단=2006:20(y780-844 h64). D-home-* 요소는 이 region 프레임에 자식으로 추가.
 - 섹션 컨테이너 규약: 연회색 #F0F0F0 프레임 SEC/<group> + 상단 제목(40px Bold #0A0A0A) 프레임 내부 x=48 y=40. 폭은 화면 3개(~470px)+간격80px 여유. create_text parentId 좌표=부모-상대 정상 재확인(2004:15 abs 6048/40, push-out 없음).
 
 ---
@@ -54,4 +55,10 @@ Started: Wed Jul  1 15:53:56 KST 2026
 - 대상 nodeId: SEC/A=**2004:14**(1700x1120, 연회색 #F0F0F0, 절대 x=6000 y=0), 제목 SEC/A-title=**2004:15**("A. 온보딩 · 홈").
 - 게이트: G0(채널 조인+doc info) / G1(프레임+제목 생성, 화면3개용 폭 여유) / G2 read-back(get_node_info로 프레임+제목 텍스트 노드 '온보딩' 확인) / G4(영어 누수 0, #0A0A0A 토큰) 통과. 밀스톤 아님 → export 생략.
 - 학습: create_text parentId 좌표=부모-상대 정상(2004:15 abs 6048/40 프레임 내부). 섹션 컨테이너 규약 확립 → SEC/B도 동일 패턴.
+---
+## 2026-07-02 - K-home home 화면 골격 프레임 생성
+- 대상 nodeId: cook/home=**2006:16**(390x844, #FFF7F0). SEC/A(2004:14) 자식으로 생성(부모-상대 x=48 y=120 → 절대 x=6048 y=120, SEC/A 내부 OK). 기존 cook/home 없어 신규 create(멱등: get_document_info로 부재 확인).
+- region 서브프레임 4개(부모-상대 좌표, 병렬 아님 1콜씩 순차 생성): region/상태바=**2006:17**(y0-48 h48), region/헤더=**2006:18**(y48-120 h72), region/콘텐츠=**2006:19**(y120-780 h660), region/하단=**2006:20**(y780-844 h64). 상태바→헤더→콘텐츠→하단 세로 스택.
+- 게이트: G0(채널 5evd9cs8 조인+get_document_info, 페이지 '요리 비서' 939:2) / G1(프레임+region 4 생성) / G2 read-back(get_node_info 2006:16 → 자식 4 + 절대좌표 정합 확인, push-out 없음) / G4(영어 누수 0, #FFF7F0 토큰). 밀스톤 아님 → export 생략.
+- 학습: 섹션 프레임(SEC/A)에 화면 프레임을 자식으로 넣을 때도 create_frame parentId 좌표=부모-상대 정상(cook/home abs 6048/120). D-home-* 요소는 region 프레임에 자식 추가 예정.
 ---

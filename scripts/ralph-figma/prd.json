@@ -46,7 +46,8 @@
       "title": "home 화면 골격 프레임 생성",
       "description": "cook/home 프레임(390x844, 배경 #FFF7F0)을 SEC/A 안에 만들고 상태바/헤더/콘텐츠/하단 region 서브프레임 골격을 잡는다.",
       "priority": 3,
-      "passes": false,
+      "passes": true,
+      "notes": "cook/home nodeId=2006:16 (390x844, #FFF7F0, SEC/A(2004:14) 자식, 부모-상대 x=48 y=120 → 절대 x=6048 y=120, 프레임 내부 OK). region 서브프레임 4개: region/상태바=2006:17(y0-48), region/헤더=2006:18(y48-120), region/콘텐츠=2006:19(y120-780,h660), region/하단=2006:20(y780-844,h64). G0(채널 5evd9cs8)·G1·G2 read-back(cook/home 자식 4 + 절대좌표 정합)·G4 통과. 밀스톤 아님 → export 생략. 이후 D-home-* 요소는 이 region 프레임들 안에 자식으로 추가.",
       "acceptanceCriteria": [
         "멱등: cook/home가 이미 있으면 재사용(중복 생성 금지), 없으면 생성해 SEC/A 안에 배치(390x844, 배경 #FFF7F0).",
         "상태바/헤더/콘텐츠/하단 region 서브프레임 골격을 만든다.",
