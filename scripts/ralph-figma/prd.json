@@ -1,0 +1,173 @@
+{
+  "project": "cook 와이어프레임 Figma 이식 (app.html → Figma)",
+  "branchName": "main",
+  "description": "app.html의 각 화면을 쓰기형 Figma MCP(플러그인 브리지)로 Figma 캔버스에 실제로 그려 넣는다. 화면 1개=스토리 1개, ralph 루프로 자율 구현→green-gate(G0 연결·G1 그리기·G2 read-back·G3 export·G4 정직/토큰) 통과→한글 커밋. 소스 목표 이미지는 scripts/ralph-figma/source-screens/<view>.png, 스토리 상세는 docs/FIGMA_WIREFRAME_STORIES_ko.md. 규칙은 scripts/ralph-figma/CODEX.md.",
+  "figma": {
+    "page": "Cookflow Wireframes",
+    "channel": "h1s0c8tc",
+    "frameSize": { "w": 390, "h": 844 },
+    "note": "channel은 Figma 플러그인(브리지)에서 발급받은 값으로 교체. .env의 FIGMA_CHANNEL로도 지정 가능."
+  },
+  "userStories": [
+    {
+      "id": "F0",
+      "title": "연결 스파이크 — home 1화면 end-to-end 파이프라인 증명",
+      "description": "쓰기형 Figma MCP 채널 조인 확인 후 cook/home 프레임에 상태바·로고·헤드라인만 최소 그리기 → read-back → export로 연결→그리기→검증 파이프라인을 증명한다. 이 스토리가 통과해야 나머지를 신뢰한다.",
+      "priority": 1,
+      "passes": true,
+      "notes": "cook/home 프레임 nodeId=2004:2(자식 9), 헤드라인 텍스트 nodeId=2004:7. export=scripts/ralph-figma/exports/home_spike.png(780x1688 유효 PNG, transcript base64 추출로 저장). 파이프라인 G0~G4 통과. 그리는 대상 Figma 페이지는 '펫쏙'(브리지가 여는 현재 페이지). create_* 좌표는 부모-상대, move_node는 절대 좌표.",
+      "acceptanceCriteria": [
+        "G0: join_channel 후 get_document_info 성공(채널 라이브).",
+        "G1: cook/home 프레임(390x844) 생성, 상태바·Cookflow 로고·'오늘 뭐 만들까요?' 헤드라인 포함.",
+        "G2: get_node_info로 자식 노드 존재와 헤드라인 텍스트 노드 확인.",
+        "G3: export_node_as_image로 scripts/ralph-figma/exports/home_spike.png 저장.",
+        "progress.txt에 nodeId·export 경로 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "F1-01",
+      "title": "home 화면 Figma 이식",
+      "description": "홈: 상태바, 헤더(로고+알림/프로필), '오늘 뭐 만들까요?', 영상 링크 바로 요리하기 오렌지 카드, 검색바, 카테고리 원형칩 5개, '당신만을 위한 추천' 섹션+추천 카드 2개, 하단탭바(홈/등록/요리북)를 재현.",
+      "priority": 2,
+      "passes": false,
+      "acceptanceCriteria": [
+        "cook/home 프레임에 상태바→헤더→헤드라인→오렌지 CTA 카드→검색바→카테고리칩→추천 카드→하단탭바 영역이 원본과 대응한다.",
+        "G2: 자식 ≥6, '오늘 뭐 만들까요?'와 '영상 링크로 바로 요리하기' 텍스트 노드 존재.",
+        "G3: exports/home.png 저장 후 source-screens/home.png와 영역 대조.",
+        "G4: 영어 누수 0, 브랜드 그린/오렌지 토큰 사용, 한글 커밋."
+      ]
+    },
+    {
+      "id": "F1-02",
+      "title": "detail 화면 Figma 이식",
+      "description": "레시피 상세: 헤더(뒤로/레시피/공유), 영상 히어로(썸네일+재생아이콘+'정적 미리보기'+YouTube 배지), 제목+북마크·저장수, ⭐4.7 후기, 설명, '먼저 만든 사람의 팁' 카드, 메타칩(5단계/재료9개/타임스탬프), 하단 플로팅 '요리 시작하기' CTA.",
+      "priority": 3,
+      "passes": false,
+      "acceptanceCriteria": [
+        "cook/detail 프레임에 영상 히어로·제목·평점·팁 카드·메타칩·플로팅 CTA 영역이 원본과 대응한다.",
+        "G2: '요리 시작하기'와 '정적 미리보기' 텍스트 노드 존재(거짓 재생중 표기 없음).",
+        "G3: exports/detail.png 저장·대조. G4 통과 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "F1-03",
+      "title": "loading 화면 Figma 이식",
+      "description": "영상 분석 로딩: 중앙 로딩 인디케이터 + 분석 상태 카피 + 단계 진행 힌트. 가짜 완료 표기 금지.",
+      "priority": 4,
+      "passes": false,
+      "acceptanceCriteria": [
+        "cook/loading 프레임에 로딩 인디케이터와 분석 상태 카피가 있다.",
+        "G2: 분석 상태 카피 텍스트 노드 존재. G3: exports/loading.png 저장·대조.",
+        "G4 통과 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "F1-04",
+      "title": "cook3 조리 모드(주력) Figma 이식",
+      "description": "다크 조리 모드: 상태바(다크), 헤더(조리 모드), 영상+‘정적 미리보기·실기기 확인’ 오버레이, 단계 도트 5칸, 톤칩(화이트/허브/스틸/크림), 스와이프 힌트, 현재 단계 카드('1단계. 육수 준비하기·1/5'+리스트), 하단 4버튼(타이머/핸즈프리 꺼짐/재료/요리 완성).",
+      "priority": 5,
+      "passes": false,
+      "acceptanceCriteria": [
+        "cook/cook3 프레임(다크 #0A0A0A/#161616)에 영상 오버레이·단계 도트·톤칩·단계 카드·하단 4버튼 영역이 원본과 대응한다.",
+        "G2: '요리 완성'과 '1단계. 육수 준비하기' 텍스트 노드 존재. 이전/다음 버튼 없음.",
+        "G3: exports/cook3.png 저장·대조. 거짓 '재생 중' 없음. 한글 커밋."
+      ]
+    },
+    {
+      "id": "F1-05",
+      "title": "complete 완료 화면 Figma 이식",
+      "description": "완성 결과 강조(체크/사진)+'완성!' 헤드라인+요약(요리명·시간)+액션(팁 남기기/홈으로/다시 요리하기). 무의미 지표 없음.",
+      "priority": 6,
+      "passes": false,
+      "acceptanceCriteria": [
+        "cook/complete 프레임에 완성 강조·요약·액션 버튼 영역이 있다.",
+        "G2: '완성'과 '팁 남기기' 텍스트 노드 존재. G3: exports/complete.png 저장·대조.",
+        "G4 통과 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "F1-06",
+      "title": "tipWrite 팁 남기기 화면 Figma 이식",
+      "description": "헤더(뒤로/팁 남기기)+별점 선택+텍스트 입력+사진 첨부+등록 CTA.",
+      "priority": 7,
+      "passes": false,
+      "acceptanceCriteria": [
+        "cook/tipWrite 프레임에 별점·입력·사진첨부·등록 CTA 영역이 있다.",
+        "G2: '팁 남기기' 텍스트 노드 존재. G3: exports/tipWrite.png 저장·대조.",
+        "G4 통과 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "F1-07",
+      "title": "cookbook 요리북 화면 Figma 이식",
+      "description": "헤더(요리북)+섹션(최근 조리/저장한 레시피/기록 기반 추천/기록 메모)+하단탭바.",
+      "priority": 8,
+      "passes": false,
+      "acceptanceCriteria": [
+        "cook/cookbook 프레임에 4개 섹션과 하단탭바가 있다.",
+        "G2: '요리북' 텍스트 노드 존재. G3: exports/cookbook.png 저장·대조.",
+        "G4 통과 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "F1-08",
+      "title": "reviews 후기 전체 화면 Figma 이식",
+      "description": "헤더(뒤로/후기)+평점 요약+후기 리스트(작성자·별점·본문·사진)+작성 CTA.",
+      "priority": 9,
+      "passes": false,
+      "acceptanceCriteria": [
+        "cook/reviews 프레임에 평점 요약과 후기 리스트가 있다.",
+        "G2: '후기' 텍스트 노드 존재. G3: exports/reviews.png 저장·대조.",
+        "G4 통과 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "F1-09",
+      "title": "sheet 영상 링크 등록 바텀시트 Figma 이식",
+      "description": "스크림 위 바텀시트+핸들+'영상 링크 등록'+링크 입력+플랫폼 배지(YouTube/Instagram)+분석 시작 CTA.",
+      "priority": 10,
+      "passes": false,
+      "acceptanceCriteria": [
+        "cook/sheet 프레임에 바텀시트·링크 입력·플랫폼 배지·CTA가 있다.",
+        "G2: '등록' 또는 '영상 링크' 텍스트 노드 존재. G3: exports/sheet.png 저장·대조.",
+        "G4 통과 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "F1-10",
+      "title": "cook 조리 모드(구·레거시) Figma 이식",
+      "description": "다크 구버전 조리 화면(타이머/재료/음성 가이드 진입점). 레거시 표기.",
+      "priority": 11,
+      "passes": false,
+      "acceptanceCriteria": [
+        "cook/cook 프레임(다크)에 구버전 조리 컨트롤 영역이 있다.",
+        "G2: '조리' 텍스트 노드 존재. G3: exports/cook.png 저장·대조.",
+        "G4 통과 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "F1-11",
+      "title": "cook2 핸즈프리(구·레거시) Figma 이식",
+      "description": "다크 정적 핸즈프리 스냅샷. 레거시 표기.",
+      "priority": 12,
+      "passes": false,
+      "acceptanceCriteria": [
+        "cook/cook2 프레임(다크)에 정적 핸즈프리 스냅샷 영역이 있다.",
+        "G2: 핸즈프리 관련 라벨 텍스트 노드 존재. G3: exports/cook2.png 저장·대조.",
+        "G4 통과 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "F2-01",
+      "title": "공통 컴포넌트화 + 플로우 정리",
+      "description": "상태바·하단탭바를 컴포넌트로 승격해 화면 간 재사용하고, 프레임을 플로우 순서(home→sheet→loading→detail→cook3→complete→tipWrite, 보조 cookbook/reviews)로 정렬한다.",
+      "priority": 13,
+      "passes": false,
+      "acceptanceCriteria": [
+        "상태바·하단탭바 컴포넌트를 만들어 최소 2화면에서 인스턴스로 재사용한다.",
+        "read-back으로 컴포넌트 인스턴스 재사용을 확인한다.",
+        "프레임이 플로우 순서로 정렬되고 한글 커밋."
+      ]
+    }
+  ]
+}
