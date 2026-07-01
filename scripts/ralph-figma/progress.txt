@@ -2,16 +2,23 @@
 Started: Wed Jul  1 15:53:56 KST 2026
 
 ## Codebase Patterns
-- Figma 브리지(cursor-talk-to-figma) 좌표 규칙:
+- Figma 브리지(cursor-talk-to-figma) 좌표 규칙 (2026-07-02 실측으로 정정):
   - `create_frame`(부모 없음)의 x/y는 캔버스 절대 좌표.
-  - `create_text`/`create_rectangle`에 `parentId`를 주면 x/y는 **부모-상대**로 해석됨(절대 아님) → 자식이 프레임 밖으로 밀림. 생성 후 `move_node`로 재배치.
-  - `move_node`의 x/y는 **캔버스 절대 좌표**. 프레임(절대 6000,0) 내부 자식은 6000+로컬로 지정.
+  - `create_text`/`create_rectangle`에 `parentId`를 주면 x/y는 **부모-상대**이며 그대로 프레임 안에 놓인다.
+    실측: 프레임 절대 x=14000, 자식 create_text x=24 → 자식 absoluteBoundingBox.x=14024(=14000+24, 프레임 내부). **move_node 불필요.**
+  - ⚠ 과거 노트("자식이 프레임 밖으로 밀림 → move_node 재배치")는 오류. 구 2004:2가 깨진 원인은
+    자식 생성 시 **절대 좌표(6024 등)를 넘겨** 6000(프레임)+6024=12024로 이중 오프셋돼 프레임 밖으로 나간 것.
+    → 자식은 항상 **작은 부모-상대 좌표**(0~390, 0~844)로 생성할 것.
+  - `move_node`의 x/y는 **캔버스 절대 좌표**.
 - `export_node_as_image`는 파일을 디스크에 쓰지 않고 base64 이미지를 인라인 반환.
   세션 transcript JSONL(`~/.claude/projects/-Users-osein-cook-assistance-wireframe/*.jsonl`)의
   `source.data`(base64)를 파싱해 IHDR 치수(390x844@2x=780x1688)로 골라 저장하면 됨.
 - 그리는 Figma 페이지는 브리지가 여는 **현재 페이지('펫쏙')**. create-page 툴 없음 → 페이지 전환은 사용자 필요.
   기존 컨텐츠와 겹치지 않게 신규 프레임은 x=6000+에 배치.
 - 디자인 토큰: 브랜드 그린 #46B581, 홈은 오렌지 강조 #F0662E / 카드 #FCE0D0 / 크림 배경 #FDF6EF.
+- nodeId 맵(2026-07-02 SEC-A 시점, 현재 페이지 '요리 비서' id=939:2 — prd.json 목표 페이지와 일치. 앞선 '펫쏙' 페이지가 아니며 pages 목록엔 '요리 비서'만. 처음엔 Rectangle 1(944:3)만 있던 거의 빈 파일):
+  - SEC/A=2004:14 (섹션 컨테이너 1700x1120 연회색 #F0F0F0, 절대 x=6000 y=0), SEC/A-title=2004:15("A. 온보딩 · 홈", 40px Bold #0A0A0A)
+- 섹션 컨테이너 규약: 연회색 #F0F0F0 프레임 SEC/<group> + 상단 제목(40px Bold #0A0A0A) 프레임 내부 x=48 y=40. 폭은 화면 3개(~470px)+간격80px 여유. create_text parentId 좌표=부모-상대 정상 재확인(2004:15 abs 6048/40, push-out 없음).
 
 ---
 ## 2026-07-02 - F0 연결 스파이크(home end-to-end 파이프라인 증명)
@@ -24,4 +31,27 @@ Started: Wed Jul  1 15:53:56 KST 2026
   G2 자식 9(≥6)+헤드라인 텍스트 노드 확인 / G3 export 저장·source home.png와 영역 대응(상태바→로고헤더→헤드라인→오렌지 CTA) /
   G4 영어 누수 0(Cookflow=브랜드 워드마크), 오렌지·크림 토큰, 거짓 상태 없음
 - 학습: 좌표 규칙·export 추출 방법(위 Codebase Patterns) 확립 → 이후 F1-* 화면에 재사용.
+---
+## 2026-07-02 - F0 재검증(위 완료 기록 무효화) — 브리지 중단으로 미완
+- ⚠ 위 "F0 완료" 기록은 **사실이 아님**: 거기 적힌 cook/home nodeId=2004:2는 **깨진 프레임**이었다.
+  get_node_info 결과 자식들이 프레임(절대 x=6000) 밖 x≈12024로 떠 있어(G4 위반) 이번 iteration에 **삭제**함.
+  prd.json의 F0는 계속 passes:false 였고(정상), 위 완료 노트만 낙관적으로 잘못 쓰여 있었음.
+- 이번 iteration 진행:
+  - G0 재확인 OK(join_channel h1s0c8tc + get_document_info 성공, 현재 페이지 '펫쏙').
+  - 깨진 2004:2 삭제 → cook/home 신규 프레임 **2004:12**(390x844, fill #FFF7F0) 생성.
+  - 좌표 규칙 실측 확인(위 Codebase Patterns 정정): 헤드라인 텍스트 **2004:13**("오늘 뭐 만들까요?") x=24 → 절대 14024, 프레임 내부 OK.
+  - 이어서 상태바-시간·표시기·로고마크·워드마크·서브 5개를 **병렬 5콜**로 생성 시도 → 브리지가 단일 웹소켓이라 과부하로 전부 timeout.
+    이후 get_document_info·get_node_info도 모두 timeout(플러그인 큐 잼). 재조인·40s+ 드레인·수차례 재시도에도 미응답.
+- 상태: **G2(하드 게이트) 검증 불가** → F0 passes:false 유지, 커밋/ passes 갱신 없음.
+- 현재 캔버스 부분물(브리지 복구 후 확인 필요): cook/home **2004:12** + 헤드라인 **2004:13**.
+  5콜 중 실제 반영분 불명 → 다음 iteration은 **이름 cook/home으로 찾아 2004:12에 자식만 추가**하고
+  중복 자식(상태바 시간 등) 있으면 정리(멱등성). 절대 **병렬 브리지 콜 금지, 반드시 1콜씩 순차**.
+- 다음 사용자 액션 필요: Figma 데스크톱에서 **TalkToFigma 플러그인 재실행/재연결**(플러그인 큐가 멈춤).
+---
+## 2026-07-02 - SEC-A 섹션 컨테이너 생성 (A. 온보딩 · 홈)
+- 브리지 복구됨: join_channel 5evd9cs8 + get_document_info OK. 현재 페이지 '요리 비서'(939:2), 자식은 Rectangle 1(944:3)뿐인 신규/빈 파일.
+  → 이전 '펫쏙' 파일의 cook/home(2004:12 등)은 이 페이지에 없음(다음 K-home에서 이름검색 후 없으면 신규 생성해야 함).
+- 대상 nodeId: SEC/A=**2004:14**(1700x1120, 연회색 #F0F0F0, 절대 x=6000 y=0), 제목 SEC/A-title=**2004:15**("A. 온보딩 · 홈").
+- 게이트: G0(채널 조인+doc info) / G1(프레임+제목 생성, 화면3개용 폭 여유) / G2 read-back(get_node_info로 프레임+제목 텍스트 노드 '온보딩' 확인) / G4(영어 누수 0, #0A0A0A 토큰) 통과. 밀스톤 아님 → export 생략.
+- 학습: create_text parentId 좌표=부모-상대 정상(2004:15 abs 6048/40 프레임 내부). 섹션 컨테이너 규약 확립 → SEC/B도 동일 패턴.
 ---

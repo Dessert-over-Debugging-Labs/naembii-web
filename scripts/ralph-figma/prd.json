@@ -3,9 +3,12 @@
   "branchName": "main",
   "description": "app.html의 각 화면을 쓰기형 Figma MCP(플러그인 브리지)로 Figma 캔버스에 실제로 그려 넣는다. 화면 1개=스토리 1개, ralph 루프로 자율 구현→green-gate(G0 연결·G1 그리기·G2 read-back·G3 export·G4 정직/토큰) 통과→한글 커밋. 소스 목표 이미지는 scripts/ralph-figma/source-screens/<view>.png, 스토리 상세는 docs/FIGMA_WIREFRAME_STORIES_ko.md. 규칙은 scripts/ralph-figma/CODEX.md.",
   "figma": {
-    "page": "Cookflow Wireframes",
-    "channel": "h1s0c8tc",
-    "frameSize": { "w": 390, "h": 844 },
+    "page": "요리비서",
+    "channel": "5evd9cs8",
+    "frameSize": {
+      "w": 390,
+      "h": 844
+    },
     "note": "channel은 Figma 플러그인(브리지)에서 발급받은 값으로 교체. .env의 FIGMA_CHANNEL로도 지정 가능."
   },
   "userStories": [
@@ -25,148 +28,1358 @@
       ]
     },
     {
-      "id": "F1-01",
-      "title": "home 화면 Figma 이식",
-      "description": "홈: 상태바, 헤더(로고+알림/프로필), '오늘 뭐 만들까요?', 영상 링크 바로 요리하기 오렌지 카드, 검색바, 카테고리 원형칩 5개, '당신만을 위한 추천' 섹션+추천 카드 2개, 하단탭바(홈/등록/요리북)를 재현.",
+      "id": "SEC-A",
+      "title": "섹션 컨테이너 SEC/A 생성 (A. 온보딩 · 홈)",
+      "description": "그룹 'A. 온보딩 · 홈' 화면들을 담을 큰 타이틀 컨테이너 프레임 SEC/A를 만든다(네이티브 section 없음 → 컨테이너 프레임으로 섹션 구현).",
       "priority": 2,
-      "passes": false,
+      "passes": true,
+      "notes": "현재 Figma 파일(페이지 '요리 비서', id 939:2)은 F0 스파이크와 다른 신규 파일이라 비어 있었음(Rectangle 1만 존재). SEC/A 프레임 nodeId=2004:14(1700x1120, 연회색 #F0F0F0, 절대좌표 x=6000,y=0). 제목 텍스트 nodeId=2004:15('A. 온보딩 · 홈', 40px Bold #0A0A0A, 프레임 상단). 화면 3개(home/sheet/loading ~470px+간격80px)용 넉넉한 폭. G0(채널 5evd9cs8 조인+get_document_info)·G1·G2 read-back·G4 통과.",
       "acceptanceCriteria": [
-        "cook/home 프레임에 상태바→헤더→헤드라인→오렌지 CTA 카드→검색바→카테고리칩→추천 카드→하단탭바 영역이 원본과 대응한다.",
-        "G2: 자식 ≥6, '오늘 뭐 만들까요?'와 '영상 링크로 바로 요리하기' 텍스트 노드 존재.",
-        "G3: exports/home.png 저장 후 source-screens/home.png와 영역 대조.",
-        "G4: 영어 누수 0, 브랜드 그린/오렌지 토큰 사용, 한글 커밋."
+        "멱등: get_document_info로 SEC/A 존재 확인, 없으면 연회색 배경 컨테이너 프레임 생성 + 상단 제목 텍스트 'A. 온보딩 · 홈'.",
+        "화면 3개가 가로로 들어갈 넉넉한 크기(화면당 ~470px 폭, 간격 80px).",
+        "G2: SEC/A 프레임과 제목 텍스트 존재. nodeId를 notes/progress에 기록.",
+        "한글 커밋."
       ]
     },
     {
-      "id": "F1-02",
-      "title": "detail 화면 Figma 이식",
-      "description": "레시피 상세: 헤더(뒤로/레시피/공유), 영상 히어로(썸네일+재생아이콘+'정적 미리보기'+YouTube 배지), 제목+북마크·저장수, ⭐4.7 후기, 설명, '먼저 만든 사람의 팁' 카드, 메타칩(5단계/재료9개/타임스탬프), 하단 플로팅 '요리 시작하기' CTA.",
+      "id": "K-home",
+      "title": "home 화면 골격 프레임 생성",
+      "description": "cook/home 프레임(390x844, 배경 #FFF7F0)을 SEC/A 안에 만들고 상태바/헤더/콘텐츠/하단 region 서브프레임 골격을 잡는다.",
       "priority": 3,
       "passes": false,
       "acceptanceCriteria": [
-        "cook/detail 프레임에 영상 히어로·제목·평점·팁 카드·메타칩·플로팅 CTA 영역이 원본과 대응한다.",
-        "G2: '요리 시작하기'와 '정적 미리보기' 텍스트 노드 존재(거짓 재생중 표기 없음).",
-        "G3: exports/detail.png 저장·대조. G4 통과 후 한글 커밋."
+        "멱등: cook/home가 이미 있으면 재사용(중복 생성 금지), 없으면 생성해 SEC/A 안에 배치(390x844, 배경 #FFF7F0).",
+        "상태바/헤더/콘텐츠/하단 region 서브프레임 골격을 만든다.",
+        "G2: get_node_info로 cook/home 프레임 존재 확인. nodeId를 notes/progress nodeId 맵에 기록.",
+        "한글 커밋."
       ]
     },
     {
-      "id": "F1-03",
-      "title": "loading 화면 Figma 이식",
-      "description": "영상 분석 로딩: 중앙 로딩 인디케이터 + 분석 상태 카피 + 단계 진행 힌트. 가짜 완료 표기 금지.",
+      "id": "D-home-01",
+      "title": "home: 상태바(9:41·신호/와이파이/배터리)",
+      "description": "cook/home 안에 '상태바(9:41·신호/와이파이/배터리)' 요소를 정밀하게 그린다. 원본 source-screens/home.png 대비 위치·간격·타이포 정합.",
       "priority": 4,
       "passes": false,
       "acceptanceCriteria": [
-        "cook/loading 프레임에 로딩 인디케이터와 분석 상태 카피가 있다.",
-        "G2: 분석 상태 카피 텍스트 노드 존재. G3: exports/loading.png 저장·대조.",
-        "G4 통과 후 한글 커밋."
+        "멱등: cook/home(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '9:41' 텍스트 노드가 cook/home 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
       ]
     },
     {
-      "id": "F1-04",
-      "title": "cook3 조리 모드(주력) Figma 이식",
-      "description": "다크 조리 모드: 상태바(다크), 헤더(조리 모드), 영상+‘정적 미리보기·실기기 확인’ 오버레이, 단계 도트 5칸, 톤칩(화이트/허브/스틸/크림), 스와이프 힌트, 현재 단계 카드('1단계. 육수 준비하기·1/5'+리스트), 하단 4버튼(타이머/핸즈프리 꺼짐/재료/요리 완성).",
+      "id": "D-home-02",
+      "title": "home: 헤더: Cookflow 로고+부제, 알림/프로필 아이콘",
+      "description": "cook/home 안에 '헤더: Cookflow 로고+부제, 알림/프로필 아이콘' 요소를 정밀하게 그린다. 원본 source-screens/home.png 대비 위치·간격·타이포 정합.",
       "priority": 5,
       "passes": false,
       "acceptanceCriteria": [
-        "cook/cook3 프레임(다크 #0A0A0A/#161616)에 영상 오버레이·단계 도트·톤칩·단계 카드·하단 4버튼 영역이 원본과 대응한다.",
-        "G2: '요리 완성'과 '1단계. 육수 준비하기' 텍스트 노드 존재. 이전/다음 버튼 없음.",
-        "G3: exports/cook3.png 저장·대조. 거짓 '재생 중' 없음. 한글 커밋."
+        "멱등: cook/home(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: 'Cookflow' 텍스트 노드가 cook/home 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
       ]
     },
     {
-      "id": "F1-05",
-      "title": "complete 완료 화면 Figma 이식",
-      "description": "완성 결과 강조(체크/사진)+'완성!' 헤드라인+요약(요리명·시간)+액션(팁 남기기/홈으로/다시 요리하기). 무의미 지표 없음.",
+      "id": "D-home-03",
+      "title": "home: 헤드라인",
+      "description": "cook/home 안에 '헤드라인' 요소를 정밀하게 그린다. 원본 source-screens/home.png 대비 위치·간격·타이포 정합.",
       "priority": 6,
       "passes": false,
       "acceptanceCriteria": [
-        "cook/complete 프레임에 완성 강조·요약·액션 버튼 영역이 있다.",
-        "G2: '완성'과 '팁 남기기' 텍스트 노드 존재. G3: exports/complete.png 저장·대조.",
-        "G4 통과 후 한글 커밋."
+        "멱등: cook/home(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '오늘 뭐 만들까요?' 텍스트 노드가 cook/home 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
       ]
     },
     {
-      "id": "F1-06",
-      "title": "tipWrite 팁 남기기 화면 Figma 이식",
-      "description": "헤더(뒤로/팁 남기기)+별점 선택+텍스트 입력+사진 첨부+등록 CTA.",
+      "id": "D-home-04",
+      "title": "home: 영상 링크 바로 요리하기 오렌지 카드+부제",
+      "description": "cook/home 안에 '영상 링크 바로 요리하기 오렌지 카드+부제' 요소를 정밀하게 그린다. 원본 source-screens/home.png 대비 위치·간격·타이포 정합.",
       "priority": 7,
       "passes": false,
       "acceptanceCriteria": [
-        "cook/tipWrite 프레임에 별점·입력·사진첨부·등록 CTA 영역이 있다.",
-        "G2: '팁 남기기' 텍스트 노드 존재. G3: exports/tipWrite.png 저장·대조.",
-        "G4 통과 후 한글 커밋."
+        "멱등: cook/home(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '영상 링크로 바로 요리하기' 텍스트 노드가 cook/home 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
       ]
     },
     {
-      "id": "F1-07",
-      "title": "cookbook 요리북 화면 Figma 이식",
-      "description": "헤더(요리북)+섹션(최근 조리/저장한 레시피/기록 기반 추천/기록 메모)+하단탭바.",
+      "id": "D-home-05",
+      "title": "home: 검색바",
+      "description": "cook/home 안에 '검색바' 요소를 정밀하게 그린다. 원본 source-screens/home.png 대비 위치·간격·타이포 정합.",
       "priority": 8,
       "passes": false,
       "acceptanceCriteria": [
-        "cook/cookbook 프레임에 4개 섹션과 하단탭바가 있다.",
-        "G2: '요리북' 텍스트 노드 존재. G3: exports/cookbook.png 저장·대조.",
-        "G4 통과 후 한글 커밋."
+        "멱등: cook/home(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '먹고 싶은 요리를 검색해보세요' 텍스트 노드가 cook/home 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
       ]
     },
     {
-      "id": "F1-08",
-      "title": "reviews 후기 전체 화면 Figma 이식",
-      "description": "헤더(뒤로/후기)+평점 요약+후기 리스트(작성자·별점·본문·사진)+작성 CTA.",
+      "id": "D-home-06",
+      "title": "home: 카테고리 원형칩 5(셰프/급상승/한식/분식/일식)",
+      "description": "cook/home 안에 '카테고리 원형칩 5(셰프/급상승/한식/분식/일식)' 요소를 정밀하게 그린다. 원본 source-screens/home.png 대비 위치·간격·타이포 정합.",
       "priority": 9,
       "passes": false,
       "acceptanceCriteria": [
-        "cook/reviews 프레임에 평점 요약과 후기 리스트가 있다.",
-        "G2: '후기' 텍스트 노드 존재. G3: exports/reviews.png 저장·대조.",
-        "G4 통과 후 한글 커밋."
+        "멱등: cook/home(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '한식' 텍스트 노드가 cook/home 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
       ]
     },
     {
-      "id": "F1-09",
-      "title": "sheet 영상 링크 등록 바텀시트 Figma 이식",
-      "description": "스크림 위 바텀시트+핸들+'영상 링크 등록'+링크 입력+플랫폼 배지(YouTube/Instagram)+분석 시작 CTA.",
+      "id": "D-home-07",
+      "title": "home: '당신만을 위한 추천' 섹션 헤더+전체",
+      "description": "cook/home 안에 ''당신만을 위한 추천' 섹션 헤더+전체' 요소를 정밀하게 그린다. 원본 source-screens/home.png 대비 위치·간격·타이포 정합.",
       "priority": 10,
       "passes": false,
       "acceptanceCriteria": [
-        "cook/sheet 프레임에 바텀시트·링크 입력·플랫폼 배지·CTA가 있다.",
-        "G2: '등록' 또는 '영상 링크' 텍스트 노드 존재. G3: exports/sheet.png 저장·대조.",
-        "G4 통과 후 한글 커밋."
+        "멱등: cook/home(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '당신만을 위한 추천' 텍스트 노드가 cook/home 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
       ]
     },
     {
-      "id": "F1-10",
-      "title": "cook 조리 모드(구·레거시) Figma 이식",
-      "description": "다크 구버전 조리 화면(타이머/재료/음성 가이드 진입점). 레거시 표기.",
+      "id": "D-home-08",
+      "title": "home: 추천 카드1(순두부찌개: 썸네일+사유+메타)",
+      "description": "cook/home 안에 '추천 카드1(순두부찌개: 썸네일+사유+메타)' 요소를 정밀하게 그린다. 원본 source-screens/home.png 대비 위치·간격·타이포 정합.",
       "priority": 11,
       "passes": false,
       "acceptanceCriteria": [
-        "cook/cook 프레임(다크)에 구버전 조리 컨트롤 영역이 있다.",
-        "G2: '조리' 텍스트 노드 존재. G3: exports/cook.png 저장·대조.",
-        "G4 통과 후 한글 커밋."
+        "멱등: cook/home(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '순두부찌개' 텍스트 노드가 cook/home 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
       ]
     },
     {
-      "id": "F1-11",
-      "title": "cook2 핸즈프리(구·레거시) Figma 이식",
-      "description": "다크 정적 핸즈프리 스냅샷. 레거시 표기.",
+      "id": "D-home-09",
+      "title": "home: 추천 카드2(감바스 알 아히요)",
+      "description": "cook/home 안에 '추천 카드2(감바스 알 아히요)' 요소를 정밀하게 그린다. 원본 source-screens/home.png 대비 위치·간격·타이포 정합.",
       "priority": 12,
       "passes": false,
       "acceptanceCriteria": [
-        "cook/cook2 프레임(다크)에 정적 핸즈프리 스냅샷 영역이 있다.",
-        "G2: 핸즈프리 관련 라벨 텍스트 노드 존재. G3: exports/cook2.png 저장·대조.",
-        "G4 통과 후 한글 커밋."
+        "멱등: cook/home(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '감바스 알 아히요' 텍스트 노드가 cook/home 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
       ]
     },
     {
-      "id": "F2-01",
-      "title": "공통 컴포넌트화 + 플로우 정리",
-      "description": "상태바·하단탭바를 컴포넌트로 승격해 화면 간 재사용하고, 프레임을 플로우 순서(home→sheet→loading→detail→cook3→complete→tipWrite, 보조 cookbook/reviews)로 정렬한다.",
+      "id": "D-home-10",
+      "title": "home: 하단탭바(홈/등록/요리북)",
+      "description": "cook/home 안에 '하단탭바(홈/등록/요리북)' 요소를 정밀하게 그린다. 원본 source-screens/home.png 대비 위치·간격·타이포 정합.",
       "priority": 13,
       "passes": false,
       "acceptanceCriteria": [
-        "상태바·하단탭바 컴포넌트를 만들어 최소 2화면에서 인스턴스로 재사용한다.",
-        "read-back으로 컴포넌트 인스턴스 재사용을 확인한다.",
-        "프레임이 플로우 순서로 정렬되고 한글 커밋."
+        "멱등: cook/home(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '요리북' 텍스트 노드가 cook/home 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "home-DONE",
+      "title": "home 화면 완성 검수 + export",
+      "description": "cook/home가 원본과 영역 대응하는지 확인하고 PNG로 내보낸다(밀스톤).",
+      "priority": 14,
+      "passes": false,
+      "acceptanceCriteria": [
+        "cook/home가 원본 source-screens/home.png와 영역 대응(상태바→헤더→콘텐츠→하단).",
+        "G3: export_node_as_image로 exports/home.png(scale2) 저장.",
+        "미비 요소 발견 시 보정. 한글 커밋."
+      ]
+    },
+    {
+      "id": "NOTE-home",
+      "title": "home 포스트잇 + 주석 배치",
+      "description": "cook/home 옆에 리뷰 코멘트용 노란 포스트잇과 핵심 요소 주석을 배치한다.",
+      "priority": 15,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/home 오른쪽 옆에 노란 포스트잇 NOTE/home-1(#FFE8A3, 라운드12, '리뷰 코멘트' 자리) 배치.",
+        "핵심 요소 1개 이상에 set_annotation 콜아웃 부착.",
+        "G2: NOTE/home-1 노드와 주석 존재 확인. 한글 커밋."
+      ]
+    },
+    {
+      "id": "K-sheet",
+      "title": "sheet 화면 골격 프레임 생성",
+      "description": "cook/sheet 프레임(390x844, 배경 #FFF7F0)을 SEC/A 안에 만들고 상태바/헤더/콘텐츠/하단 region 서브프레임 골격을 잡는다.",
+      "priority": 16,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/sheet가 이미 있으면 재사용(중복 생성 금지), 없으면 생성해 SEC/A 안에 배치(390x844, 배경 #FFF7F0).",
+        "상태바/헤더/콘텐츠/하단 region 서브프레임 골격을 만든다.",
+        "G2: get_node_info로 cook/sheet 프레임 존재 확인. nodeId를 notes/progress nodeId 맵에 기록.",
+        "한글 커밋."
+      ]
+    },
+    {
+      "id": "D-sheet-01",
+      "title": "sheet: 스크림 반투명 배경",
+      "description": "cook/sheet 안에 '스크림 반투명 배경' 요소를 정밀하게 그린다. 원본 source-screens/sheet.png 대비 위치·간격·타이포 정합.",
+      "priority": 17,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/sheet(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: 추가한 노드(도형)가 get_node_info로 cook/sheet 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "D-sheet-02",
+      "title": "sheet: 바텀시트 핸들 바",
+      "description": "cook/sheet 안에 '바텀시트 핸들 바' 요소를 정밀하게 그린다. 원본 source-screens/sheet.png 대비 위치·간격·타이포 정합.",
+      "priority": 18,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/sheet(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: 추가한 노드(도형)가 get_node_info로 cook/sheet 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "D-sheet-03",
+      "title": "sheet: '영상 링크 등록' 제목",
+      "description": "cook/sheet 안에 ''영상 링크 등록' 제목' 요소를 정밀하게 그린다. 원본 source-screens/sheet.png 대비 위치·간격·타이포 정합.",
+      "priority": 19,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/sheet(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '영상 링크 등록' 텍스트 노드가 cook/sheet 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "D-sheet-04",
+      "title": "sheet: 링크 입력 필드",
+      "description": "cook/sheet 안에 '링크 입력 필드' 요소를 정밀하게 그린다. 원본 source-screens/sheet.png 대비 위치·간격·타이포 정합.",
+      "priority": 20,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/sheet(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '링크 붙여넣기' 텍스트 노드가 cook/sheet 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "D-sheet-05",
+      "title": "sheet: 플랫폼 배지(YouTube/Instagram)",
+      "description": "cook/sheet 안에 '플랫폼 배지(YouTube/Instagram)' 요소를 정밀하게 그린다. 원본 source-screens/sheet.png 대비 위치·간격·타이포 정합.",
+      "priority": 21,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/sheet(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: 'YouTube' 텍스트 노드가 cook/sheet 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "D-sheet-06",
+      "title": "sheet: 분석 시작 CTA",
+      "description": "cook/sheet 안에 '분석 시작 CTA' 요소를 정밀하게 그린다. 원본 source-screens/sheet.png 대비 위치·간격·타이포 정합.",
+      "priority": 22,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/sheet(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '분석 시작' 텍스트 노드가 cook/sheet 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "sheet-DONE",
+      "title": "sheet 화면 완성 검수 + export",
+      "description": "cook/sheet가 원본과 영역 대응하는지 확인하고 PNG로 내보낸다(밀스톤).",
+      "priority": 23,
+      "passes": false,
+      "acceptanceCriteria": [
+        "cook/sheet가 원본 source-screens/sheet.png와 영역 대응(상태바→헤더→콘텐츠→하단).",
+        "G3: export_node_as_image로 exports/sheet.png(scale2) 저장.",
+        "미비 요소 발견 시 보정. 한글 커밋."
+      ]
+    },
+    {
+      "id": "NOTE-sheet",
+      "title": "sheet 포스트잇 + 주석 배치",
+      "description": "cook/sheet 옆에 리뷰 코멘트용 노란 포스트잇과 핵심 요소 주석을 배치한다.",
+      "priority": 24,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/sheet 오른쪽 옆에 노란 포스트잇 NOTE/sheet-1(#FFE8A3, 라운드12, '리뷰 코멘트' 자리) 배치.",
+        "핵심 요소 1개 이상에 set_annotation 콜아웃 부착.",
+        "G2: NOTE/sheet-1 노드와 주석 존재 확인. 한글 커밋."
+      ]
+    },
+    {
+      "id": "K-loading",
+      "title": "loading 화면 골격 프레임 생성",
+      "description": "cook/loading 프레임(390x844, 배경 #FFF7F0)을 SEC/A 안에 만들고 상태바/헤더/콘텐츠/하단 region 서브프레임 골격을 잡는다.",
+      "priority": 25,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/loading가 이미 있으면 재사용(중복 생성 금지), 없으면 생성해 SEC/A 안에 배치(390x844, 배경 #FFF7F0).",
+        "상태바/헤더/콘텐츠/하단 region 서브프레임 골격을 만든다.",
+        "G2: get_node_info로 cook/loading 프레임 존재 확인. nodeId를 notes/progress nodeId 맵에 기록.",
+        "한글 커밋."
+      ]
+    },
+    {
+      "id": "D-loading-01",
+      "title": "loading: 상태바",
+      "description": "cook/loading 안에 '상태바' 요소를 정밀하게 그린다. 원본 source-screens/loading.png 대비 위치·간격·타이포 정합.",
+      "priority": 26,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/loading(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '9:41' 텍스트 노드가 cook/loading 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "D-loading-02",
+      "title": "loading: 중앙 로딩 인디케이터",
+      "description": "cook/loading 안에 '중앙 로딩 인디케이터' 요소를 정밀하게 그린다. 원본 source-screens/loading.png 대비 위치·간격·타이포 정합.",
+      "priority": 27,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/loading(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: 추가한 노드(도형)가 get_node_info로 cook/loading 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "D-loading-03",
+      "title": "loading: 분석 상태 카피",
+      "description": "cook/loading 안에 '분석 상태 카피' 요소를 정밀하게 그린다. 원본 source-screens/loading.png 대비 위치·간격·타이포 정합.",
+      "priority": 28,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/loading(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '영상을 분석하고 있어요' 텍스트 노드가 cook/loading 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "D-loading-04",
+      "title": "loading: 단계 진행 힌트(재료/단계 추출)",
+      "description": "cook/loading 안에 '단계 진행 힌트(재료/단계 추출)' 요소를 정밀하게 그린다. 원본 source-screens/loading.png 대비 위치·간격·타이포 정합.",
+      "priority": 29,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/loading(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '재료' 텍스트 노드가 cook/loading 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "loading-DONE",
+      "title": "loading 화면 완성 검수 + export",
+      "description": "cook/loading가 원본과 영역 대응하는지 확인하고 PNG로 내보낸다(밀스톤).",
+      "priority": 30,
+      "passes": false,
+      "acceptanceCriteria": [
+        "cook/loading가 원본 source-screens/loading.png와 영역 대응(상태바→헤더→콘텐츠→하단).",
+        "G3: export_node_as_image로 exports/loading.png(scale2) 저장.",
+        "미비 요소 발견 시 보정. 한글 커밋."
+      ]
+    },
+    {
+      "id": "NOTE-loading",
+      "title": "loading 포스트잇 + 주석 배치",
+      "description": "cook/loading 옆에 리뷰 코멘트용 노란 포스트잇과 핵심 요소 주석을 배치한다.",
+      "priority": 31,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/loading 오른쪽 옆에 노란 포스트잇 NOTE/loading-1(#FFE8A3, 라운드12, '리뷰 코멘트' 자리) 배치.",
+        "핵심 요소 1개 이상에 set_annotation 콜아웃 부착.",
+        "G2: NOTE/loading-1 노드와 주석 존재 확인. 한글 커밋."
+      ]
+    },
+    {
+      "id": "SEC-B",
+      "title": "섹션 컨테이너 SEC/B 생성 (B. 상세 · 조리)",
+      "description": "그룹 'B. 상세 · 조리' 화면들을 담을 큰 타이틀 컨테이너 프레임 SEC/B를 만든다(네이티브 section 없음 → 컨테이너 프레임으로 섹션 구현).",
+      "priority": 32,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: get_document_info로 SEC/B 존재 확인, 없으면 연회색 배경 컨테이너 프레임 생성 + 상단 제목 텍스트 'B. 상세 · 조리'.",
+        "화면 4개가 가로로 들어갈 넉넉한 크기(화면당 ~470px 폭, 간격 80px).",
+        "G2: SEC/B 프레임과 제목 텍스트 존재. nodeId를 notes/progress에 기록.",
+        "한글 커밋."
+      ]
+    },
+    {
+      "id": "K-detail",
+      "title": "detail 화면 골격 프레임 생성",
+      "description": "cook/detail 프레임(390x844, 배경 #FFF7F0)을 SEC/B 안에 만들고 상태바/헤더/콘텐츠/하단 region 서브프레임 골격을 잡는다.",
+      "priority": 33,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/detail가 이미 있으면 재사용(중복 생성 금지), 없으면 생성해 SEC/B 안에 배치(390x844, 배경 #FFF7F0).",
+        "상태바/헤더/콘텐츠/하단 region 서브프레임 골격을 만든다.",
+        "G2: get_node_info로 cook/detail 프레임 존재 확인. nodeId를 notes/progress nodeId 맵에 기록.",
+        "한글 커밋."
+      ]
+    },
+    {
+      "id": "D-detail-01",
+      "title": "detail: 상태바",
+      "description": "cook/detail 안에 '상태바' 요소를 정밀하게 그린다. 원본 source-screens/detail.png 대비 위치·간격·타이포 정합.",
+      "priority": 34,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/detail(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '9:41' 텍스트 노드가 cook/detail 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "D-detail-02",
+      "title": "detail: 헤더(뒤로/레시피/공유)",
+      "description": "cook/detail 안에 '헤더(뒤로/레시피/공유)' 요소를 정밀하게 그린다. 원본 source-screens/detail.png 대비 위치·간격·타이포 정합.",
+      "priority": 35,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/detail(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '레시피' 텍스트 노드가 cook/detail 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "D-detail-03",
+      "title": "detail: 영상 히어로(썸네일+재생아이콘+정적 미리보기 배지+YouTube 배지)",
+      "description": "cook/detail 안에 '영상 히어로(썸네일+재생아이콘+정적 미리보기 배지+YouTube 배지)' 요소를 정밀하게 그린다. 원본 source-screens/detail.png 대비 위치·간격·타이포 정합.",
+      "priority": 36,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/detail(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '정적 미리보기' 텍스트 노드가 cook/detail 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "D-detail-04",
+      "title": "detail: 제목+북마크+저장수 342",
+      "description": "cook/detail 안에 '제목+북마크+저장수 342' 요소를 정밀하게 그린다. 원본 source-screens/detail.png 대비 위치·간격·타이포 정합.",
+      "priority": 37,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/detail(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '백종원이 알려주는 칼칼한 순두부찌개' 텍스트 노드가 cook/detail 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "D-detail-05",
+      "title": "detail: 평점 ⭐4.7 후기 3개",
+      "description": "cook/detail 안에 '평점 ⭐4.7 후기 3개' 요소를 정밀하게 그린다. 원본 source-screens/detail.png 대비 위치·간격·타이포 정합.",
+      "priority": 38,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/detail(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '4.7' 텍스트 노드가 cook/detail 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "D-detail-06",
+      "title": "detail: 설명 문단",
+      "description": "cook/detail 안에 '설명 문단' 요소를 정밀하게 그린다. 원본 source-screens/detail.png 대비 위치·간격·타이포 정합.",
+      "priority": 39,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/detail(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '칼칼한 국물' 텍스트 노드가 cook/detail 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "D-detail-07",
+      "title": "detail: '먼저 만든 사람의 팁' 카드",
+      "description": "cook/detail 안에 ''먼저 만든 사람의 팁' 카드' 요소를 정밀하게 그린다. 원본 source-screens/detail.png 대비 위치·간격·타이포 정합.",
+      "priority": 40,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/detail(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '먼저 만든 사람의 팁' 텍스트 노드가 cook/detail 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "D-detail-08",
+      "title": "detail: 메타칩3(5단계 추출/재료 9개/타임스탬프 연동)",
+      "description": "cook/detail 안에 '메타칩3(5단계 추출/재료 9개/타임스탬프 연동)' 요소를 정밀하게 그린다. 원본 source-screens/detail.png 대비 위치·간격·타이포 정합.",
+      "priority": 41,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/detail(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '재료 9개' 텍스트 노드가 cook/detail 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "D-detail-09",
+      "title": "detail: 하단 플로팅 '요리 시작하기' CTA",
+      "description": "cook/detail 안에 '하단 플로팅 '요리 시작하기' CTA' 요소를 정밀하게 그린다. 원본 source-screens/detail.png 대비 위치·간격·타이포 정합.",
+      "priority": 42,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/detail(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '요리 시작하기' 텍스트 노드가 cook/detail 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "detail-DONE",
+      "title": "detail 화면 완성 검수 + export",
+      "description": "cook/detail가 원본과 영역 대응하는지 확인하고 PNG로 내보낸다(밀스톤).",
+      "priority": 43,
+      "passes": false,
+      "acceptanceCriteria": [
+        "cook/detail가 원본 source-screens/detail.png와 영역 대응(상태바→헤더→콘텐츠→하단).",
+        "G3: export_node_as_image로 exports/detail.png(scale2) 저장.",
+        "미비 요소 발견 시 보정. 한글 커밋."
+      ]
+    },
+    {
+      "id": "NOTE-detail",
+      "title": "detail 포스트잇 + 주석 배치",
+      "description": "cook/detail 옆에 리뷰 코멘트용 노란 포스트잇과 핵심 요소 주석을 배치한다.",
+      "priority": 44,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/detail 오른쪽 옆에 노란 포스트잇 NOTE/detail-1(#FFE8A3, 라운드12, '리뷰 코멘트' 자리) 배치.",
+        "핵심 요소 1개 이상에 set_annotation 콜아웃 부착.",
+        "G2: NOTE/detail-1 노드와 주석 존재 확인. 한글 커밋."
+      ]
+    },
+    {
+      "id": "K-cook3",
+      "title": "cook3 화면 골격 프레임 생성",
+      "description": "cook/cook3 프레임(390x844, 배경 #0A0A0A)을 SEC/B 안에 만들고 상태바/헤더/콘텐츠/하단 region 서브프레임 골격을 잡는다.",
+      "priority": 45,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/cook3가 이미 있으면 재사용(중복 생성 금지), 없으면 생성해 SEC/B 안에 배치(390x844, 배경 #0A0A0A).",
+        "상태바/헤더/콘텐츠/하단 region 서브프레임 골격을 만든다.",
+        "G2: get_node_info로 cook/cook3 프레임 존재 확인. nodeId를 notes/progress nodeId 맵에 기록.",
+        "한글 커밋."
+      ]
+    },
+    {
+      "id": "D-cook3-01",
+      "title": "cook3: 상태바(다크)",
+      "description": "cook/cook3 안에 '상태바(다크)' 요소를 정밀하게 그린다. 원본 source-screens/cook3.png 대비 위치·간격·타이포 정합.",
+      "priority": 46,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/cook3(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '9:41' 텍스트 노드가 cook/cook3 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "D-cook3-02",
+      "title": "cook3: 헤더(뒤로/조리 모드/도움말)",
+      "description": "cook/cook3 안에 '헤더(뒤로/조리 모드/도움말)' 요소를 정밀하게 그린다. 원본 source-screens/cook3.png 대비 위치·간격·타이포 정합.",
+      "priority": 47,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/cook3(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '조리 모드' 텍스트 노드가 cook/cook3 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "D-cook3-03",
+      "title": "cook3: 영상 영역+정적 미리보기·실기기 확인 오버레이",
+      "description": "cook/cook3 안에 '영상 영역+정적 미리보기·실기기 확인 오버레이' 요소를 정밀하게 그린다. 원본 source-screens/cook3.png 대비 위치·간격·타이포 정합.",
+      "priority": 48,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/cook3(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '정적 미리보기 · 실제 재생은 실기기에서 확인' 텍스트 노드가 cook/cook3 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "D-cook3-04",
+      "title": "cook3: 단계 도트 5칸(1칸 활성)",
+      "description": "cook/cook3 안에 '단계 도트 5칸(1칸 활성)' 요소를 정밀하게 그린다. 원본 source-screens/cook3.png 대비 위치·간격·타이포 정합.",
+      "priority": 49,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/cook3(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '1 / 5' 텍스트 노드가 cook/cook3 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "D-cook3-05",
+      "title": "cook3: 톤칩4(화이트/허브/스틸/크림)",
+      "description": "cook/cook3 안에 '톤칩4(화이트/허브/스틸/크림)' 요소를 정밀하게 그린다. 원본 source-screens/cook3.png 대비 위치·간격·타이포 정합.",
+      "priority": 50,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/cook3(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '화이트' 텍스트 노드가 cook/cook3 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "D-cook3-06",
+      "title": "cook3: 스와이프 힌트",
+      "description": "cook/cook3 안에 '스와이프 힌트' 요소를 정밀하게 그린다. 원본 source-screens/cook3.png 대비 위치·간격·타이포 정합.",
+      "priority": 51,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/cook3(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '단계 카드를 위아래로 스와이프' 텍스트 노드가 cook/cook3 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "D-cook3-07",
+      "title": "cook3: 현재 단계 카드(1단계.육수 준비하기 1/5 + 리스트3)",
+      "description": "cook/cook3 안에 '현재 단계 카드(1단계.육수 준비하기 1/5 + 리스트3)' 요소를 정밀하게 그린다. 원본 source-screens/cook3.png 대비 위치·간격·타이포 정합.",
+      "priority": 52,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/cook3(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '1단계. 육수 준비하기' 텍스트 노드가 cook/cook3 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "D-cook3-08",
+      "title": "cook3: 하단 컨트롤 4(타이머/핸즈프리 꺼짐/재료/요리 완성)",
+      "description": "cook/cook3 안에 '하단 컨트롤 4(타이머/핸즈프리 꺼짐/재료/요리 완성)' 요소를 정밀하게 그린다. 원본 source-screens/cook3.png 대비 위치·간격·타이포 정합.",
+      "priority": 53,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/cook3(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '요리 완성' 텍스트 노드가 cook/cook3 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "cook3-DONE",
+      "title": "cook3 화면 완성 검수 + export",
+      "description": "cook/cook3가 원본과 영역 대응하는지 확인하고 PNG로 내보낸다(밀스톤).",
+      "priority": 54,
+      "passes": false,
+      "acceptanceCriteria": [
+        "cook/cook3가 원본 source-screens/cook3.png와 영역 대응(상태바→헤더→콘텐츠→하단).",
+        "G3: export_node_as_image로 exports/cook3.png(scale2) 저장.",
+        "미비 요소 발견 시 보정. 한글 커밋."
+      ]
+    },
+    {
+      "id": "NOTE-cook3",
+      "title": "cook3 포스트잇 + 주석 배치",
+      "description": "cook/cook3 옆에 리뷰 코멘트용 노란 포스트잇과 핵심 요소 주석을 배치한다.",
+      "priority": 55,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/cook3 오른쪽 옆에 노란 포스트잇 NOTE/cook3-1(#FFE8A3, 라운드12, '리뷰 코멘트' 자리) 배치.",
+        "핵심 요소 1개 이상에 set_annotation 콜아웃 부착.",
+        "G2: NOTE/cook3-1 노드와 주석 존재 확인. 한글 커밋."
+      ]
+    },
+    {
+      "id": "K-cook",
+      "title": "cook 화면 골격 프레임 생성",
+      "description": "cook/cook 프레임(390x844, 배경 #0A0A0A)을 SEC/B 안에 만들고 상태바/헤더/콘텐츠/하단 region 서브프레임 골격을 잡는다.",
+      "priority": 56,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/cook가 이미 있으면 재사용(중복 생성 금지), 없으면 생성해 SEC/B 안에 배치(390x844, 배경 #0A0A0A).",
+        "상태바/헤더/콘텐츠/하단 region 서브프레임 골격을 만든다.",
+        "G2: get_node_info로 cook/cook 프레임 존재 확인. nodeId를 notes/progress nodeId 맵에 기록.",
+        "한글 커밋."
+      ]
+    },
+    {
+      "id": "D-cook-01",
+      "title": "cook: 상태바(다크)",
+      "description": "cook/cook 안에 '상태바(다크)' 요소를 정밀하게 그린다. 원본 source-screens/cook.png 대비 위치·간격·타이포 정합.",
+      "priority": 57,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/cook(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '9:41' 텍스트 노드가 cook/cook 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "D-cook-02",
+      "title": "cook: 헤더(조리)",
+      "description": "cook/cook 안에 '헤더(조리)' 요소를 정밀하게 그린다. 원본 source-screens/cook.png 대비 위치·간격·타이포 정합.",
+      "priority": 58,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/cook(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '조리' 텍스트 노드가 cook/cook 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "D-cook-03",
+      "title": "cook: 영상/스텝 영역",
+      "description": "cook/cook 안에 '영상/스텝 영역' 요소를 정밀하게 그린다. 원본 source-screens/cook.png 대비 위치·간격·타이포 정합.",
+      "priority": 59,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/cook(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '단계' 텍스트 노드가 cook/cook 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "D-cook-04",
+      "title": "cook: 타이머 진입",
+      "description": "cook/cook 안에 '타이머 진입' 요소를 정밀하게 그린다. 원본 source-screens/cook.png 대비 위치·간격·타이포 정합.",
+      "priority": 60,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/cook(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '타이머' 텍스트 노드가 cook/cook 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "D-cook-05",
+      "title": "cook: 재료 진입",
+      "description": "cook/cook 안에 '재료 진입' 요소를 정밀하게 그린다. 원본 source-screens/cook.png 대비 위치·간격·타이포 정합.",
+      "priority": 61,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/cook(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '재료' 텍스트 노드가 cook/cook 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "D-cook-06",
+      "title": "cook: 음성 가이드 진입",
+      "description": "cook/cook 안에 '음성 가이드 진입' 요소를 정밀하게 그린다. 원본 source-screens/cook.png 대비 위치·간격·타이포 정합.",
+      "priority": 62,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/cook(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '음성' 텍스트 노드가 cook/cook 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "cook-DONE",
+      "title": "cook 화면 완성 검수 + export",
+      "description": "cook/cook가 원본과 영역 대응하는지 확인하고 PNG로 내보낸다(밀스톤).",
+      "priority": 63,
+      "passes": false,
+      "acceptanceCriteria": [
+        "cook/cook가 원본 source-screens/cook.png와 영역 대응(상태바→헤더→콘텐츠→하단).",
+        "G3: export_node_as_image로 exports/cook.png(scale2) 저장.",
+        "미비 요소 발견 시 보정. 한글 커밋."
+      ]
+    },
+    {
+      "id": "NOTE-cook",
+      "title": "cook 포스트잇 + 주석 배치",
+      "description": "cook/cook 옆에 리뷰 코멘트용 노란 포스트잇과 핵심 요소 주석을 배치한다.",
+      "priority": 64,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/cook 오른쪽 옆에 노란 포스트잇 NOTE/cook-1(#FFE8A3, 라운드12, '리뷰 코멘트' 자리) 배치.",
+        "핵심 요소 1개 이상에 set_annotation 콜아웃 부착.",
+        "G2: NOTE/cook-1 노드와 주석 존재 확인. 한글 커밋."
+      ]
+    },
+    {
+      "id": "K-cook2",
+      "title": "cook2 화면 골격 프레임 생성",
+      "description": "cook/cook2 프레임(390x844, 배경 #0A0A0A)을 SEC/B 안에 만들고 상태바/헤더/콘텐츠/하단 region 서브프레임 골격을 잡는다.",
+      "priority": 65,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/cook2가 이미 있으면 재사용(중복 생성 금지), 없으면 생성해 SEC/B 안에 배치(390x844, 배경 #0A0A0A).",
+        "상태바/헤더/콘텐츠/하단 region 서브프레임 골격을 만든다.",
+        "G2: get_node_info로 cook/cook2 프레임 존재 확인. nodeId를 notes/progress nodeId 맵에 기록.",
+        "한글 커밋."
+      ]
+    },
+    {
+      "id": "D-cook2-01",
+      "title": "cook2: 상태바(다크)",
+      "description": "cook/cook2 안에 '상태바(다크)' 요소를 정밀하게 그린다. 원본 source-screens/cook2.png 대비 위치·간격·타이포 정합.",
+      "priority": 66,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/cook2(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '9:41' 텍스트 노드가 cook/cook2 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "D-cook2-02",
+      "title": "cook2: 핸즈프리 정적 스냅샷",
+      "description": "cook/cook2 안에 '핸즈프리 정적 스냅샷' 요소를 정밀하게 그린다. 원본 source-screens/cook2.png 대비 위치·간격·타이포 정합.",
+      "priority": 67,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/cook2(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '핸즈프리' 텍스트 노드가 cook/cook2 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "D-cook2-03",
+      "title": "cook2: 안내/레거시 라벨",
+      "description": "cook/cook2 안에 '안내/레거시 라벨' 요소를 정밀하게 그린다. 원본 source-screens/cook2.png 대비 위치·간격·타이포 정합.",
+      "priority": 68,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/cook2(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '레거시' 텍스트 노드가 cook/cook2 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "cook2-DONE",
+      "title": "cook2 화면 완성 검수 + export",
+      "description": "cook/cook2가 원본과 영역 대응하는지 확인하고 PNG로 내보낸다(밀스톤).",
+      "priority": 69,
+      "passes": false,
+      "acceptanceCriteria": [
+        "cook/cook2가 원본 source-screens/cook2.png와 영역 대응(상태바→헤더→콘텐츠→하단).",
+        "G3: export_node_as_image로 exports/cook2.png(scale2) 저장.",
+        "미비 요소 발견 시 보정. 한글 커밋."
+      ]
+    },
+    {
+      "id": "NOTE-cook2",
+      "title": "cook2 포스트잇 + 주석 배치",
+      "description": "cook/cook2 옆에 리뷰 코멘트용 노란 포스트잇과 핵심 요소 주석을 배치한다.",
+      "priority": 70,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/cook2 오른쪽 옆에 노란 포스트잇 NOTE/cook2-1(#FFE8A3, 라운드12, '리뷰 코멘트' 자리) 배치.",
+        "핵심 요소 1개 이상에 set_annotation 콜아웃 부착.",
+        "G2: NOTE/cook2-1 노드와 주석 존재 확인. 한글 커밋."
+      ]
+    },
+    {
+      "id": "SEC-C",
+      "title": "섹션 컨테이너 SEC/C 생성 (C. 완료 · 소셜 · 요리북)",
+      "description": "그룹 'C. 완료 · 소셜 · 요리북' 화면들을 담을 큰 타이틀 컨테이너 프레임 SEC/C를 만든다(네이티브 section 없음 → 컨테이너 프레임으로 섹션 구현).",
+      "priority": 71,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: get_document_info로 SEC/C 존재 확인, 없으면 연회색 배경 컨테이너 프레임 생성 + 상단 제목 텍스트 'C. 완료 · 소셜 · 요리북'.",
+        "화면 4개가 가로로 들어갈 넉넉한 크기(화면당 ~470px 폭, 간격 80px).",
+        "G2: SEC/C 프레임과 제목 텍스트 존재. nodeId를 notes/progress에 기록.",
+        "한글 커밋."
+      ]
+    },
+    {
+      "id": "K-complete",
+      "title": "complete 화면 골격 프레임 생성",
+      "description": "cook/complete 프레임(390x844, 배경 #FFF7F0)을 SEC/C 안에 만들고 상태바/헤더/콘텐츠/하단 region 서브프레임 골격을 잡는다.",
+      "priority": 72,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/complete가 이미 있으면 재사용(중복 생성 금지), 없으면 생성해 SEC/C 안에 배치(390x844, 배경 #FFF7F0).",
+        "상태바/헤더/콘텐츠/하단 region 서브프레임 골격을 만든다.",
+        "G2: get_node_info로 cook/complete 프레임 존재 확인. nodeId를 notes/progress nodeId 맵에 기록.",
+        "한글 커밋."
+      ]
+    },
+    {
+      "id": "D-complete-01",
+      "title": "complete: 상태바",
+      "description": "cook/complete 안에 '상태바' 요소를 정밀하게 그린다. 원본 source-screens/complete.png 대비 위치·간격·타이포 정합.",
+      "priority": 73,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/complete(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '9:41' 텍스트 노드가 cook/complete 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "D-complete-02",
+      "title": "complete: 완성 히어로(체크 원 + '완성!' + 요리명)",
+      "description": "cook/complete 안에 '완성 히어로(체크 원 + '완성!' + 요리명)' 요소를 정밀하게 그린다. 원본 source-screens/complete.png 대비 위치·간격·타이포 정합.",
+      "priority": 74,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/complete(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '완성!' 텍스트 노드가 cook/complete 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "D-complete-03",
+      "title": "complete: 요약(소요 시간·난이도·완성 기록)",
+      "description": "cook/complete 안에 '요약(소요 시간·난이도·완성 기록)' 요소를 정밀하게 그린다. 원본 source-screens/complete.png 대비 위치·간격·타이포 정합.",
+      "priority": 75,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/complete(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '소요 시간' 텍스트 노드가 cook/complete 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "D-complete-04",
+      "title": "complete: 액션(홈으로/다시 요리하기)",
+      "description": "cook/complete 안에 '액션(홈으로/다시 요리하기)' 요소를 정밀하게 그린다. 원본 source-screens/complete.png 대비 위치·간격·타이포 정합.",
+      "priority": 76,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/complete(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '다시 요리하기' 텍스트 노드가 cook/complete 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "D-complete-05",
+      "title": "complete: 팁 남기기 진입 버튼",
+      "description": "cook/complete 안에 '팁 남기기 진입 버튼' 요소를 정밀하게 그린다. 원본 source-screens/complete.png 대비 위치·간격·타이포 정합.",
+      "priority": 77,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/complete(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '팁 남기기' 텍스트 노드가 cook/complete 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "complete-DONE",
+      "title": "complete 화면 완성 검수 + export",
+      "description": "cook/complete가 원본과 영역 대응하는지 확인하고 PNG로 내보낸다(밀스톤).",
+      "priority": 78,
+      "passes": false,
+      "acceptanceCriteria": [
+        "cook/complete가 원본 source-screens/complete.png와 영역 대응(상태바→헤더→콘텐츠→하단).",
+        "G3: export_node_as_image로 exports/complete.png(scale2) 저장.",
+        "미비 요소 발견 시 보정. 한글 커밋."
+      ]
+    },
+    {
+      "id": "NOTE-complete",
+      "title": "complete 포스트잇 + 주석 배치",
+      "description": "cook/complete 옆에 리뷰 코멘트용 노란 포스트잇과 핵심 요소 주석을 배치한다.",
+      "priority": 79,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/complete 오른쪽 옆에 노란 포스트잇 NOTE/complete-1(#FFE8A3, 라운드12, '리뷰 코멘트' 자리) 배치.",
+        "핵심 요소 1개 이상에 set_annotation 콜아웃 부착.",
+        "G2: NOTE/complete-1 노드와 주석 존재 확인. 한글 커밋."
+      ]
+    },
+    {
+      "id": "K-tipWrite",
+      "title": "tipWrite 화면 골격 프레임 생성",
+      "description": "cook/tipWrite 프레임(390x844, 배경 #FFF7F0)을 SEC/C 안에 만들고 상태바/헤더/콘텐츠/하단 region 서브프레임 골격을 잡는다.",
+      "priority": 80,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/tipWrite가 이미 있으면 재사용(중복 생성 금지), 없으면 생성해 SEC/C 안에 배치(390x844, 배경 #FFF7F0).",
+        "상태바/헤더/콘텐츠/하단 region 서브프레임 골격을 만든다.",
+        "G2: get_node_info로 cook/tipWrite 프레임 존재 확인. nodeId를 notes/progress nodeId 맵에 기록.",
+        "한글 커밋."
+      ]
+    },
+    {
+      "id": "D-tipWrite-01",
+      "title": "tipWrite: 상태바",
+      "description": "cook/tipWrite 안에 '상태바' 요소를 정밀하게 그린다. 원본 source-screens/tipWrite.png 대비 위치·간격·타이포 정합.",
+      "priority": 81,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/tipWrite(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '9:41' 텍스트 노드가 cook/tipWrite 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "D-tipWrite-02",
+      "title": "tipWrite: 헤더(뒤로/팁 남기기)",
+      "description": "cook/tipWrite 안에 '헤더(뒤로/팁 남기기)' 요소를 정밀하게 그린다. 원본 source-screens/tipWrite.png 대비 위치·간격·타이포 정합.",
+      "priority": 82,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/tipWrite(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '팁 남기기' 텍스트 노드가 cook/tipWrite 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "D-tipWrite-03",
+      "title": "tipWrite: 별점 선택",
+      "description": "cook/tipWrite 안에 '별점 선택' 요소를 정밀하게 그린다. 원본 source-screens/tipWrite.png 대비 위치·간격·타이포 정합.",
+      "priority": 83,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/tipWrite(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '별점' 텍스트 노드가 cook/tipWrite 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "D-tipWrite-04",
+      "title": "tipWrite: 텍스트 입력 영역",
+      "description": "cook/tipWrite 안에 '텍스트 입력 영역' 요소를 정밀하게 그린다. 원본 source-screens/tipWrite.png 대비 위치·간격·타이포 정합.",
+      "priority": 84,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/tipWrite(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '팁을 남겨주세요' 텍스트 노드가 cook/tipWrite 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "D-tipWrite-05",
+      "title": "tipWrite: 사진 첨부",
+      "description": "cook/tipWrite 안에 '사진 첨부' 요소를 정밀하게 그린다. 원본 source-screens/tipWrite.png 대비 위치·간격·타이포 정합.",
+      "priority": 85,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/tipWrite(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '사진 추가' 텍스트 노드가 cook/tipWrite 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "D-tipWrite-06",
+      "title": "tipWrite: 등록 CTA",
+      "description": "cook/tipWrite 안에 '등록 CTA' 요소를 정밀하게 그린다. 원본 source-screens/tipWrite.png 대비 위치·간격·타이포 정합.",
+      "priority": 86,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/tipWrite(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '등록' 텍스트 노드가 cook/tipWrite 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "tipWrite-DONE",
+      "title": "tipWrite 화면 완성 검수 + export",
+      "description": "cook/tipWrite가 원본과 영역 대응하는지 확인하고 PNG로 내보낸다(밀스톤).",
+      "priority": 87,
+      "passes": false,
+      "acceptanceCriteria": [
+        "cook/tipWrite가 원본 source-screens/tipWrite.png와 영역 대응(상태바→헤더→콘텐츠→하단).",
+        "G3: export_node_as_image로 exports/tipWrite.png(scale2) 저장.",
+        "미비 요소 발견 시 보정. 한글 커밋."
+      ]
+    },
+    {
+      "id": "NOTE-tipWrite",
+      "title": "tipWrite 포스트잇 + 주석 배치",
+      "description": "cook/tipWrite 옆에 리뷰 코멘트용 노란 포스트잇과 핵심 요소 주석을 배치한다.",
+      "priority": 88,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/tipWrite 오른쪽 옆에 노란 포스트잇 NOTE/tipWrite-1(#FFE8A3, 라운드12, '리뷰 코멘트' 자리) 배치.",
+        "핵심 요소 1개 이상에 set_annotation 콜아웃 부착.",
+        "G2: NOTE/tipWrite-1 노드와 주석 존재 확인. 한글 커밋."
+      ]
+    },
+    {
+      "id": "K-cookbook",
+      "title": "cookbook 화면 골격 프레임 생성",
+      "description": "cook/cookbook 프레임(390x844, 배경 #FFF7F0)을 SEC/C 안에 만들고 상태바/헤더/콘텐츠/하단 region 서브프레임 골격을 잡는다.",
+      "priority": 89,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/cookbook가 이미 있으면 재사용(중복 생성 금지), 없으면 생성해 SEC/C 안에 배치(390x844, 배경 #FFF7F0).",
+        "상태바/헤더/콘텐츠/하단 region 서브프레임 골격을 만든다.",
+        "G2: get_node_info로 cook/cookbook 프레임 존재 확인. nodeId를 notes/progress nodeId 맵에 기록.",
+        "한글 커밋."
+      ]
+    },
+    {
+      "id": "D-cookbook-01",
+      "title": "cookbook: 상태바",
+      "description": "cook/cookbook 안에 '상태바' 요소를 정밀하게 그린다. 원본 source-screens/cookbook.png 대비 위치·간격·타이포 정합.",
+      "priority": 90,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/cookbook(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '9:41' 텍스트 노드가 cook/cookbook 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "D-cookbook-02",
+      "title": "cookbook: 헤더(요리북)",
+      "description": "cook/cookbook 안에 '헤더(요리북)' 요소를 정밀하게 그린다. 원본 source-screens/cookbook.png 대비 위치·간격·타이포 정합.",
+      "priority": 91,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/cookbook(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '요리북' 텍스트 노드가 cook/cookbook 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "D-cookbook-03",
+      "title": "cookbook: 최근 조리 섹션",
+      "description": "cook/cookbook 안에 '최근 조리 섹션' 요소를 정밀하게 그린다. 원본 source-screens/cookbook.png 대비 위치·간격·타이포 정합.",
+      "priority": 92,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/cookbook(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '최근 조리' 텍스트 노드가 cook/cookbook 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "D-cookbook-04",
+      "title": "cookbook: 저장한 레시피 섹션",
+      "description": "cook/cookbook 안에 '저장한 레시피 섹션' 요소를 정밀하게 그린다. 원본 source-screens/cookbook.png 대비 위치·간격·타이포 정합.",
+      "priority": 93,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/cookbook(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '저장한 레시피' 텍스트 노드가 cook/cookbook 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "D-cookbook-05",
+      "title": "cookbook: 기록 기반 추천 섹션",
+      "description": "cook/cookbook 안에 '기록 기반 추천 섹션' 요소를 정밀하게 그린다. 원본 source-screens/cookbook.png 대비 위치·간격·타이포 정합.",
+      "priority": 94,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/cookbook(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '기록 기반 추천' 텍스트 노드가 cook/cookbook 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "D-cookbook-06",
+      "title": "cookbook: 하단탭바",
+      "description": "cook/cookbook 안에 '하단탭바' 요소를 정밀하게 그린다. 원본 source-screens/cookbook.png 대비 위치·간격·타이포 정합.",
+      "priority": 95,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/cookbook(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '홈' 텍스트 노드가 cook/cookbook 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "cookbook-DONE",
+      "title": "cookbook 화면 완성 검수 + export",
+      "description": "cook/cookbook가 원본과 영역 대응하는지 확인하고 PNG로 내보낸다(밀스톤).",
+      "priority": 96,
+      "passes": false,
+      "acceptanceCriteria": [
+        "cook/cookbook가 원본 source-screens/cookbook.png와 영역 대응(상태바→헤더→콘텐츠→하단).",
+        "G3: export_node_as_image로 exports/cookbook.png(scale2) 저장.",
+        "미비 요소 발견 시 보정. 한글 커밋."
+      ]
+    },
+    {
+      "id": "NOTE-cookbook",
+      "title": "cookbook 포스트잇 + 주석 배치",
+      "description": "cook/cookbook 옆에 리뷰 코멘트용 노란 포스트잇과 핵심 요소 주석을 배치한다.",
+      "priority": 97,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/cookbook 오른쪽 옆에 노란 포스트잇 NOTE/cookbook-1(#FFE8A3, 라운드12, '리뷰 코멘트' 자리) 배치.",
+        "핵심 요소 1개 이상에 set_annotation 콜아웃 부착.",
+        "G2: NOTE/cookbook-1 노드와 주석 존재 확인. 한글 커밋."
+      ]
+    },
+    {
+      "id": "K-reviews",
+      "title": "reviews 화면 골격 프레임 생성",
+      "description": "cook/reviews 프레임(390x844, 배경 #FFF7F0)을 SEC/C 안에 만들고 상태바/헤더/콘텐츠/하단 region 서브프레임 골격을 잡는다.",
+      "priority": 98,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/reviews가 이미 있으면 재사용(중복 생성 금지), 없으면 생성해 SEC/C 안에 배치(390x844, 배경 #FFF7F0).",
+        "상태바/헤더/콘텐츠/하단 region 서브프레임 골격을 만든다.",
+        "G2: get_node_info로 cook/reviews 프레임 존재 확인. nodeId를 notes/progress nodeId 맵에 기록.",
+        "한글 커밋."
+      ]
+    },
+    {
+      "id": "D-reviews-01",
+      "title": "reviews: 상태바",
+      "description": "cook/reviews 안에 '상태바' 요소를 정밀하게 그린다. 원본 source-screens/reviews.png 대비 위치·간격·타이포 정합.",
+      "priority": 99,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/reviews(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '9:41' 텍스트 노드가 cook/reviews 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "D-reviews-02",
+      "title": "reviews: 헤더(뒤로/후기)",
+      "description": "cook/reviews 안에 '헤더(뒤로/후기)' 요소를 정밀하게 그린다. 원본 source-screens/reviews.png 대비 위치·간격·타이포 정합.",
+      "priority": 100,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/reviews(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '후기' 텍스트 노드가 cook/reviews 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "D-reviews-03",
+      "title": "reviews: 평점 요약(평균·개수)",
+      "description": "cook/reviews 안에 '평점 요약(평균·개수)' 요소를 정밀하게 그린다. 원본 source-screens/reviews.png 대비 위치·간격·타이포 정합.",
+      "priority": 101,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/reviews(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '평균 별점' 텍스트 노드가 cook/reviews 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "D-reviews-04",
+      "title": "reviews: 후기 카드1(작성자·별점·본문·사진)",
+      "description": "cook/reviews 안에 '후기 카드1(작성자·별점·본문·사진)' 요소를 정밀하게 그린다. 원본 source-screens/reviews.png 대비 위치·간격·타이포 정합.",
+      "priority": 102,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/reviews(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '민지' 텍스트 노드가 cook/reviews 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "D-reviews-05",
+      "title": "reviews: 후기 작성 CTA",
+      "description": "cook/reviews 안에 '후기 작성 CTA' 요소를 정밀하게 그린다. 원본 source-screens/reviews.png 대비 위치·간격·타이포 정합.",
+      "priority": 103,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/reviews(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
+        "G2: '후기 쓰기' 텍스트 노드가 cook/reviews 안에 존재.",
+        "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
+        "nodeId 기록 후 한글 커밋."
+      ]
+    },
+    {
+      "id": "reviews-DONE",
+      "title": "reviews 화면 완성 검수 + export",
+      "description": "cook/reviews가 원본과 영역 대응하는지 확인하고 PNG로 내보낸다(밀스톤).",
+      "priority": 104,
+      "passes": false,
+      "acceptanceCriteria": [
+        "cook/reviews가 원본 source-screens/reviews.png와 영역 대응(상태바→헤더→콘텐츠→하단).",
+        "G3: export_node_as_image로 exports/reviews.png(scale2) 저장.",
+        "미비 요소 발견 시 보정. 한글 커밋."
+      ]
+    },
+    {
+      "id": "NOTE-reviews",
+      "title": "reviews 포스트잇 + 주석 배치",
+      "description": "cook/reviews 옆에 리뷰 코멘트용 노란 포스트잇과 핵심 요소 주석을 배치한다.",
+      "priority": 105,
+      "passes": false,
+      "acceptanceCriteria": [
+        "멱등: cook/reviews 오른쪽 옆에 노란 포스트잇 NOTE/reviews-1(#FFE8A3, 라운드12, '리뷰 코멘트' 자리) 배치.",
+        "핵심 요소 1개 이상에 set_annotation 콜아웃 부착.",
+        "G2: NOTE/reviews-1 노드와 주석 존재 확인. 한글 커밋."
+      ]
+    },
+    {
+      "id": "FLOW-01",
+      "title": "화면 간 플로우 연결선",
+      "description": "create_connections로 주요 사용자 흐름을 화살표로 잇는다.",
+      "priority": 106,
+      "passes": false,
+      "acceptanceCriteria": [
+        "create_connections로 home→sheet→loading→detail→cook3→complete→tipWrite 흐름 연결(멱등, 중복 금지).",
+        "G2: 커넥터 노드 존재 확인.",
+        "한글 커밋."
+      ]
+    },
+    {
+      "id": "MILE-FINAL",
+      "title": "전체 보드 export + 최종 리포트",
+      "description": "완성된 전체 보드를 내보내고 최종 리포트를 정리한다.",
+      "priority": 107,
+      "passes": false,
+      "acceptanceCriteria": [
+        "각 섹션(SEC/A·B·C) 또는 전체 보드를 export_node_as_image로 exports/board-*.png 저장.",
+        "docs/progress/FIGMA_REPORT_ko.md 최종 요약 갱신.",
+        "모든 스토리 passes 확인 후 한글 커밋."
       ]
     }
   ]
