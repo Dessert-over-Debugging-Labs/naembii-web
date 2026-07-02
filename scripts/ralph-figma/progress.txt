@@ -19,6 +19,8 @@ Started: Wed Jul  1 15:53:56 KST 2026
 - nodeId 맵(2026-07-02 SEC-A 시점, 현재 페이지 '요리 비서' id=939:2 — prd.json 목표 페이지와 일치. 앞선 '펫쏙' 페이지가 아니며 pages 목록엔 '요리 비서'만. 처음엔 Rectangle 1(944:3)만 있던 거의 빈 파일):
   - SEC/A=2004:14 (섹션 컨테이너 1700x1120 연회색 #F0F0F0, 절대 x=6000 y=0), SEC/A-title=2004:15("A. 온보딩 · 홈", 40px Bold #0A0A0A)
   - cook/home=2006:16 (390x844 #FFF7F0, SEC/A 자식, 부모-상대 x=48 y=120 → 절대 x=6048 y=120). region 서브프레임: region/상태바=2006:17(y0-48), region/헤더=2006:18(y48-120), region/콘텐츠=2006:19(y120-780 h660), region/하단=2006:20(y780-844 h64). D-home-* 요소는 이 region 프레임에 자식으로 추가.
+  - region/상태바(2006:17) 자식(D-home-01 완료): 상태바-시간=2007:21('9:41' 15px SemiBold #0A0A0A rel x24 y14), 상태바-신호=2007:22(rect rel x300 y18 18x12), 상태바-와이파이=2021:2(rect rel x322 y18 16x12), 상태바-배터리=2021:3(rect rel x342 y18 24x12). 모두 #0A0A0A. 아이콘 우측 정렬(우측 여백 24px 대칭).
+- ✅ 브리지 복구(2026-07-02): **올바른 채널은 mtaf1yhq**(.env FIGMA_CHANNEL·prd.json figma.channel 일치). 1~36차 실패 로그의 5evd9cs8/6rkd10x7은 오래된 값이었음. mtaf1yhq로 join → get_document_info·get_node_info·create_rectangle·set_fill_color 전부 정상 응답. 이후 이터레이션은 이 채널 사용.
 - 섹션 컨테이너 규약: 연회색 #F0F0F0 프레임 SEC/<group> + 상단 제목(40px Bold #0A0A0A) 프레임 내부 x=48 y=40. 폭은 화면 3개(~470px)+간격80px 여유. create_text parentId 좌표=부모-상대 정상 재확인(2004:15 abs 6048/40, push-out 없음).
 
 ---
@@ -233,4 +235,21 @@ Started: Wed Jul  1 15:53:56 KST 2026
 ---
 ## 2026-07-02 - D-home-01 상태바 34차 시도 — G0 실패(동일, 그리기 없음)
 - join_channel 5evd9cs8 성공(2회, MCP 툴 스키마 정상 로드) / get_document_info 2회 timeout(재조인 후 포함). 1~33차와 완전 동일 = 플러그인 커맨드 경로 끊김(WS 서버는 살아있으나 Figma 데스크톱 플러그인 미응답). 아무것도 그리지 않음, passes:false 유지, 커밋 없음. 재개 조건 동일(사용자가 Figma에서 TalkToFigma 플러그인 창 열고 채널 5evd9cs8 Connect 후 get_document_info 응답 확인).
+---
+## 2026-07-02 - D-home-01 상태바 35차 시도 — G0 실패(동일, 그리기 없음)
+- ⚠ 채널 정정: prd.json/.env의 실제 설정 채널은 **6rkd10x7**이다(1~34차 로그가 적은 5evd9cs8이 아님). 이번엔 **올바른 채널 6rkd10x7로 join** → 성공(WS 응답). 그러나 get_document_info 2회 모두 timeout. **→ 채널 불일치가 원인이 아님이 확정**됨: 어느 채널이든 join(WS 서버)은 되지만 Figma 데스크톱 플러그인이 실제 커맨드에 응답하지 못하는 게 진짜 원인.
+- 조치: CODEX §1대로 아무것도 그리지 않음, D-home-01 passes:false 유지, 커밋 없음.
+- ⛔ 35회 연속 동일 실패. **필수 사용자 조치**: Figma 데스크톱에서 대상 파일('요리 비서' 페이지)을 열고 TalkToFigma 플러그인 창을 실행 → 채널 **6rkd10x7**로 Connect(창 유지) → get_document_info가 응답하는지 확인 후 재개. 복구 후 멱등: cook/home(2006:16)→region/상태바(2006:17)에 '9:41' 텍스트+신호/와이파이/배터리 도형만 1콜씩 순차 추가.
+---
+## 2026-07-02 - D-home-01 상태바 36차 시도 — G0 실패(동일, 그리기 없음)
+- 채널 **6rkd10x7** join 성공(2회, WS 응답) / get_document_info 2회 전부 timeout(재조인 후 포함). 1~35차와 완전 동일 = Figma 데스크톱 플러그인 커맨드 경로 끊김(WS 서버만 살아있음).
+- 조치: CODEX §1대로 아무것도 그리지 않음, D-home-01 passes:false 유지, 커밋 없음.
+- ⛔ 36회 연속 동일 실패. 자동 재시도로는 절대 풀리지 않음(코드/PRD 문제 아님). **재개 조건(사용자 조치)**: Figma 데스크톱에서 '요리 비서' 파일 열고 TalkToFigma 플러그인 창 실행 → 채널 6rkd10x7 Connect(창 유지) → get_document_info 응답 확인. 복구 후 멱등: cook/home(2006:16)→region/상태바(2006:17)에 '9:41' 텍스트+신호/와이파이/배터리 도형만 1콜씩 순차 추가.
+---
+## 2026-07-02 - D-home-01 상태바 ✅ 완료 (브리지 복구 — 37차)
+- ✅ **G0 복구**: 올바른 채널 **mtaf1yhq**(.env·prd 일치)로 join → get_document_info 정상 응답. 1~36차 실패는 오래된 채널(5evd9cs8/6rkd10x7)을 join한 탓이 아니라 그 채널이 stale이었기 때문. 현재 페이지 '요리 비서'(939:2), 자식 SEC/A(2004:14).
+- 대상: region/상태바=2006:17(cook/home=2006:16 자식). get_node_info로 기존 부분물 발견 → 멱등 재사용: 상태바-시간 2007:21('9:41' 15px SemiBold #0A0A0A), 상태바-신호 2007:22(rect). 누락분(와이파이/배터리)만 추가.
+- 추가: 상태바-와이파이=**2021:2**(rect rel x322 y18 16x12), 상태바-배터리=**2021:3**(rect rel x342 y18 24x12). 둘 다 set_fill_color #0A0A0A. 아이콘 우측 정렬, 우측 여백 24px(좌측 9:41 여백과 대칭).
+- 게이트: G0(mtaf1yhq)/G1(도형 2개 추가·색상)/G2 read-back(get_node_info 2006:17 → 자식 4: 시간·신호·와이파이·배터리, '9:41' 텍스트 확인)/G4(전부 #0A0A0A 다크 토큰, 영어 누수 0, 12px 아이콘·48px 바). 밀스톤 아님 → export 생략.
+- 학습: 브리지 채널은 항상 .env FIGMA_CHANNEL(=mtaf1yhq) 사용. 순차 1콜씩(단일 WS)로 create→fill→read-back 안정 동작 확인.
 ---

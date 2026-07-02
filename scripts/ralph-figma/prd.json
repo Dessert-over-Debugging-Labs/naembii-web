@@ -4,7 +4,7 @@
   "description": "app.html의 각 화면을 쓰기형 Figma MCP(플러그인 브리지)로 Figma 캔버스에 실제로 그려 넣는다. 화면 1개=스토리 1개, ralph 루프로 자율 구현→green-gate(G0 연결·G1 그리기·G2 read-back·G3 export·G4 정직/토큰) 통과→한글 커밋. 소스 목표 이미지는 scripts/ralph-figma/source-screens/<view>.png, 스토리 상세는 docs/FIGMA_WIREFRAME_STORIES_ko.md. 규칙은 scripts/ralph-figma/CODEX.md.",
   "figma": {
     "page": "요리비서",
-    "channel": "6rkd10x7",
+    "channel": "mtaf1yhq",
     "frameSize": {
       "w": 390,
       "h": 844
@@ -60,7 +60,8 @@
       "title": "home: 상태바(9:41·신호/와이파이/배터리)",
       "description": "cook/home 안에 '상태바(9:41·신호/와이파이/배터리)' 요소를 정밀하게 그린다. 원본 source-screens/home.png 대비 위치·간격·타이포 정합.",
       "priority": 4,
-      "passes": false,
+      "passes": true,
+      "notes": "브리지 복구됨(채널 mtaf1yhq — 이전 로그의 5evd9cs8/6rkd10x7는 오래된 값, .env·prd 모두 mtaf1yhq. join+get_document_info 응답 OK). 대상 region/상태바=2006:17(cook/home=2006:16 자식). 기존 부분물 재사용(멱등): 상태바-시간 2007:21('9:41' 15px SemiBold #0A0A0A, rel x24 y14), 상태바-신호 2007:22(rect rel x300 y18 18x12). 이번 추가: 상태바-와이파이=2021:2(rect rel x322 y18 16x12), 상태바-배터리=2021:3(rect rel x342 y18 24x12) 둘 다 #0A0A0A. 아이콘 우측 정렬(우측 여백 24px=좌측 9:41 여백 대칭). G0/G1/G2(read-back: region/상태바 자식 4 + '9:41' 텍스트 확인)/G4(다크 토큰·영어 누수 0) 통과. 밀스톤 아님 → export 생략.",
       "acceptanceCriteria": [
         "멱등: cook/home(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
         "G2: '9:41' 텍스트 노드가 cook/home 안에 존재.",
