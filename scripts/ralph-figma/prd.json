@@ -998,13 +998,14 @@
       "title": "complete 화면 골격 프레임 생성",
       "description": "cook/complete 프레임(390x844, 배경 #FFF7F0)을 SEC/C 안에 만들고 상태바/헤더/콘텐츠/하단 region 서브프레임 골격을 잡는다.",
       "priority": 72,
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "멱등: cook/complete가 이미 있으면 재사용(중복 생성 금지), 없으면 생성해 SEC/C 안에 배치(390x844, 배경 #FFF7F0).",
         "상태바/헤더/콘텐츠/하단 region 서브프레임 골격을 만든다.",
         "G2: get_node_info로 cook/complete 프레임 존재 확인. nodeId를 notes/progress nodeId 맵에 기록.",
         "한글 커밋."
-      ]
+      ],
+      "notes": "브리지 채널 607h63ew(라이브, get_document_info 응답 OK, 페이지 '요리 비서' 939:2). 멱등: SEC/C(2070:20) 자식 확인 → cook/complete 없어 신규 create. cook/complete=2070:22(390x844, #FFF7F0, SEC/C 자식, 부모-상대 x=48 y=120 → 절대 x=7728 y=4520, SEC/C(abs 7680~10680 x, 4400~5520 y) 내부 OK, push-out 없음). region 서브프레임 4개(전부 #FFF7F0): region/상태바=2070:23(y0-48 abs 7728/4520), region/헤더=2070:24(y48-120 h72 abs 7728/4568), region/콘텐츠=2070:25(y120-780 h660 abs 7728/4640), region/하단=2070:26(y780-844 h64 abs 7728/5300 bottom 5364 < SEC/C bottom 5520). 상태바→헤더→콘텐츠→하단 세로 스택. G0/G1/G2 read-back(get_node_info 2070:22 → 자식 4 + 절대좌표 정합)/G4(영어 누수 0·초록 누수 0·#FFF7F0 토큰) 통과. 밀스톤 아님 → export 생략. D-complete-* 요소는 이 region 프레임에 자식 추가(히어로/요약카드/액션은 콘텐츠=2070:25 중앙). ⚠ divergence 해소: cook-v2/* 패밀리(complete=2043:598 등)는 별도 채널 fjthvb00의 v2 리디자인 트랙(이모지·영어 카피=본 granular 트랙 G4 위반)이라 granular v1 포트를 대체하지 않음 → 계획대로 진행. 다음: D-complete-01(상태바 9:41·신호/와이파이/배터리, home 상태바 2007:21~ 패턴 재사용)."
     },
     {
       "id": "D-complete-01",
