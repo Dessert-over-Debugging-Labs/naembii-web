@@ -944,7 +944,8 @@
       "title": "cook2: 안내/레거시 라벨",
       "description": "cook/cook2 안에 '안내/레거시 라벨' 요소를 정밀하게 그린다. 원본 source-screens/cook2.png 대비 위치·간격·타이포 정합.",
       "priority": 68,
-      "passes": false,
+      "passes": true,
+      "notes": "브리지 채널 kpgtp6vl(라이브, join+get_document_info OK, 페이지 '요리 비서' 939:2). 대상 cook/cook2=2050:77(다크 #0a0a0a, SEC/B 2036:111 자식) region/하단=2050:81(abs 9860/2214 390x64, 비어 있어 신규 추가·멱등: get_node_info 2050:77 read-back으로 기존 레거시 라벨 없음 확인). app.html:1173 주석 '<!-- 4-B. 조리 (보관용 스냅샷) -->' + 사이드바 '핸즈프리 모드(구)' 근거로 cook2가 레거시/보관용 스냅샷임을 알리는 안내 라벨을 빈 하단 region에 배치(실앱 cook2는 하단탭 없는 풀스크린 HUD라 하단 비어 있음·콘텐츠 미침범). 추가 자식 3: 레거시라벨-배경=2050:202(rect rel x90 y17 210x30 #1b1b1b panel2 라운드15 stroke #2a2a2a 1px, abs 9950/2231 중앙정렬 x-center 10055=frame center), 레거시라벨-아이콘=2050:203(rect 14x14 rel x118 y25 #a7a7a7 muted 라운드3 archive placeholder), 레거시라벨-텍스트=2050:204('레거시 · 보관용 스냅샷' 12px SemiBold #a7a7a7 rel x140 y26 → abs 10000/2240 width112, 우변 10112 < 펠 우변 10160 < 프레임 우변 10250 내부 정합, 오버플로 0). G0/G1/G2(get_node_info 2050:81 → 자식 3 + '레거시 · 보관용 스냅샷' 텍스트 노드 2050:204 확인, 폭·좌표 프레임/펠 내부 정합)/G4(다크 #0a0a0a/#1b1b1b/#2a2a2a·muted #a7a7a7 §4b 토큰, 12px, 초록 #46b581/#3fa76f 누수 0·영어 누수 0) 통과. 밀스톤 아님 → export 생략. 다음 cook2-DONE(밀스톤: cook/cook2 원본 대응 검수 + export exports/cook2.png).",
       "acceptanceCriteria": [
         "멱등: cook/cook2(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
         "G2: '레거시' 텍스트 노드가 cook/cook2 안에 존재.",

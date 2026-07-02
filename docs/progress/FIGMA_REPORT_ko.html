@@ -132,5 +132,14 @@
   <li><b>다음</b>: cook3-FULL(actionable 여부는 cook-v2/cook3 접힌콘텐츠 유무로 판정).</li>
 </ul>
 <hr>
+<h2>D-cook2-03 — cook2 안내/레거시 라벨</h2>
+<ul>
+  <li><b>대상</b>: <code>cook/cook2</code>(2050:77, 다크 #0a0a0a) 빈 <code>region/하단</code>(2050:81, abs 9860/2214 390×64). 멱등: read-back으로 기존 라벨 부재 확인 후 신규 추가.</li>
+  <li><b>근거</b>: <code>app.html:1173</code> 주석 &lsquo;4-B. 조리 (보관용 스냅샷)&rsquo; + 사이드바 &lsquo;핸즈프리 모드(구)&rsquo; → cook2=레거시/보관용 스냅샷. 실앱은 하단탭 없는 풀스크린 HUD라 하단 region이 비어 콘텐츠 미침범.</li>
+  <li><b>추가</b>: 3노드 — 배경 펠 2050:202(rect rel x90 y17 210×30 #1b1b1b r15 stroke #2a2a2a 1px, 프레임 중앙정렬) · 아이콘 2050:203(14×14 #a7a7a7 r3 archive placeholder) · 텍스트 <code>레거시 · 보관용 스냅샷</code> 2050:204(12px SemiBold #a7a7a7, abs 10000/2240 width112, 펠·프레임 우변 내부 정합).</li>
+  <li><b>게이트</b>: <span class="gate">G0 ✅(kpgtp6vl) / G1 ✅ / G2 ✅(자식 3 + &lsquo;레거시&rsquo; 텍스트 노드, 폭 112px 오버플로 0) / G4 ✅</span> — 다크 §4b 토큰(#0a0a0a/#1b1b1b/#2a2a2a·muted #a7a7a7), 12px, 초록 누수 0·영어 누수 0. 밀스톤 아님 → export 생략.</li>
+  <li><b>다음</b>: cook2-DONE(밀스톤 검수 + export <code>exports/cook2.png</code>).</li>
+</ul>
+<hr>
 </body>
 </html>
