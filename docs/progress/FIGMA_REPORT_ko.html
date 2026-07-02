@@ -26,6 +26,16 @@
 </blockquote>
 
 <hr>
+<h3>[D-home-08] home 추천 카드1(순두부찌개: 썸네일+사유+메타) ✅ · 2026-07-02</h3>
+<ul>
+  <li><b>무엇을</b>: <code>cook/home</code>(2006:16) <code>region/콘텐츠</code>(2006:19) 추천 섹션 헤더 아래(rel y350)에 개인화 추천 카드1(썸네일 + 추천 사유 + 제목 + 메타) 추가.</li>
+  <li><b>어떻게(주요 노드)</b>: 멱등 확인(기존 자식 30) 후 자식 5개 추가 — 추천카드1(2021:41, rect 358×86 <code>#FFFCF7</code> 라운드16 stroke <code>#DDD1C6</code> 1px), 추천카드1-썸네일(2021:42, 62×62 <code>#E3F3EC</code> 라운드15 이미지 placeholder), 추천카드1-사유(2021:43, <code>뜨끈한 국물 요리를 요즘 많이 땡겨하시네요?</code> 13px w900 그린 <code>#46B581</code>), 추천카드1-제목(2021:44, <code>순두부찌개</code> 17px w900 <code>#0A0A0A</code> abs 6150/625), 추천카드1-메타(2021:45, <code>백종원 · 2인분 · 30분 · 기록 기반</code> 13px w800 gray <code>#6E6258</code>).</li>
+  <li><b>소스 대응</b>: <code>app.html:979</code> <code>.personal-list</code>/<code>.personal-card</code>, 데이터 <code>app.html:1840</code> <code>PERSONAL_RECS[0]</code>(vid 21j8SASqLJU) + line1828 RECIPES.</li>
+  <li><b>게이트</b>: <span class="gate">G0 ✅(채널 <code>mtaf1yhq</code>) / G1 ✅ / G2 ✅(<code>get_node_info</code> 2021:44 → <code>순두부찌개</code> 텍스트 노드·abs 6150/625 프레임 내부 정합) / G4 ✅</span>(surface·line·green-soft·그린 <code>#46B581</code>·다크 <code>#0A0A0A</code>·gray <code>#6E6258</code> 토큰·17/13px·영어 누수 0). 밀스톤 아님 → export 생략.</li>
+  <li><b>다음</b>: D-home-09(추천 카드2 감바스 알 아히요).</li>
+</ul>
+
+<hr>
 <h3>[F0] 연결 스파이크 — home end-to-end 파이프라인 증명 · 2026-07-02</h3>
 <ul>
   <li><b>무엇을</b>: 연결→그리기→read-back→export 파이프라인이 실제로 동작함을 홈 1화면(최소 구성)으로 증명.</li>
