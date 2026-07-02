@@ -433,7 +433,8 @@
       "title": "loading 포스트잇 + 주석 배치",
       "description": "cook/loading 옆에 리뷰 코멘트용 노란 포스트잇과 핵심 요소 주석을 배치한다.",
       "priority": 31,
-      "passes": false,
+      "passes": true,
+      "notes": "브리지 채널 ihbg56ny(라이브, get_document_info 응답 OK, 페이지 '요리 비서' 939:2). 멱등: get_node_info 2004:14(SEC/A)로 자식=title·cook/home2006:16·NOTE/home-1(2024:59)·cook/sheet2025:62·NOTE/sheet-1(2030:82)·cook/loading2031:85만 확인 → NOTE/loading-1 없어 신규 create. 포스트잇 NOTE/loading-1=2035:108(SEC/A 자식, 부모-상대 x1850 y120 → abs 7850/120, cook/loading(2031:85) 우변 abs 7830 옆 20px 갭, SEC/A(우변 8300) 내부. 240x180 #FFE8A3 라운드12). 자식 2: NOTE/loading-1-제목=2035:109('리뷰 코멘트' 15px Bold #231A14 rel x16 y16), NOTE/loading-1-본문=2035:110('여기에 로딩 화면 피드백을 남겨 주세요.' 13px Regular #6E6258 rel x16 y48 → 우변 abs 8080 < 프레임 우변 8090 내부). 주석(set_annotation) 2건: 로딩 분석헤드라인 2033:96('레시피를 분석하고 있어요')·로딩스피너 트랙 2032:94(둘 다 success:true). G0/G1/G2(get_node_info 2035:108 → 자식 2 + '리뷰 코멘트' 텍스트 확인, abs 7850 cook/loading 우측 정합 / 주석 success)/G4(포스트잇 #FFE8A3·ink #231A14·gray #6E6258 토큰, 15/13px, 영어 누수 0·초록 누수 0) 통과. 밀스톤 아님 → export 생략. 다음: SEC-B(B 섹션 컨테이너).",
       "acceptanceCriteria": [
         "멱등: cook/loading 오른쪽 옆에 노란 포스트잇 NOTE/loading-1(#FFE8A3, 라운드12, '리뷰 코멘트' 자리) 배치.",
         "핵심 요소 1개 이상에 set_annotation 콜아웃 부착.",
