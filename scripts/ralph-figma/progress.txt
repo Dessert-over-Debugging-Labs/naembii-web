@@ -485,3 +485,14 @@ Started: Wed Jul  1 15:53:56 KST 2026
 - 게이트: G0/G1(기존 유지)/G2(검수)/G3(export)/G4(초록누수 0=#46b581 0건·진짜초록 fresh#3fa76f는 완료체크만, 영어누수 0, §4b 팔레트) 통과.
 - 원본 영역대응: 상태바→(loading은 헤더·하단탭 없음)→콘텐츠(중앙 스피너·분석 카피·steps-log). ⚠ 의도적 차이: 스피너=아크 대신 피치디스크+테라코타헤드 근사(브리지 fill-alpha 무시), 4스텝 앞 2행 done(app.html:1477 순차 done 스냅샷).
 - nodeId 맵: cook/loading=2031:85 완성(D-loading-01~04 + DONE 검수/export). 다음: NOTE-loading(포스트잇 NOTE/loading-1 + 주석).
+
+---
+## 2026-07-02 - FIX-home-color home 초록→주색 재색 보정 (멱등: 이미 보정됨, 재색 0)
+- 브리지 채널 ihbg56ny(라이브, get_document_info OK, 페이지 요리 비서 939:2).
+- 멱등 확인: 이 보정은 home-DONE(priority 14) iteration이 17노드 set_fill_color로 **선적용 완료**. FIX-home-color는 priority 13.5지만 실행 순서상 home-DONE 뒤라 잔여 초록 없음.
+- G2 read-back(get_node_info): cook/home(2006:16) 하위 초록 #46b581·green-soft #e3f3ec fill **0건**.
+  - region/헤더(2006:18): 로고마크 2021:4=#d66b42, 알림뱃지 2021:9=#c99b4a(accent 골드).
+  - region/콘텐츠(2006:19): 카테고리아이콘 2021:23/26/29/32/35=#d66b42, 카테고리원 2021:22/25/28/31/34=#fbe7de(peach), 추천섹션아이콘 2021:37=#d66b42, 카드1썸네일 2021:42=#fbe7de, 카드1사유 2021:43=#e1875f(테라코타 l).
+  - 상태바(2006:17)·하단(2006:20): 초록 노드 애초에 없음(상태바 #0a0a0a, 탭바 ink #231a14/오렌지 #f3a23a/#f8f4ef).
+- 게이트: G0/G1(재색 대상 0=이미 정합)/G2(초록 누수 0)/G4(§4b 팔레트 정합). 신규 노드 0. 밀스톤 아님 → export 생략.
+- 다음: NOTE-loading(loading 포스트잇 + 주석).

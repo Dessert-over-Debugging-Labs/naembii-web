@@ -306,3 +306,7 @@
 - **다음**: NOTE-loading — 포스트잇 `NOTE/loading-1` + 주석.
 
 ---
+- **FIX-home-color** (home 초록→주색 재색): 멱등 확인 결과 재색 불필요 — home-DONE이 17노드 선(先)보정 완료. G2 read-back으로 cook/home(2006:16) 하위 초록 #46b581·green-soft #e3f3ec **0건** 확인(로고마크·카테고리 아이콘/원·추천섹션 아이콘·카드1 썸네일/사유 모두 테라코타 #d66b42/peach #fbe7de/#e1875f 정합). 신규 노드 0. `passes:true`.
+- **다음**: NOTE-loading — 포스트잇 `NOTE/loading-1` + 주석.
+
+---

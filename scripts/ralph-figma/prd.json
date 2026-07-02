@@ -1415,13 +1415,14 @@
       "title": "home 초록→주색(테라코타 오렌지) 재색 보정",
       "description": "이전 iteration이 잘못된 브랜드색(초록 #46B581/green-soft)으로 로고마크·카테고리 원/아이콘·추천 사유 텍스트 등을 칠했다. app.html 실제 팔레트는 --green=--primary=테라코타 오렌지 #D66B42다. cook/home(2006:16) 안의 초록 계열 노드를 모두 찾아 주색으로 재색한다(멱등, 새 노드 생성 금지).",
       "priority": 13.5,
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "cook/home 하위에서 초록(#46B581류)·green-soft(#E3F3EC류) fill 노드를 get_node_info/scan으로 찾는다.",
         "로고마크·카테고리 아이콘·섹션 아이콘·추천 사유 텍스트 fill → 주색 #D66B42, 카테고리 원/썸네일 placeholder 배경 → peach soft #FBE7DE 로 set_fill_color 재색.",
         "재색 후 read-back으로 cook/home에 #46B581 계열이 남지 않음을 확인(진짜 초록 --fresh #3FA76F 의도 사용분은 예외).",
         "한글 커밋."
-      ]
+      ],
+      "notes": "브리지 채널 ihbg56ny(라이브, get_document_info 응답 OK, 페이지 요리 비서 939:2). ✅ 멱등 확인 결과 재색 불필요: 이 보정은 이미 home-DONE(priority 14) iteration이 17노드 set_fill_color로 선(先)적용함. G2 read-back(get_node_info)으로 cook/home(2006:16) 하위 초록(#46b581)·green-soft(#e3f3ec) fill 노드 0건 확인. region/헤더(2006:18): 로고마크2021:4=#d66b42·알림뱃지2021:9=#c99b4a(accent 골드). region/콘텐츠(2006:19): 카테고리아이콘2021:23/26/29/32/35=#d66b42·카테고리원2021:22/25/28/31/34=#fbe7de(peach)·추천섹션아이콘2021:37=#d66b42·카드1썸네일2021:42=#fbe7de·카드1사유2021:43=#e1875f(테라코타 l, 카드2 2023:48과 일치). 상태바(2006:17)·하단(2006:20)엔 애초에 초록 노드 없음. G4: 초록 누수 0·§4b 팔레트 정합. 신규 노드 생성 0(멱등). 다음: NOTE-loading."
     }
   ]
 }
