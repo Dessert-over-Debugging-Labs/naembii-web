@@ -389,3 +389,8 @@
 - **초록 누수 검증**: 전 노드 fill 스캔 → #46b581·#e3f3ec 0건. detail은 처음부터 §4b 테라코타(primary #d66b42·l #e1875f·칩 #7a3a22·accent #c99b4a)로 그려 home식 색 보정 불필요.
 - **게이트**: G0(채널 ihbg56ny 라이브)·G2(read-back 전수)·G3(export_node_as_image PNG scale2 → exports/detail.png, 780x1688 유효 PNG)·G4(§4b 팔레트·초록/영어 누수 0, YouTube=플랫폼 고유명) 통과.
 - **다음**: NOTE-detail(포스트잇+주석) 또는 K-cook3(cook/cook3 다크 골격, SEC/B 안).
+
+## NOTE-detail — detail 포스트잇 + 주석
+- **포스트잇** NOTE/detail-1(2041:158, #FFE8A3 라운드12, 240x180)을 cook/detail 오른쪽 옆(abs 6480/1420, SEC/B 자식)에 배치. 자식: 제목 '리뷰 코멘트'(2041:159) + 본문 '여기에 상세 화면 피드백을 남겨 주세요.'(2041:160).
+- **주석** 2건: detail-제목(2037:134, '레시피 제목 · 순두부찌개') + detail-요리시작(2041:157, '주 CTA · 요리 시작하기 → 조리 모드 진입').
+- **게이트**: G0(채널 ihbg56ny)·G2(read-back: 포스트잇 자식 2 + '리뷰 코멘트' 텍스트, 주석 success)·G4(#FFE8A3·ink #231A14·gray #6E6258, 15/13px, 영어 누수 0) 통과. 밀스톤 아님 → export 생략.

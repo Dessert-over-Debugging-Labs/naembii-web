@@ -596,3 +596,11 @@ Started: Wed Jul  1 15:53:56 KST 2026
 - **G4 초록 누수 검증**: 전 노드 fill 스캔 → #46b581·#e3f3ec **0건**. detail은 처음부터 §4b 테라코타로 그려 home-DONE식 색 보정 불필요. 사용색=primary #d66b42·primary-l #e1875f·칩텍스트 #7a3a22·accent #c99b4a·on-primary #2a1005·ink #231a14·gray #6e6258·line #ddd1c6·surface #fffcf7/#fefcf7·bg #fff7f0·gray2 #a99b90(썸네일)·YouTube #ff0000·북마크 #9a9aa0. 영어 누수 0(YouTube=플랫폼 고유명).
 - G3 export_node_as_image PNG scale2 → scripts/ralph-figma/exports/detail.png(780x1688 유효 PNG, transcript base64 추출 저장, 78KB). 원본 source-screens/detail.png와 영역 대응(상태바→헤더→콘텐츠(히어로→제목→평점→설명→팁→메타칩)→하단 CTA).
 - 게이트: G0/G2(read-back)/G3(export)/G4(§4b 팔레트·초록/영어 누수 0) 통과. 다음: NOTE-detail(포스트잇+주석) 또는 K-cook3(cook/cook3 다크 #0A0A0A 골격, SEC/B 안).
+
+## 2026-07-02 - NOTE-detail detail 포스트잇 + 주석 배치
+- 브리지 채널 ihbg56ny 라이브(join + get_document_info OK, 페이지 요리 비서 939:2, 최상위 SEC/A 2004:14·SEC/B 2036:111).
+- 멱등: SEC/B(2036:111) read-back → cook/detail(2036:113, 우변 abs 6438) 옆에 NOTE 없음 확인 → 신규 생성.
+- 포스트잇 NOTE/detail-1=**2041:158**(SEC/B 자식, 부모-상대 x480 y120 → abs 6480/1420, cook/detail 우측 옆 42px. 240x180 #FFE8A3 라운드12). 자식 2: 제목=**2041:159**('리뷰 코멘트' 15px Bold #231A14 rel x16 y16), 본문=**2041:160**('여기에 상세 화면 피드백을 남겨 주세요.' 13px Regular #6E6258 rel x16 y48).
+- 주석(set_annotation) 2건 success: detail-제목 2037:134('레시피 제목 · 순두부찌개') + detail-요리시작텍스트 2041:157('주 CTA · 요리 시작하기 → 조리 모드 진입').
+- 게이트: G0(채널 ihbg56ny) / G1(포스트잇+텍스트2+주석2) / G2 read-back(get_node_info 2041:158 → 자식 2 + '리뷰 코멘트' 텍스트, abs 6480 cook/detail 우측 정합, 주석 success) / G4(#FFE8A3·ink #231A14·gray #6E6258, 15/13px, 영어 누수 0). 밀스톤 아님 → export 생략.
+- 다음: K-cook3(cook/cook3 다크 골격 프레임, SEC/B 안).

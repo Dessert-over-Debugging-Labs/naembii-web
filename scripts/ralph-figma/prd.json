@@ -613,12 +613,13 @@
       "title": "detail 포스트잇 + 주석 배치",
       "description": "cook/detail 옆에 리뷰 코멘트용 노란 포스트잇과 핵심 요소 주석을 배치한다.",
       "priority": 44,
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "멱등: cook/detail 오른쪽 옆에 노란 포스트잇 NOTE/detail-1(#FFE8A3, 라운드12, '리뷰 코멘트' 자리) 배치.",
         "핵심 요소 1개 이상에 set_annotation 콜아웃 부착.",
         "G2: NOTE/detail-1 노드와 주석 존재 확인. 한글 커밋."
-      ]
+      ],
+      "notes": "브리지 채널 ihbg56ny(라이브, get_document_info 응답 OK, 페이지 요리 비서 939:2). cook/detail=2036:113은 SEC/B(2036:111) 자식(우변 abs 6438). 멱등: SEC/B/cook/detail read-back → NOTE/detail 없음 확인 → 신규. 포스트잇 NOTE/detail-1=2041:158(SEC/B 자식, 부모-상대 x480 y120 → abs 6480/1420, cook/detail 우측 옆 42px 간격. 240x180 #FFE8A3 라운드12). 자식 2: NOTE/detail-1-제목=2041:159(리뷰 코멘트 15px Bold ink #231A14 rel x16 y16), NOTE/detail-1-본문=2041:160(여기에 상세 화면 피드백을 남겨 주세요. 13px Regular gray #6E6258 rel x16 y48). 주석(set_annotation) 2건 success: detail-제목 2037:134(레시피 제목·순두부찌개)·detail-요리시작텍스트 2041:157(주 CTA 요리 시작하기→조리 모드 진입). G0/G1/G2(get_node_info 2041:158 → 자식 2 + 리뷰 코멘트 텍스트 확인, abs 6480 cook/detail 우측 정합 / 주석 success)/G4(포스트잇 #FFE8A3·ink #231A14·gray #6E6258 토큰, 15/13px, 영어 누수 0) 통과. 밀스톤 아님 → export 생략. 다음: K-cook3(cook/cook3 다크 골격, SEC/B 안)."
     },
     {
       "id": "K-cook3",
