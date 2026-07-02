@@ -806,7 +806,8 @@
       "title": "cook: 헤더(조리)",
       "description": "cook/cook 안에 '헤더(조리)' 요소를 정밀하게 그린다. 원본 source-screens/cook.png 대비 위치·간격·타이포 정합.",
       "priority": 58,
-      "passes": false,
+      "passes": true,
+      "notes": "브리지 채널 ihbg56ny(라이브, join+get_document_info OK, 페이지 '요리 비서' 939:2). 대상 region/헤더=2042:231(cook/cook=2042:229 자식, 다크 #0a0a0a, abs 7470/1468 390x72). 멱등: get_node_info 2042:231 → children=[] 확인 → 신규 추가(중복 없음). cook3 헤더(2041:163) 밝은 색 패턴 재사용. app.html:1154 .nav.dark(뒤로 chevron-left · '기본 조리 모드' 14px · 도움말 help-circle) 대응. 추가 자식 3: 헤더-뒤로아이콘=2042:238(rect 24x24 rel x24 y24 #f8f8f4 라운드6 chevron-left placeholder), 헤더-제목=2042:240('기본 조리 모드' 14px Bold #f8f8f4, abs x7620 y1494 폭84 → 프레임 중앙 정합=frame center 7665·title center 7662), 헤더-도움말아이콘=2042:239(rect 24x24 rel x342 y24 #f8f8f4 라운드12 help-circle placeholder, 우측 여백 24px 대칭). G0/G1/G2 read-back(get_node_info 2042:231 → 자식 3 + '기본 조리 모드' 텍스트 노드('조리' 포함)·#f8f8f4·프레임 내부 정합)/G4(다크 화면 밝은 색 ink #f8f8f4 §4b 토큰, 14px 제목, 영어 누수 0·초록 누수 0) 통과. 밀스톤 아님 → export 생략. 다음: D-cook-03(영상/스텝 영역 — region/콘텐츠=2042:232).",
       "acceptanceCriteria": [
         "멱등: cook/cook(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
         "G2: '조리' 텍스트 노드가 cook/cook 안에 존재.",
