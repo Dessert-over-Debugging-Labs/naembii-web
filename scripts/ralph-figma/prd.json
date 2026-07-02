@@ -268,7 +268,8 @@
       "title": "sheet: '영상 링크 등록' 제목",
       "description": "cook/sheet 안에 ''영상 링크 등록' 제목' 요소를 정밀하게 그린다. 원본 source-screens/sheet.png 대비 위치·간격·타이포 정합.",
       "priority": 19,
-      "passes": false,
+      "passes": true,
+      "notes": "브리지 채널 ihbg56ny(라이브, get_document_info 응답 OK, 페이지 '요리 비서' 939:2). 대상 cook/sheet=2025:62(자식: region4 2025:63~66·스크림2025:67·패널2025:68·핸들바2025:70). 멱등: get_node_info 2025:62로 기존 제목 텍스트 없음 확인 → 신규 추가. 패널(2025:68)이 RECTANGLE이라 자식 불가 → 제목도 cook/sheet 직속으로 패널 위(핸들 아래)에 겹쳐 배치. sheet-제목=2026:71(TEXT, cook/sheet 직속, 부모-상대 x24 y272 → abs 6784/392, 패널 영역 abs 350~964 내부·프레임 내부 정합). 내용 '영상 링크 등록'(app.html:1253 h3 '레시피 등록하기'에 대응하는 시트 제목=story G2 라벨), 20px ExtraBold ink #231A14, 핸들바(rel y242~247) 아래 rel y272. G0/G1/G2(get_node_info 2026:71 → '영상 링크 등록' 텍스트 노드·좌표 정합 확인)/G4(ink #231A14 §4b 토큰, 20px 제목, 영어 누수 0·초록 누수 0) 통과. 밀스톤 아님 → export 생략. ⚠ 관찰: 페이지 최상위에 stray sheet-핸들바=2025:69(RECTANGLE)가 떠 있음(cook/sheet 밖, 과거 D-sheet-02 잔여 추정) — D-sheet-03 범위 아니라 미조치, 이후 정리 후보. 다음 D-sheet-04(링크 입력 필드 '링크 붙여넣기')는 제목 아래 rel y~316, cook/sheet 직속.",
       "acceptanceCriteria": [
         "멱등: cook/sheet(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
         "G2: '영상 링크 등록' 텍스트 노드가 cook/sheet 안에 존재.",
