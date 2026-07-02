@@ -213,7 +213,8 @@
       "title": "home 포스트잇 + 주석 배치",
       "description": "cook/home 옆에 리뷰 코멘트용 노란 포스트잇과 핵심 요소 주석을 배치한다.",
       "priority": 15,
-      "passes": false,
+      "passes": true,
+      "notes": "브리지 채널 ihbg56ny(라이브, get_document_info 응답 OK, 페이지 '요리 비서' 939:2). 포스트잇 NOTE/home-1=2024:59(SEC/A(2004:14) 자식, 부모-상대 x480 y120 → abs 6480/120, cook/home(2006:16) 우측 옆=cook/home 우변 abs 6438보다 오른쪽. 240x180 #FFE8A3 라운드12). 자식 2: NOTE/home-1-제목=2024:60('리뷰 코멘트' 15px Bold #231A14 rel x16 y16), NOTE/home-1-본문=2024:61('여기에 홈 화면 피드백을 남겨 주세요.' 13px Regular #6E6258 rel x16 y48). 주석(set_annotation) 2건: 헤드라인 2021:11('오늘 뭐 만들까요?')·CTA제목 2021:15('영상 링크로 바로 요리하기') 콜아웃 부착(둘 다 success). G0/G1/G2(get_node_info 2024:59 → 자식 2 + '리뷰 코멘트' 텍스트 확인, abs 6480 cook/home 우측 정합 / 주석 success 응답)/G4(포스트잇 #FFE8A3·ink #231A14·gray #6E6258 토큰, 15/13px, 영어 누수 0) 통과. 밀스톤 아님 → export 생략. 다음: K-sheet(cook/sheet 골격 프레임).",
       "acceptanceCriteria": [
         "멱등: cook/home 오른쪽 옆에 노란 포스트잇 NOTE/home-1(#FFE8A3, 라운드12, '리뷰 코멘트' 자리) 배치.",
         "핵심 요소 1개 이상에 set_annotation 콜아웃 부착.",
