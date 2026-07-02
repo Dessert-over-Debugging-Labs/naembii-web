@@ -889,7 +889,8 @@
       "title": "cook 포스트잇 + 주석 배치",
       "description": "cook/cook 옆에 리뷰 코멘트용 노란 포스트잇과 핵심 요소 주석을 배치한다.",
       "priority": 64,
-      "passes": false,
+      "passes": true,
+      "notes": "브리지 채널 kpgtp6vl(라이브, join+get_document_info OK, 페이지 '요리 비서' 939:2). 멱등: get_node_info 2036:111(SEC/B)로 자식 확인 → cook/cook(2042:229, abs x9150 우변 9540) 뒤에 NOTE/cook-1 없어 신규 create. ⚠ SEC/B 절대좌표가 이동함(과거 x6000 → 현재 abs x7680, 우변 10680). 포스트잇 NOTE/cook-1=2050:74(SEC/B 자식, 부모-상대 x1900 y120 → abs 9580/1434, cook/cook 우변 9540 오른쪽 40px 갭, NOTE/cook3-1(우변 9110)·cook/cook 다음 순서, SEC/B 우변 10680 내부. 240x180 #FFE8A3 라운드12). 자식 2: NOTE/cook-1-제목=2050:75('리뷰 코멘트' 15px Bold #231A14 rel x16 y16), NOTE/cook-1-본문=2050:76('여기에 조리 화면 피드백을 남겨 주세요.' 13px Regular #6E6258 rel x16 y48, 너비214<240 오버플로 없음). 주석(set_annotation) 2건: 헤더-제목 2042:240('기본 조리 모드')·음성-원 2050:71('음성 가이드' 64px 핸즈프리 CTA) 콜아웃 부착(둘 다 success:true). G0/G1/G2(get_node_info 2050:74 → 자식 2 + '리뷰 코멘트' 텍스트 확인, abs 9580 cook/cook 우측 정합 / 주석 success)/G4(포스트잇 #FFE8A3·ink #231A14·gray #6E6258 토큰, 15/13px, 영어 누수 0·초록 누수 0) 통과. 밀스톤 아님 → export 생략. 다음: K-cook2(cook/cook2 다크 #0A0A0A 골격, SEC/B 안, cook/cook 우측). ⚠ 관찰: 페이지에 병렬 리디자인 세트 cook-v2/*(2043:391~)가 여전히 존재.",
       "acceptanceCriteria": [
         "멱등: cook/cook 오른쪽 옆에 노란 포스트잇 NOTE/cook-1(#FFE8A3, 라운드12, '리뷰 코멘트' 자리) 배치.",
         "핵심 요소 1개 이상에 set_annotation 콜아웃 부착.",
