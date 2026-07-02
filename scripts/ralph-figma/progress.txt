@@ -656,3 +656,11 @@ Started: Wed Jul  1 15:53:56 KST 2026
 - 추가 자식 12: 화이트칩=2041:183(pill white a0.13+#f8f8f4 border w1 radius18)/닷2041:184(#f8f8f4 r7)/라벨2042:185('화이트' 12px w800 #f8f8f4), 허브칩=2042:186(panel #111111 radius18, inactive stroke 생략)/닷2042:187(#76D99E)/라벨2042:188('허브' muted #a7a7a7), 스틸칩=2042:189/닷2042:190(#92C5FF)/라벨2042:191('스틸'), 크림칩=2042:192/닷2042:193(#F3E2BC)/라벨2042:194('크림').
 - 게이트: G0(채널 ihbg56ny)/G1/G2 read-back(2042:185 → '화이트' 텍스트 노드 #f8f8f4 12px w800 abs 6807/1855 프레임 내부)/G4(다크 panel #111111·ink #f8f8f4·muted #a7a7a7·active soft white a0.13, 톤 도트 화이트/허브 #76D99E/스틸 #92C5FF/크림 #F3E2BC=CODEX §4b cook3 톤칩색, 초록 #46B581 누수 0·영어 누수 0, 12px·pill·14px 도트) 통과. 밀스톤 아님 → export 생략.
 - 학습: 다크 화면 inactive 칩 stroke(cook-line white a0.16)는 #0A0A0A 위 무의미 → 생략(active 화이트칩만 #f8f8f4 border=선택 신호). create_text fontColor 인라인으로 라벨 색 지정(set_fill_color 절약). 브리지 콜은 1콜씩 순차(병렬 금지). 다음 D-cook3-06(스와이프 힌트)은 톤칩(rel y304~340) 아래.
+
+---
+## 2026-07-02 - D-cook3-06 cook3 스와이프 힌트
+- 대상 region/콘텐츠=2041:164(cook/cook3=2041:161 자식, 다크 #0A0A0A, abs 6760/1540). 멱등: get_node_info로 기존 자식 22(영상3+미리보기2+단계도트5+카운터+톤칩12)만 확인 → 스와이프 힌트 없어 신규 추가.
+- app.html:1128 <div class="swipe-hint cook-swipe-hint"><i chevrons-up-down>단계 카드를 위아래로 스와이프. CSS :557~563/578~579: .swipe-hint(flex gap6 padding7·10 radius999 12px w800) + cook3(bg rgba(8,8,8,.72) border cook-line color cook-muted, 아이콘 cook-accent) + .cook-swipe-hint(static width max-content margin auto=중앙). 톤칩(바닥 rel y340) 아래 rel y352에 중앙 pill.
+- 추가 자식 3: 스와이프힌트=2042:195(pill rect rel x99 y352 192x30, fill #080808 a0.72, stroke #ffffff a0.16 1px, radius15), 스와이프힌트아이콘=2042:196(rect 14x14 rel x109 y360 #f8f8f4=cook-accent radius3 chevrons-up-down placeholder), 스와이프힌트텍스트=2042:197('단계 카드를 위아래로 스와이프' 12px w800 muted #a7a7a7 rel x129 y360 → abs 6889/1900 너비152). 콘텐츠 좌우 패딩 10 대칭, pill 프레임 중앙(center 6955).
+- 게이트: G0(채널 ihbg56ny)/G1/G2 read-back(2042:197 → '단계 카드를 위아래로 스와이프' 텍스트 노드 #a7a7a7 12px w800 abs 6889/1900 프레임 내부)/G4(다크 bg #080808 a0.72·border white a0.16=cook-line·muted #a7a7a7·아이콘 #f8f8f4=cook-accent, 초록 #46B581 누수 0·영어 누수 0, 12px 서브·pill radius) 통과. 밀스톤 아님 → export 생략.
+- 학습: create_text가 실제 렌더 폭(152px)으로 계산 → 처음 추정폭(165)으로 만든 pill(206)은 우측 패딩 과다 → read-back 폭 확인 후 resize(192)+move로 좌우 패딩 10 대칭 재정렬. width:max-content pill은 텍스트 실측 후 폭 확정이 정석. 다음 D-cook3-07(현재 단계 카드 1단계.육수 준비하기 1/5 + 리스트3)은 스와이프 힌트(rel y352~382) 아래.

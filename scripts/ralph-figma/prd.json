@@ -710,13 +710,14 @@
       "title": "cook3: 스와이프 힌트",
       "description": "cook/cook3 안에 '스와이프 힌트' 요소를 정밀하게 그린다. 원본 source-screens/cook3.png 대비 위치·간격·타이포 정합.",
       "priority": 51,
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "멱등: cook/cook3(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
         "G2: '단계 카드를 위아래로 스와이프' 텍스트 노드가 cook/cook3 안에 존재.",
         "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
         "nodeId 기록 후 한글 커밋."
-      ]
+      ],
+      "notes": "브리지 채널 ihbg56ny(라이브, join+get_document_info OK, 페이지 '요리 비서' 939:2). 대상 region/콘텐츠=2041:164(cook/cook3=2041:161 자식, 다크 #0A0A0A, abs 6760/1540). 멱등: get_node_info 2041:164로 기존 자식 22(영상3+미리보기2+단계도트5+카운터+톤칩12)만 확인 → 스와이프 힌트 없어 신규 추가. app.html:1128 <div class='swipe-hint cook-swipe-hint'><i chevrons-up-down>단계 카드를 위아래로 스와이프. CSS app.html:557~563/578~579: .swipe-hint(flex gap6 padding7·10 radius999 12px w800) + cook3 오버라이드(bg rgba(8,8,8,.72) border cook-line color cook-muted, 아이콘 color cook-accent), .cook-swipe-hint(static width max-content margin auto=중앙). 톤칩(바닥 rel y340) 아래 rel y352에 중앙 pill 배치. 추가 자식 3: 스와이프힌트=2042:195(pill rect rel x99 y352 192x30, fill #080808 a0.72, stroke #ffffff a0.16 1px, radius15=pill), 스와이프힌트아이콘=2042:196(rect 14x14 rel x109 y360 #f8f8f4=cook-accent radius3 chevrons-up-down placeholder), 스와이프힌트텍스트=2042:197('단계 카드를 위아래로 스와이프' 12px w800 muted #a7a7a7 rel x129 y360 → abs 6889/1900 프레임 내부, 너비 152). 콘텐츠 좌우 패딩 10 대칭, pill 프레임 중앙(center 6955). G0/G1/G2 read-back(get_node_info 2042:197 → '단계 카드를 위아래로 스와이프' 텍스트 노드 #a7a7a7·12px w800·abs 6889/1900 프레임 내부 정합)/G4(다크: bg #080808 a0.72·border white a0.16=cook-line·muted #a7a7a7·아이콘 #f8f8f4=cook-accent, 초록 #46B581 누수 0·영어 누수 0, 12px 서브·radius pill) 통과. 밀스톤 아님 → export 생략. 다음 D-cook3-07(현재 단계 카드 1단계.육수 준비하기 1/5 + 리스트3)은 스와이프 힌트 아래."
     },
     {
       "id": "D-cook3-07",
