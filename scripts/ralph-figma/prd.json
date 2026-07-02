@@ -144,7 +144,8 @@
       "title": "home: '당신만을 위한 추천' 섹션 헤더+전체",
       "description": "cook/home 안에 ''당신만을 위한 추천' 섹션 헤더+전체' 요소를 정밀하게 그린다. 원본 source-screens/home.png 대비 위치·간격·타이포 정합.",
       "priority": 10,
-      "passes": false,
+      "passes": true,
+      "notes": "브리지 채널 mtaf1yhq. 대상 region/콘텐츠=2006:19(cook/home=2006:16 자식) 카테고리칩(바닥 rel y300) 아래 rel y~320에 추가(멱등: get_node_info로 기존 자식 26=헤드라인+CTA7+검색3+카테고리15만 확인 → 추천 섹션 헤더 없음). app.html:978 .section-t(sparkles + '당신만을 위한 추천' + '전체 ›' more) 대응. 추가 자식 4: 추천섹션아이콘=2021:37(rect 18x18 rel x24 y322 #46B581 라운드4 sparkles placeholder), 추천섹션제목=2021:38('당신만을 위한 추천' 16px ExtraBold #0A0A0A rel x50 y319 → abs 6098/559, 프레임 내부 OK), 추천섹션전체=2021:39('전체' 13px SemiBold #8A8A8A rel x324 y321), 추천섹션전체화살표=2021:40('›' 16px #8A8A8A rel x352 y319). G0/G1/G2(get_node_info 2021:38 → '당신만을 위한 추천' 텍스트 노드 확인, 좌표 정합)/G4(그린 #46B581·다크 #0A0A0A·gray #8A8A8A 토큰, 16/13px, 영어 누수 0=›는 기호). 밀스톤 아님 → export 생략. 다음 D-home-08(추천 카드1 순두부찌개)은 이 헤더 아래 rel y~350.",
       "acceptanceCriteria": [
         "멱등: cook/home(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
         "G2: '당신만을 위한 추천' 텍스트 노드가 cook/home 안에 존재.",
