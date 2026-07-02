@@ -195,3 +195,14 @@
 - **다음**: D-sheet-04(링크 입력 필드, G2 라벨 '링크 붙여넣기') — 제목 아래 rel y~316, cook/sheet 직속.
 
 ---
+
+---
+
+### [D-sheet-04] sheet: 링크 입력 필드 · 2026-07-02
+
+- **무엇을**: `cook/sheet` 바텀시트에 영상 링크 입력 필드를 그림(app.html:1255 `<label class=field><i lucide=link><input url></label>` 대응). 좌측 링크 아이콘 + '링크 붙여넣기' 플레이스홀더.
+- **어떻게(멱등)**: `get_node_info` cook/sheet(2025:62) → 자식(region 4 + 스크림 2025:67 + 패널 2025:68 + 핸들 2025:70 + 제목 2026:71)에 링크 필드 부재 확인 후 신규 추가. 패널이 RECTANGLE이라 자식 불가 → 필드도 cook/sheet 직속으로 제목 아래(rel y316) 패널 위에 겹쳐 배치. `sheet-링크필드`=2027:72(rect 342x54, surface2 #EEE4DA, 라운드12, stroke line #DDD1C6 1px), `sheet-링크아이콘`=2027:73(20x20 #FF0000 라운드4, 필드 세로중앙), `sheet-링크텍스트`=2027:74('링크 붙여넣기', 15px Regular gray #6E6258, abs 6830/454).
+- **게이트**: G0 ✅(채널 `ihbg56ny`) / G1 ✅(필드+아이콘+텍스트 3) / G2 ✅(`get_node_info` 2027:74 → characters '링크 붙여넣기', fill #6e6258, 15px, abs 6830/454) / G4 ✅(surface2 #EEE4DA·line #DDD1C6·gray #6E6258·링크아이콘 #FF0000=app 실색, 15px, 초록 누수 0·영어 누수 0). 밀스톤 아님 → export 생략.
+- **다음**: D-sheet-05(플랫폼 배지 YouTube/Instagram = app.html:1256 .paste-note 힌트) — 필드 아래 rel y~382, cook/sheet 직속.
+
+---

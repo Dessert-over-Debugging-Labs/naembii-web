@@ -282,7 +282,8 @@
       "title": "sheet: 링크 입력 필드",
       "description": "cook/sheet 안에 '링크 입력 필드' 요소를 정밀하게 그린다. 원본 source-screens/sheet.png 대비 위치·간격·타이포 정합.",
       "priority": 20,
-      "passes": false,
+      "passes": true,
+      "notes": "브리지 채널 ihbg56ny(라이브, get_document_info 응답 OK, 페이지 '요리 비서' 939:2). 대상 cook/sheet=2025:62(자식: region4 2025:63~66·스크림2025:67·패널2025:68·핸들바2025:70·제목2026:71). 멱등: get_node_info 2025:62로 링크필드 없음 확인 → 신규 추가. 패널(2025:68)이 RECTANGLE이라 자식 불가 → 필드도 cook/sheet 직속으로 제목(2026:71 rel y272~296) 아래 rel y316에 배치. app.html:1255 <label class=field><i lucide=link><input url></label> 대응, CSS app.html:347 .field{height54·surface2·line 1px·radius12·padding0 16·gap10·15px·gray}, app.html:352 .field svg{20x20 #FF0000 유튜브 링크아이콘}. 추가 자식 3: sheet-링크필드=2027:72(rect rel x24 y316 342x54 surface2 #EEE4DA 라운드12 stroke line #DDD1C6 1px), sheet-링크아이콘=2027:73(rect 20x20 rel x40 y333 #FF0000 라운드4 link placeholder, 필드 세로중앙), sheet-링크텍스트=2027:74('링크 붙여넣기' 15px Regular gray #6E6258 rel x70 y334 → abs 6830/454, 필드 세로중앙 정합, 패널 내부). G0/G1/G2(get_node_info 2027:74 → '링크 붙여넣기' 텍스트 노드·좌표 정합 확인)/G4(surface2 #EEE4DA·line #DDD1C6·gray #6E6258·링크아이콘 #FF0000=app 실색, 15px, 초록 누수 0·영어 누수 0) 통과. 밀스톤 아님 → export 생략. 다음 D-sheet-05(플랫폼 배지 YouTube/Instagram)는 필드 아래(app.html:1256 .paste-note) rel y~382, cook/sheet 직속.",
       "acceptanceCriteria": [
         "멱등: cook/sheet(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
         "G2: '링크 붙여넣기' 텍스트 노드가 cook/sheet 안에 존재.",
