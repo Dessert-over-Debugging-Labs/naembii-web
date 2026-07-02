@@ -23,6 +23,7 @@ Started: Wed Jul  1 15:53:56 KST 2026
   - region/콘텐츠(2006:19) 자식(D-home-03 완료): 헤드라인=2021:11('오늘 뭐 만들까요?' 26px ExtraBold #0A0A0A, rel x24 y16 → abs 6072/256). app.html:952 <h1> 대응. 이후 D-home-04~ 요소도 이 콘텐츠 프레임에 자식 추가.
   - region/콘텐츠(2006:19) 자식(D-home-04 완료): 헤드라인 아래 rel y60에 오렌지 CTA 카드(app.html:960 quick-import). CTA카드=2021:12(rect 358x74 rel x16 y60 #FCE0D0 라운드18), CTA아이콘=2021:13(46x46 rel x30 y74 #F0662E 라운드14), CTA아이콘심볼=2021:14('▶' 흰 18px), CTA제목=2021:15('영상 링크로 바로 요리하기' 15px w900 #0A0A0A rel x88 y70), CTA부제=2021:16('재료, 단계, 구간을 먼저 확인하고 시작' 12px w700 #8A8A8A rel x88 y94), CTA화살표배경=2021:17(28x28 rel x332 y83 #FBDBCB 라운드14), CTA화살표=2021:18('›' 18px #F0662E). 이후 D-home-05(검색바)도 카드 아래(rel y~150)에 세로 스택 추가.
   - region/콘텐츠(2006:19) 자식(D-home-05 완료): CTA카드(bottom rel y134) 아래 rel y150에 검색바(app.html:968 .search). 검색바=2021:19(rect 358x48 rel x16 y150 #FFFCF7 라운드12 stroke #DDD1C6 1px), 검색아이콘=2021:20(rect 18x18 rel x32 y165 #6E6258 라운드4 돋보기 플레이스홀더), 검색텍스트=2021:21('먹고 싶은 요리를 검색해보세요' 15px Regular #6E6258 rel x60 y166 → abs 6108/406). 이후 D-home-06(카테고리 원형칩)은 검색바 아래 rel y~220.
+  - region/콘텐츠(2006:19) 자식(D-home-06 완료): 검색바 아래 rel y220에 카테고리 원형칩 5개(app.html:970-974 .cats/.cat). 가로 스택 rel x16/88/160/232/304(원 56x56 간격16), 원 y220·아이콘 y236·라벨 y284. 셰프=2021:22/23/24, 급상승=2021:25/26/27, 한식=2021:28/29/30, 분식=2021:31/32/33, 일식=2021:34/35/36(칩당 원+아이콘+라벨). 원 #E3F3EC(green-soft) 라운드28, 아이콘 #46B581 24x24 라운드6(lucide placeholder), 라벨 13px SemiBold #6E6258. 이후 D-home-07('당신만을 위한 추천' 섹션)은 칩 아래 rel y~320.
   - region/헤더(2006:18) 자식(D-home-02 완료): 로고마크=2021:4(rect 32x32 rel x24 y20 #46B581 라운드9), 로고재생아이콘=2021:5('▶' 흰 14px), 워드마크=2021:6('Cookflow' 16px w900 #0A0A0A), 부제=2021:7('영상 레시피 요리 도우미' 12px #8A8A8A), 알림버튼=2021:8(40x40 rel x278 y16 #FFFFFF 라운드20), 알림뱃지=2021:9(9x9 rel x306 y18 #F0662E 라운드5), 프로필버튼=2021:10(40x40 rel x326 y16 #E8E0D6 라운드20). 우측 아이콘 우측 여백 24px. 앱 소스(app.html:951) brand-lockup(app-mark play + Cookflow + eyebrow)·hd-right(bell notify-dot + circle-user) 대응.
 - ✅ 브리지 복구(2026-07-02): **올바른 채널은 mtaf1yhq**(.env FIGMA_CHANNEL·prd.json figma.channel 일치). 1~36차 실패 로그의 5evd9cs8/6rkd10x7은 오래된 값이었음. mtaf1yhq로 join → get_document_info·get_node_info·create_rectangle·set_fill_color 전부 정상 응답. 이후 이터레이션은 이 채널 사용.
 - 섹션 컨테이너 규약: 연회색 #F0F0F0 프레임 SEC/<group> + 상단 제목(40px Bold #0A0A0A) 프레임 내부 x=48 y=40. 폭은 화면 3개(~470px)+간격80px 여유. create_text parentId 좌표=부모-상대 정상 재확인(2004:15 abs 6048/40, push-out 없음).
@@ -282,4 +283,11 @@ Started: Wed Jul  1 15:53:56 KST 2026
 - 추가 자식 3: 검색바=2021:19(rect 358x48 rel x16 y150 #FFFCF7 라운드12 stroke #DDD1C6 1px), 검색아이콘=2021:20(rect 18x18 rel x32 y165 #6E6258 라운드4 돋보기 플레이스홀더), 검색텍스트=2021:21('먹고 싶은 요리를 검색해보세요' 15px Regular #6E6258 rel x60 y166 → abs 6108/406, 프레임 내부 OK).
 - 게이트: G1(바+아이콘+플레이스홀더 텍스트)/G2 read-back(get_node_info 2021:21 → '먹고 싶은 요리를 검색해보세요' 텍스트 노드 확인, 좌표 정합)/G4(surface #FFFCF7·line #DDD1C6·gray #6E6258 앱 토큰, 15px 본문, 영어 누수 0). 밀스톤 아님 → export 생략.
 - 학습: 입력형(검색바)은 배경 rect(surface+line stroke) → 좌측 아이콘 → 플레이스홀더 텍스트 순. 다음 D-home-06(카테고리 원형칩)은 검색바 아래 rel y~220.
+---
+## 2026-07-02 - D-home-06 카테고리 원형칩 5(셰프/급상승/한식/분식/일식) ✅ 완료
+- G0: 채널 mtaf1yhq join + get_document_info 정상 응답(페이지 '요리 비서' 939:2, SEC/A 2004:14).
+- 대상 region/콘텐츠=2006:19(멱등: get_node_info로 기존 자식 11=헤드라인 2021:11+CTA 2021:12~18+검색 2021:19~21만 확인 → 카테고리칩 없음). app.html:970-974 .cats/.cat 이식.
+- 추가 자식 15(칩당 원+아이콘 placeholder+라벨): 셰프=2021:22/23/24, 급상승=2021:25/26/27, 한식=2021:28/29/30, 분식=2021:31/32/33, 일식=2021:34/35/36. 가로 스택 rel x16/88/160/232/304(원 56x56 간격16), 원 y220·아이콘 y236·라벨 y284. 원 #E3F3EC(green-soft) 라운드28, 아이콘 #46B581 24x24 라운드6, 라벨 13px SemiBold #6E6258.
+- 게이트: G1(원5+아이콘5+라벨5)/G2 read-back(get_node_info 2021:30 → '한식' 텍스트 노드 확인, abs x6223 y524 프레임 내부 정합)/G4(그린 #46B581·green-soft·gray #6E6258 앱 토큰, 13px 서브, 원56=8그리드, 영어 누수 0). 밀스톤 아님 → export 생략.
+- 학습: 원형칩은 원 rect(라운드=반지름) → 중앙 아이콘 placeholder rect → 하단 라벨 순, 칩 폭 56+간격16으로 가로 스택. 다음 D-home-07('당신만을 위한 추천' 섹션 헤더)은 칩 아래 rel y~320.
 ---

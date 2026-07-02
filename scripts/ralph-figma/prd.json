@@ -130,7 +130,8 @@
       "title": "home: 카테고리 원형칩 5(셰프/급상승/한식/분식/일식)",
       "description": "cook/home 안에 '카테고리 원형칩 5(셰프/급상승/한식/분식/일식)' 요소를 정밀하게 그린다. 원본 source-screens/home.png 대비 위치·간격·타이포 정합.",
       "priority": 9,
-      "passes": false,
+      "passes": true,
+      "notes": "브리지 채널 mtaf1yhq. 대상 region/콘텐츠=2006:19(cook/home=2006:16 자식) 검색바(2021:19, bottom rel y198) 아래 rel y220에 추가(멱등: get_node_info로 기존 자식 11=헤드라인+CTA7+검색3만 확인 → 카테고리칩 없음). app.html:970-974 .cats/.cat(원형 .ic 56x56 라운드50% green-soft 배경·green 아이콘 24px, 라벨 13px w600 gray) 대응. 칩 5개 가로 스택(rel x16/88/160/232/304, 간격16), 원 y220, 아이콘 y236, 라벨 y284. 추가 자식 15(칩당 원+아이콘+라벨): 셰프=원2021:22/아이콘2021:23/라벨2021:24, 급상승=2021:25/26/27, 한식=2021:28/29/30, 분식=2021:31/32/33, 일식=2021:34/35/36. 원 #E3F3EC(green-soft) 라운드28, 아이콘 #46B581 24x24 라운드6(lucide 아이콘 placeholder), 라벨 13px SemiBold #6E6258. G0/G1/G2(get_node_info 2021:30 → '한식' 텍스트 노드 확인, abs x6223 y524 프레임 내부 정합)/G4(그린 #46B581·green-soft·gray #6E6258 토큰, 13px, 영어 누수 0). 밀스톤 아님 → export 생략.",
       "acceptanceCriteria": [
         "멱등: cook/home(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
         "G2: '한식' 텍스트 노드가 cook/home 안에 존재.",
