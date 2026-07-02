@@ -765,12 +765,13 @@
       "title": "cook3 포스트잇 + 주석 배치",
       "description": "cook/cook3 옆에 리뷰 코멘트용 노란 포스트잇과 핵심 요소 주석을 배치한다.",
       "priority": 55,
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "멱등: cook/cook3 오른쪽 옆에 노란 포스트잇 NOTE/cook3-1(#FFE8A3, 라운드12, '리뷰 코멘트' 자리) 배치.",
         "핵심 요소 1개 이상에 set_annotation 콜아웃 부착.",
         "G2: NOTE/cook3-1 노드와 주석 존재 확인. 한글 커밋."
-      ]
+      ],
+      "notes": "브리지 채널 ihbg56ny(라이브, join+get_document_info OK, 페이지 '요리 비서' 939:2, 최상위 SEC/A 2004:14·SEC/B 2036:111). 멱등: SEC/B(2036:111) 자식 훑어 NOTE/cook3-1 없음 확인 → 신규 create. cook/cook3=2041:161(abs 6760/1420 390x844, 우변 7150). 포스트잇 NOTE/cook3-1=2042:226(SEC/B 자식, 부모-상대 x1190 y120 → abs 7190/1420, cook/cook3 우측 옆 40px 갭, SEC/B 우변 9000 내부. 240x180 #FFE8A3 라운드12). 자식 2: NOTE/cook3-1-제목=2042:227('리뷰 코멘트' 15px Bold ink #231A14 rel x16 y16), NOTE/cook3-1-본문=2042:228('여기에 조리 모드 화면 피드백을 남겨 주세요.' 13px Regular gray #6E6258 rel x16 y48, 폭 241로 프레임 우변 17px 미세 초과=코스메틱, SEC/B 내부라 무해). 주석(set_annotation) 2건: 단계카드 제목 2042:199('1단계. 육수 준비하기' — 스와이프/영상 구간 연동 콜아웃)·핸즈프리 원 2042:217(음성 패널 morph 콜아웃), 둘 다 success 응답. G0(채널 ihbg56ny)/G1/G2 read-back(get_node_info 2042:226 → 자식 2 + '리뷰 코멘트' 텍스트 확인, abs 7190 cook/cook3 우측 정합 / 주석 2건 success)/G4(포스트잇 #FFE8A3·ink #231A14·gray #6E6258 토큰, 15/13px, 영어 누수 0·초록 누수 0) 통과. 밀스톤 아님 → export 생략. 다음: K-cook(cook/cook 다크 #0A0A0A 골격, SEC/B 안)."
     },
     {
       "id": "K-cook",

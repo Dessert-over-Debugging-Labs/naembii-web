@@ -702,3 +702,11 @@ Started: Wed Jul  1 15:53:56 KST 2026
 - 게이트: G0(채널 ihbg56ny) / G2 전수 정합 / G3 export_node_as_image PNG scale2 → scripts/ralph-figma/exports/cook3.png(780x1688 유효 PNG 66835B, transcript base64 IHDR 추출) / G4(초록 누수 0=#46b581/#e3f3ec 0건, 톤칩·finish는 §4b 정당색·영어 누수 0·다크 §4b 팔레트·영역 대응).
 - 학습: cook3는 처음부터 다크 §4b 토큰(테라코타 #d66b42·톤칩·fresh #3fa76f)으로 그려 home처럼 초록 일괄보정 불필요. 밀스톤 검수+export 파이프라인 재확인. 다음: NOTE-cook3(포스트잇+주석) 또는 K-cook.
 ---
+
+---
+## 2026-07-02 - NOTE-cook3 (cook3 포스트잇 + 주석)
+- 대상 SEC/B=2036:111(abs 6000/1300 3000x1120). cook/cook3=2041:161(우변 abs 7150). 멱등: NOTE/cook3-1 미존재 확인 → 신규.
+- 포스트잇 NOTE/cook3-1=2042:226(SEC/B 자식, 부모-상대 x1190 y120 → abs 7190/1420, cook/cook3 우측 40px 갭, 240x180 #FFE8A3 r12). 자식: 제목=2042:227('리뷰 코멘트' 15px Bold #231A14), 본문=2042:228('여기에 조리 모드 화면 피드백을 남겨 주세요.' 13px Regular #6E6258).
+- 주석 2건(set_annotation, 둘 다 success): 단계카드제목 2042:199·핸즈프리원 2042:217.
+- 게이트: G0(ihbg56ny)/G1/G2 read-back(2042:226 자식2 + '리뷰 코멘트' + 주석 success)/G4(#FFE8A3·#231A14·#6E6258, 15/13px, 영어·초록 누수 0). 밀스톤 아님 → export 생략.
+- 다음: K-cook(cook/cook 다크 #0A0A0A 골격, SEC/B 안).
