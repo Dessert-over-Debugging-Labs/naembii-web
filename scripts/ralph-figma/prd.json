@@ -364,7 +364,8 @@
       "title": "loading: 상태바",
       "description": "cook/loading 안에 '상태바' 요소를 정밀하게 그린다. 원본 source-screens/loading.png 대비 위치·간격·타이포 정합.",
       "priority": 26,
-      "passes": false,
+      "passes": true,
+      "notes": "브리지 채널 ihbg56ny(라이브, get_document_info 응답 OK, 페이지 '요리 비서' 939:2). 대상 region/상태바=2031:86(cook/loading=2031:85 자식, abs 7440/120 390x48). 멱등: get_node_info 2031:86로 children=[] 확인 → 신규 추가. home 상태바(2007:21~/2021:2~3) 패턴 재사용. 추가 자식 4: 상태바-시간=2031:90('9:41' 15px SemiBold #0A0A0A rel x24 y14 → abs 7464/134), 상태바-신호=2032:91(rect rel x300 y18 18x12 #0A0A0A → abs 7740/138), 상태바-와이파이=2032:92(rect rel x322 y18 16x12 #0A0A0A → abs 7762/138), 상태바-배터리=2032:93(rect rel x342 y18 24x12 #0A0A0A → abs 7782/138 우변 7806 < 프레임 우변 7830). 아이콘 우측 정렬(우측 여백 24px, 좌측 9:41 여백 대칭). G0/G1/G2(get_node_info 2031:86 → 자식 4 + '9:41' 텍스트 노드 확인, 좌표 프레임 내부 정합)/G4(다크 #0A0A0A 토큰, 영어 누수 0=9:41은 숫자, 초록 누수 0) 통과. 밀스톤 아님 → export 생략. 다음 D-loading-02(중앙 로딩 인디케이터)는 region/콘텐츠=2031:88 중앙.",
       "acceptanceCriteria": [
         "멱등: cook/loading(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
         "G2: '9:41' 텍스트 노드가 cook/loading 안에 존재.",
