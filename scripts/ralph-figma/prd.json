@@ -240,7 +240,8 @@
       "title": "sheet: 스크림 반투명 배경",
       "description": "cook/sheet 안에 '스크림 반투명 배경' 요소를 정밀하게 그린다. 원본 source-screens/sheet.png 대비 위치·간격·타이포 정합.",
       "priority": 17,
-      "passes": false,
+      "passes": true,
+      "notes": "브리지 채널 ihbg56ny(라이브, get_document_info 응답 OK, 페이지 '요리 비서' 939:2). 대상 cook/sheet=2025:62(자식: region/상태바2025:63·헤더2025:64·콘텐츠2025:65·하단2025:66, 전부 비어 있었음). 멱등: get_node_info로 cook/sheet 자식에 스크림 없음 확인 → 신규 추가. sheet-스크림=2025:67(rect, cook/sheet 직속 자식, 부모-상대 x0 y0 390x844 → abs 6760/120 프레임 정합, 전체 덮음). fill #000000 opacity 0.4 = app.html:334 .scrim{background:rgba(0,0,0,.4);inset:0;z-index:60} 정확 대응(홈 콘텐츠 위·바텀시트 아래 딤 오버레이). region 서브프레임 뒤에 생성돼 상단 렌더. G0/G1/G2(get_node_info 2025:67 → #000000 a0.4, 390x844 프레임 정합)/G4(딤 스크림=순수 도형, 영어 누수 0·초록 누수 0) 통과. 밀스톤 아님 → export 생략. 다음 D-sheet-02(바텀시트 핸들 바)는 region/콘텐츠=2025:65 하단 시트 영역.",
       "acceptanceCriteria": [
         "멱등: cook/sheet(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
         "G2: 추가한 노드(도형)가 get_node_info로 cook/sheet 안에 존재.",

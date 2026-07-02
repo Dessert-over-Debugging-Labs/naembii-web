@@ -356,3 +356,10 @@ Started: Wed Jul  1 15:53:56 KST 2026
 - region 서브프레임 4개(1콜씩 순차, 부모-상대 좌표): region/상태바=**2025:63**(y0-48 h48), region/헤더=**2025:64**(y48-120 h72), region/콘텐츠=**2025:65**(y120-780 h660), region/하단=**2025:66**(y780-844 h64). 전부 #FFF7F0, 상태바→헤더→콘텐츠→하단 세로 스택.
 - 게이트: G1(프레임+region 4) / G2 read-back(get_node_info 2025:62 → 자식 4 + 절대좌표 정합 abs 6760/120·168·240·900, push-out 없음) / G4(영어 누수 0·초록 누수 0·#FFF7F0 토큰). 밀스톤 아님 → export 생략.
 - 학습: cook/home과 동일 골격 패턴(상태바48/헤더72/콘텐츠660/하단64) 재사용. D-sheet-* 요소는 이 region 프레임에 자식 추가. ⚠ K-loading 배치 시 SEC/A 폭(1700, 우변 7700) 초과 우려 → sheet 포스트잇(~abs 7160+) 배치 후 loading은 SEC/A resize_node 필요.
+---
+## 2026-07-02 - D-sheet-01 sheet 스크림 반투명 배경 ✅ 완료
+- G0: 채널 **ihbg56ny** join + get_document_info 정상 응답(페이지 '요리 비서' 939:2, SEC/A 2004:14).
+- 멱등: get_node_info로 cook/sheet=2025:62 자식(region 4개=2025:63~66, 전부 비어 있음)에 스크림 부재 확인 → 신규 추가.
+- sheet-스크림=**2025:67**(rect, cook/sheet(2025:62) 직속 자식, 부모-상대 x0 y0 390x844 → abs 6760/120 프레임 정합, 화면 전체 덮음). fill **#000000 opacity 0.4** = app.html:334 `.scrim{position:absolute;inset:0;background:rgba(0,0,0,.4);z-index:60}` 정확 대응(홈 콘텐츠 위·바텀시트 아래 딤 오버레이). region 서브프레임보다 뒤에 생성돼 상단 렌더.
+- 게이트: G1(스크림 rect 1) / G2 read-back(get_node_info 2025:67 → fill #000000 a0.4, 390x844 abs 6760/120 프레임 정합) / G4(딤 스크림=순수 도형, 영어 누수 0·초록 누수 0). 밀스톤 아님 → export 생략.
+- 학습: 오버레이/스크림은 화면 프레임 직속 rect(전체 덮개, 부모-상대 0,0)로 그리고 fill alpha로 반투명 표현. set_fill_color의 a 파라미터가 fill opacity로 반영됨(0.4 확인). 다음 D-sheet-02(바텀시트 핸들 바)는 region/콘텐츠=2025:65 하단 시트 영역.
