@@ -269,3 +269,12 @@
 - **다음**: D-loading-02 — 중앙 로딩 인디케이터(region/콘텐츠=2031:88 중앙).
 
 ---
+
+## D-loading-02 — loading 중앙 로딩 인디케이터(스피너)
+- **대상**: region/콘텐츠 `2031:88`(cook/loading `2031:85` 자식, abs 7440/240 390×660). 멱등: children=[] 확인 후 신규 추가.
+- **소스**: app.html:380-381 `.spinner`(64×64 border 5px `--green-soft`=피치 track, border-top `--green`=테라코타 회전) + :1026 `<div class=spinner>`.
+- **요소 2**: 로딩스피너-트랙(`2032:94`, rect rel x163 y240 64×64 r32 원형, fill+stroke 피치 `#FBE7DE` w5, abs 7603/480 중앙 7635/512 — ⚠ 브리지가 fill alpha 무시=a1 강제 → 피치 solid 디스크로 렌더), 로딩스피너-활성헤드(`2032:95`, rect rel x189 y234 12×12 r6 테라코타 `#D66B42`, abs 7629/474 중앙 7635/480 트랙 상단 12시=border-top 활성 아크 근사).
+- **게이트**: G0 ✅(채널 `ihbg56ny`) / G1 ✅ / G2 ✅(`get_node_info` 2031:88 → 자식 2 도형 존재, 좌표 프레임 내부 정합) / G4 ✅(피치 `#FBE7DE`·테라코타 `#D66B42` §4b 토큰, 초록 누수 0·영어 누수 0, 도형 스토리라 텍스트 없음). 밀스톤 아님 → export 생략.
+- **다음**: D-loading-03 — 분석 상태 카피('레시피를 분석하고 있어요'=app.html:1028 h2), 스피너 아래 rel y~328.
+
+---

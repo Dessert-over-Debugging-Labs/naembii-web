@@ -378,7 +378,8 @@
       "title": "loading: 중앙 로딩 인디케이터",
       "description": "cook/loading 안에 '중앙 로딩 인디케이터' 요소를 정밀하게 그린다. 원본 source-screens/loading.png 대비 위치·간격·타이포 정합.",
       "priority": 27,
-      "passes": false,
+      "passes": true,
+      "notes": "브리지 채널 ihbg56ny(라이브, get_document_info 응답 OK, 페이지 '요리 비서' 939:2). 대상 region/콘텐츠=2031:88(cook/loading=2031:85 자식, abs 7440/240 390x660). 멱등: get_node_info 2031:88로 children=[] 확인 → 신규 추가. app.html:380-381 .loading/.spinner(64x64 border 5px solid green-soft=--primary-soft 피치, border-top-color green=--primary 테라코타 #D66B42, radius50% 회전) + :1026-1027 <div class=spinner> 대응. 콘텐츠 세로중앙 근처(로딩 블록 시작 rel y240)에 배치, 이후 D-loading-03 카피가 아래(rel y~328). 추가 자식 2: 로딩스피너-트랙=2032:94(rect rel x163 y240 64x64 r32 → 원형, abs 7603/480 중앙 x7635, fill 피치 #FBE7DE + stroke 피치 #FBE7DE weight5. ⚠ 브리지가 fill alpha를 무시(a=0 넘겨도 a=1 강제)해 투명 링이 아닌 피치 solid 디스크로 렌더 → 트랙 역할), 로딩스피너-활성헤드=2032:95(rect rel x189 y234 12x12 r6 테라코타 #D66B42, abs 7629/474 중앙 x7635 트랙 상단 12시 방향=border-top 활성 아크 근사). 트랙 중앙(7635,512)·헤드 중앙(7635,480) 수평 정렬·상단 정합. G0/G1/G2(get_node_info 2031:88 → 자식 2 도형 존재, 좌표 프레임 내부 정합)/G4(피치 #FBE7DE·테라코타 #D66B42 §4b 토큰, 초록 누수 0·영어 누수 0, 도형 스토리라 텍스트 없음) 통과. 밀스톤 아님 → export 생략. 다음 D-loading-03(분석 상태 카피 '레시피를 분석하고 있어요'=app.html:1028 h2)은 스피너 아래 rel y~328, region/콘텐츠 자식.",
       "acceptanceCriteria": [
         "멱등: cook/loading(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
         "G2: 추가한 노드(도형)가 get_node_info로 cook/loading 안에 존재.",
