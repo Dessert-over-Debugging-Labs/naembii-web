@@ -254,7 +254,8 @@
       "title": "sheet: 바텀시트 핸들 바",
       "description": "cook/sheet 안에 '바텀시트 핸들 바' 요소를 정밀하게 그린다. 원본 source-screens/sheet.png 대비 위치·간격·타이포 정합.",
       "priority": 18,
-      "passes": false,
+      "passes": true,
+      "notes": "브리지 채널 ihbg56ny(라이브, get_document_info 응답 OK, 페이지 '요리 비서' 939:2). 대상 cook/sheet=2025:62(자식: region4 + sheet-스크림2025:67). 핸들 바는 바텀시트 패널 위에 놓이므로, 이름 없는 선행 컨테이너인 시트 패널 표면을 함께 생성(스크림과 동일 성격). ⚠ 스크림(2025:67)이 cook/sheet 자식 배열의 마지막이라 최상단 렌더 → 패널·핸들은 스크림 '뒤에 생성'해 위로 올려야 함. region/콘텐츠(2025:65) 안에 넣으면 40% 딤 스크림 아래로 가려짐(D-sheet-01 노트의 '콘텐츠에 넣어라'는 오류). 따라서 패널·핸들·이후 D-sheet-03~06(제목/필드/배지/CTA)은 전부 cook/sheet(2025:62) 직속 자식으로 스크림 뒤에 생성. 추가 자식 2: sheet-패널=2025:68(rect, cook/sheet 직속, 부모-상대 x0 y230 390x614 → abs 6760/350, fill surface #FFFCF7 라운드24=app.html:336 .sheet border-radius 24 top·bottom은 프레임 하단과 겹쳐 클립돼 무해. bridge corners 배열 미지원 'Cannot unwrap symbol'이라 전체 라운드24로 대체), sheet-핸들바=2025:70(rect, cook/sheet 직속, 부모-상대 x176 y242 38x5 → abs 6936/362, 중앙 정렬 x-center 6955, fill gray2 #A99B90 라운드2.5=app.html:344 .grabber width38 height5 gray2 radius3). ⚠ 패널은 RECTANGLE이라 자식 불가('Parent node does not support children') → 이후 시트 내부 요소도 cook/sheet 직속으로 패널 위(패널 영역 frame y230~844)에 겹쳐 배치. G0/G1/G2(get_node_info 2025:62 → 패널 opaque #FFFCF7·라운드24·스크림 위, 핸들 #A99B90 38x5 중앙·패널 상단+12 확인)/G4(surface·gray2 §4b 토큰, 영어 누수 0·초록 누수 0) 통과. 밀스톤 아님 → export 생략. 다음 D-sheet-03('영상 링크 등록' 제목=app.html:1253 '레시피 등록하기')은 cook/sheet 직속, 핸들 아래 rel y~270(패널 위).",
       "acceptanceCriteria": [
         "멱등: cook/sheet(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
         "G2: 추가한 노드(도형)가 get_node_info로 cook/sheet 안에 존재.",
