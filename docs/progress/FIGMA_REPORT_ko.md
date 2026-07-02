@@ -370,3 +370,9 @@
 - **어떻게(주요 노드)**: region/콘텐츠(2036:116) 자식 5개 신규 — 팁카드=2039:141(rect rel x24 y470 342x88 surface #FFFCF7 라운드16 stroke line #DDD1C6 1px), 팁아이콘배경=2039:142(34x34 accent-soft #F7EDDD 라운드10), 팁아이콘=2039:143(18x18 accent #C99B4A 라운드4 lightbulb placeholder), 팁제목=2039:144('먼저 만든 사람의 팁' 14px w900 ink #231A14 → abs 6132/2026), 팁본문=2039:145('청양고추는 반만…/남은 국물에는 밥을 넣어 마무리해도 좋아요.' 13px Regular gray #6E6258 2줄 → abs 6132/2048 카드 내부). 설명문단 아래 rel y470(12px 갭).
 - **게이트**: G0(채널 ihbg56ny 라이브)·G1·G2 read-back('먼저 만든 사람의 팁' 텍스트 노드 2039:144 + 본문 2줄 카드 내부 정합)·G4(surface·line·accent·accent-soft·ink·gray §4b 토큰, 14/13px, 초록 누수 0·영어 누수 0) 통과. 밀스톤 아님 → export 생략.
 - **다음**: D-detail-08 — detail 추출 요약 배지 3(5단계 추출/재료 9개/타임스탬프 연동, app.html:1060 .extract-summary), region/콘텐츠 팁 카드 아래 rel y~570.
+
+### [D-detail-08] detail 메타칩3(5단계 추출/재료 9개/타임스탬프 연동) · 2026-07-02
+- **무엇을**: cook/detail 추출 요약 배지 3개(.extract-summary)를 app.html:1060 대비 정합 배치. 가로 스택 칩 — list-checks '5단계 추출' / shopping-basket '재료 9개' / timer '타임스탬프 연동'.
+- **어떻게(주요 노드)**: region/콘텐츠(2036:116) 자식 9개 신규(칩당 배경+아이콘+텍스트) — 칩1 배경2040:146(rect rel x24 y570 96x32 surface #FFFCF7 라운드10 stroke line #DDD1C6 1px)/아이콘2040:147(14x14 primary-l #E1875F 라운드3)/텍스트2040:148('5단계 추출' 12px w800 #7A3A22), 칩2 배경2040:149(rel x128 80x32)/아이콘2040:150/텍스트2040:151('재료 9개' → abs 6205/2120), 칩3 배경2040:152(rel x216 124x32 우변 abs 6388<6438)/아이콘2040:153/텍스트2041:154('타임스탬프 연동' → abs 6293/2120 우변 6373<6438). 팁 카드 아래 rel y570, 간격8.
+- **게이트**: G0(채널 ihbg56ny 라이브)·G1·G2 read-back('재료 9개' 텍스트 노드 2040:151 #7a3a22 12px w800 + '타임스탬프 연동' 2041:154 프레임 내부 정합)·G4(surface·line·primary-l·칩텍스트 #7A3A22 §4b 토큰, 12px, 초록 누수 0·영어 누수 0=9개 숫자) 통과. 밀스톤 아님 → export 생략.
+- **다음**: D-detail-09 — 하단 플로팅 '요리 시작하기' CTA(app.html .cta-fixed), region/하단 또는 콘텐츠 하단.
