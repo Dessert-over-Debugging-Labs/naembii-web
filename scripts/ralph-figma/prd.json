@@ -186,7 +186,8 @@
       "title": "home: 하단탭바(홈/등록/요리북)",
       "description": "cook/home 안에 '하단탭바(홈/등록/요리북)' 요소를 정밀하게 그린다. 원본 source-screens/home.png 대비 위치·간격·타이포 정합.",
       "priority": 13,
-      "passes": false,
+      "passes": true,
+      "notes": "브리지 채널 ihbg56ny(라이브). 대상 region/하단=2006:20(cook/home=2006:16 자식, 390x64, abs 6048/900), 비어 있어 신규 추가(멱등: get_node_info로 children=[] 확인). app.html:986-990 .bottom-tabs(다크 플로팅 필 + 3탭 홈/등록/요리북, active=오렌지 #F3A23A) 대응. 추가 자식 9: 탭바배경=2023:51(rect rel x16 y6 358x52 #231A14 ink-dark 라운드26=app rgba(35,26,20,.92)), 홈활성하이라이트=2023:52(rect rel x26 y12 100x40 #FFFCF7 a0.13 라운드20=app .active bg rgba(255,252,247,.13)), 홈아이콘=2023:53(24x24 rel x64 y15 #F3A23A 라운드6 lucide home placeholder), 홈라벨=2023:54('홈' 10px w740 #F3A23A rel x68 y41), 등록아이콘=2023:55(24x24 rel x183 y15 #F8F4EF 라운드6 plus placeholder), 등록라벨=2023:56('등록' 10px #F8F4EF rel x185 y41), 요리북아이콘=2023:57(24x24 rel x302 y15 #F8F4EF 라운드6 book-open placeholder), 요리북라벨=2023:58('요리북' 10px #F8F4EF rel x298 y41 → abs 6346/941, 프레임 내부 OK). 3탭 등간격(그리드 3열, 열중심 x75.6/194.9/314.2). G0/G1/G2(get_node_info 2006:20 → 자식 9 + '요리북' 텍스트 노드 2023:58 확인, abs 좌표 프레임 내부 정합)/G4(다크 ink #231A14·active 오렌지 #F3A23A(app 실색)·light #F8F4EF, 10px, 초록 누수 0·영어 누수 0) 통과. 밀스톤 아님 → export 생략. 다음 home-DONE(밀스톤): 카테고리/추천헤더/카드1의 초록(#46B581·#E3F3EC, 노드 2021:22~43)을 테라코타 #D66B42로 일괄 보정 + export exports/home.png.",
       "acceptanceCriteria": [
         "멱등: cook/home(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
         "G2: '요리북' 텍스트 노드가 cook/home 안에 존재.",
