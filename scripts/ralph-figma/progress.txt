@@ -633,3 +633,10 @@ Started: Wed Jul  1 15:53:56 KST 2026
 - 추가 자식 3: 헤더-뒤로아이콘=2041:170(rect 24x24 rel x24 y24 #f8f8f4 라운드6 chevron-left placeholder, abs 6784/1492 좌측 여백24), 헤더-제목=2041:171('조리 모드' 14px Bold #f8f8f4 rel x165 y26 → abs 6925/1494 width55 center6952≈프레임center6955 중앙), 헤더-도움말아이콘=2041:172(rect 24x24 rel x342 y24 #f8f8f4 라운드12 원형 help-circle placeholder, abs 7102/1492 우측 여백24 대칭).
 - 게이트: G0/G1/G2 read-back(get_node_info 2041:163 → 자식 3 + '조리 모드' 텍스트 노드 #f8f8f4·프레임 내부·좌우 대칭 확인) / G4(다크 밝은색 #f8f8f4 토큰, 14px, 8px 그리드, 초록 누수 0·영어 누수 0) 통과. 밀스톤 아님 → export 생략.
 - nodeId 맵: region/헤더(2041:163) 자식=뒤로아이콘2041:170·제목2041:171·도움말아이콘2041:172. 다음: D-cook3-03(영상 영역+정적 미리보기·실기기 확인 오버레이, region/콘텐츠=2041:164).
+---
+## 2026-07-02 - D-cook3-03 cook3 영상 영역+정적 미리보기 오버레이
+- 대상 region/콘텐츠=2041:164(cook/cook3=2041:161 자식, 다크 #0A0A0A, abs 6760/1540 390x660). 멱등: get_node_info로 children=[] 확인 → 신규 추가.
+- 소스 app.html:1118 .cook-video#cook3Video(data-clip='정적 미리보기 · 실제 재생은 실기기에서 확인' + 썸네일 img 21j8SASqLJU). CSS :459 height260/bg#000, :887 ::after 하단 오버레이배지(rgba(0,0,0,.68)/border rgba(255,255,255,.18)/radius12/#fff 12px w700 center).
+- 추가 자식 4: cook3-영상영역=2041:173(rect rel x0 y0 390x260 #000000), cook3-영상썸네일=2041:174(rect rel x0 y20 390x220 #1B1B1B 16:9 레터박스 썸네일 placeholder), cook3-미리보기배지=2041:175(rect rel x16 y216 358x32 #000000 a0.68 라운드12 stroke #ffffff a0.18 1px, bottom abs 1788=영상바닥-12), cook3-미리보기텍스트=2041:176('정적 미리보기 · 실제 재생은 실기기에서 확인' 12px w700 #ffffff rel x70 y224 → abs 6830/1764 width219).
+- 게이트: G0(채널 ihbg56ny)/G1/G2 read-back(get_node_info 2041:164 → 자식 4 + '정적 미리보기 · 실제 재생은 실기기에서 확인' 텍스트 노드 2041:176·전부 프레임 내부 정합)/G4(다크 #000/#1B1B1B·반투명 검정 오버레이·흰 텍스트, 12px, 초록 누수 0·영어 누수 0, 거짓 '재생 중' 없음=정적 썸네일+정직 오버레이) 통과. 밀스톤 아님 → export 생략.
+- nodeId 맵: region/콘텐츠(2041:164) 자식=영상영역2041:173·썸네일2041:174·미리보기배지2041:175·미리보기텍스트2041:176. 다음: D-cook3-04(단계 도트 5칸 1칸 활성 '1 / 5', region/콘텐츠 영상 아래 cook-progress 영역).

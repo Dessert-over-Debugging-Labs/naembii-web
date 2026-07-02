@@ -410,3 +410,9 @@
 - 소스 app.html:1116 #cook3 .nav.dark = 뒤로(chevron-left)·제목 '조리 모드'(14px w700)·도움말(help-circle), 색 전부 --cook-ink #f8f8f4.
 - **추가 자식 3**: 헤더-뒤로아이콘(2041:170, rect 24x24 rel x24 y24 #f8f8f4 라운드6, 좌측 여백24), 헤더-제목(2041:171, '조리 모드' 14px Bold #f8f8f4, abs 6925/1494 중앙정렬), 헤더-도움말아이콘(2041:172, rect 24x24 rel x342 y24 #f8f8f4 라운드12 원형, 우측 여백24 대칭).
 - **게이트**: G0(채널 ihbg56ny)·G2(read-back: region/헤더 자식 3 + '조리 모드' 텍스트 #f8f8f4·좌우 대칭·프레임 내부)·G4(다크 밝은색 #f8f8f4, 14px, 8px 그리드, 초록 누수 0·영어 누수 0) 통과. 밀스톤 아님 → export 생략.
+
+## D-cook3-03 — cook3: 영상 영역+정적 미리보기·실기기 확인 오버레이 · 2026-07-02
+- 대상 **region/콘텐츠**(2041:164, cook/cook3=2041:161 자식, 다크 #0A0A0A, abs 6760/1540 390x660). 멱등: children=[] 확인 → 신규 추가.
+- 소스 app.html:1118 .cook-video#cook3Video(정적 썸네일 21j8SASqLJU + data-clip 오버레이), CSS :459 height260 bg#000, :887 ::after 하단 배지.
+- **추가 자식 4**: cook3-영상영역(2041:173, rect 390x260 #000000), cook3-영상썸네일(2041:174, rect 390x220 rel y20 #1B1B1B 레터박스 썸네일 placeholder), cook3-미리보기배지(2041:175, rect 358x32 rel x16 y216 #000000 a0.68 라운드12 stroke #ffffff a0.18), cook3-미리보기텍스트(2041:176, '정적 미리보기 · 실제 재생은 실기기에서 확인' 12px w700 #ffffff, abs 6830/1764).
+- **게이트**: G0(채널 ihbg56ny)·G2(read-back: region/콘텐츠 자식 4 + 정직 오버레이 텍스트·프레임 내부)·G4(다크 #000/#1B1B1B, 반투명 검정 오버레이·흰 12px, 초록 누수 0·영어 누수 0, 거짓 '재생 중' 없음) 통과. 밀스톤 아님 → export 생략.
