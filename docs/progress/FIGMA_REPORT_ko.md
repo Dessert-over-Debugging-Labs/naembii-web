@@ -318,3 +318,7 @@
 - **다음**: K-detail — cook/detail 골격 프레임(SEC/B 안).
 
 ---
+- **K-detail** (detail 화면 골격 프레임 생성): SEC/B(2036:111) 안에 `cook/detail`=2036:113(390x844 #FFF7F0, 부모-상대 x48 y120 → abs 6048/1420, SEC/B 내부) 신규 create — region 서브프레임 4개 세로 스택: region/상태바=2036:114(h48)·region/헤더=2036:115(h72)·region/콘텐츠=2036:116(h660)·region/하단=2036:117(h64, bottom 2264 < SEC/B bottom 2420). G0(ihbg56ny)·G1·G2 read-back(자식 4+절대좌표 정합·push-out 없음)·G4(영어/초록 누수 0·#FFF7F0 토큰) 통과. 밀스톤 아님 → export 생략. `passes:true`.
+- **다음**: D-detail-01 — detail 상태바(region/상태바 2036:114).
+
+---

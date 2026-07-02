@@ -460,13 +460,14 @@
       "title": "detail 화면 골격 프레임 생성",
       "description": "cook/detail 프레임(390x844, 배경 #FFF7F0)을 SEC/B 안에 만들고 상태바/헤더/콘텐츠/하단 region 서브프레임 골격을 잡는다.",
       "priority": 33,
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "멱등: cook/detail가 이미 있으면 재사용(중복 생성 금지), 없으면 생성해 SEC/B 안에 배치(390x844, 배경 #FFF7F0).",
         "상태바/헤더/콘텐츠/하단 region 서브프레임 골격을 만든다.",
         "G2: get_node_info로 cook/detail 프레임 존재 확인. nodeId를 notes/progress nodeId 맵에 기록.",
         "한글 커밋."
-      ]
+      ],
+      "notes": "브리지 채널 ihbg56ny(라이브, get_document_info OK, 페이지 '요리 비서' 939:2, 최상위 자식=SEC/A 2004:14·SEC/B 2036:111). 멱등: get_node_info 2036:111(SEC/B)로 자식=title(2036:112)뿐 확인 → cook/detail 없어 신규 create. cook/detail=2036:113(390x844, #FFF7F0, SEC/B(2036:111) 자식, 부모-상대 x=48 y=120 → 절대 x=6048 y=1420, SEC/B(abs 6000~9000/1300~2420) 내부 OK). region 서브프레임 4개: region/상태바=2036:114(y0-48 h48, abs 6048/1420), region/헤더=2036:115(y48-120 h72, abs 6048/1468), region/콘텐츠=2036:116(y120-780 h660, abs 6048/1540), region/하단=2036:117(y780-844 h64, abs 6048/2200 bottom 2264 < SEC/B bottom 2420). 상태바→헤더→콘텐츠→하단 세로 스택, 전부 #FFF7F0. G0/G1/G2 read-back(get_node_info 2036:113 → 자식 4 + 절대좌표 정합, push-out 없음)/G4(영어 누수 0·초록 누수 0·#FFF7F0 토큰) 통과. 밀스톤 아님 → export 생략. 이후 D-detail-* 요소는 이 region 프레임들에 자식으로 추가(상태바=2036:114, 헤더=2036:115, 히어로/제목/재료/단계 등 콘텐츠=2036:116, 하단 CTA=2036:117). 다음: D-detail-01(상태바)."
     },
     {
       "id": "D-detail-01",
