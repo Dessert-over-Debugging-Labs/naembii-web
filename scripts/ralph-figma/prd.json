@@ -516,7 +516,8 @@
       "title": "detail: 제목+북마크+저장수 342",
       "description": "cook/detail 안에 '제목+북마크+저장수 342' 요소를 정밀하게 그린다. 원본 source-screens/detail.png 대비 위치·간격·타이포 정합.",
       "priority": 37,
-      "passes": false,
+      "passes": true,
+      "notes": "브리지 채널 ihbg56ny(라이브, get_document_info OK, 페이지 '요리 비서' 939:2, 최상위 SEC/A 2004:14·SEC/B 2036:111). 대상 region/콘텐츠=2036:116(cook/detail=2036:113 자식, abs 6048/1540 390x660). 멱등: get_node_info 2036:116로 자식=히어로 9개(2036:125~2037:133, y0~230)만 확인, 제목/북마크 없음 → 신규 추가. app.html:1050 .dhead(h2 제목 + .dsave 북마크버튼(bookmark 아이콘 + em 저장수)) 대응. CSS app.html:408 .detail-body h2{22px w800 line1.35 ink}, :827 .dhead{flex align-start gap12}, :829 .dsave{column min48x48 우측}, :830 svg{27x27 #9a9aa0}, :831 em{13px w700 gray}. 저장수=app.html:1778 '21j8SASqLJU':{likes:342}. 히어로(y0~230) 아래 detail-body 영역 rel y250에 배치. 추가 자식 3: 제목=2037:134(TEXT '백종원이 알려주는\\n칼칼한 순두부찌개' 22px ExtraBold ink #231A14 rel x24 y250 → abs 6072/1790 width167 2줄 height54, 프레임 내부. 원문 <br> 반영해 1노드 2줄, 우측 북마크 자리 확보), 북마크아이콘=2037:135(rect 27x27 rel x337 y250 → abs 6385/1790 우변 6412 #9A9AA0(app .dsave svg 실색) 라운드6 bookmark placeholder, 우측 정렬), 저장수=2037:136('342' 13px Bold gray #6E6258 rel x340 y282 → abs 6388/1822 width26 우변 6414, 아이콘 하단 중앙). G0/G1/G2(get_node_info 2037:134 → '백종원이 알려주는 칼칼한 순두부찌개' 텍스트 노드·좌표 정합 / 2037:136 '342' 확인, 전 요소 프레임 우변 6438 내부)/G4(ink #231A14·gray #6E6258·#9A9AA0 토큰, 22/13px, 영어 누수 0=342 숫자·초록 누수 0) 통과. 밀스톤 아님 → export 생략. 다음 D-detail-05(평점 ⭐4.7 후기 3개)는 region/콘텐츠 제목 아래 rel y~320(.drating).",
       "acceptanceCriteria": [
         "멱등: cook/detail(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
         "G2: '백종원이 알려주는 칼칼한 순두부찌개' 텍스트 노드가 cook/detail 안에 존재.",
