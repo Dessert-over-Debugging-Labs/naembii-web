@@ -1493,7 +1493,8 @@
         "resize_node로 cook/loading 높이를 전체 콘텐츠에 맞춰 확장(고정 844 아님). 하단탭바/플로팅 CTA는 최하단 또는 고정 주석.",
         "G2 read-back으로 하단 콘텐츠 노드 존재 확인. G3: exports/loading.png 갱신.",
         "한글 커밋."
-      ]
+      ],
+      "notes": "⛔ PARK(v1에 추가할 콘텐츠 없음, sheet-FULL과 동일 사유). 2026-07-02 G0 연결(채널 kpgtp6vl, 페이지 '요리 비서' 939:2). 핵심 판정: (1) app.html loading view(app.html:1028~1040)는 statusbar+중앙 spinner+h2/p+steps-log 4행의 **단일 뷰포트 상태**로 844 초과 접힌 스크롤 콘텐츠가 **아예 없음** → '-FULL(전체 스크롤 확장)'로 v1에 추가할 하단 콘텐츠 자체가 존재하지 않음. (2) v1 cook/loading(2031:85)은 K-loading~loading-DONE로 이미 완성(스피너·헤드라인·부제·steps-log 4행)·export됨. ⇒ v1에 추가·확장할 것이 없어 이 스토리는 **no-op**. 억지로 그리면 중복(G4 위배)이므로 passes:false 유지(가짜 통과 금지). 참고: cook-v2/loading(2043:667)에도 완전판(네이티브 오토레이아웃 content>checklist>check-row: 상태바 '9:41'/'5G  Wi-Fi  100%', loading-title '레시피를 분석하고 있어요', loading-sub '영상을 단계별로 쪼개는 중이에요.', checklist 4행 영상 불러오기 ✓/재료·분량 추출 ●/조리 단계 분해/핸즈프리용 재구성)이 존재하나, park의 1차 근거는 '**v1에 추가할 게 없음**'이지 'v2가 있음'이 아니다. ⚠ park 범위 한정(중요): **park는 v1에 추가할 콘텐츠가 없는 화면(loading·sheet)에 한정한다.** D-cook v1 트랙(D-cook-05~)과 콘텐츠 많은 detail-FULL·cook3-FULL은 park 대상 아님(likely actionable). 근거: cook-v2/* 완전 세트는 D-cook-01~04(v1 cook/cook) 커밋 당시에도 이미 존재했고 그때 v1에서 진행됨 → 'v2 존재=park' 트리거는 성립 안 함. home-FULL도 v2 존재 상태에서 v1에 26노드 추가함. ⚠ 상위 결정 필요(사용자): v1(SEC/A 내부)·v2(cook-v2/* 11화면 완전 세트) 두 병렬 세트 공존. 루프는 증분 작업이 남은 v1 스토리는 v1에서 진행하고, 추가할 게 없는 -FULL만 park해 왔음. 사용자에게 물을 단일 결정: **'v1 D-cook 트랙을 계속할 의도인가(정본=v1인가 v2인가)?'** — 이 한 답이 남은 ~40개 v1 스토리가 작업인지 낭비인지를 가른다."
     },
     {
       "id": "detail-FULL",
