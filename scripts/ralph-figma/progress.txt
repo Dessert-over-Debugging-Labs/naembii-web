@@ -913,3 +913,14 @@ Started: Wed Jul  1 15:53:56 KST 2026
 - 주석 2건(set_annotation, 둘 다 success): cook2-nav제목 2050:177('핸즈프리 모드')·cook2-레거시라벨-텍스트 2050:204('레거시 · 보관용 스냅샷').
 - 게이트: G0(채널 607h63ew)/G1/G2 read-back(get_node_info 2066:2 → 자식 2 + '리뷰 코멘트' 텍스트 확인, abs 10290 cook/cook2 우측 정합 / 주석 2건 success)/G4(포스트잇 #FFE8A3·ink #231A14·gray #6E6258 토큰, 15/13px, 초록 누수 0·영어 누수 0) 통과. 밀스톤 아님 → export 생략.
 - 다음: SEC-C(섹션 컨테이너 'C. 완료 · 소셜 · 요리북').
+
+---
+## 2026-07-03 - sheet-FULL sheet 전체 스크롤 콘텐츠 확장 (import-preview 이식, BLOCKED 해제)
+- 대상 cook/sheet=2025:62(현재 abs 8440/-296, 채널 607h63ew 라이브, 페이지 '요리 비서' 939:2).
+- 판정 정정: 이전 BLOCKED('v2에 import-preview 있으니 v1 복제 금지')은 후속 home-FULL/detail-FULL 선례(v2 존재에도 v1 독립 진행)로 무효화됨. app.html:1261~1277 import-preview는 v1 D-sheet-*가 통째로 누락 → 링크힌트(rel~412)와 CTA(rel700) 사이 288px 빈 갭에 신규 추가(중복 아님).
+- 추가 자식 15(cook/sheet 직속, 부모-상대, 패널 RECTANGLE이라 직속 배치): 미리보기카드=2070:5(x24 y432 342x176 surface #FFFCF7 r16 stroke line), 썸네일=2070:6(100x100 peach #FBE7DE r12), 재생▶=2070:7(ink), 상태=2070:8('✓ 분석 완료' fresh #3FA76F 성공문맥), 제목1=2070:9('백종원이 알려주는')·제목2=2070:10('칼칼한 순두부찌개' ink 15/800 2줄), 메타=2070:11('백종원 · YouTube · 긴 영상 · 전문 요리사' gray), 정직1=2070:12·정직2=2070:13(gray2 #A99B90 2줄), 태그 pill3(#EEE4DA r13+텍스트 gray): 5단계 2070:14/15·재료 9개 2070:16/17·구간 연결 2070:18/19.
+- ⚠ 학습: create_text가 마지막 태그(2070:19)를 #ff8000 a0.3(오렌지 stray)로 생성 → get_node_info 읽기 후 set_fill_color로 gray #6E6258 보정. create_text fontColor가 간헐적으로 미적용될 수 있으니 색 중요한 텍스트는 read-back 필수.
+- 프레임 resize 불필요: 카드 바닥 rel608 < CTA rel700, 전부 844 내부(단일 뷰포트 바텀시트, CODEX G1b resize는 조건부).
+- 게이트: G0/G1/G1b(클립0)/G2 read-back(get_node_info 2025:62 신규 15노드+라벨 정합)/G3 export exports/sheet.png(780x1688 유효 PNG, 육안 정합)/G4(§4b 팔레트, fresh=성공만, 초록·오렌지 stray·영어 누수 0). 한글 커밋.
+- 루프 위생: 확인된 no-op loading-FULL(30.3→107.3)·cook3-FULL(54.3→107.5)을 MILE-FINAL(107) 아래로 재배치(passes:false 유지). 이로써 다음 최저 미통과=SEC-C(71)→complete/tipWrite/cookbook/reviews 실작업으로 루프 전진.
+- ⚠ 상위 미결(사용자): v1(SEC/A·SEC/B) vs v2(cook-v2/* 11화면 완전 세트) 정본 결정. 현 루프는 v1 독립 진행 기준으로 동작 중(home-FULL/detail-FULL 선례).
