@@ -564,3 +564,11 @@ Started: Wed Jul  1 15:53:56 KST 2026
 - 게이트: G0(채널 ihbg56ny 조인+get_document_info OK) / G1 / G2 read-back(get_node_info 2039:140 → '칼칼한 국물…' 텍스트 노드·좌표 정합) / G4(gray #6E6258 §4b 토큰, 15px, 초록 누수 0·영어 누수 0=15분 숫자). 밀스톤 아님 → export 생략.
 - 다음: D-detail-07('먼저 만든 사람의 팁' 카드)는 region/콘텐츠 설명 문단 아래 rel y~470.
 ---
+
+---
+## 2026-07-02 - D-detail-07 detail '먼저 만든 사람의 팁' 카드
+- 대상 region/콘텐츠=2036:116(cook/detail=2036:113 자식). 멱등: get_node_info로 자식 16개(히어로9+제목3+평점3+설명1)만 확인, 팁 카드 없음 → 신규 추가.
+- app.html:1056 .tip-strip(lightbulb + b '먼저 만든 사람의 팁' + p 팁 본문) 대응. 설명문단(2039:140 bottom abs 1998) 아래 rel y470.
+- 추가 자식 5: 팁카드=2039:141(rect rel x24 y470 342x88 surface #FFFCF7 라운드16 stroke line #DDD1C6 1px), 팁아이콘배경=2039:142(34x34 rel x38 y484 accent-soft #F7EDDD 라운드10), 팁아이콘=2039:143(18x18 rel x46 y492 accent #C99B4A 라운드4 lightbulb placeholder), 팁제목=2039:144('먼저 만든 사람의 팁' 14px w900 ink #231A14 rel x84 y486 → abs 6132/2026), 팁본문=2039:145('청양고추는 반만…\n남은 국물에는 밥을 넣어 마무리해도 좋아요.' 13px Regular gray #6E6258 rel x84 y508 → abs 6132/2048 width238 height32, 카드 내부).
+- 게이트: G0(채널 ihbg56ny 라이브) / G1 / G2(get_node_info 2039:144 '먼저 만든 사람의 팁' + 2039:145 본문 2줄 카드 내부 정합) / G4(surface·line·accent·accent-soft·ink·gray §4b 토큰, 14/13px, 초록 누수 0·영어 누수 0). 밀스톤 아님 → export 생략.
+- 학습: accent-soft rgba(201,155,74,.15)는 브리지 alpha 도형 대신 surface 위 합성 근사색 #F7EDDD 단색으로 대체. 다음 D-detail-08(추출 요약 배지 3, app.html:1060 .extract-summary)은 팁 카드 아래 rel y~570.

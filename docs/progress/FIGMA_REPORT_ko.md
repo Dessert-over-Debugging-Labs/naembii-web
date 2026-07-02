@@ -364,3 +364,9 @@
 - **어떻게(주요 노드)**: region/콘텐츠(2036:116) 자식 1개 신규 — 설명문단(2039:140, TEXT '칼칼한 국물에 몽글몽글한 순두부가…순두부찌개가 완성됩니다.' 15px Regular gray #6E6258 rel x24 y350 → abs 6072/1890 width220 height108). 브리지 폭 미지원 → 원문 6줄 수동 분할(\n), 최대행 width220<342 콘텐츠폭·프레임 우변 6438·하변 2200 내부. 평점행 아래 12px 갭.
 - **게이트**: G0(채널 ihbg56ny 라이브)·G1·G2 read-back('칼칼한 국물…' 텍스트 노드 2039:140·좌표 정합)·G4(gray #6E6258 §4b 토큰, 15px, 초록 누수 0·영어 누수 0=15분 숫자) 통과. 밀스톤 아님 → export 생략.
 - **다음**: D-detail-07 — detail '먼저 만든 사람의 팁' 카드(region/콘텐츠 설명 문단 아래 rel y~470).
+
+### [D-detail-07] detail '먼저 만든 사람의 팁' 카드 · 2026-07-02
+- **무엇을**: cook/detail 팁 카드(.tip-strip)를 app.html:1056 대비 정합 배치. lightbulb 아이콘 + 팁 제목 + 팁 본문.
+- **어떻게(주요 노드)**: region/콘텐츠(2036:116) 자식 5개 신규 — 팁카드=2039:141(rect rel x24 y470 342x88 surface #FFFCF7 라운드16 stroke line #DDD1C6 1px), 팁아이콘배경=2039:142(34x34 accent-soft #F7EDDD 라운드10), 팁아이콘=2039:143(18x18 accent #C99B4A 라운드4 lightbulb placeholder), 팁제목=2039:144('먼저 만든 사람의 팁' 14px w900 ink #231A14 → abs 6132/2026), 팁본문=2039:145('청양고추는 반만…/남은 국물에는 밥을 넣어 마무리해도 좋아요.' 13px Regular gray #6E6258 2줄 → abs 6132/2048 카드 내부). 설명문단 아래 rel y470(12px 갭).
+- **게이트**: G0(채널 ihbg56ny 라이브)·G1·G2 read-back('먼저 만든 사람의 팁' 텍스트 노드 2039:144 + 본문 2줄 카드 내부 정합)·G4(surface·line·accent·accent-soft·ink·gray §4b 토큰, 14/13px, 초록 누수 0·영어 누수 0) 통과. 밀스톤 아님 → export 생략.
+- **다음**: D-detail-08 — detail 추출 요약 배지 3(5단계 추출/재료 9개/타임스탬프 연동, app.html:1060 .extract-summary), region/콘텐츠 팁 카드 아래 rel y~570.

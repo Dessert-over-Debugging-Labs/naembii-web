@@ -558,13 +558,14 @@
       "title": "detail: '먼저 만든 사람의 팁' 카드",
       "description": "cook/detail 안에 ''먼저 만든 사람의 팁' 카드' 요소를 정밀하게 그린다. 원본 source-screens/detail.png 대비 위치·간격·타이포 정합.",
       "priority": 40,
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "멱등: cook/detail(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
         "G2: '먼저 만든 사람의 팁' 텍스트 노드가 cook/detail 안에 존재.",
         "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
         "nodeId 기록 후 한글 커밋."
-      ]
+      ],
+      "notes": "브리지 채널 ihbg56ny(라이브, join+get_node_info OK, 페이지 '요리 비서' 939:2). 대상 region/콘텐츠=2036:116(cook/detail=2036:113 자식, abs 6048/1540 390x660). 멱등: get_node_info 2036:116로 자식=히어로9(2036:125~2037:133)+제목행3(2037:134~136)+평점행3(2038:137~139)+설명문단1(2039:140)=16개만 확인, 팁 카드 없음 → 신규 추가. app.html:1056 <div class=tip-strip>(아이콘 .ti lightbulb + b '먼저 만든 사람의 팁' + p 팁 본문) 대응. CSS app.html:409 .tip-strip{flex·gap12·align-start·surface·line 1px·라운드16·padding14·mb18}, :410 .ti{34x34·라운드10·accent-soft·accent}, :412 b{14px·w900}, :413 p{13px·gray·line1.45}. 설명문단(2039:140, bottom abs 1998) 아래 rel y470(12px 갭)에 배치. 추가 자식 5: 팁카드=2039:141(rect rel x24 y470 342x88 surface #FFFCF7 라운드16 stroke line #DDD1C6 1px), 팁아이콘배경=2039:142(rect 34x34 rel x38 y484 accent-soft #F7EDDD(=rgba(201,155,74,.15) over surface 근사) 라운드10), 팁아이콘=2039:143(rect 18x18 rel x46 y492 accent #C99B4A 라운드4 lightbulb placeholder, 34box 중앙), 팁제목=2039:144('먼저 만든 사람의 팁' 14px w900 ink #231A14 rel x84 y486 → abs 6132/2026 width112), 팁본문=2039:145('청양고추는 반만 넣어도 충분히 칼칼해요.\\n남은 국물에는 밥을 넣어 마무리해도 좋아요.' 13px Regular gray #6E6258 rel x84 y508 → abs 6132/2048 width238 height32, 우변 6370<카드우변 6414·하변 2080<카드하변 2098 내부). ⚠ 브리지 create_text 폭/줄바꿈 미지원 → 팁 본문을 자연 분기점에서 2줄 수동 분할(\\n). G0/G1/G2(get_node_info 2039:144 → '먼저 만든 사람의 팁' 텍스트 노드·좌표 정합 / 2039:145 본문 2줄 카드 내부 정합 확인)/G4(surface #FFFCF7·line #DDD1C6·accent #C99B4A·accent-soft #F7EDDD·ink #231A14·gray #6E6258 §4b 토큰, 14/13px, 초록 누수 0·영어 누수 0) 통과. 밀스톤 아님 → export 생략. 다음 D-detail-08(추출 요약 배지 3: 5단계 추출/재료 9개/타임스탬프 연동, app.html:1060 .extract-summary)은 region/콘텐츠 팁 카드 아래 rel y~570."
     },
     {
       "id": "D-detail-08",
