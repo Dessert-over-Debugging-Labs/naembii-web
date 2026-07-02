@@ -738,13 +738,14 @@
       "title": "cook3: 하단 컨트롤 4(타이머/핸즈프리 꺼짐/재료/요리 완성)",
       "description": "cook/cook3 안에 '하단 컨트롤 4(타이머/핸즈프리 꺼짐/재료/요리 완성)' 요소를 정밀하게 그린다. 원본 source-screens/cook3.png 대비 위치·간격·타이포 정합.",
       "priority": 53,
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "멱등: cook/cook3(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
         "G2: '요리 완성' 텍스트 노드가 cook/cook3 안에 존재.",
         "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
         "nodeId 기록 후 한글 커밋."
-      ]
+      ],
+      "notes": "브리지 채널 ihbg56ny(라이브, join+get_document_info OK, 페이지 '요리 비서' 939:2). 대상 region/하단=2041:165(cook/cook3=2041:161 자식, 비어 있었음 children[]). ⚠ 골격 하단 region은 64px였으나 app.html #cook3 .cook-ctrl은 height:156px(:643) — D-cook3-07 단계카드(2042:198 바닥 abs 2146)와 겹치지 않도록 region/하단을 resize 390x118 + move rel y726(abs 6760/2146, bottom 2264=프레임 하단 정합, 카드 바로 아래 flush). fill을 cook-bg #050505(app.html:491 #cook3 --cook-bg)로 갱신(#0a0a0a→#050505). app.html:1133~1139 .cook-ctrl>.ctrl-buttons(grid 4열)>4×.cbtn(.cic 원+small 라벨) 대응. 추가 자식 13: 상단보더=2042:213(rect 390x1 rel y0 #ffffff a0.16=cook-line border-top). ①타이머: 원2042:214(52x52 rel x32 y16 #D66B42=--green/primary(.cic.o) 라운드26)+아이콘2042:215(22x22 rel x47 y31 #2A1005=on-green 라운드5 timer)+라벨2042:216('타이머' 12px w600 #9a9aa0(.cbtn small)). ②핸즈프리 꺼짐(off): 원2042:217(64x64 rel x117 y10 #30261D=--dark3(.cic.mic.off) 라운드32)+아이콘2042:218(28x28 rel x135 y28 #9a9aa0 라운드6 mic-off, off=muted)+라벨2042:219('핸즈프리 꺼짐' 12px w600 #9a9aa0). ③재료: 원2042:220(52x52 rel x215 y16 #30261D=--dark3(.cic.d) 라운드26)+아이콘2042:221(22x22 rel x230 y31 #FFFFFF(.cic svg 기본) 라운드5 carrot)+라벨2042:222('재료' 12px w600 #9a9aa0). ④요리 완성: 원2042:223(52x52 rel x306 y16 #3FA76F=--fresh(.cic.finish, 진짜 초록=성공 강조만 허용) 라운드26)+아이콘2042:224(22x22 rel x321 y31 #07130C(.cic.finish svg) 라운드5 check)+라벨2042:225('요리 완성' 12px w600 #9a9aa0 abs 7065/2226). 4버튼 grid 4열 등간격(열중심 abs 6818/6909/7001/7092). mic 64원은 center y42 정렬(top y10), 52원은 top y16(center 42). 라벨 top y80 공통. G0(채널 ihbg56ny)/G1/G2 read-back(get_node_info 2041:165 → 자식 13 + '요리 완성' 텍스트 노드 2042:225 #9a9aa0 12px abs 7065/2226 프레임 내부 정합, '타이머'·'재료'·'핸즈프리 꺼짐'도 정합)/G4(다크 cook-bg #050505·cook-line white a0.16·primary #D66B42·on-green #2A1005·dark3 #30261D·fresh #3FA76F·on-fresh #07130C·라벨 #9a9aa0, 초록 #46B581 누수 0(fresh #3FA76F는 finish 성공 강조로 정당)·영어 누수 0, 12px 서브·52~64px 터치) 통과. 밀스톤 아님 → export 생략. 다음: cook3-DONE(밀스톤 검수+export exports/cook3.png)."
     },
     {
       "id": "cook3-DONE",

@@ -679,3 +679,17 @@ Started: Wed Jul  1 15:53:56 KST 2026
 - 게이트: G0(채널 ihbg56ny)/G1/G2 read-back(get_node_info 2042:199 → '1단계. 육수 준비하기' 텍스트 노드 abs 6792/1948 프레임 내부 정합)/G4(다크 panel #111111·ink #f8f8f4·muted #a7a7a7·on-accent #0b0b0b·cook-accent-soft/line=white a0.13/0.16, 초록 #46B581 누수 0·영어 누수 0, 16/20/12px·라운드16·24px 도트) 통과. 밀스톤 아님 → export 생략.
 - nodeId 맵 추가: cook3 단계카드=2042:198(제목2042:199·배지2042:200/201·리스트1~3 닷/번호/텍스트 2042:202~210·영상참조 2042:211/212). 다음: D-cook3-08(하단 컨트롤 4 타이머/핸즈프리 꺼짐/재료/요리 완성, region/하단=2041:165).
 ---
+
+## 2026-07-02 - D-cook3-08 cook3: 하단 컨트롤 4(타이머/핸즈프리 꺼짐/재료/요리 완성)
+- 대상 region/하단=2041:165(cook/cook3=2041:161 자식, 비어 있었음). ⚠ 골격 하단 region은 64px였으나 app.html #cook3 .cook-ctrl height:156px(:643) — D-cook3-07 단계카드(2042:198 바닥 abs 2146)와 겹치지 않게 resize 390x118 + move rel y726(abs 6760/2146, bottom 2264=프레임 하단 정합, 카드 바로 아래 flush). fill #0a0a0a→cook-bg #050505(app.html:491 #cook3 --cook-bg).
+- app.html:1133~1139 .cook-ctrl>.ctrl-buttons(grid 4열)>4×.cbtn(.cic 원+small 라벨) 대응. 추가 자식 13:
+  - 상단보더=2042:213(rect 390x1 rel y0 #ffffff a0.16=cook-line border-top)
+  - ①타이머: 원2042:214(52x52 rel x32 y16 #D66B42=--green/primary(.cic.o) r26)/아이콘2042:215(22x22 rel x47 y31 #2A1005=on-green r5 timer)/라벨2042:216('타이머' 12px w600 #9a9aa0)
+  - ②핸즈프리 꺼짐(off): 원2042:217(64x64 rel x117 y10 #30261D=--dark3(.cic.mic.off) r32)/아이콘2042:218(28x28 rel x135 y28 #9a9aa0 r6 mic-off muted)/라벨2042:219('핸즈프리 꺼짐' 12px w600 #9a9aa0)
+  - ③재료: 원2042:220(52x52 rel x215 y16 #30261D=--dark3(.cic.d) r26)/아이콘2042:221(22x22 rel x230 y31 #FFFFFF r5 carrot)/라벨2042:222('재료' 12px w600 #9a9aa0)
+  - ④요리 완성: 원2042:223(52x52 rel x306 y16 #3FA76F=--fresh(.cic.finish, 진짜 초록=성공 강조 허용) r26)/아이콘2042:224(22x22 rel x321 y31 #07130C r5 check)/라벨2042:225('요리 완성' 12px w600 #9a9aa0 abs 7065/2226)
+- 4버튼 grid 4열 등간격(열중심 abs 6818/6909/7001/7092). mic 64원 center y42(top y10), 52원 top y16(center 42). 라벨 top y80 공통.
+- 게이트: G0(채널 ihbg56ny)/G1/G2 read-back(get_node_info 2041:165 → 자식 13 + '요리 완성' 텍스트 노드 2042:225 #9a9aa0 12px abs 7065/2226 프레임 내부, 타이머·재료·핸즈프리 꺼짐 정합)/G4(다크 cook-bg #050505·cook-line white a0.16·primary #D66B42·on-green #2A1005·dark3 #30261D·fresh #3FA76F·on-fresh #07130C·라벨 #9a9aa0, 초록 #46B581 누수 0(fresh는 finish 성공 강조로 정당)·영어 누수 0, 12px 서브·52~64px 터치) 통과. 밀스톤 아님 → export 생략.
+- 학습: 골격 region 높이가 실제 컴포넌트(cook-ctrl 156px)와 어긋날 때, 위 콘텐츠(단계카드) 바닥에 flush하도록 resize+move로 맞춤(겹침 방지). .cic.finish=--fresh(#3FA76F 진짜 초록)는 CODEX §4b '성공 강조에만' 규칙에 부합 → 초록 누수 아님. mic.off는 --dark3 배경+muted 아이콘으로 '꺼짐' 신호. 다음: cook3-DONE(밀스톤: cook/cook3 검수+export exports/cook3.png).
+- nodeId 맵 추가: cook3 하단컨트롤=region/하단 2041:165(resize 390x118 abs 6760/2146). 자식 13(2042:213~225).
+---
