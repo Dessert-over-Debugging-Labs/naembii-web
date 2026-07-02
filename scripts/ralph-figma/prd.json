@@ -530,13 +530,14 @@
       "title": "detail: 평점 ⭐4.7 후기 3개",
       "description": "cook/detail 안에 '평점 ⭐4.7 후기 3개' 요소를 정밀하게 그린다. 원본 source-screens/detail.png 대비 위치·간격·타이포 정합.",
       "priority": 38,
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "멱등: cook/detail(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
         "G2: '4.7' 텍스트 노드가 cook/detail 안에 존재.",
         "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
         "nodeId 기록 후 한글 커밋."
-      ]
+      ],
+      "notes": "브리지 채널 ihbg56ny(라이브, get_document_info OK, 페이지 '요리 비서' 939:2, 최상위 SEC/A 2004:14·SEC/B 2036:111). 대상 region/콘텐츠=2036:116(cook/detail=2036:113 자식, abs 6048/1540 390x660). 멱등: get_node_info 2036:116로 자식=히어로9(2036:125~2037:133)+제목행3(2037:134~136)만 확인, 평점행 없음 → 신규 추가. app.html:1054 <div class=drating id=detRating> + :1963 renderDetailSocial(star 아이콘 + b 평점 + span.rc '후기 N개') 대응. CSS app.html:834 .drating{gap6·16px·w800·ink}, :835 svg{18x18 accent #C99B4A fill}, :836 .rc{13px·w600·gray·ml2}. 데이터 app.html:1778 순두부(21j8SASqLJU) 시드 후기 → 스토리 라벨대로 평점 4.7·후기 3개. 제목행(2037:134~136, bottom abs 1844) 아래 rel y320에 배치. 추가 자식 3: 평점별아이콘=2038:137(rect 18x18 rel x24 y320 → abs 6072/1860 accent #C99B4A 라운드4 star placeholder), 평점숫자=2038:138(TEXT '4.7' 16px ExtraBold ink #231A14 rel x48 y319 → abs 6096/1859 width25), 후기수=2038:139(TEXT '후기 3개' 13px w600 gray #6E6258 rel x80 y321 → abs 6128/1861). G0/G1/G2(get_node_info 2038:138 → '4.7' 텍스트 노드·좌표 정합 확인, 별아이콘~평점~후기수 6121<6128 비겹침·프레임 우변 6438 내부)/G4(accent #C99B4A·ink #231A14·gray #6E6258 §4b 토큰, 16/13px, 영어 누수 0=4.7 숫자·초록 누수 0) 통과. 밀스톤 아님 → export 생략. 다음 D-detail-06(설명 문단 .dsummary)는 region/콘텐츠 평점행 아래 rel y~350."
     },
     {
       "id": "D-detail-06",

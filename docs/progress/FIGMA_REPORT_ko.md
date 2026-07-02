@@ -352,3 +352,9 @@
 - **어떻게(주요 노드)**: region/콘텐츠(2036:116) 자식 3개 신규 — 제목(2037:134, TEXT `백종원이 알려주는\n칼칼한 순두부찌개` 22px ExtraBold ink #231A14 rel x24 y250 → abs 6072/1790, 원문 `<br>` 반영 1노드 2줄), 북마크아이콘(2037:135, 27×27 rel x337 y250 #9A9AA0 라운드6 bookmark placeholder 우측 정렬), 저장수(2037:136, `342` 13px w700 gray #6E6258 아이콘 하단 중앙). 저장수는 app.html:1778 likes:342.
 - **게이트**: G0(채널 ihbg56ny 라이브)·G1·G2 read-back(제목 텍스트 노드 2037:134 + '342' 2037:136, 전 요소 프레임 우변 6438 내부)·G4(ink #231A14·gray #6E6258·#9A9AA0 토큰, 22/13px, 영어 누수 0=342 숫자·초록 누수 0) 통과. 밀스톤 아님 → export 생략.
 - **다음**: D-detail-05 — detail 평점 ⭐4.7 후기 3개(region/콘텐츠 제목 아래 rel y~320 `.drating`).
+
+### [D-detail-05] detail 평점 ⭐4.7 후기 3개 · 2026-07-02
+- **무엇을**: cook/detail 평점행(별 + `4.7` + `후기 3개`)을 app.html:1054 `.drating` / renderDetailSocial 대비 정합 배치.
+- **어떻게(주요 노드)**: region/콘텐츠(2036:116) 자식 3개 신규 — 평점별아이콘(2038:137, 18×18 rel x24 y320 accent #C99B4A 라운드4 star placeholder), 평점숫자(2038:138, TEXT `4.7` 16px ExtraBold ink #231A14 rel x48 y319 → abs 6096/1859), 후기수(2038:139, TEXT `후기 3개` 13px w600 gray #6E6258 rel x80 y321).
+- **게이트**: G0(채널 ihbg56ny 라이브)·G1·G2 read-back(`4.7` 텍스트 노드 2038:138, 별~숫자~후기수 비겹침·프레임 우변 6438 내부)·G4(accent #C99B4A·ink #231A14·gray #6E6258 토큰, 16/13px, 영어 누수 0=4.7 숫자·초록 누수 0) 통과. 밀스톤 아님 → export 생략.
+- **다음**: D-detail-06 — detail 설명 문단(region/콘텐츠 평점행 아래 rel y~350 `.dsummary`).
