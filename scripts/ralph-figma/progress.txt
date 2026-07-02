@@ -537,3 +537,10 @@ Started: Wed Jul  1 15:53:56 KST 2026
 - 추가 자식 3: 뒤로아이콘=2036:122(rect 24x24 rel x24 y24 → abs 6072/1492 ink #231A14 라운드6 chevron-left placeholder), 제목=2036:123('레시피' 16px Bold #231A14 rel x174 y26 → abs 6222/1494 width45, 중심 6244.5≈프레임중심 6243 중앙정합), 공유아이콘=2036:124(rect 24x24 rel x342 y24 → abs 6390/1492 우변 6414 ink #231A14 라운드6 share-2 placeholder). 아이콘 좌우 24px 대칭.
 - 게이트: G0(채널 ihbg56ny 라이브+get_document_info OK, 페이지 '요리 비서' 939:2)/G1/G2 read-back(get_node_info 2036:115 → 자식 3 + '레시피' 텍스트 노드, 좌표 프레임 내부)/G4(ink #231A14 토큰·16px·영어 누수 0·초록 누수 0) 통과. 밀스톤 아님 → export 생략.
 - 다음: D-detail-03(영상 히어로 썸네일+재생아이콘+미리보기/YouTube 배지, region/콘텐츠=2036:116).
+
+---
+## 2026-07-02 - D-detail-03 detail 영상 히어로(썸네일+재생+정적 미리보기/YouTube 배지)
+- 대상 region/콘텐츠=2036:116(cook/detail=2036:113 자식, abs 6048/1540 390x660). 멱등: get_node_info 2036:116 children=[] 확인 → 신규 추가. app.html:1043 .hero(썸네일 img + .play 원형 + .video-honesty '정적 미리보기' + .yt-badge 'YouTube') 대응.
+- 추가 자식 9(히어로 영역 y0~230): 히어로썸네일=2036:125(rect rel x0 y0 390x230 gray2 #A99B90 이미지 placeholder), 재생버튼=2036:126(66x66 rel x162 y82 #000000 a0.34 라운드33 중앙), 재생아이콘=2036:127('▶' 24px #FFFFFF rel x187 y99), 미리보기배지배경=2036:128(rect rel x16 y192 112x28 #000000 a0.64 라운드12 stroke #FFFFFF a0.22 1px), 미리보기아이콘=2036:129(14x14 rel x26 y199 warn골드 #C99B4A 라운드3), 미리보기텍스트=2036:130('정적 미리보기' 12px w700 #FFFFFF rel x46 y199 → abs 6094/1739), YouTube배지배경=2036:131(rect rel x296 y194 78x24 #FF0000 라운드8 우변 abs 6422<6438), YouTube아이콘=2036:132(14x14 rel x304 y199 #FFFFFF 라운드3), YouTube텍스트=2037:133('YouTube' 12px w700 #FFFFFF rel x322 y198 → abs 6370/1738 우변 6421 프레임 내부).
+- 게이트: G0(채널 ihbg56ny 라이브+get_document_info OK, 페이지 '요리 비서' 939:2)/G1/G2 read-back(get_node_info 2036:116 → 자식 9 + '정적 미리보기' 텍스트 노드 2036:130, 전 요소 프레임 내부)/G4(gray2 #A99B90·warn골드 #C99B4A·YouTube #FF0000·흰 §4b 토큰·12px·초록 누수 0·영어 누수 0=YouTube 플랫폼 고유명·▶ 기호) 통과. 밀스톤 아님 → export 생략.
+- 학습: 히어로는 콘텐츠 최상단 full-bleed(y0~230). 배지 반투명(a0.34/0.64)·stroke a0.22는 set_fill_color/set_stroke_color의 a 파라미터로 정상 반영. 다음: D-detail-04(제목+북마크+저장수 342, region/콘텐츠 히어로 아래 rel y~250, .dhead h2 '백종원이 알려주는 칼칼한 순두부찌개').
