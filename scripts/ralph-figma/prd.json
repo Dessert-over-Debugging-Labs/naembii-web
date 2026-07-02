@@ -296,7 +296,8 @@
       "title": "sheet: 플랫폼 배지(YouTube/Instagram)",
       "description": "cook/sheet 안에 '플랫폼 배지(YouTube/Instagram)' 요소를 정밀하게 그린다. 원본 source-screens/sheet.png 대비 위치·간격·타이포 정합.",
       "priority": 21,
-      "passes": false,
+      "passes": true,
+      "notes": "브리지 채널 ihbg56ny(라이브, get_document_info 응답 OK, 페이지 '요리 비서' 939:2). 대상 cook/sheet=2025:62(자식: region4·스크림2025:67·패널2025:68·핸들바2025:70·제목2026:71·링크필드2027:72~74). 멱등: get_node_info 2025:62로 플랫폼 힌트 없음 확인 → 신규 추가. app.html:1256 .paste-note(<i lucide=wand-sparkles> + 'YouTube, Shorts, Instagram 링크를 그대로 붙여넣으세요. 어디서 가져왔는지는 따로 입력하지 않아도 됩니다.') 대응. CSS app.html:353 .paste-note{gap8·gray·12px·w800·line1.45}, :354 svg{15x15·primary-l}. 실제 앱은 '플랫폼 배지'가 아니라 링크필드 아래 힌트 라인(YouTube/Shorts/Instagram 플랫폼 언급)이라 이를 충실히 렌더. 패널(2025:68)이 RECTANGLE이라 자식 불가 → cook/sheet 직속으로 링크필드(2027:72, 바닥 rel y370) 아래 rel y382에 배치. 추가 자식 3: sheet-플랫폼힌트아이콘=2027:75(rect 15x15 rel x24 y382 primary-l #E1875F 라운드4 wand-sparkles placeholder), sheet-플랫폼힌트텍스트=2027:76('YouTube, Shorts, Instagram 링크를 그대로 붙여넣으세요.' 12px w800 gray #6E6258 rel x47 y381 → abs 6807/501, 너비308 프레임내부), sheet-플랫폼힌트텍스트2=2027:77('어디서 가져왔는지는 따로 입력하지 않아도 됩니다.' 12px w800 #6E6258 rel x47 y397 → abs 6807/517, 너비249). ⚠ 브리지 create_text는 폭/줄바꿈 미지원 → 원문(558px 단일행 오버플로)을 2줄로 분할해 프레임 내부에 맞춤(line1 우변 7115·line2 우변 7056 < 프레임 우변 7150). G0/G1/G2(get_node_info 2027:76 → 'YouTube' 포함 텍스트 노드·좌표 정합 확인)/G4(gray #6E6258·primary-l #E1875F §4b 토큰, 12px, 초록 누수 0·영어 누수 0=YouTube/Shorts/Instagram은 플랫폼 고유명) 통과. 밀스톤 아님 → export 생략. 다음 D-sheet-06(분석 시작 CTA=app.html:1274 '입력 완료' 버튼)는 미리보기 영역 아래 시트 하단, cook/sheet 직속.",
       "acceptanceCriteria": [
         "멱등: cook/sheet(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
         "G2: 'YouTube' 텍스트 노드가 cook/sheet 안에 존재.",

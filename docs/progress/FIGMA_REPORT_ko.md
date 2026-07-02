@@ -206,3 +206,13 @@
 - **다음**: D-sheet-05(플랫폼 배지 YouTube/Instagram = app.html:1256 .paste-note 힌트) — 필드 아래 rel y~382, cook/sheet 직속.
 
 ---
+
+### [D-sheet-05] sheet: 플랫폼 배지(YouTube/Instagram) · 2026-07-02
+
+- **무엇을**: `cook/sheet` 바텀시트 링크 입력 필드 아래에 플랫폼 힌트 라인을 그림(app.html:1256 `.paste-note` = `<i lucide=wand-sparkles>` + 'YouTube, Shorts, Instagram 링크를 그대로 붙여넣으세요…' 대응). 실제 앱은 별도 '배지'가 아니라 링크필드 아래 안내 문구이므로 이를 충실히 렌더.
+- **어떻게(멱등)**: `get_node_info` cook/sheet(2025:62) → 자식(region 4 + 스크림 2025:67 + 패널 2025:68 + 핸들 2025:70 + 제목 2026:71 + 링크필드 2027:72~74)에 힌트 부재 확인 후 신규 추가. 패널이 RECTANGLE이라 자식 불가 → cook/sheet 직속으로 링크필드(바닥 rel y370) 아래 rel y382에 배치. `sheet-플랫폼힌트아이콘`=2027:75(rect 15×15, primary-l #E1875F, 라운드4, wand-sparkles placeholder), `sheet-플랫폼힌트텍스트`=2027:76('YouTube, Shorts, Instagram 링크를 그대로 붙여넣으세요.', 12px w800 gray #6E6258, abs 6807/501), `sheet-플랫폼힌트텍스트2`=2027:77('어디서 가져왔는지는 따로 입력하지 않아도 됩니다.', 12px w800 #6E6258, abs 6807/517).
+- **주의**: 브리지 `create_text`는 폭/줄바꿈 미지원 → 원문 단일행이 558px로 프레임 우변(7150) 초과 → 자연 분기점에서 2줄로 수동 분할해 프레임 내부에 맞춤(line1 우변 7115·line2 우변 7056).
+- **게이트**: G0 ✅(채널 `ihbg56ny`) / G1 ✅(아이콘+텍스트 2 = 3) / G2 ✅(`get_node_info` 2027:76 → characters에 'YouTube' 포함, fill #6e6258, 12px w800, abs 6807/501) / G4 ✅(gray #6E6258·primary-l #E1875F 토큰, 12px, 초록 누수 0·영어 누수 0 = YouTube/Shorts/Instagram은 플랫폼 고유명). 밀스톤 아님 → export 생략.
+- **다음**: D-sheet-06(분석 시작 CTA = app.html:1274 `<button class=btn>입력 완료</button>`) — 시트 하단, cook/sheet 직속.
+
+---
