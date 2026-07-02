@@ -382,3 +382,10 @@
 - **어떻게(주요 노드)**: region/하단(2036:117, abs 6048/2200 390x64) 자식 3개 신규 — detail-요리시작버튼=2041:155(rect rel x52 y3 286x58 primary #D66B42 라운드29 pill, gradient는 bridge 단색 미지원→주색 solid, 중앙정렬), detail-요리시작아이콘=2041:156(20x20 rel x133 y22 on-green #2A1005 라운드5 chef-hat placeholder), detail-요리시작텍스트=2041:157('요리 시작하기' 16px w800 on-green #2A1005 rel x161 y23 → abs 6209/2223 width92). 아이콘+텍스트(center 6241)·버튼(center 6243) 중앙 정렬.
 - **게이트**: G0(채널 ihbg56ny 라이브)·G1·G2 read-back('요리 시작하기' 텍스트 노드 2041:157 #2a1005 16px w800 + region/하단 2036:117 자식 3 확인)·G4(primary #D66B42·on-green #2A1005 §4b 토큰, 16px, 초록 누수 0·영어 누수 0) 통과. 밀스톤 아님 → export 생략.
 - **다음**: detail-DONE — cook/detail 원본 대응 검수 + export exports/detail.png(밀스톤).
+
+### [detail-DONE] detail 화면 완성 검수 + export (밀스톤) · 2026-07-02
+- **무엇을**: cook/detail(2036:113)이 원본 source-screens/detail.png와 영역 대응하는지 검수하고 PNG로 내보냄.
+- **어떻게(검수)**: get_node_info 2036:113 전수 read-back — 4 region 세로 스택(상태바→헤더→콘텐츠→하단) 정합, 요소 전부 존재('레시피'·'정적 미리보기'·YouTube·'백종원이 알려주는 칼칼한 순두부찌개'·'342'·'4.7'/'후기 3개'·설명문단·'먼저 만든 사람의 팁'·'5단계 추출'/'재료 9개'/'타임스탬프 연동'·'요리 시작하기'). 미비 요소 없음.
+- **초록 누수 검증**: 전 노드 fill 스캔 → #46b581·#e3f3ec 0건. detail은 처음부터 §4b 테라코타(primary #d66b42·l #e1875f·칩 #7a3a22·accent #c99b4a)로 그려 home식 색 보정 불필요.
+- **게이트**: G0(채널 ihbg56ny 라이브)·G2(read-back 전수)·G3(export_node_as_image PNG scale2 → exports/detail.png, 780x1688 유효 PNG)·G4(§4b 팔레트·초록/영어 누수 0, YouTube=플랫폼 고유명) 통과.
+- **다음**: NOTE-detail(포스트잇+주석) 또는 K-cook3(cook/cook3 다크 골격, SEC/B 안).

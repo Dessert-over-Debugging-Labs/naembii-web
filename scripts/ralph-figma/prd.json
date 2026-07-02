@@ -600,7 +600,8 @@
       "title": "detail 화면 완성 검수 + export",
       "description": "cook/detail가 원본과 영역 대응하는지 확인하고 PNG로 내보낸다(밀스톤).",
       "priority": 43,
-      "passes": false,
+      "passes": true,
+      "notes": "브리지 채널 ihbg56ny(라이브, join+get_document_info OK, 페이지 '요리 비서' 939:2, 최상위 SEC/A 2004:14·SEC/B 2036:111). 대상 cook/detail=2036:113(자식: region/상태바2036:114·헤더2036:115·콘텐츠2036:116·하단2036:117). G2 read-back(get_node_info 2036:113 전체): 4 region 세로 스택 정합(상태바 y1420·헤더 y1468·콘텐츠 y1540 h660·하단 y2200 h64). 요소 전수: 상태바=9:41+신호/와이파이/배터리(#0a0a0a 4), 헤더=뒤로/제목'레시피'/공유(#231a14 3), 콘텐츠=히어로9(썸네일#a99b90·재생·미리보기'정적 미리보기'·YouTube배지)+제목'백종원이 알려주는\\n칼칼한 순두부찌개'+북마크+저장수'342'+평점'4.7'/'후기 3개'+설명문단+팁카드'먼저 만든 사람의 팁'+메타칩3'5단계 추출'/'재료 9개'/'타임스탬프 연동', 하단=요리시작버튼(#d66b42)+'요리 시작하기'(#2a1005). **G4 팔레트 검증(초록 누수 0)**: 전 노드 fill 스캔 결과 #46b581·#e3f3ec 0건 — detail은 처음부터 §4b 테라코타로 그려 home처럼 보정 불필요. 사용색=primary #d66b42·primary-l #e1875f·칩텍스트 #7a3a22·accent #c99b4a·on-primary #2a1005·ink #231a14·gray #6e6258·line #ddd1c6·surface #fffcf7/#fefcf7·bg #fff7f0·gray2 #a99b90·YouTube #ff0000·북마크 #9a9aa0. 영어 누수 0(YouTube=플랫폼 고유명). G3 export_node_as_image PNG scale2 → scripts/ralph-figma/exports/detail.png(780x1688 유효 PNG, transcript base64 추출 저장). 원본 source-screens/detail.png와 영역 대응(상태바→헤더→콘텐츠(히어로→제목→평점→설명→팁→메타칩)→하단 CTA). 미비 요소 없음(보정 불필요). 다음: NOTE-detail(포스트잇+주석) 또는 K-cook3(cook/cook3 다크 골격).",
       "acceptanceCriteria": [
         "cook/detail가 원본 source-screens/detail.png와 영역 대응(상태바→헤더→콘텐츠→하단).",
         "G3: export_node_as_image로 exports/detail.png(scale2) 저장.",
