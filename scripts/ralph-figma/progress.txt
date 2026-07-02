@@ -693,3 +693,12 @@ Started: Wed Jul  1 15:53:56 KST 2026
 - 학습: 골격 region 높이가 실제 컴포넌트(cook-ctrl 156px)와 어긋날 때, 위 콘텐츠(단계카드) 바닥에 flush하도록 resize+move로 맞춤(겹침 방지). .cic.finish=--fresh(#3FA76F 진짜 초록)는 CODEX §4b '성공 강조에만' 규칙에 부합 → 초록 누수 아님. mic.off는 --dark3 배경+muted 아이콘으로 '꺼짐' 신호. 다음: cook3-DONE(밀스톤: cook/cook3 검수+export exports/cook3.png).
 - nodeId 맵 추가: cook3 하단컨트롤=region/하단 2041:165(resize 390x118 abs 6760/2146). 자식 13(2042:213~225).
 ---
+
+## 2026-07-02 - cook3-DONE cook3 화면 완성 검수 + export(밀스톤)
+- 브리지 채널 ihbg56ny(라이브, join+get_document_info OK, 페이지 '요리 비서' 939:2, 최상위 SEC/A 2004:14·SEC/B 2036:111).
+- 대상 cook/cook3=2041:161(다크 #0a0a0a, SEC/B 자식, abs 6760/1420 390x844). G2 전수 read-back(get_node_info 2041:161):
+  - 4 region 세로 스택 정합: region/상태바 2041:162(y0-48)·헤더 2041:163(y48-120)·콘텐츠 2041:164(y120-780)·하단 2041:165(resize 390x118, y726-844, bottom abs 2264=프레임 하단 flush). push-out 없음.
+  - 요소 전부 존재: 상태바(9:41+신호/와이파이/배터리)·헤더('조리 모드')·영상영역(#000+#1b1b1b 썸네일+'정적 미리보기 · 실제 재생은 실기기에서 확인' 오버레이=거짓 재생 없음)·단계도트5(1칸 활성)+‘1 / 5’·톤칩4(화이트/허브#76d99e/스틸#92c5ff/크림#f3e2bc)·스와이프 힌트·단계카드('1단계. 육수 준비하기'+배지+리스트3+‘0:00 ~ 0:35 · 원본 구간’)·하단컨트롤4(타이머#d66b42/핸즈프리 꺼짐/재료/요리 완성#3fa76f).
+- 게이트: G0(채널 ihbg56ny) / G2 전수 정합 / G3 export_node_as_image PNG scale2 → scripts/ralph-figma/exports/cook3.png(780x1688 유효 PNG 66835B, transcript base64 IHDR 추출) / G4(초록 누수 0=#46b581/#e3f3ec 0건, 톤칩·finish는 §4b 정당색·영어 누수 0·다크 §4b 팔레트·영역 대응).
+- 학습: cook3는 처음부터 다크 §4b 토큰(테라코타 #d66b42·톤칩·fresh #3fa76f)으로 그려 home처럼 초록 일괄보정 불필요. 밀스톤 검수+export 파이프라인 재확인. 다음: NOTE-cook3(포스트잇+주석) 또는 K-cook.
+---

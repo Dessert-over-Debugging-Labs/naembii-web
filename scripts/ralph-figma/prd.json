@@ -752,12 +752,13 @@
       "title": "cook3 화면 완성 검수 + export",
       "description": "cook/cook3가 원본과 영역 대응하는지 확인하고 PNG로 내보낸다(밀스톤).",
       "priority": 54,
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "cook/cook3가 원본 source-screens/cook3.png와 영역 대응(상태바→헤더→콘텐츠→하단).",
         "G3: export_node_as_image로 exports/cook3.png(scale2) 저장.",
         "미비 요소 발견 시 보정. 한글 커밋."
-      ]
+      ],
+      "notes": "브리지 채널 ihbg56ny(라이브, join+get_document_info OK, 페이지 '요리 비서' 939:2, 최상위 SEC/A 2004:14·SEC/B 2036:111). 대상 cook/cook3=2041:161(다크 #0a0a0a, SEC/B 자식, abs 6760/1420 390x844). G2 전수 read-back(get_node_info 2041:161): 4 region 세로 스택 정합(상태바 2041:162 y0-48·헤더 2041:163 y48-120·콘텐츠 2041:164 y120-780·하단 2041:165 y726-844 resize118 bottom 2264=프레임 하단 flush, push-out 없음). 요소 전부 존재: 상태바(9:41+신호/와이파이/배터리 #f8f8f4), 헤더(뒤로/‘조리 모드’/도움말 #f8f8f4), 영상영역(#000 검정+#1b1b1b 썸네일+‘정적 미리보기 · 실제 재생은 실기기에서 확인’ 오버레이=거짓 재생 없음), 단계도트5(1칸 활성 #f8f8f4·나머지 흰 a0.14)+‘1 / 5’, 톤칩4(화이트 active·허브 #76d99e·스틸 #92c5ff·크림 #f3e2bc), 스와이프 힌트, 단계카드(‘1단계. 육수 준비하기’+‘1 / 5’ 배지+리스트3 냄비물250ml/코인육수/멸치액젓+‘0:00 ~ 0:35 · 원본 구간’), 하단컨트롤4(타이머 #d66b42·핸즈프리 꺼짐 #30261d·재료 #30261d·요리 완성 #3fa76f). G4: 초록 누수 0(#46b581/#e3f3ec 0건; 톤칩 허브 #76d99e·스틸 #92c5ff·크림 #f3e2bc·finish #3fa76f는 §4b cook3 톤/성공색으로 정당), 영어 누수 0(9:41·1/5·시간표기·ml 단위만; STEP/Mic 없음), 다크 §4b 팔레트, 상태바→헤더→콘텐츠→하단 영역 대응. G3 export_node_as_image PNG scale2 → scripts/ralph-figma/exports/cook3.png(780x1688 유효 PNG 66835B, transcript base64 IHDR 추출). 보정 불필요(cook3는 처음부터 다크 §4b 테라코타/톤칩으로 그려 초록 함정 회피). 다음: NOTE-cook3(포스트잇+주석) 또는 K-cook(cook/cook 다크 골격)."
     },
     {
       "id": "NOTE-cook3",
