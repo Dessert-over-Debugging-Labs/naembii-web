@@ -392,7 +392,8 @@
       "title": "loading: 분석 상태 카피",
       "description": "cook/loading 안에 '분석 상태 카피' 요소를 정밀하게 그린다. 원본 source-screens/loading.png 대비 위치·간격·타이포 정합.",
       "priority": 28,
-      "passes": false,
+      "passes": true,
+      "notes": "브리지 채널 ihbg56ny(라이브, get_document_info 응답 OK, 페이지 '요리 비서' 939:2). 대상 region/콘텐츠=2031:88(cook/loading=2031:85 자식, abs 7440/240 390x660, 페이지 중심 x7635). 멱등: get_node_info 2031:88로 기존 자식=로딩스피너 트랙2032:94·활성헤드2032:95만 확인 → 분석 카피 없음. app.html:1028 .loading h2+p 대응. ⚠ G2 라벨 정정: PRD accept의 '영상을 분석하고 있어요'는 패러프레이즈이고 app.html:1028 실제 카피는 h2 '레시피를 분석하고 있어요' + p '영상을 단계별로 쪼개는 중이에요.'(부제에 '영상을' 포함). G4(원본 정합) 우선 → 실제 카피로 그림. 추가 자식 2: 로딩-분석헤드라인=2033:96(TEXT '레시피를 분석하고 있어요' 20px ExtraBold ink #231A14, 스피너 하단 rel y328·gap24 아래, width211 → move_node abs x7530 y568로 중앙정렬 center 7635.5≈페이지중심), 로딩-분석부제=2033:97(TEXT '영상을 단계별로 쪼개는 중이에요.' 15px Regular gray #6E6258, width210 abs x7530 y610 center 7635 정확 중앙, 헤드라인 아래 rel y370). app.html .loading는 flex column center·gap24 → 스피너-헤드라인-부제 세로 중앙 스택. G0/G1/G2(get_node_info 2031:88 → 자식 4, '레시피를 분석하고 있어요'·'영상을 단계별로 쪼개는 중이에요.' 텍스트 노드 확인)/G4(ink #231A14·gray #6E6258 §4b 토큰, 20/15px, 초록 누수 0·영어 누수 0, 크림 #FFF7F0 bg) 통과. 밀스톤 아님 → export 생략. 다음 D-loading-04(단계 진행 힌트 재료/단계 추출)는 부제 아래 rel y~410.",
       "acceptanceCriteria": [
         "멱등: cook/loading(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
         "G2: '영상을 분석하고 있어요' 텍스트 노드가 cook/loading 안에 존재.",

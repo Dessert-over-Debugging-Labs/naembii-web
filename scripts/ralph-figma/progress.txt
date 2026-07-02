@@ -461,3 +461,10 @@ Started: Wed Jul  1 15:53:56 KST 2026
 - 추가 자식 2: 로딩스피너-트랙=2032:94(rect rel x163 y240 64x64 r32 원형, fill+stroke 피치 #FBE7DE w5, abs 7603/480 중앙 7635/512. ⚠ 브리지 fill alpha 무시=a1 강제 → 투명 링 대신 피치 solid 디스크로 렌더=트랙), 로딩스피너-활성헤드=2032:95(rect rel x189 y234 12x12 r6 테라코타 #D66B42, abs 7629/474 중앙 7635/480 트랙 상단 12시=border-top 활성 아크 근사).
 - 게이트: G0(ihbg56ny 라이브)/G1(도형2)/G2(get_node_info 2031:88 자식2 존재·좌표 정합)/G4(피치 #FBE7DE·테라코타 #D66B42 §4b, 초록 누수 0·영어 누수 0, 도형 스토리) 통과. 밀스톤 아님 → export 생략.
 - 학습: create_rectangle+set_fill_color의 alpha(a=0)는 브리지가 무시하고 a=1 강제 → 투명 도형(빈 링 등)은 불가, solid로만 표현. 다음 D-loading-03(분석 카피 '레시피를 분석하고 있어요')은 스피너 아래 rel y~328 region/콘텐츠 자식.
+---
+## 2026-07-02 - D-loading-03 loading 분석 상태 카피
+- 대상 region/콘텐츠=2031:88(cook/loading=2031:85 자식, abs 7440/240 390x660, 페이지 중심 x7635). 멱등: 기존 자식=스피너 트랙2032:94·활성헤드2032:95만 확인 → 분석 카피 없어 신규 추가.
+- app.html:1028 .loading h2+p 이식. ⚠ G2 라벨 정정: PRD accept의 '영상을 분석하고 있어요'는 패러프레이즈, app.html 실제 카피는 h2 '레시피를 분석하고 있어요' + p '영상을 단계별로 쪼개는 중이에요.'(부제에 '영상을' 포함). G4(원본 정합) 우선 → 실제 카피로 그림.
+- 추가 자식 2: 로딩-분석헤드라인=**2033:96**(TEXT '레시피를 분석하고 있어요' 20px ExtraBold ink #231A14, 스피너 하단(rel y304)+gap24, width211 → move_node abs x7530 y568로 중앙정렬, center 7635.5≈페이지중심), 로딩-분석부제=**2033:97**(TEXT '영상을 단계별로 쪼개는 중이에요.' 15px Regular gray #6E6258, width210 abs x7530 y610 center 7635 정확 중앙, 헤드라인 아래 rel y370). app.html .loading=flex column center gap24 → 스피너-헤드라인-부제 세로 중앙 스택.
+- 게이트: G0(ihbg56ny 라이브)/G1(텍스트2 생성+중앙정렬)/G2 read-back(get_node_info 2031:88 → 자식 4, '레시피를 분석하고 있어요'·'영상을 단계별로 쪼개는 중이에요.' 텍스트 노드 확인)/G4(ink #231A14·gray #6E6258 §4b 토큰, 20/15px, 초록 누수 0·영어 누수 0, 크림 #FFF7F0 bg) 통과. 밀스톤 아님 → export 생략.
+- 학습: create_text는 LEFT 정렬·부모상대 배치 → 중앙정렬 필요 시 read-back으로 실측 width 확인 후 move_node(abs)로 center=페이지중심 보정. 다음 D-loading-04(단계 진행 힌트 재료/단계 추출)는 부제 아래 rel y~410.
