@@ -474,7 +474,8 @@
       "title": "detail: 상태바",
       "description": "cook/detail 안에 '상태바' 요소를 정밀하게 그린다. 원본 source-screens/detail.png 대비 위치·간격·타이포 정합.",
       "priority": 34,
-      "passes": false,
+      "passes": true,
+      "notes": "브리지 채널 ihbg56ny(라이브, get_document_info OK, 페이지 '요리 비서' 939:2, 최상위 자식=SEC/A 2004:14·SEC/B 2036:111). 대상 region/상태바=2036:114(cook/detail=2036:113 자식, abs 6048/1420 390x48). 멱등: get_node_info 2036:114로 children=[] 확인 → 신규 추가. home(2007:21~/2021:2~3)·loading(2031:90/2032:91~93) 상태바 패턴 재사용. 추가 자식 4: 상태바-시간=2036:118('9:41' 15px SemiBold #0A0A0A rel x24 y14 → abs 6072/1434), 상태바-신호=2036:119(rect rel x300 y18 18x12 #0A0A0A → abs 6348/1438), 상태바-와이파이=2036:120(rect rel x322 y18 16x12 #0A0A0A → abs 6370/1438), 상태바-배터리=2036:121(rect rel x342 y18 24x12 #0A0A0A → abs 6390/1438 우변 6414 < 프레임 우변 6438). 아이콘 우측 정렬(우측 여백 24px, 좌측 9:41 여백 대칭). G0/G1/G2(get_node_info 2036:114 → 자식 4 + '9:41' 텍스트 노드 확인, 좌표 프레임 내부 정합)/G4(다크 #0A0A0A 토큰, 영어 누수 0=9:41은 숫자, 초록 누수 0) 통과. 밀스톤 아님 → export 생략. 다음 D-detail-02(헤더 뒤로/레시피/공유)는 region/헤더=2036:115.",
       "acceptanceCriteria": [
         "멱등: cook/detail(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
         "G2: '9:41' 텍스트 노드가 cook/detail 안에 존재.",
