@@ -626,7 +626,8 @@
       "title": "cook3 화면 골격 프레임 생성",
       "description": "cook/cook3 프레임(390x844, 배경 #0A0A0A)을 SEC/B 안에 만들고 상태바/헤더/콘텐츠/하단 region 서브프레임 골격을 잡는다.",
       "priority": 45,
-      "passes": false,
+      "passes": true,
+      "notes": "브리지 채널 ihbg56ny(라이브, join+get_document_info OK, 페이지 '요리 비서' 939:2, 최상위 SEC/A 2004:14·SEC/B 2036:111). 멱등: get_node_info 2036:111(SEC/B)로 자식=title 2036:112·cook/detail 2036:113(우변 6438)·NOTE/detail-1 2041:158(abs 6480/우변 6720)만 확인 → cook/cook3 없어 신규 create(중복 없음). cook/cook3=2041:161(390x844, 다크 #0A0A0A, SEC/B 자식, 부모-상대 x=760 y=120 → 절대 x=6760 y=1420, NOTE/detail-1 우변 6720 오른쪽 40px 간격, SEC/B abs 6000~9000/1300~2420 내부 OK 우변 7150). region 서브프레임 4개(전부 다크 #0A0A0A, cook/cook3는 조리 다크 화면): region/상태바=2041:162(y0-48 h48 abs 6760/1420), region/헤더=2041:163(y48-120 h72 abs 6760/1468), region/콘텐츠=2041:164(y120-780 h660 abs 6760/1540), region/하단=2041:165(y780-844 h64 abs 6760/2200 bottom 2264 < SEC/B bottom 2420). 상태바→헤더→콘텐츠→하단 세로 스택, push-out 없음. G0/G1/G2 read-back(get_node_info 2041:161 → 자식 4 + 다크 #0a0a0a·절대좌표 정합)/G4(다크 #0A0A0A §4b 토큰, 영어 누수 0·초록 누수 0) 통과. 밀스톤 아님 → export 생략. ⚠ cook3는 다크 화면 — 이후 D-cook3-* 요소는 이 region에 자식 추가, 텍스트/아이콘은 밝은 색(ink #f8f8f4·muted #a7a7a7·톤칩 허브 #76D99E/스틸 #92C5FF/크림 #F3E2BC). 다음: D-cook3-01(상태바 다크 — home/detail 상태바 패턴 재사용하되 색은 밝게 #f8f8f4).",
       "acceptanceCriteria": [
         "멱등: cook/cook3가 이미 있으면 재사용(중복 생성 금지), 없으면 생성해 SEC/B 안에 배치(390x844, 배경 #0A0A0A).",
         "상태바/헤더/콘텐츠/하단 region 서브프레임 골격을 만든다.",
