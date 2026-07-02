@@ -123,5 +123,14 @@
   <li><b>다음</b>: F1-01 home 전체 이식(검색바·카테고리 원형칩 5개·추천 카드 2개·하단탭바까지 확장).</li>
 </ul>
 <hr>
+<h2>detail-FULL — cook/detail 전체 스크롤 콘텐츠 확장</h2>
+<ul>
+  <li><b>판정</b>: <b>actionable</b>. v1 <code>cook/detail</code>(2036:113)·v2 <code>cook-v2/detail</code>(2043:473) 둘 다 재료/단계/후기 부재(v2는 stat-card+CTA에서 끊김) → 신규 콘텐츠, <code>sheet-FULL</code> park와 상황 다름.</li>
+  <li><b>추가</b>: <code>region/콘텐츠</code>(2036:116)에 90노드(2050:82~171) — 메타카드(조리시간 30분·분량 2인분·난이도 쉬움) + 탭(재료/레시피/리뷰) + 재료 9개(주재료 순두부·양파·애호박·청양고추·계란 / 양념 다진마늘·진간장·멸치액젓·코인육수) + 레시피 5단계(A 육수 준비하기~E 마무리하기) + 후기 3(요리고수★5/자취왕★4/맵찔이★5) + 후기 쓰기.</li>
+  <li><b>레이아웃</b>: <code>resize_node</code> cook/detail 390×2744·region/콘텐츠 390×2560. CTA <code>요리 시작하기</code>는 <code>move_node(0,2680)</code>=<b>부모-상대</b>로 하단 flush + &lsquo;스크롤 시 고정&rsquo; 주석.</li>
+  <li><b>게이트</b>: <span class="gate">G0 ✅ / G1 ✅ / G2 ✅(scan_text_nodes 75노드 정합·오버플로 0) / G4 ✅</span> — §4b 팔레트(green-soft=peach·green=terracotta 함정 회피, 금지초록 0·영어 누수 0). -DONE/MILE 아님 → export 생략.</li>
+  <li><b>다음</b>: cook3-FULL(actionable 여부는 cook-v2/cook3 접힌콘텐츠 유무로 판정).</li>
+</ul>
+<hr>
 </body>
 </html>

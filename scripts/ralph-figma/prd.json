@@ -1506,13 +1506,14 @@
       "title": "detail 전체 스크롤 콘텐츠 확장",
       "description": "cook/detail 프레임이 첫 화면(844)만 있어 스크롤 하단 콘텐츠가 빠졌다. app.html의 detail view 마크업을 끝까지 읽어 접힌 하단 콘텐츠(재료·단계·후기 등 CTA 아래 전체)를 모두 그리고, resize_node로 프레임 높이를 콘텐츠에 맞춰 늘린다(멱등, 기존 노드 재사용).",
       "priority": 43.3,
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "app.html detail view의 하단(접힌) 콘텐츠 요소를 cook/detail에 추가(멱등, 중복 금지).",
         "resize_node로 cook/detail 높이를 전체 콘텐츠에 맞춰 확장(고정 844 아님). 하단탭바/플로팅 CTA는 최하단 또는 고정 주석.",
         "G2 read-back으로 하단 콘텐츠 노드 존재 확인. G3: exports/detail.png 갱신.",
         "한글 커밋."
-      ]
+      ],
+      "notes": "브리지 채널 kpgtp6vl(라이브, join+get_document_info OK, 페이지 '요리 비서' 939:2). 대상 cook/detail=2036:113(v1, SEC/B 2036:111 자식). 판정: sheet-FULL과 달리 **actionable**(home-FULL/loading 케이스) — app.html detail view(1053~1102)의 접힌 하단 콘텐츠(.meta·dtabs·재료·레시피 단계·후기)가 **v1에도 v2(cook-v2/detail 2043:473, scan_text_nodes 28노드가 stat-card+CTA에서 끊김)에도 부재** → 중복 아님, 신규 콘텐츠. region/콘텐츠(2036:116)에 자식 90노드 추가(2050:82~171, 부모-상대 좌표): 메타카드(2050:82 #FFFCF7 r16 stroke line, 조리시간30분/분량2인분/난이도쉬움 값+라벨 2050:84~89) + 탭 재료/레시피/리뷰(2050:90~92, 재료 active ink + 밑줄 2050:83 primary #D66B42) + 재료9개 타이틀(2050:102) 주재료5(순두부1팩/양파1/2개/애호박1/3개/청양고추1개/계란1개 카드 2050:93~113) 양념4(다진마늘1큰술/진간장2큰술/멸치액젓1큰술/코인육수1개 2050:98~122) + 레시피 타이틀(2050:133) 5단계 카드 A~E(육수 준비하기/고추기름 내기/채소 익히기/순두부 끓이기/마무리하기, 각 번호배지 peach #FBE7DE+글자 #D66B42·제목·시간 #9a9aa0·세부 3줄 gray, 2050:123~153) + 후기 타이틀(2050:161) 리뷰카드(2050:154)3(요리고수★5/자취왕★4/맵찔이★5, 아바타 fresh-soft #E0EEE1+이름+별점 accent #C99B4A+본문, 구분선2 2050:158/159) + 후기쓰기 ghost버튼(peach 2050:160 + '후기 쓰기' #D66B42 2050:171). 프레임 확장: resize cook/detail 2036:113→390x2744, region/콘텐츠 2036:116→390x2560(bottom abs 4114). ⚠ move_node는 **부모-상대**(CODEX '절대' 오기, cook-DONE 이중오프셋 학습 재확인): region/하단 2036:117을 move_node(0,2680)로 abs(7728,4114) 배치=프레임 하단 flush, CTA 요리시작버튼 abs y4117 콘텐츠(bottom 4094) 아래. set_annotation 2041:155='스크롤 시 하단 고정 플로팅 CTA'. G0/G1/G2 read-back(scan_text_nodes 2036:116→75 텍스트노드, 접힌 라벨 전부 정합: 조리시간/재료 9개/순두부/청양고추/양념/멸치액젓/레시피/육수 준비하기/마무리하기/후기/요리고수/후기 쓰기, 오버플로 없음)/G4(§4b 팔레트: surface #FFFCF7·line #DDD1C6·peach #FBE7DE·primary #D66B42·ink·gray·accent #C99B4A, .rstep-no=green-soft=peach·green=terracotta 함정 회피, review avatar=fresh-soft #E0EEE1 정직 초록(성공/후기 문맥), 금지초록 #46b581/#e3f3ec 0건·영어 누수 0=YouTube 플랫폼명/A~E 단계기호/시간·단위) 통과. detail-FULL은 -DONE/MILE 아님 → export 생략(read-back 충분). 다음 미통과: cook3-FULL(54.3, actionable 여부 cook-v2/cook3 2043:528 접힌콘텐츠 확인 필요)."
     },
     {
       "id": "cook3-FULL",

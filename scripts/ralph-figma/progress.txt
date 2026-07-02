@@ -822,3 +822,19 @@ Started: Wed Jul  1 15:53:56 KST 2026
 - region 서브프레임 4개(부모-상대 좌표, 1콜씩 순차, 전부 다크 #0A0A0A): region/상태바=2050:78(y0-48 abs 9860/1434), region/헤더=2050:79(y48-120 h72 abs 9860/1482), region/콘텐츠=2050:80(y120-780 h660 abs 9860/1554), region/하단=2050:81(y780-844 h64 abs 9860/2214 bottom 2278 < SEC/B bottom 2434). 상태바→헤더→콘텐츠→하단 세로 스택, push-out 없음.
 - 게이트: G0(채널 kpgtp6vl 조인+get_document_info, 페이지 '요리 비서' 939:2) / G1(프레임+region 4 생성) / G2 read-back(get_node_info 2050:77 → 자식 4 + 절대좌표 정합) / G4(영어 누수 0·초록 누수 0·다크 #0A0A0A 토큰). 밀스톤 아님 → export 생략.
 - ⚠ cook2=다크 정적 스냅샷 화면 → D-cook2-* 텍스트/아이콘은 밝은 색(ink #f8f8f4·muted #a7a7a7). 다음: D-cook2-01(상태바 다크 9:41, cook 상태바 2042:234~ 밝은 색 패턴 재사용).
+
+## 2026-07-02 - detail-FULL (detail 전체 스크롤 콘텐츠 확장) ✅ 완료
+- 브리지 채널 kpgtp6vl(라이브, join+get_document_info OK, 페이지 '요리 비서' 939:2). 대상 cook/detail=2036:113(v1, SEC/B 2036:111).
+- **판정 재정립(중요)**: sheet-FULL/loading-FULL(park)과 달리 detail-FULL은 **actionable**. 근거: (1) v1 cook/detail=단일뷰포트(844)로 접힌 재료·단계·후기 부재 확인, (2) **cook-v2/detail=2043:473 scan_text_nodes 28노드가 stat-card(조리시간/분량/난이도)+CTA에서 끊김 → v2에도 재료/단계/후기 부재**. ⇒ 신규 콘텐츠(중복/死프레임 아님, home-FULL 케이스). sheet-FULL park는 'v2가 이미 상위판 보유'가 근거였고 detail은 그 조건 불성립.
+- region/콘텐츠(2036:116)에 자식 90노드 추가(2050:82~171, 부모-상대):
+  · 메타카드(2050:82~89): #FFFCF7 r16 stroke line, 조리시간 30분/분량 2인분/난이도 쉬움(app RECIPE_PRESETS ytLongChef).
+  · 탭(2050:83 밑줄 primary + 2050:90~92): 재료(active ink)/레시피/리뷰(#9a9aa0).
+  · 재료 9개(2050:102) + 주재료 5(순두부 1팩/양파 1/2개/애호박 1/3개/청양고추 1개/계란 1개, 카드 #FFFCF7 r12 stroke) + 양념 4(다진마늘 1큰술/진간장 2큰술/멸치액젓 1큰술/코인육수 1개), 카드bg 2050:93~101 · 텍스트 2050:103~122.
+  · 레시피(2050:133) + 5단계 A~E(육수 준비하기 0:00~0:35 / 고추기름 내기 / 채소 익히기 / 순두부 끓이기 / 마무리하기 2:40~3:10), 각 카드+번호배지(peach #FBE7DE r8 + 글자 #D66B42)+제목+시간(#9a9aa0)+세부3줄(gray), 2050:123~153.
+  · 후기(2050:161) + 리뷰카드(2050:154) 3(요리고수 ★5 / 자취왕 ★4 / 맵찔이 ★5, 아바타 fresh-soft #E0EEE1 원 + 이름 + 별점 accent #C99B4A + 본문 2줄, 구분선 2050:158/159) + 후기 쓰기 ghost버튼(peach 2050:160 + '후기 쓰기' #D66B42 2050:171).
+- 프레임 확장: resize_node cook/detail 2036:113→390x2744, region/콘텐츠 2036:116→390x2560(bottom abs 4114).
+- ⚠ **move_node=부모-상대**(CODEX 'move_node는 절대'는 오기 — cook-DONE 이중오프셋 학습 재확인): 1차 move_node(2036:117, 7728, 4114) → abs(15456,5548)=부모원점(7728,1434)+입력. 정정 move_node(2036:117, 0, 2680) → abs(7728,4114) 프레임 하단 flush. CTA 요리시작버튼 abs y4117(콘텐츠 bottom 4094 아래). set_annotation 2041:155 '스크롤 시 하단 고정 플로팅 CTA'.
+- 게이트: G0(kpgtp6vl)/G1/G2 read-back(scan_text_nodes 2036:116 → 75 텍스트노드, 접힌 라벨 전부 정합, 오버플로 0)/G4(§4b: surface·line·peach·primary·ink·gray·accent, .rstep-no green-soft=peach·green=terracotta 함정 회피, review avatar fresh-soft #E0EEE1=정직 초록(후기/성공 문맥), 금지초록 #46b581/#e3f3ec 0건, 영어 누수 0=YouTube 플랫폼명·A~E 단계기호·시간/단위) 통과. detail-FULL은 -DONE/MILE 아님 → export 생략.
+- 병렬 배치(assistant 1턴 다중 tool_use)로 create/style 다발 처리 성공(브리지 순차 큐 OK). 병렬 cook-v2/* 세트 상존(v1↔v2 정본 미결) — prd 권위 소스로 진행.
+- 다음 미통과: cook3-FULL(54.3). D-cook2-01~(66~)도 대기. cook3-FULL actionable 여부는 cook-v2/cook3(2043:528) 접힌콘텐츠 유무로 판정 필요.
+---
