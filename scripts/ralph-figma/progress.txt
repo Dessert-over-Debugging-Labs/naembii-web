@@ -711,3 +711,9 @@ Started: Wed Jul  1 15:53:56 KST 2026
 - 주석 2건(set_annotation, 둘 다 success): 단계카드제목 2042:199·핸즈프리원 2042:217.
 - 게이트: G0(ihbg56ny)/G1/G2 read-back(2042:226 자식2 + '리뷰 코멘트' + 주석 success)/G4(#FFE8A3·#231A14·#6E6258, 15/13px, 영어·초록 누수 0). 밀스톤 아님 → export 생략.
 - 다음: K-cook(cook/cook 다크 #0A0A0A 골격, SEC/B 안).
+---
+## 2026-07-02 - D-cook-01 cook: 상태바(다크)
+- 대상 region/상태바=2042:230(cook/cook=2042:229 자식, 다크 #0a0a0a, abs 7470/1420 390x48). 멱등: get_node_info 2042:230 → children=[] 확인 → 신규 추가(중복 없음). cook3 상태바(2041:166~) 밝은 색 패턴 재사용.
+- 추가 자식 4: 상태바-시간=2042:234('9:41' 15px SemiBold #f8f8f4, rel x24 y14 → abs 7494/1434), 상태바-신호=2042:235(rect rel x300 y18 18x12 #f8f8f4), 상태바-와이파이=2042:236(rect rel x322 y18 16x12 #f8f8f4), 상태바-배터리=2042:237(rect rel x342 y18 24x12 #f8f8f4). 아이콘 우측 정렬(우측 여백 24px 대칭).
+- 게이트: G0(ihbg56ny 라이브)/G1/G2 read-back(get_node_info 2042:230 → 자식 4 + '9:41' 텍스트 노드 #f8f8f4·abs 7494/1434 프레임 내부 정합)/G4(다크 화면 밝은 색 ink #f8f8f4 §4b 토큰, 영어 누수 0·초록 누수 0, 15px). 밀스톤 아님 → export 생략.
+- 다음: D-cook-02(헤더 조리 — region/헤더=2042:231, 밝은 색).
