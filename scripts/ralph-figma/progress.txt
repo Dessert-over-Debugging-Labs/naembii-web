@@ -328,3 +328,16 @@ Started: Wed Jul  1 15:53:56 KST 2026
 - 추가 자식 9: 탭바배경=2023:51(rect rel x16 y6 358x52 #231A14 ink-dark 라운드26=app rgba(35,26,20,.92)), 홈활성=2023:52(100x40 rel x26 y12 #FFFCF7 a0.13 라운드20=app .active bg), 홈아이콘=2023:53(24x24 rel x64 y15 #F3A23A 라운드6), 홈라벨=2023:54('홈' 10px w740 #F3A23A), 등록아이콘=2023:55(24x24 rel x183 y15 #F8F4EF), 등록라벨=2023:56('등록' 10px #F8F4EF), 요리북아이콘=2023:57(24x24 rel x302 y15 #F8F4EF), 요리북라벨=2023:58('요리북' 10px #F8F4EF rel x298 y41 → abs 6346/941). 3탭 그리드 3열 등간격.
 - 게이트: G0(채널 ihbg56ny 조인+get_document_info, 페이지 '요리 비서' 939:2) / G1(9자식 생성) / G2 read-back(get_node_info 2006:20 → 자식 9 + '요리북' 텍스트 노드 2023:58 확인, abs 프레임 내부 정합) / G4(다크 ink #231A14·active 오렌지 #F3A23A(app 실색)·light #F8F4EF, 10px, 초록·영어 누수 0). 밀스톤 아님 → export 생략.
 - 학습: 하단탭바는 다크 필 배경 #231A14 + 활성탭 화이트 a0.13 하이라이트 + 오렌지 #F3A23A 강조. region/하단(h64)에 필 h52로 맞춤. 다음 home-DONE(밀스톤): 카테고리/추천헤더/카드1 초록(#46B581·#E3F3EC, 노드 2021:22~43)을 테라코타 #D66B42로 일괄 보정 + export exports/home.png.
+---
+## 2026-07-02 - home-DONE home 화면 완성 검수 + export ✅ 완료 (밀스톤)
+- G0: 채널 **ihbg56ny** join + get_document_info 정상 응답(페이지 '요리 비서' 939:2, SEC/A 2004:14 → cook/home 2006:16).
+- ✅ **소스 실측(mutation 전 필수 확인)**: `grep --primary/--green app.html` → app.html:11 `--primary:#D66B42`, line12 `--primary-l:#E1875F`, line20 `--green:var(--primary)`(초록은 이름뿐, 실제 테라코타). 컴포넌트: `.quick-import .qi-icon{background:var(--primary)}`·`.qi-arrow{color:var(--primary)}`(line186/191), `.notify-dot::after{background:var(--accent)}`(=#C99B4A, line183), `.cat .ic{background:var(--green-soft);color:var(--green)}`(line208). → **CODEX §4b 확정**: 초록 #46B581/#E3F3EC은 app.html에 존재하지 않는 오류색.
+- **초록 누수 일괄 보정(17노드 set_fill_color, 1콜씩 순차)**:
+  - 초록아이콘 #46b581 → 테라코타 #D66B42(7): 로고마크 2021:4, 카테고리아이콘 2021:23/26/29/32/35, 추천섹션아이콘 2021:37.
+  - green-soft #e3f3ec → 피치 #FBE7DE(6): 카테고리원 2021:22/25/28/31/34, 카드1썸네일 2021:42.
+  - 카드1사유 2021:43 #46b581 → #E1875F(카드2 2023:48과 일치).
+  - CTA 솔리드 primary #f0662e → #D66B42(2): CTA아이콘 2021:13, CTA화살표 글리프 2021:18(app에선 var(--primary)).
+  - 알림뱃지 2021:9 #f0662e → accent 골드 #C99B4A(1, app .notify-dot=--accent).
+  - 유지(초록 아님, app 반투명 오렌지 글로우 rgba(240,90,40,.x) 근사): CTA카드 2021:12 #fce0d0, CTA화살표배경 2021:17 #fbdbcb.
+- 게이트: G1(17노드 보정) / G2 read-back(get_node_info 2006:16 → **#46b581·#e3f3ec 0건**, 로고 #d66b42·뱃지 #c99b4a·CTA #d66b42·카테고리원 #fbe7de/아이콘 #d66b42·카드1썸네일 #fbe7de/사유 #e1875f 확인; 한글 라벨 전부 정합) / **G3 export_node_as_image PNG scale2 → scripts/ralph-figma/exports/home.png(780x1688 유효 PNG, 85136 bytes, transcript base64 추출)** / G4(초록 누수 0·영어 누수 0(Cookflow=브랜드 워드마크)·§4b 팔레트·상태바→헤더→콘텐츠→하단 원본 영역 대응).
+- 학습: **캔버스 색을 캐논 export로 확정하기 전엔 반드시 app.html :root를 직접 grep**(노트/§ 요약만 믿지 말 것 — F0 false-done 전례). §4b `--green`=primary 함정 재확인. 초록(#46B581/#E3F3EC) 및 CTA 오렌지(#F0662E)는 D-home-* 초기 노트가 잘못 쓴 색이었고 home-DONE에서 §4b 실팔레트로 정정. sheet/detail 등 후속 화면은 처음부터 §4b 테라코타로 그릴 것. 다음: NOTE-home(포스트잇+주석) 또는 K-sheet.

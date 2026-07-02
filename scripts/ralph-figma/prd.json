@@ -200,7 +200,8 @@
       "title": "home 화면 완성 검수 + export",
       "description": "cook/home가 원본과 영역 대응하는지 확인하고 PNG로 내보낸다(밀스톤).",
       "priority": 14,
-      "passes": false,
+      "passes": true,
+      "notes": "브리지 채널 ihbg56ny(라이브, get_document_info 응답 OK, 페이지 '요리 비서' 939:2). 대상 cook/home=2006:16(자식: region/상태바2006:17·헤더2006:18·콘텐츠2006:19·하단2006:20). ✅ app.html :root 실측 확인(app.html:11~22): --primary=#D66B42, --green=var(--primary)=테라코타(초록 아님), --primary-l=#E1875F, .quick-import .qi-icon/.qi-arrow=var(--primary), .notify-dot=var(--accent)=#C99B4A → CODEX §4b 확정. **초록 누수 보정(17노드 set_fill_color)**: 초록아이콘#46b581→테라코타#D66B42 = 로고마크2021:4·카테고리아이콘2021:23/26/29/32/35·추천섹션아이콘2021:37(7). green-soft#e3f3ec→피치#FBE7DE = 카테고리원2021:22/25/28/31/34·카드1썸네일2021:42(6). 카드1사유2021:43 #46b581→#E1875F(카드2와 일치). CTA솔리드 primary #f0662e→#D66B42 = CTA아이콘2021:13·CTA화살표글리프2021:18(2). 알림뱃지2021:9 #f0662e→accent골드#C99B4A(1). 잔존 오렌지(CTA카드2021:12 #fce0d0·화살표배경2021:17 #fbdbcb)는 app 반투명 오렌지 글로우 rgba(240,90,40,.x) 근사라 유지(초록 아님). G2 read-back(get_node_info 2006:16 → #46b581·#e3f3ec 0건, 한글 라벨 전부 정합: 9:41/오늘 뭐 만들까요?/셰프·급상승·한식·분식·일식/당신만을 위한 추천/순두부찌개/감바스 알 아히요/홈·등록·요리북). G3 export_node_as_image PNG scale2 → scripts/ralph-figma/exports/home.png(780x1688 유효 PNG, transcript base64 추출). G4: 초록 누수 0·영어 누수 0(Cookflow=브랜드)·§4b 팔레트·상태바→헤더→콘텐츠→하단 영역 대응. 다음: NOTE-home 또는 K-sheet.",
       "acceptanceCriteria": [
         "cook/home가 원본 source-screens/home.png와 영역 대응(상태바→헤더→콘텐츠→하단).",
         "G3: export_node_as_image로 exports/home.png(scale2) 저장.",

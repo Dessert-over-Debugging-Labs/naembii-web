@@ -142,3 +142,12 @@
 - **다음**: home-DONE(밀스톤) — 카테고리/추천헤더/카드1 초록(`#46B581`·`#E3F3EC`, 노드 2021:22~43)을 테라코타 `#D66B42`로 일괄 보정 + `export exports/home.png`.
 
 ---
+
+### [home-DONE] home 화면 완성 검수 + export ✅ (밀스톤) · 2026-07-02
+- **무엇을**: `cook/home`(2006:16) 완성 검수. 초기 D-home-* 노트가 잘못 칠한 **초록 누수(#46B581/#E3F3EC)를 §4b 테라코타 팔레트로 일괄 보정**하고 캐논 PNG로 export.
+- **소스 실측(보정 전 필수)**: `grep --primary/--green app.html` → `--primary:#D66B42`(app.html:11), `--primary-l:#E1875F`, `--green:var(--primary)`(초록은 이름뿐). `.qi-icon/.qi-arrow=var(--primary)`, `.notify-dot=var(--accent)=#C99B4A`, `.cat .ic{background:--green-soft;color:--green}`. → 초록은 app.html에 없는 오류색 확정.
+- **어떻게(17노드 `set_fill_color`, 1콜씩 순차)**: 초록아이콘 #46b581→테라코타 `#D66B42`(로고 2021:4·카테고리아이콘 2021:23/26/29/32/35·추천섹션 2021:37). green-soft #e3f3ec→피치 `#FBE7DE`(카테고리원 2021:22/25/28/31/34·카드1썸네일 2021:42). 카드1사유 2021:43→`#E1875F`(카드2와 일치). CTA 솔리드 #f0662e→`#D66B42`(CTA아이콘 2021:13·화살표 글리프 2021:18). 알림뱃지 2021:9→accent 골드 `#C99B4A`. 잔존 오렌지(CTA카드 #fce0d0·화살표배경 #fbdbcb)는 app 반투명 오렌지 글로우 근사라 유지(초록 아님).
+- **게이트**: G0 ✅(채널 `ihbg56ny`) / G1 ✅(17노드 보정) / G2 ✅(`get_node_info` 2006:16 → **#46b581·#e3f3ec 0건**, 한글 라벨 전부 정합) / **G3 ✅ `export_node_as_image` PNG scale2 → `scripts/ralph-figma/exports/home.png`(780×1688 유효 PNG, 85136 bytes)** / G4 ✅(초록 누수 0·영어 누수 0·§4b 팔레트·상태바→헤더→콘텐츠→하단 영역 대응).
+- **다음**: NOTE-home(포스트잇+주석) 또는 K-sheet(sheet 화면 골격) — 후속 화면은 처음부터 §4b 테라코타로 그릴 것.
+
+---
