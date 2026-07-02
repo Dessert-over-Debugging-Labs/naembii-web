@@ -557,3 +557,10 @@ Started: Wed Jul  1 15:53:56 KST 2026
 - 추가 자식 3(제목행 bottom abs 1844 아래 rel y320): 평점별아이콘=2038:137(rect 18x18 rel x24 y320 → abs 6072/1860 accent #C99B4A 라운드4 star placeholder=app .drating svg fill accent), 평점숫자=2038:138(TEXT '4.7' 16px ExtraBold ink #231A14 rel x48 y319 → abs 6096/1859 width25), 후기수=2038:139(TEXT '후기 3개' 13px w600 gray #6E6258 rel x80 y321 → abs 6128/1861). CSS: .drating gap6·16px·w800·ink / svg 18x18 accent / .rc 13px w600 gray.
 - 게이트: G0(채널 ihbg56ny 라이브+get_document_info OK, 페이지 '요리 비서' 939:2)/G1/G2 read-back(get_node_info 2038:138 → '4.7' 텍스트 노드·abs 6096/1859 정합, 별~숫자(우변 6121)~후기수(6128) 비겹침·프레임 우변 6438 내부)/G4(accent #C99B4A·ink #231A14·gray #6E6258 §4b 토큰·16/13px·영어 누수 0=4.7 숫자·초록 누수 0) 통과. 밀스톤 아님 → export 생략.
 - 학습: app .drating은 별(accent)+평점숫자(ink)+후기수(.rc gray) 인라인 3요소. 다음: D-detail-06(설명 문단 .dsummary, region/콘텐츠 평점행 아래 rel y~350).
+
+## 2026-07-02 - D-detail-06 detail 설명 문단
+- 대상: region/콘텐츠=2036:116(cook/detail=2036:113 자식, abs 6048/1540 390x660). 멱등: 자식 15개(히어로9+제목행3+평점행3)만 확인, 설명 문단 없음 → 신규 추가.
+- 추가 자식 1: 설명문단=2039:140(TEXT, rel x24 y350 → abs 6072/1890 width220 height108, gray #6E6258 15px Regular). app.html:1055 .dsummary/:1618 summary 데이터 대응. 브리지 폭 미지원 → 원문을 6줄 수동 분할(\n), 최대행 width220<342 콘텐츠폭·프레임 우변 6438·하변 2200 내부. 평점행(bottom abs 1878) 아래 12px 갭.
+- 게이트: G0(채널 ihbg56ny 조인+get_document_info OK) / G1 / G2 read-back(get_node_info 2039:140 → '칼칼한 국물…' 텍스트 노드·좌표 정합) / G4(gray #6E6258 §4b 토큰, 15px, 초록 누수 0·영어 누수 0=15분 숫자). 밀스톤 아님 → export 생략.
+- 다음: D-detail-07('먼저 만든 사람의 팁' 카드)는 region/콘텐츠 설명 문단 아래 rel y~470.
+---

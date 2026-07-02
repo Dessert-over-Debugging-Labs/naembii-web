@@ -544,13 +544,14 @@
       "title": "detail: 설명 문단",
       "description": "cook/detail 안에 '설명 문단' 요소를 정밀하게 그린다. 원본 source-screens/detail.png 대비 위치·간격·타이포 정합.",
       "priority": 39,
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "멱등: cook/detail(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
         "G2: '칼칼한 국물' 텍스트 노드가 cook/detail 안에 존재.",
         "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
         "nodeId 기록 후 한글 커밋."
-      ]
+      ],
+      "notes": "브리지 채널 ihbg56ny(라이브, get_document_info OK, 페이지 '요리 비서' 939:2, 최상위 SEC/A 2004:14·SEC/B 2036:111). 대상 region/콘텐츠=2036:116(cook/detail=2036:113 자식, abs 6048/1540 390x660). 멱등: get_node_info 2036:116로 자식=히어로9(2036:125~2037:133)+제목행3(2037:134~136)+평점행3(2038:137~139)=15개만 확인, 설명 문단 없음 → 신규 추가. app.html:1055 <p class=dsummary id=detailSummary>(app.html:1618 summary 데이터) 대응. CSS app.html:873 .dsummary{15px·line-height1.65·gray·margin-bottom20}. 평점행(bottom abs 1878) 아래 rel y350에 배치. 추가 자식 1: 설명문단=2039:140(TEXT '칼칼한 국물에 몽글몽글한 순두부가 어우러지는 한 그릇 요리예요. 코인 육수로 감칠맛을 빠르게 잡고 고추기름을 내 깊은 맛을 더하면, 15분 만에 식당 부럽지 않은 순두부찌개가 완성됩니다.' 15px Regular gray #6E6258 rel x24 y350 → abs 6072/1890 width220 height108, 프레임 우변 6438·하변 2200 내부). ⚠ 브리지 create_text 폭/줄바꿈 미지원 → 원문(단일 문단)을 자연 분기점에서 6줄로 수동 분할(\\n), 최대행 width220<342 콘텐츠폭 유지. G0/G1/G2(get_node_info 2039:140 → '칼칼한 국물…' 텍스트 노드·좌표 정합 확인, 평점행 아래 12px 갭)/G4(gray #6E6258 §4b 토큰, 15px, 초록 누수 0·영어 누수 0=15분 숫자) 통과. 밀스톤 아님 → export 생략. 다음 D-detail-07('먼저 만든 사람의 팁' 카드)는 region/콘텐츠 설명 문단 아래 rel y~470."
     },
     {
       "id": "D-detail-07",
