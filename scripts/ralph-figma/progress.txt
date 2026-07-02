@@ -56,9 +56,181 @@ Started: Wed Jul  1 15:53:56 KST 2026
 - 게이트: G0(채널 조인+doc info) / G1(프레임+제목 생성, 화면3개용 폭 여유) / G2 read-back(get_node_info로 프레임+제목 텍스트 노드 '온보딩' 확인) / G4(영어 누수 0, #0A0A0A 토큰) 통과. 밀스톤 아님 → export 생략.
 - 학습: create_text parentId 좌표=부모-상대 정상(2004:15 abs 6048/40 프레임 내부). 섹션 컨테이너 규약 확립 → SEC/B도 동일 패턴.
 ---
+## 2026-07-02 - D-home-01 상태바 시도 — 브리지 미응답으로 G0 실패(그리기 없음)
+- 대상 스토리: D-home-01(home 상태바 9:41·신호/와이파이/배터리). cook/home=2006:16, region/상태바=2006:17에 자식 추가 예정이었음.
+- G0: join_channel 5evd9cs8 **성공**(WS 서버 응답)이나, 실제 Figma 커맨드는 전부 timeout:
+  get_document_info ×2, get_node_info(2006:17), get_node_info(2006:16) 모두 미응답. 재조인 후 재시도도 timeout.
+  → TalkToFigma 플러그인(브리지)이 미실행이거나 큐 잼 상태(과거 F0 재검증과 동일 증상).
+- 조치: CODEX §1 G0 실패 규칙대로 **아무것도 그리지 않음**. D-home-01 passes:false 유지, 커밋 없음.
+- 다음 사용자 액션 필요: Figma 데스크톱에서 **TalkToFigma 플러그인 재실행/재연결** 후 다시 이터레이션.
+  복구되면 멱등: cook/home(2006:16) 이름/nodeId로 찾아 region/상태바(2006:17)에 '9:41' 텍스트 + 신호/와이파이/배터리 도형만 추가.
+---
 ## 2026-07-02 - K-home home 화면 골격 프레임 생성
 - 대상 nodeId: cook/home=**2006:16**(390x844, #FFF7F0). SEC/A(2004:14) 자식으로 생성(부모-상대 x=48 y=120 → 절대 x=6048 y=120, SEC/A 내부 OK). 기존 cook/home 없어 신규 create(멱등: get_document_info로 부재 확인).
 - region 서브프레임 4개(부모-상대 좌표, 병렬 아님 1콜씩 순차 생성): region/상태바=**2006:17**(y0-48 h48), region/헤더=**2006:18**(y48-120 h72), region/콘텐츠=**2006:19**(y120-780 h660), region/하단=**2006:20**(y780-844 h64). 상태바→헤더→콘텐츠→하단 세로 스택.
 - 게이트: G0(채널 5evd9cs8 조인+get_document_info, 페이지 '요리 비서' 939:2) / G1(프레임+region 4 생성) / G2 read-back(get_node_info 2006:16 → 자식 4 + 절대좌표 정합 확인, push-out 없음) / G4(영어 누수 0, #FFF7F0 토큰). 밀스톤 아님 → export 생략.
 - 학습: 섹션 프레임(SEC/A)에 화면 프레임을 자식으로 넣을 때도 create_frame parentId 좌표=부모-상대 정상(cook/home abs 6048/120). D-home-* 요소는 region 프레임에 자식 추가 예정.
+---
+## 2026-07-02 - D-home-01 상태바 재시도 — 브리지 미응답으로 G0 실패(그리기 없음)
+- 대상 스토리: D-home-01(home 상태바 9:41·신호/와이파이/배터리). cook/home=2006:16, region/상태바=2006:17에 '9:41' 텍스트 + 신호/와이파이/배터리 도형 추가 예정이었음.
+- G0: join_channel 5evd9cs8 **성공**(WS 서버 응답)이나 get_document_info가 전부 timeout(×2 + 재조인 후 재시도도 timeout). 과거 F0 재검증·D-home-01 1차 시도와 동일 증상 = TalkToFigma 플러그인 미실행/큐 잼.
+- 조치: CODEX §1 G0 실패 규칙대로 **아무것도 그리지 않음**. D-home-01 passes:false 유지, prd 갱신·커밋 없음.
+- 다음 사용자 액션 필요: Figma 데스크톱에서 **TalkToFigma 플러그인 재실행/재연결** 후 다시 이터레이션. 복구되면 멱등: cook/home(2006:16) → region/상태바(2006:17)에 '9:41' 텍스트 + 신호/와이파이/배터리 도형만 추가.
+---
+## 2026-07-02 - D-home-01 상태바 3차 시도 — 브리지 미응답으로 G0 실패(그리기 없음)
+- 대상 스토리: D-home-01(home 상태바 9:41·신호/와이파이/배터리). cook/home=2006:16, region/상태바=2006:17 자식 추가 예정.
+- G0: join_channel 5evd9cs8 **성공**(2회 조인 모두 WS 응답)이나 get_document_info **3회 전부 timeout**(재조인 후 재시도 포함). 과거 F0 재검증·D-home-01 1·2차와 완전 동일 증상 = TalkToFigma 플러그인 미실행/큐 잼.
+- 조치: CODEX §1 G0 실패 규칙대로 **아무것도 그리지 않음**. D-home-01 passes:false 유지, prd 갱신·커밋 없음.
+- ⚠ 반복 패턴: WS 서버(join)는 살아있으나 Figma 데스크톱 플러그인이 커맨드에 응답 못 함. **사용자가 Figma에서 TalkToFigma 플러그인을 실제로 실행/재연결하기 전까지는 이터레이션을 돌려도 계속 G0에서 막힘.** 복구되면 멱등: cook/home(2006:16) → region/상태바(2006:17)에 '9:41' 텍스트 + 신호/와이파이/배터리 도형만 순차(1콜씩) 추가.
+---
+## 2026-07-02 - D-home-01 상태바 4차 시도 — 브리지 미응답으로 G0 실패(그리기 없음)
+- 대상 스토리: D-home-01(home 상태바 9:41·신호/와이파이/배터리). cook/home=2006:16, region/상태바=2006:17 자식 추가 예정.
+- G0: join_channel 5evd9cs8 **성공**(2회 조인 모두 WS 응답)이나 get_document_info **2회 전부 timeout**(재조인 후 재시도 포함). 1~3차와 완전 동일 증상 = TalkToFigma 플러그인 미실행/큐 잼.
+- 조치: CODEX §1 G0 실패 규칙대로 **아무것도 그리지 않음**. D-home-01 passes:false 유지, prd 갱신·커밋 없음.
+- ⛔ 4회 연속 동일 실패. **자동 이터레이션으로는 더 진행 불가** — 근본 원인은 코드가 아니라 Figma 데스크톱 앱에서 TalkToFigma 플러그인이 커맨드에 응답하지 못하는 상태. 사용자가 플러그인을 실제로 실행/재연결(창을 열어둔 채 채널 5evd9cs8 유지)한 뒤에만 재개할 것.
+---
+## 2026-07-02 - D-home-01 상태바 5차 시도 — 브리지 미응답으로 G0 실패(그리기 없음)
+- 대상 스토리: D-home-01(home 상태바 9:41·신호/와이파이/배터리). cook/home=2006:16, region/상태바=2006:17 자식 추가 예정.
+- G0: join_channel 5evd9cs8 **성공**(2회 조인 모두 WS 응답)이나 get_document_info **2회 전부 timeout**(재조인 후 재시도 포함). 1~4차와 완전 동일 증상 = TalkToFigma 플러그인 미실행/큐 잼.
+- 조치: CODEX §1 G0 실패 규칙대로 **아무것도 그리지 않음**. D-home-01 passes:false 유지, prd 갱신·커밋 없음.
+- ⛔ 5회 연속 동일 실패. 상황 변화 없음. **사용자 조치 전까지 이터레이션 무의미**: Figma 데스크톱에서 TalkToFigma 플러그인 창을 연 채 "Connect to channel 5evd9cs8"로 재연결해야 함. WS 서버(join 응답)는 살아있으나 플러그인↔Figma 커맨드 경로가 끊겨 있음.
+---
+## 2026-07-02 - D-home-01 상태바 6차 시도 — 브리지 미응답으로 G0 실패(그리기 없음)
+- 대상 스토리: D-home-01(home 상태바 9:41·신호/와이파이/배터리). cook/home=2006:16, region/상태바=2006:17 자식 추가 예정.
+- G0: join_channel 5evd9cs8 **성공**(2회 조인 모두 WS 응답)이나 get_document_info **2회 전부 timeout**(재조인 후 재시도 포함). 1~5차와 완전 동일 증상 = TalkToFigma 플러그인 미실행/큐 잼.
+- 조치: CODEX §1 G0 실패 규칙대로 **아무것도 그리지 않음**. D-home-01 passes:false 유지, prd 갱신·커밋 없음.
+- ⛔ 6회 연속 동일 실패. 근본 원인은 코드가 아니라 Figma 데스크톱 앱 상태. **사용자가 TalkToFigma 플러그인을 실제로 실행/재연결(창 열어둔 채 채널 5evd9cs8)하기 전까지 재시도는 계속 여기서 막힘.** 그 전엔 추가 이터레이션 무의미.
+---
+## 2026-07-02 - D-home-01 상태바 7차 시도 — 브리지 미응답으로 G0 실패(그리기 없음)
+- 대상 스토리: D-home-01(home 상태바 9:41·신호/와이파이/배터리). cook/home=2006:16, region/상태바=2006:17 자식 추가 예정.
+- G0: join_channel 5evd9cs8 **성공**(WS 응답)이나 get_document_info **2회 전부 timeout**. 1~6차와 완전 동일 증상 = TalkToFigma 플러그인 미실행/큐 잼.
+- 조치: CODEX §1 G0 실패 규칙대로 **아무것도 그리지 않음**. D-home-01 passes:false 유지, prd 갱신·커밋 없음.
+- ⛔ 7회 연속 동일 실패. 상황 변화 없음. 코드/이터레이션으로 해결 불가. **필수 사용자 조치**: Figma 데스크톱에서 TalkToFigma 플러그인 창을 열고 채널 5evd9cs8로 재연결. 그 전까지 재시도 무의미.
+---
+## 2026-07-02 - D-home-01 상태바 8차 시도 — 브리지 미응답으로 G0 실패(그리기 없음)
+- 대상 스토리: D-home-01(home 상태바 9:41·신호/와이파이/배터리). cook/home=2006:16, region/상태바=2006:17 자식 추가 예정.
+- G0: join_channel 5evd9cs8 **성공**(2회 조인 모두 WS 응답)이나 get_document_info **2회 전부 timeout**(재조인 후 재시도 포함). 1~7차와 완전 동일 증상 = TalkToFigma 플러그인 미실행/큐 잼.
+- 조치: CODEX §1 G0 실패 규칙대로 **아무것도 그리지 않음**. D-home-01 passes:false 유지, prd 갱신·커밋 없음.
+- ⛔ 8회 연속 동일 실패. WS 서버(join)는 살아있으나 플러그인↔Figma 커맨드 경로 끊김. **사용자가 Figma 데스크톱에서 TalkToFigma 플러그인 창을 열고 채널 5evd9cs8로 재연결하기 전까지 재시도는 계속 G0에서 막힘.** 그 전엔 추가 이터레이션 무의미.
+---
+## 2026-07-02 - D-home-01 상태바 9차 시도 — 브리지 미응답으로 G0 실패(그리기 없음)
+- 대상 스토리: D-home-01(home 상태바 9:41·신호/와이파이/배터리). cook/home=2006:16, region/상태바=2006:17 자식 추가 예정.
+- G0: join_channel 5evd9cs8 **성공**(2회 조인 모두 WS 응답)이나 get_document_info **2회 전부 timeout**(재조인 후 재시도 포함). 1~8차와 완전 동일 증상 = TalkToFigma 플러그인 미실행/큐 잼.
+- 조치: CODEX §1 G0 실패 규칙대로 **아무것도 그리지 않음**. D-home-01 passes:false 유지, prd 갱신·커밋 없음.
+- ⛔ 9회 연속 동일 실패. 상황 변화 전무. 코드/이터레이션으로 해결 불가 — 근본 원인은 Figma 데스크톱 앱의 TalkToFigma 플러그인이 커맨드에 응답하지 못하는 상태. **필수 사용자 조치**: Figma 데스크톱에서 TalkToFigma 플러그인 창을 연 채 채널 5evd9cs8로 재연결(Connect). 그 전까지 재시도는 계속 G0에서 막힘.
+---
+## 2026-07-02 - D-home-01 상태바 10차 시도 — 브리지 미응답으로 G0 실패(그리기 없음)
+- 대상 스토리: D-home-01(home 상태바 9:41·신호/와이파이/배터리). cook/home=2006:16, region/상태바=2006:17 자식 추가 예정.
+- G0: join_channel 5evd9cs8 **성공**(2회 조인 모두 WS 응답)이나 get_document_info **2회 전부 timeout**(재조인 후 재시도 포함). 1~9차와 완전 동일 증상 = TalkToFigma 플러그인 미실행/큐 잼.
+- 조치: CODEX §1 G0 실패 규칙대로 **아무것도 그리지 않음**. D-home-01 passes:false 유지, prd 갱신·커밋 없음.
+- ⛔ 10회 연속 동일 실패. WS 서버(join)는 살아있으나 플러그인↔Figma 커맨드 경로 끊김. **필수 사용자 조치**: Figma 데스크톱에서 TalkToFigma 플러그인 창을 연 채 채널 5evd9cs8로 재연결(Connect). 그 전까지 자동 이터레이션은 계속 G0에서 막히므로 무의미.
+---
+## 2026-07-02 - D-home-01 상태바 11차 시도 — 브리지 미응답으로 G0 실패(그리기 없음)
+- 대상 스토리: D-home-01(home 상태바 9:41·신호/와이파이/배터리). cook/home=2006:16, region/상태바=2006:17 자식 추가 예정.
+- G0: join_channel 5evd9cs8 **성공**(2회 조인 모두 WS 응답)이나 get_document_info **2회 전부 timeout**(재조인 후 재시도 포함). 1~10차와 완전 동일 증상 = TalkToFigma 플러그인 미실행/큐 잼.
+- 조치: CODEX §1 G0 실패 규칙대로 **아무것도 그리지 않음**. D-home-01 passes:false 유지, prd 갱신·커밋 없음.
+- ⛔ 11회 연속 동일 실패. 이번엔 MCP 서버가 새로 연결돼 툴 스키마는 정상 로드됐으나 커맨드 경로는 여전히 끊김. **필수 사용자 조치**: Figma 데스크톱에서 TalkToFigma 플러그인 창을 연 채 채널 5evd9cs8로 재연결(Connect). 그 전까지 자동 이터레이션은 계속 G0에서 막히므로 무의미.
+---
+## 2026-07-02 - D-home-01 상태바 12차 시도 — 브리지 미응답으로 G0 실패(그리기 없음)
+- G0: join_channel 5evd9cs8 성공, get_document_info 2회 전부 timeout. 1~11차와 완전 동일 = 플러그인 커맨드 경로 끊김.
+- 조치: 아무것도 그리지 않음, passes:false 유지, 커밋 없음.
+- ⛔ 12회 연속 동일 실패. **근본 원인은 코드가 아니라 Figma 데스크톱 앱 상태이며, 재시도만으로는 절대 풀리지 않는다.** 이 로그에 13·14차를 더 쌓아도 무의미 — 사용자가 Figma에서 TalkToFigma 플러그인 창을 열고 채널 5evd9cs8로 Connect 하기 전까지 D-home-01 이후 모든 스토리는 G0에서 막힌다. 복구 신호 확인 후에만 재개할 것.
+---
+## 2026-07-02 - D-home-01 상태바 13차 시도 — 브리지 미응답으로 G0 실패(그리기 없음)
+- G0: join_channel 5evd9cs8 성공(2회), get_document_info 2회 전부 timeout(재조인 후 포함). 1~12차와 완전 동일 = 플러그인 커맨드 경로 끊김. (이번엔 TalkToFigma MCP 툴 스키마는 정상 로드됨 — WS 서버는 살아있음.)
+- 조치: 아무것도 그리지 않음, passes:false 유지, 커밋 없음.
+- ⛔ 13회 연속 동일 실패. 상황 변화 전무. **필수 사용자 조치**: Figma 데스크톱에서 TalkToFigma 플러그인 창을 연 채 채널 5evd9cs8로 Connect. 그 전까지 자동 이터레이션은 계속 G0에서 막히므로 무의미.
+---
+## 2026-07-02 - D-home-01 상태바 14차 시도 — 브리지 미응답으로 G0 실패(그리기 없음)
+- G0: join_channel 5evd9cs8 성공(2회, WS 응답), get_document_info 2회 전부 timeout(재조인 후 포함). 1~13차와 완전 동일 = 플러그인 커맨드 경로 끊김.
+- 조치: 아무것도 그리지 않음, D-home-01 passes:false 유지, 커밋 없음.
+- ⛔ 14회 연속 동일 실패. WS 서버는 살아있으나 Figma 데스크톱 플러그인↔커맨드 경로가 죽어 있음. 코드/재시도로 해결 불가. **필수 사용자 조치**: Figma 데스크톱에서 TalkToFigma 플러그인 창을 열고 채널 5evd9cs8로 Connect(창을 연 채 유지). 그 전까지 이 스토리 이후 모든 스토리는 G0에서 막힌다.
+---
+## 2026-07-02 - D-home-01 상태바 15차 시도 — 브리지 미응답으로 G0 실패(그리기 없음)
+- G0: join_channel 5evd9cs8 성공(2회, WS 응답), get_document_info 2회 전부 timeout(재조인 후 포함). 1~14차와 완전 동일 = 플러그인 커맨드 경로 끊김.
+- 조치: 아무것도 그리지 않음, D-home-01 passes:false 유지, 커밋 없음.
+- ⛔ 15회 연속 동일 실패. 상황 변화 전무 — 자동 재시도로는 절대 풀리지 않는다. **이 이터레이션 루프는 사용자 복구 신호 없이는 무의미하게 반복될 뿐이므로 여기서 멈춘다.** 재개 조건: 사용자가 Figma 데스크톱에서 TalkToFigma 플러그인 창을 열고 채널 5evd9cs8로 Connect(창 유지)한 뒤 다시 이터레이션을 돌린다. 복구되면 멱등: cook/home(2006:16)→region/상태바(2006:17)에 '9:41' 텍스트+신호/와이파이/배터리 도형만 1콜씩 순차 추가.
+---
+## 2026-07-02 - D-home-01 상태바 16차 시도 — 브리지 미응답으로 G0 실패(그리기 없음)
+- G0: join_channel 5evd9cs8 성공(2회, WS 응답), get_document_info 2회 전부 timeout(재조인 후 포함). 1~15차와 완전 동일 = 플러그인 커맨드 경로 끊김.
+- 조치: 아무것도 그리지 않음, D-home-01 passes:false 유지, 커밋 없음.
+- ⛔ 16회 연속 동일 실패. 근본 원인은 코드/PRD가 아니라 Figma 데스크톱 앱의 TalkToFigma 플러그인이 커맨드에 응답하지 못하는 상태(WS join만 성공). **사용자가 플러그인 창을 열고 채널 5evd9cs8로 Connect하기 전까지는 재시도가 무의미하므로 여기서 멈춘다.** 복구되면 멱등: cook/home(2006:16)→region/상태바(2006:17)에 '9:41' 텍스트+신호/와이파이/배터리 도형만 1콜씩 순차 추가.
+---
+## 2026-07-02 - D-home-01 상태바 17차 시도 — 브리지 미응답으로 G0 실패(그리기 없음)
+- G0: join_channel 5evd9cs8 성공(2회, WS 응답), get_document_info 2회 전부 timeout(재조인 후 포함). 1~16차와 완전 동일 = 플러그인 커맨드 경로 끊김.
+- 조치: 아무것도 그리지 않음, D-home-01 passes:false 유지, 커밋 없음.
+- ⛔ 17회 연속 동일 실패. 상황 변화 전무. 자동 재시도로는 절대 풀리지 않음 — **사용자가 Figma 데스크톱에서 TalkToFigma 플러그인 창을 연 채 채널 5evd9cs8로 Connect하기 전까지 재개 무의미.** 복구 후 멱등: cook/home(2006:16)→region/상태바(2006:17)에 '9:41' 텍스트+신호/와이파이/배터리 도형만 1콜씩 순차 추가.
+---
+## 2026-07-02 - D-home-01 상태바 18차 시도 — 브리지 미응답으로 G0 실패(그리기 없음)
+- G0: join_channel 5evd9cs8 성공(2회, WS 응답), get_document_info 2회 전부 timeout(재조인 후 포함). 1~17차와 완전 동일 = 플러그인 커맨드 경로 끊김. (TalkToFigma MCP 툴 스키마는 정상 로드됨 — WS 서버는 살아있음.)
+- 조치: 아무것도 그리지 않음, D-home-01 passes:false 유지, 커밋 없음.
+- ⛔ 18회 연속 동일 실패. 근본 원인은 코드/PRD가 아니라 Figma 데스크톱 앱의 TalkToFigma 플러그인이 커맨드에 응답하지 못하는 상태(WS join만 성공). 자동 재시도로는 풀리지 않으므로 여기서 멈춘다. **필수 사용자 조치**: Figma 데스크톱에서 TalkToFigma 플러그인 창을 연 채 채널 5evd9cs8로 Connect(창 유지). 복구 후 멱등: cook/home(2006:16)→region/상태바(2006:17)에 '9:41' 텍스트+신호/와이파이/배터리 도형만 1콜씩 순차 추가.
+---
+## 2026-07-02 - D-home-01 상태바 19차 시도 — 브리지 미응답으로 G0 실패(그리기 없음)
+- G0: join_channel 5evd9cs8 성공(2회, WS 응답), get_document_info 2회 전부 timeout(재조인 후 포함). 1~18차와 완전 동일 = 플러그인 커맨드 경로 끊김. (TalkToFigma MCP 툴 스키마는 정상 로드됨 — WS 서버는 살아있음.)
+- 조치: 아무것도 그리지 않음, D-home-01 passes:false 유지, 커밋 없음.
+- ⛔ 19회 연속 동일 실패. 상황 변화 전무. 코드/자동 재시도로 해결 불가 — 근본 원인은 Figma 데스크톱 앱에서 TalkToFigma 플러그인이 커맨드에 응답하지 못하는 상태. **필수 사용자 조치**: Figma 데스크톱에서 TalkToFigma 플러그인 창을 연 채 채널 5evd9cs8로 Connect(창 유지)한 뒤 재개. 그 전까지 D-home-01 이후 모든 스토리는 G0에서 막히므로 재시도 무의미.
+---
+## 2026-07-02 - D-home-01 상태바 20차 시도 — 브리지 미응답으로 G0 실패(그리기 없음)
+- G0: join_channel 5evd9cs8 성공(WS 응답), get_document_info 2회 전부 timeout. 1~19차와 완전 동일 = 플러그인 커맨드 경로 끊김. (TalkToFigma MCP 툴 스키마는 정상 로드됨 — WS 서버는 살아있음.)
+- 조치: CODEX §1 G0 실패 규칙대로 아무것도 그리지 않음, D-home-01 passes:false 유지, 커밋 없음.
+- ⛔ 20회 연속 동일 실패. 자동 재시도로는 절대 풀리지 않는다. **재개 조건(사용자 조치)**: Figma 데스크톱에서 TalkToFigma 플러그인 창을 열고 채널 5evd9cs8로 Connect(창 유지). 복구 후 멱등: cook/home(2006:16)→region/상태바(2006:17)에 '9:41' 텍스트+신호/와이파이/배터리 도형만 1콜씩 순차 추가.
+---
+## 2026-07-02 - D-home-01 상태바 21차 시도 — 브리지 미응답으로 G0 실패(그리기 없음)
+- G0: join_channel 5evd9cs8 성공(2회, WS 응답), get_document_info 2회 전부 timeout(재조인 후 포함). 1~20차와 완전 동일 = 플러그인 커맨드 경로 끊김.
+- 조치: CODEX §1 G0 실패 규칙대로 아무것도 그리지 않음, D-home-01 passes:false 유지, 커밋 없음.
+- ⛔ 21회 연속 동일 실패. 상황 변화 전무. **자동 이터레이션은 여기서 영구히 막힌다** — 사용자가 Figma 데스크톱에서 TalkToFigma 플러그인 창을 열고 채널 5evd9cs8로 Connect(창 유지)하기 전까지 재시도는 100% 무의미. 복구 신호(get_document_info 응답) 확인 후에만 재개.
+---
+## 2026-07-02 - D-home-01 상태바 22차 시도 — 브리지 미응답으로 G0 실패(그리기 없음)
+- G0: join_channel 5evd9cs8 성공(2회, WS 응답), get_document_info 2회 전부 timeout(재조인 후 포함). 1~21차와 완전 동일 = 플러그인 커맨드 경로 끊김.
+- 조치: CODEX §1대로 아무것도 그리지 않음, D-home-01 passes:false 유지, 커밋 없음.
+- ⛔ 22회 연속 동일 실패. 근본 원인은 코드/PRD가 아니라 Figma 데스크톱 앱 상태. **재개 조건(사용자 조치)**: Figma 데스크톱에서 TalkToFigma 플러그인 창을 열고 채널 5evd9cs8로 Connect(창 유지). 복구 후 멱등: cook/home(2006:16)→region/상태바(2006:17)에 '9:41' 텍스트+신호/와이파이/배터리 도형만 1콜씩 순차 추가.
+---
+## 2026-07-02 - D-home-01 상태바 23차 시도 — 브리지 미응답으로 G0 실패(그리기 없음)
+- G0: join_channel 5evd9cs8 성공(WS 응답), get_document_info 2회 전부 timeout. 1~22차와 완전 동일 = 플러그인 커맨드 경로 끊김(WS 서버는 살아있음).
+- 조치: CODEX §1대로 아무것도 그리지 않음, D-home-01 passes:false 유지, 커밋 없음.
+- ⛔ 23회 연속 동일 실패. 상황 변화 전무. **자동 재시도는 100% 무의미** — 사용자가 Figma 데스크톱에서 TalkToFigma 플러그인 창을 열고 채널 5evd9cs8로 Connect(창 유지)하기 전까지 D-home-01 이후 모든 스토리는 G0에서 막힌다. 복구 신호(get_document_info 응답) 확인 후에만 재개.
+---
+## 2026-07-02 - D-home-01 상태바 24차 시도 — 브리지 미응답으로 G0 실패(그리기 없음)
+- G0: join_channel 5evd9cs8 성공(WS 응답), get_document_info 2회 전부 timeout. 1~23차와 완전 동일 = 플러그인 커맨드 경로 끊김(WS 서버는 살아있음).
+- 조치: CODEX §1대로 아무것도 그리지 않음, D-home-01 passes:false 유지, 커밋 없음.
+- ⛔ 24회 연속 동일 실패. 근본 원인은 코드/PRD가 아니라 Figma 데스크톱 앱의 플러그인 상태. **사용자 조치(플러그인 창 열고 채널 5evd9cs8 Connect) 전까지 재시도 무의미.** 복구 후 멱등: cook/home(2006:16)→region/상태바(2006:17)에 '9:41' 텍스트+신호/와이파이/배터리 도형만 1콜씩 순차 추가.
+---
+## 2026-07-02 - D-home-01 상태바 25차 시도 — 브리지 미응답으로 G0 실패(그리기 없음)
+- G0: join_channel 5evd9cs8 성공(2회, WS 응답), get_document_info 2회 전부 timeout(재조인 후 포함). 1~24차와 완전 동일 = 플러그인 커맨드 경로 끊김(WS 서버는 살아있음).
+- 조치: CODEX §1대로 아무것도 그리지 않음, D-home-01 passes:false 유지, 커밋 없음.
+- ⛔ 25회 연속 동일 실패. 상황 변화 전무. 자동 재시도로는 절대 풀리지 않는다. **재개 조건(사용자 조치)**: Figma 데스크톱에서 TalkToFigma 플러그인 창을 연 채 채널 5evd9cs8로 Connect(창 유지). 복구 신호(get_document_info 응답) 확인 후에만 재개. 복구 후 멱등: cook/home(2006:16)→region/상태바(2006:17)에 '9:41' 텍스트+신호/와이파이/배터리 도형만 1콜씩 순차 추가.
+---
+## 2026-07-02 - D-home-01 상태바 26차 시도 — 브리지 미응답으로 G0 실패(그리기 없음)
+- G0: join_channel 5evd9cs8 성공(2회, WS 응답), get_document_info 2회 전부 timeout(재조인 후 포함). 1~25차와 완전 동일 = 플러그인 커맨드 경로 끊김(WS 서버는 살아있음).
+- 조치: CODEX §1대로 아무것도 그리지 않음, D-home-01 passes:false 유지, 커밋 없음.
+- ⛔ 26회 연속 동일 실패. **자동 재시도로는 절대 풀리지 않는 상태이므로 여기서 멈춘다.** 재개 조건(사용자 조치): Figma 데스크톱에서 TalkToFigma 플러그인 창을 열고 채널 5evd9cs8로 Connect(창 유지). 복구 신호(get_document_info 응답) 확인 후에만 재개. 복구 후 멱등: cook/home(2006:16)→region/상태바(2006:17)에 '9:41' 텍스트+신호/와이파이/배터리 도형만 1콜씩 순차 추가.
+---
+## 2026-07-02 - D-home-01 상태바 27차 시도 — 브리지 미응답으로 G0 실패(그리기 없음)
+- G0: join_channel 5evd9cs8 성공(WS 응답), get_document_info 2회 전부 timeout. 1~26차와 완전 동일 = 플러그인 커맨드 경로 끊김.
+- 조치: CODEX §1대로 아무것도 그리지 않음, D-home-01 passes:false 유지, 커밋 없음.
+- ⛔ 27회 연속 동일 실패. 상황 변화 전무. 재개 조건: 사용자가 Figma 데스크톱에서 TalkToFigma 플러그인 창을 열고 채널 5evd9cs8로 Connect(창 유지). 그 전까지 재시도 무의미.
+---
+## 2026-07-02 - D-home-01 상태바 28차 시도 — 브리지 미응답으로 G0 실패(그리기 없음)
+- G0: join_channel 5evd9cs8 성공(2회, WS 응답), get_document_info 2회 전부 timeout(재조인 후 포함). 1~27차와 완전 동일 = 플러그인 커맨드 경로 끊김(WS 서버는 살아있으나 Figma 데스크톱 플러그인이 커맨드 미응답).
+- 조치: CODEX §1대로 아무것도 그리지 않음, D-home-01 passes:false 유지, prd 갱신·커밋 없음.
+- ⛔ 28회 연속 동일 실패. 이 로그의 반복 자체가 무의미하므로 이후로는 verbose 블록을 더 쌓지 않는다. **자동 이터레이션은 사용자 조치 없이는 영구히 G0에서 막힌다.** 재개 조건: Figma 데스크톱에서 TalkToFigma 플러그인 창을 열고 채널 5evd9cs8로 Connect(창 유지)한 뒤 get_document_info가 응답하는 것을 확인. 복구 후 멱등: cook/home(2006:16)→region/상태바(2006:17)에 '9:41' 텍스트+신호/와이파이/배터리 도형만 1콜씩 순차 추가.
+---
+## 2026-07-02 - D-home-01 상태바 29차 시도 — G0 실패(동일, 그리기 없음)
+- join_channel 5evd9cs8 성공(2회) / get_document_info 2회 timeout. 1~28차와 동일 = 플러그인 커맨드 경로 끊김. 아무것도 그리지 않음, passes:false 유지, 커밋 없음. 재개 조건 동일(사용자가 Figma에서 플러그인 창 열고 채널 5evd9cs8 Connect).
+---
+## 2026-07-02 - D-home-01 상태바 30차 시도 — G0 실패(동일, 그리기 없음)
+- join_channel 5evd9cs8 성공(2회) / get_document_info 2회 timeout. 1~29차와 동일 = 플러그인 커맨드 경로 끊김. 아무것도 그리지 않음, passes:false 유지, 커밋 없음. 재개 조건 동일(사용자가 Figma에서 플러그인 창 열고 채널 5evd9cs8 Connect).
+---
+## 2026-07-02 - D-home-01 상태바 31차 시도 — G0 실패(동일, 그리기 없음)
+- join_channel 5evd9cs8 성공(2회) / get_document_info 2회 timeout. 1~30차와 동일 = 플러그인 커맨드 경로 끊김(WS 서버는 살아있으나 Figma 데스크톱 플러그인 미응답). 아무것도 그리지 않음, passes:false 유지, 커밋 없음. 재개 조건 동일(사용자가 Figma에서 TalkToFigma 플러그인 창 열고 채널 5evd9cs8 Connect 후 get_document_info 응답 확인).
+---
+## 2026-07-02 - D-home-01 상태바 32차 시도 — G0 실패(동일, 그리기 없음)
+- join_channel 5evd9cs8 성공(2회) / get_document_info 2회 timeout. 1~31차와 동일 = 플러그인 커맨드 경로 끊김(WS 서버는 살아있으나 Figma 데스크톱 플러그인 미응답). 아무것도 그리지 않음, passes:false 유지, 커밋 없음. 재개 조건 동일(사용자가 Figma에서 TalkToFigma 플러그인 창 열고 채널 5evd9cs8 Connect 후 get_document_info 응답 확인).
+---
+## 2026-07-02 - D-home-01 상태바 33차 시도 — G0 실패(동일, 그리기 없음)
+- join_channel 5evd9cs8 성공(2회) / get_document_info 2회 timeout. 1~32차와 완전 동일 = 플러그인 커맨드 경로 끊김(WS 서버는 살아있으나 Figma 데스크톱 플러그인 미응답). 아무것도 그리지 않음, passes:false 유지, 커밋 없음. 재개 조건 동일(사용자가 Figma에서 TalkToFigma 플러그인 창 열고 채널 5evd9cs8 Connect 후 get_document_info 응답 확인).
+---
+## 2026-07-02 - D-home-01 상태바 34차 시도 — G0 실패(동일, 그리기 없음)
+- join_channel 5evd9cs8 성공(2회, MCP 툴 스키마 정상 로드) / get_document_info 2회 timeout(재조인 후 포함). 1~33차와 완전 동일 = 플러그인 커맨드 경로 끊김(WS 서버는 살아있으나 Figma 데스크톱 플러그인 미응답). 아무것도 그리지 않음, passes:false 유지, 커밋 없음. 재개 조건 동일(사용자가 Figma에서 TalkToFigma 플러그인 창 열고 채널 5evd9cs8 Connect 후 get_document_info 응답 확인).
 ---

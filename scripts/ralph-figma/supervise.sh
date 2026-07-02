@@ -5,9 +5,9 @@ set +e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 cd "$ROOT"
-export ANDROID_HOME="${ANDROID_HOME:-/Users/osein/Library/Android/sdk}"
-export JAVA_HOME="${JAVA_HOME:-/Users/osein/Library/Java/JavaVirtualMachines/jdk-17.0.9.jdk/Contents/Home}"
+export PATH="$HOME/.bun/bin:$PATH"
 PRD="$SCRIPT_DIR/prd.json"
+export FIGMA_CHANNEL="$(jq -r '.figma.channel' "$PRD" 2>/dev/null)"
 LOG="$ROOT/docs/progress/FIGMA_ACTIVITY_LOG_ko.md"
 BATCH="${1:-3}"          # 배치당 codex iteration
 MAX_STALL="${2:-3}"      # 진척 없는 배치 연속 한도
@@ -25,7 +25,7 @@ while :; do
     break
   fi
   before=$(donecnt)
-  "$SCRIPT_DIR/ralph.sh" --tool codex "$BATCH" >/dev/null 2>&1
+  "$SCRIPT_DIR/ralph.sh" --tool claude "$BATCH" >>"$ROOT/../ralph-figma-supervise.log" 2>&1
   after=$(donecnt)
   if [ "$after" -le "$before" ]; then stall=$((stall+1)); else stall=0; fi
   echo "batch done $(date) done=$after stall=$stall"

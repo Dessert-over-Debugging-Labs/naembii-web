@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Figma 이식 루프 — 재개 가이드</title>
+<style>
+ body{font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:#1a1a1a;background:#faf8f5;line-height:1.75;margin:0;padding:0 16px 80px;word-break:keep-all}
+ main{max-width:840px;margin:0 auto}
+ h1{font-size:24px;margin:32px 0 8px;border-bottom:3px solid #46B581;padding-bottom:12px}
+ h2{font-size:19px;margin:30px 0 10px}
+ pre{background:#1e1e1e;color:#eee;padding:12px 16px;border-radius:8px;overflow:auto;font-size:13px}
+ code{font-size:13px} p code,li code{background:#efece6;color:#333;padding:1px 6px;border-radius:5px}
+ blockquote{background:#fff;border-left:4px solid #F26B2A;margin:14px 0;padding:10px 16px;border-radius:0 8px 8px 0}
+ .box{background:#fff;border:1px solid #e6e6e6;border-radius:10px;padding:2px 18px 14px;margin:14px 0}
+ ul{padding-left:22px}
+</style></head><body><main>
+<h1>Figma 이식 루프 — 재개 가이드</h1>
+<blockquote>네트워크 끊김 / 세션 종료 후에도 <b>완료 지점부터</b> 이어서 진행할 수 있게 하는 문서. 상태는 이미 디스크에 durable하게 저장됨.</blockquote>
+
+<div class="box"><h2>상태 저장 위치 (이미 durable)</h2>
+<ul>
+<li><code>scripts/ralph-figma/prd.json</code> — 각 스토리 <code>passes</code>(완료)와 <code>notes</code>(생성 nodeId). 네트워크 끊겨도 유지.</li>
+<li><code>scripts/ralph-figma/progress.txt</code> — <code>## Codebase Patterns</code>에 nodeId 맵·학습.</li>
+<li>매 스토리가 <b>멱등</b>(이름/nodeId로 기존 프레임 찾아 이어그림) → 중간에 죽어도 다시 돌리면 완료 지점부터, 중복 없이 이어감.</li>
+</ul></div>
+
+<div class="box"><h2>재개 방법 (원클릭)</h2>
+<blockquote>Figma 플러그인은 <b>재접속할 때마다 채널이 바뀐다</b>(예: 5evd9cs8 → 6rkd10x7). 재개 시 보통 새 채널을 넘긴다.</blockquote>
+<pre>cd /Users/osein/cook-assistance-wireframe
+
+# 1) 플러그인 열고 Connect → 표시된 채널 확인
+# 2) 그 채널로 재개 (브리지 자동 기동 + 중복 정리 + 감시견 가동)
+./scripts/ralph-figma/resume.sh &lt;새_채널&gt;
+
+# 채널 그대로면:
+./scripts/ralph-figma/resume.sh</pre></div>
+
+<div class="box"><h2>진행 확인</h2>
+<pre>jq -r '"완료 "+([.userStories[]|select(.passes==true)]|length|tostring)+"/106, 다음="+([.userStories[]|select(.passes==false)]|sort_by(.priority)|.[0].id)' scripts/ralph-figma/prd.json
+tail -f /tmp/figma-watchdog.log</pre></div>
+
+<div class="box"><h2>감시견 동작</h2>
+<ul>
+<li>1분 주기 싼 probe로 플러그인 생사 확인 → 살아있으면 supervise 배치로 완료까지, 죽어 있으면 대기(토큰 낭비 없음).</li>
+<li>네트워크 끊기면 DEAD 취급하고 대기 → 복구되면 자동 재개.</li>
+<li><b>주의</b>: nohup이라 터미널 닫아도 살지만 <b>재부팅/로그아웃 시 죽음</b> → <code>resume.sh</code>로 재기동.</li>
+</ul></div>
+
+<div class="box"><h2>트러블슈팅</h2>
+<ul>
+<li><b>계속 DEAD</b>: 플러그인 창 닫힘/채널 불일치 → Connect 후 채널 재확인.</li>
+<li><b>브리지 죽음</b>: <code>cd /Users/osein/cursor-talk-to-figma-mcp &amp;&amp; bun run src/socket.ts</code>(resume.sh 자동 처리).</li>
+<li><b>중복 그리기 우려</b>: 감시견은 1개만. <code>pkill -f ralph-figma/watchdog.sh</code> 후 resume.sh.</li>
+</ul></div>
+</main></body></html>

@@ -1,62 +1,45 @@
-# Ralph Agent — cook 와이어프레임 Figma 이식 (쓰기형 MCP)
+# Ralph Agent — cook 와이어프레임 Figma 정밀 이식 (쓰기형 MCP, 멱등)
 
-너는 이 레포의 인터랙티브 HTML 와이어프레임(`app.html`)의 각 화면을 **Figma에 실제로 그려 넣는** 자율 에이전트다. 한 번 호출당 **정확히 한 스토리(=한 화면)**만 끝내고 커밋하고 멈춘다.
+너는 `app.html`의 화면들을 **Figma 캔버스에 정밀하게 그려 넣는** 자율 에이전트다. 한 번 호출당 **정확히 한 스토리**만 끝내고(작게!) 커밋하고 멈춘다. HTML은 고치지 않는다.
 
-> 이 트랙은 HTML을 고치지 않는다. **소스(app.html 화면)를 참조해 Figma 캔버스에 프레임/도형/텍스트를 생성**한다.
+> 매 iteration은 **상태가 없는 새 세션**이다. 그래서 **멱등성**이 1순위: 이미 그린 것은 다시 만들지 말고 **찾아서 이어 그린다**.
 
-## 0. 먼저 읽을 것
-1. `scripts/ralph-figma/prd.json` — 화면별 스토리(F0 연결 스파이크 → F1-* 화면들).
-2. `scripts/ralph-figma/progress.txt` 상단 `## Codebase Patterns`.
-3. `docs/FIGMA_WIREFRAME_STORIES_ko.md` — 화면별 목표 레이아웃·핵심 요소·카피.
-4. `CLAUDE.md`(레포) — 디자인 토큰/카피 규칙. `scripts/ralph-figma/source-screens/<view>.png` — 그릴 화면의 원본 이미지(목표).
+## 0. 먼저 읽을 것 (순서대로)
+1. `scripts/ralph-figma/progress.txt` 상단 `## Codebase Patterns`(누적 학습·nodeId 맵).
+2. `scripts/ralph-figma/prd.json` — `figma`(page/channel), 스토리들. 각 스토리 `notes`에 이전 iteration이 남긴 **nodeId**가 있으면 그걸 쓴다.
+3. `docs/FIGMA_WIREFRAME_STORIES_ko.md` — 화면별 목표. `scripts/ralph-figma/source-screens/<view>.png` — 원본 이미지(목표).
 
-## 1. Figma MCP 준비 (매 iteration 첫 단계, 필수)
-MCP 툴은 세션 시작 시 바인딩되고 이 환경에선 **deferred** 다. 그리기 툴을 먼저 로드·확인하라.
-1. `ToolSearch`로 쓰기형 Figma 브리지 툴을 로드한다(패키지에 따라 이름이 다르니 검색으로 확인):
-   `join_channel, get_document_info, get_selection, create_frame, create_rectangle, create_text,
-    set_fill_color, set_corner_radius, set_layout_mode, move_node, resize_node, get_node_info,
-    export_node_as_image` (없으면 유사명 검색: "figma create frame text export").
-2. **연결 확인(게이트 0)**: `join_channel`(prd.json의 `figma.channel` 또는 .env `FIGMA_CHANNEL`) 후
-   `get_document_info`가 성공해야 한다. 실패하면 **아무것도 그리지 말고** progress에
-   "Figma 브리지 미연결 — 사용자 셋업 필요"를 남기고 그 스토리를 passes=false로 유지한 채 종료한다.
+## 1. Figma MCP 준비 + 페이지 (매 iteration 첫 단계)
+- MCP 툴은 deferred일 수 있다. 필요하면 `ToolSearch`로 로드: `join_channel, get_document_info, get_node_info, get_nodes_info, scan_text_nodes, create_frame, create_rectangle, create_text, set_fill_color, set_stroke_color, set_corner_radius, set_layout_mode, set_padding, set_item_spacing, move_node, resize_node, clone_node, set_text_content, set_annotation, set_multiple_annotations, create_connections, export_node_as_image`.
+- **G0 연결**: `join_channel`(prd.json `figma.channel`) → `get_document_info` 성공. 실패면 아무것도 그리지 말고 progress에 "브리지 미연결"만 남기고 스토리 passes 유지한 채 종료.
+- **페이지**: 그리는 대상은 브리지가 여는 **현재 페이지(prd.json `figma.page` = "요리비서")**. `get_document_info`로 현재 페이지명을 확인하고, 다르면 progress에 경고를 남기되 현재 페이지에 그린다(플러그인이 페이지를 정한다).
 
-## 2. 절차
-1. `passes:false` 중 최저 priority 1개만 구현. 단일 브랜치(main).
-2. Green-gate(§3) 통과 → `prd.json`에서 해당 스토리만 `passes:true`+`notes`(생성 nodeId·export 경로 포함)
-   → `progress.txt` + `docs/progress/FIGMA_REPORT_ko.md` 한글 기록 → 한글 커밋
-   (`feat(figma): F1-XX <화면> Figma 이식`) → 영어면 즉시 amend.
+## 2. 멱등성 규칙 (필수, 위반 시 중복 프레임 발생)
+1. 그리기 전 `get_document_info`로 현재 페이지 자식(최상위 프레임)을 훑어 **이름으로 대상 프레임을 찾는다**: 화면 프레임 = `cook/<view>`, 섹션 = `SEC/<group>`.
+2. 대상이 **있으면**: 그 nodeId를 기준으로 **자식만 추가/수정**(`get_node_info`로 이미 있는 하위요소 확인 후 없는 것만 create, 텍스트는 `set_text_content`로 갱신). **절대 새 프레임을 또 만들지 않는다.**
+3. 대상이 **없을 때만** create.
+4. 만들거나 확정한 nodeId를 **그 스토리 `notes`와 progress.txt `## Codebase Patterns`의 nodeId 맵에 반드시 기록**한다(다음 iteration이 찾도록).
+5. **좌표 규약(학습됨)**: `create_*`의 x/y는 **부모-상대**, `move_node`는 **절대 좌표**. 프레임 안 요소는 create 시 부모(frameId) 지정 + 부모기준 좌표.
 
-## 3. Green-gate (통과해야만 커밋)
-한 화면 스토리는 아래를 **모두** 만족해야 통과다.
-- **G0 연결**: §1.2 통과(채널 조인 + document_info OK).
-- **G1 그리기**: 해당 화면용 최상위 프레임 1개 생성. 이름 `cook/<view>`, 모바일 크기(**390×844**,
-  auto-layout 세로). 원본(`source-screens/<view>.png`)의 주요 영역을 재현: 상태바 → 헤더 →
-  콘텐츠(카드/리스트/캐러셀 등) → 하단(탭바 또는 플로팅 CTA). 다크 화면(cook/cook2/cook3)은
-  배경 `#0A0A0A`/`#161616`.
-- **G2 read-back**: `get_node_info`(생성 프레임)로 (a) 자식 노드 수 ≥ 6, (b) 그 화면의 **핵심 한글
-  라벨** 최소 1개가 텍스트 노드로 존재함을 확인(예: home="추천 레시피", detail="요리 시작하기",
-  cook3="요리 완성", complete="완성", tipWrite="팁 남기기").
-- **G3 export**: `export_node_as_image`(PNG, scale≥2)로 프레임을 내보내 `scripts/ralph-figma/exports/<view>.png`
-  로 저장하고, `source-screens/<view>.png`와 **영역 구성이 대응**하는지 눈으로 대조(픽셀 일치 아님).
-- **G4 정직/토큰**: 영어 누수 없음(STEP/Mic 등 금지), 브랜드 그린 `#46B581`·다크 토큰 사용,
-  빈/깨진 프레임·중복 프레임 없음. cook3 영상/음성은 거짓 "재생 중" 금지(정적/상태 표기).
+## 3. Green-gate (통과해야 커밋)
+- **G0 연결**(§1). **G1 그리기**: 스토리가 지정한 요소를 대상 프레임/섹션에 멱등하게 생성·배치.
+- **G2 read-back(하드 게이트)**: `get_node_info`(대상)로 이번 스토리가 추가한 자식 노드가 실제로 존재하고, 지정된 **핵심 한글 라벨**이 텍스트 노드로 있음을 확인. (이게 통과의 핵심 증거)
+- **G3 export(밀스톤만)**: 스토리 id가 `*-DONE`(화면 완성)·`MILE-*`일 때만 `export_node_as_image`(PNG scale2)로 `scripts/ralph-figma/exports/<view>.png` 저장. 그 외 일반 스토리는 export 생략(read-back으로 충분).
+- **G4 정직/토큰**: 영어 누수 0(STEP/Mic 금지), 브랜드 그린 `#46B581`·다크 `#0A0A0A/#161616`·본문 14~16/서브 12~13px·8px 그리드·48px 터치. 빈/중복/깨진 프레임 없음. cook3 영상은 거짓 "재생 중" 금지.
 
-## 4. 디자인 토큰 (CLAUDE.md 준수)
-- 브랜드 그린 `--green:#46B581`. 다크 배경 `#0A0A0A`/`#161616`. 본문 14~16px·서브 12~13px.
-- 8px 그리드 간격, 터치 타깃 48px+. 한글 카피, 아이콘은 자리(사각형/벡터 placeholder)로.
-- 가능하면 재사용 요소(상태바·하단탭바)는 컴포넌트/공통 프레임으로 만들어 화면 간 일관 유지.
+## 4. 섹션·포스트잇·플로우 (해당 스토리에서만)
+- **섹션**: 네이티브 section 툴이 없으므로 **큰 타이틀 컨테이너 프레임** `SEC/<group>`(연회색 배경 + 상단 제목 텍스트)로 만들고 그 안에 화면 프레임들을 배치.
+- **포스트잇**: 노란 스티키 프레임(배경 `#FFE8A3`, 라운드 12, 그림자, 안에 텍스트) `NOTE/<view>-<n>`를 해당 화면 프레임 **오른쪽 옆**에 배치. 리뷰 코멘트를 달 수 있는 자리.
+- **주석**: 핵심 요소엔 `set_annotation`/`set_multiple_annotations`로 Figma 주석(콜아웃)도 부착.
+- **플로우 연결선**: `create_connections`로 화면 간 흐름 화살표(home→sheet→loading→detail→cook3→complete→tipWrite).
 
 ## 5. progress / 리포트
-- `progress.txt`: `## [날짜] - [Story] / 그린 프레임(nodeId) / export 경로 / 게이트 결과(G0~G4) / 학습 ---`
-- `docs/progress/FIGMA_REPORT_ko.md`: `### [Story] <화면> · [날짜] / 무엇을 / 어떻게(주요 노드) / 확인(export) / 다음`
-- 재사용 패턴(예: "상태바 프레임은 컴포넌트 X 재사용")은 progress.txt 상단 `## Codebase Patterns`에.
+- `progress.txt`: `## [날짜] - [Story] / 대상 nodeId / 추가한 자식(요약) / 게이트(G0/G2[/G3]) / 학습 ---`. 상단 `## Codebase Patterns`에 **nodeId 맵**(`cook/home=2004:2` 식)과 재사용 패턴 누적.
+- `docs/progress/FIGMA_REPORT_ko.md`: 스토리별 한 줄.
 
-## 6. 커밋 금지
-`scripts/ralph-figma/session_logs|archive|exports/*.png`(대용량이면 .gitignore), 임시 캡처.
+## 6. 커밋
+- 통과 시 해당 스토리만 `passes:true`+notes(nodeId) → 한글 커밋 `feat(figma): <id> <요약>`. 커밋 실패해도 **prd.json passes 갱신은 반드시**(루프 전진의 권위 소스). 영어 요약이면 amend.
+- 커밋 금지: `session_logs|archive|exports/*.png`(gitignore됨).
 
 ## 7. 종료
-모든 스토리 passes:true면 마지막 응답을 정확히:
-```xml
-<promise>COMPLETE</promise>
-```
-아니면 간결 요약만. 다음 스토리로 넘어가지 마라.
+모든 스토리 passes:true면 마지막 응답을 정확히 `<promise>COMPLETE</promise>`. 아니면 간결 요약만. **다음 스토리로 넘어가지 마라(한 iteration = 한 스토리).**

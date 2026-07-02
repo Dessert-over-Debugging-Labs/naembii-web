@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "TalkToFigma": {
+      "command": "bunx",
+      "args": ["cursor-talk-to-figma-mcp@latest"],
+      "env": {
+        "FIGMA_CHANNEL": "${FIGMA_CHANNEL}"
+      }
+    }
+  }
+}
