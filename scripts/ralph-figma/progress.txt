@@ -807,3 +807,10 @@ Started: Wed Jul  1 15:53:56 KST 2026
 - 게이트: G0(kpgtp6vl)/G1/G2 read-back(get_node_info 2042:233 → 자식 10 + '음성 가이드' 텍스트 노드 2050:73·center rel x195 정합, mic 원중심 rel y42=형제 정합)/G4(다크 §4b 주색 #D66B42(초록 아님)·on-green #2A1005·라벨 #9a9aa0, 초록 누수 0=#46b581/#e3f3ec 0건·영어 누수 0, 12px 라벨·64px 터치) 통과. 밀스톤 아님 → export 생략.
 - nodeId 맵 갱신: region/하단(2042:233) 자식 완성 = 상단선2050:64 · 타이머(원2050:65/아이콘2050:66/라벨2050:67 center x81) · 재료(원2050:68/아이콘2050:69/라벨2050:70 center x309) · 음성(원2050:71/아이콘2050:72/라벨2050:73 center x195). cook-ctrl 3버튼 완성.
 - 다음: cook-DONE(밀스톤): cook/cook 전수 read-back + export exports/cook.png.
+
+---
+## 2026-07-02 - cook-DONE (밀스톤: cook/cook 검수 + export)
+- 대상 cook/cook=2042:229(SEC/B 2036:111 자식, 다크 #0a0a0a, 자식 4 region: 상태바2042:230·헤더2042:231·콘텐츠2042:232·하단2042:233).
+- **핵심 보정**: region/하단(2042:233)이 D-cook-04 move_node 이중오프셋 버그로 abs 18300/3594(프레임 밖 8760px 우측)에 떠 export 시 하단 컨트롤바 전체가 클립되던 상태. move_node(2042:233, 0, 726)=부모-상대로 재배치 → abs 9150/2160(h118, bottom 2278=프레임 하단 flush). read-back: 타이머-원 9205·음성-원 9313·재료-원 9433 전부 프레임 9150~9540 내부. move_node=부모-상대 재확인.
+- G0 채널 kpgtp6vl 라이브. G2 전수 read-back OK(상태바→헤더→콘텐츠→하단 정합, 한글 라벨 전부 존재, 초록 #46b581/#e3f3ec 0건). G3 export_node_as_image PNG scale2 → exports/cook.png(780x1688 유효 PNG). 육안 확인: 하단 3버튼(타이머/음성 가이드/재료 보기) 프레임 내부 정상 렌더. G4 초록·영어 누수 0(250ml/0:35=단위·시간)·§4b 다크 팔레트.
+- ⚠ cook-v2/*(2043:391~2051:159) 병렬 세트 존재 → cook/* 대체 가능성(사람 판단). prd 권위 소스라 진행. 다음: NOTE-cook.

@@ -876,7 +876,8 @@
       "title": "cook 화면 완성 검수 + export",
       "description": "cook/cook가 원본과 영역 대응하는지 확인하고 PNG로 내보낸다(밀스톤).",
       "priority": 63,
-      "passes": false,
+      "passes": true,
+      "notes": "브리지 채널 kpgtp6vl(라이브, join+get_document_info OK, 페이지 '요리 비서' 939:2). 대상 cook/cook=2042:229(자식 4 region: 상태바2042:230·헤더2042:231·콘텐츠2042:232·하단2042:233). **밀스톤 보정(핵심)**: region/하단(2042:233)이 D-cook-04의 move_node 이중오프셋 버그로 abs 18300/3594(프레임 9150~9540 밖 8760px 우측)에 떠 있어 export 시 하단 컨트롤바(타이머/음성 가이드/재료) 전체가 클립돼 사라지는 상태였음. move_node(2042:233, 0, 726)=부모-상대로 재배치 → abs 9150/2160(h118, bottom 2278=프레임 하단 flush). read-back 확인: 타이머-원 abs 9205·음성-원 9313·재료-원 9433 전부 프레임 9150~9540 내부. move_node는 부모-상대(Codebase Patterns D-loading-04 실측대로) 재확인. G2 전수 read-back(get_node_info 2042:229): 상태바(9:41+신호/와이파이/배터리 #f8f8f4) → 헤더('기본 조리 모드' #f8f8f4 + 뒤로/도움말 아이콘) → 콘텐츠(영상영역#000·썸네일#1c1712·5도트[활성#d66b42/비활성#30261d]·단계카드#1c1712 stroke#d66b42·'1단계.' #d66b42·'육수 준비하기' #fff·배지'1 / 5' #e1875f·서브1~3 번호#d66b42/텍스트#fff·구간텍스트#a7a7a7) → 하단(타이머 cic.o #d66b42·음성 cic.o.mic 64원 #d66b42·재료 cic.d #30261d, 라벨 #9a9aa0). 한글 라벨 전부 정합, 초록(#46b581/#e3f3ec) 0건. G3 export_node_as_image PNG scale2 → scripts/ralph-figma/exports/cook.png(780x1688 유효 PNG, transcript base64 추출). export 이미지 육안 확인: 다크 상태바→헤더→영상/단계카드→하단 3버튼(타이머/음성 가이드/재료 보기) 전부 프레임 내부 정상 렌더(하단바 클립 해소 확인). G4: 초록 누수 0·영어 누수 0(250ml/0:35=단위·시간)·§4b 다크 팔레트·상태바→헤더→콘텐츠→하단 영역 대응. ⚠ 관찰(사람 판단 필요, 이번 이터레이션 미조치): 페이지에 병렬 리디자인 세트 cook-v2/*(2043:391~2051:159, NOTE-v2 동반)가 존재해 cook/* 라인을 대체했을 가능성 — prd.json이 권위 소스라 정상 진행했으나 남은 cook/* 스토리가 死프레임 작업일 수 있음. 다음: NOTE-cook(cook/cook 우측 포스트잇+주석).",
       "acceptanceCriteria": [
         "cook/cook가 원본 source-screens/cook.png와 영역 대응(상태바→헤더→콘텐츠→하단).",
         "G3: export_node_as_image로 exports/cook.png(scale2) 저장.",
