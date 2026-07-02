@@ -102,7 +102,8 @@
       "title": "home: 영상 링크 바로 요리하기 오렌지 카드+부제",
       "description": "cook/home 안에 '영상 링크 바로 요리하기 오렌지 카드+부제' 요소를 정밀하게 그린다. 원본 source-screens/home.png 대비 위치·간격·타이포 정합.",
       "priority": 7,
-      "passes": false,
+      "passes": true,
+      "notes": "브리지 채널 mtaf1yhq. 대상 region/콘텐츠=2006:19(cook/home=2006:16 자식) 헤드라인(2021:11) 아래 rel y60에 추가. app.html:960 quick-import(오렌지 카드) 대응. 추가 자식 7: CTA카드=2021:12(rect rel x16 y60 358x74 #FCE0D0 라운드18), CTA아이콘=2021:13(rect 46x46 rel x30 y74 #F0662E 라운드14), CTA아이콘심볼=2021:14('▶' 흰색 18px), CTA제목=2021:15('영상 링크로 바로 요리하기' 15px w900 #0A0A0A rel x88 y70), CTA부제=2021:16('재료, 단계, 구간을 먼저 확인하고 시작' 12px w700 #8A8A8A rel x88 y94), CTA화살표배경=2021:17(rect 28x28 rel x332 y83 #FBDBCB 라운드14), CTA화살표=2021:18('›' 18px #F0662E). G0/G1/G2(region/콘텐츠 read-back 자식 8 + '영상 링크로 바로 요리하기' 텍스트 노드 2021:15 확인, 좌표 프레임 내부 정합)/G4(오렌지 토큰 #F0662E·#FCE0D0, 다크 #0A0A0A, 15/12px, 영어 누수 0) 통과. 밀스톤 아님 → export 생략.",
       "acceptanceCriteria": [
         "멱등: cook/home(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
         "G2: '영상 링크로 바로 요리하기' 텍스트 노드가 cook/home 안에 존재.",
