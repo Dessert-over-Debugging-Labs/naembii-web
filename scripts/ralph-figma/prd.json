@@ -902,7 +902,8 @@
       "title": "cook2 화면 골격 프레임 생성",
       "description": "cook/cook2 프레임(390x844, 배경 #0A0A0A)을 SEC/B 안에 만들고 상태바/헤더/콘텐츠/하단 region 서브프레임 골격을 잡는다.",
       "priority": 65,
-      "passes": false,
+      "passes": true,
+      "notes": "브리지 채널 kpgtp6vl(라이브, join+get_document_info OK, 페이지 '요리 비서' 939:2). 멱등: get_node_info 2036:111(SEC/B)로 자식 확인 → cook/cook2 없어 신규 create. cook/cook2=2050:77(390x844, 다크 #0A0A0A, SEC/B 자식, 부모-상대 x2180 y120 → abs 9860/1434, NOTE/cook-1(2050:74) 우변 9820 오른쪽 40px 갭, SEC/B 우변 10680 내부 우변 10250). region 서브프레임 4개(전부 다크 #0A0A0A): region/상태바=2050:78(y0-48 abs 9860/1434), region/헤더=2050:79(y48-120 h72 abs 9860/1482), region/콘텐츠=2050:80(y120-780 h660 abs 9860/1554), region/하단=2050:81(y780-844 h64 abs 9860/2214 bottom 2278 < SEC/B bottom 2434). 세로 스택, push-out 없음. ⚠ cook2=다크 정적 스냅샷 화면 → D-cook2-* 텍스트/아이콘은 밝은 색(ink #f8f8f4·muted #a7a7a7). G0/G1/G2 read-back(get_node_info 2050:77 → 자식 4 + 절대좌표 정합)/G4(영어 누수 0·초록 누수 0·#0A0A0A 토큰) 통과. 밀스톤 아님 → export 생략. 다음: D-cook2-01(상태바 다크 9:41, cook 상태바 2042:234~ 밝은 색 패턴 재사용).",
       "acceptanceCriteria": [
         "멱등: cook/cook2가 이미 있으면 재사용(중복 생성 금지), 없으면 생성해 SEC/B 안에 배치(390x844, 배경 #0A0A0A).",
         "상태바/헤더/콘텐츠/하단 region 서브프레임 골격을 만든다.",
