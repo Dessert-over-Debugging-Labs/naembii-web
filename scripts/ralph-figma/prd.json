@@ -116,7 +116,8 @@
       "title": "home: 검색바",
       "description": "cook/home 안에 '검색바' 요소를 정밀하게 그린다. 원본 source-screens/home.png 대비 위치·간격·타이포 정합.",
       "priority": 8,
-      "passes": false,
+      "passes": true,
+      "notes": "브리지 채널 mtaf1yhq. 대상 region/콘텐츠=2006:19(cook/home=2006:16 자식) CTA카드(2021:12, bottom rel y134) 아래 rel y150에 추가(멱등: get_node_info로 기존 자식 8=헤드라인+CTA7만 확인 → 검색바 없음). app.html:968 .search(height48·radius12·surface·line·gray 15px) 대응. 추가 자식 3: 검색바=2021:19(rect rel x16 y150 358x48 #FFFCF7 라운드12 stroke #DDD1C6 1px), 검색아이콘=2021:20(rect 18x18 rel x32 y165 #6E6258 라운드4 돋보기 플레이스홀더), 검색텍스트=2021:21('먹고 싶은 요리를 검색해보세요' 15px Regular #6E6258 rel x60 y166 → abs 6108/406, 프레임 내부 OK). G0/G1/G2(get_node_info 2021:21 → '먹고 싶은 요리를 검색해보세요' 텍스트 노드 확인, 좌표 정합)/G4(surface #FFFCF7·line #DDD1C6·gray #6E6258 토큰, 15px, 영어 누수 0) 통과. 밀스톤 아님 → export 생략.",
       "acceptanceCriteria": [
         "멱등: cook/home(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
         "G2: '먹고 싶은 요리를 검색해보세요' 텍스트 노드가 cook/home 안에 존재.",
