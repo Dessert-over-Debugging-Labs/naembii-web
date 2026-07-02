@@ -296,3 +296,13 @@
 - **다음**: loading-DONE(밀스톤) — cook/loading 검수 + export `exports/loading.png`.
 
 ---
+
+## loading-DONE — loading 화면 완성 검수 + export (밀스톤)
+- **대상**: `cook/loading`=`2031:85` (SEC/A 자식, abs 7440/120, 390x844 #FFF7F0). 채널 `ihbg56ny`.
+- **검수(G2)**: 상태바(9:41+신호/와이파이/배터리) → 콘텐츠(중앙 스피너 트랙/헤드·'레시피를 분석하고 있어요'·'영상을 단계별로 쪼개는 중이에요.'·steps-log 4행) → 헤더·하단은 loading 특성상 빈 프레임. 헤드라인 `2033:96` abs 7530/568 정합(이탈 없음).
+- **export(G3)**: `export_node_as_image`(scale2) → `scripts/ralph-figma/exports/loading.png`(780x1688 유효 PNG). transcript에 원본 `source-screens/loading.png`(876x1784)도 있어 780x1688만 선별 저장.
+- **게이트**: G0 ✅ / G2 ✅ / G3 ✅ / G4 ✅(초록 누수 0=`#46B581` 0건, fresh `#3FA76F`는 완료 체크만·§4b 팔레트·영어 누수 0).
+- **원본 대응**: 상태바→콘텐츠 정합. ⚠ 의도적 차이: 스피너=아크 대신 피치 디스크+테라코타 헤드 근사(브리지 fill-alpha 제약), 4스텝 앞 2행 done(app.html:1477 순차 done '분석 중' 스냅샷).
+- **다음**: NOTE-loading — 포스트잇 `NOTE/loading-1` + 주석.
+
+---

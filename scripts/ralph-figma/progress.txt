@@ -477,3 +477,11 @@ Started: Wed Jul  1 15:53:56 KST 2026
 - ★ 학습(Codebase Patterns 정정 필요): **move_node의 x/y는 프레임 자식에겐 부모-상대다**(절대 아님). 과거 노트 'move_node=절대'는 최상위 프레임(부모=페이지 원점 0,0)에서만 relative==absolute라 그렇게 보였을 뿐. 프레임 내부 자식 중앙정렬은 move_node(rel)로: 2033:96 → rel (90,328) → abs 7530/568(center 7635≈페이지중심, 스피너하단544~부제610 사이) 정합 확인. 즉 create_text·move_node 모두 부모-상대.
 - 게이트: G0(ihbg56ny 라이브)/G1(도형4+텍스트6 생성)/G2 read-back(get_node_info 2031:88 → 자식 14, '재료·분량 추출'(2034:103) 텍스트 노드 확인·전 노드 프레임 내부 abs x7495~7634 y650~768 정합, 헤드라인 재검 abs 7530/568)/G4(fresh #3FA76F=성공 체크만·gray2 #A99B90·ink #231A14·bg #FFF7F0 §4b 토큰, 14px, 잘못된초록 #46B581 누수 0·영어 누수 0(✓=기호)) 통과. 밀스톤 아님 → export 생략.
 - 다음: loading-DONE(밀스톤) — cook/loading 검수 + export exports/loading.png(scale2).
+---
+## 2026-07-02 - loading-DONE loading 화면 완성 검수 + export (밀스톤)
+- 브리지 채널 ihbg56ny(라이브, get_document_info OK, 페이지 '요리 비서' 939:2). 대상 cook/loading=2031:85.
+- G2 검수(get_node_info 2031:85): 자식 4 region(상태바2031:86·헤더2031:87 빈·콘텐츠2031:88·하단2031:89 빈). 상태바=9:41(2031:90)+신호/와이파이/배터리(2032:91~93). 콘텐츠=스피너트랙2032:94(피치#fbe7de)·활성헤드2032:95(테라코타#d66b42)·분석헤드라인2033:96('레시피를 분석하고 있어요' abs7530/568 center7635.5 정합)·분석부제2033:97('영상을 단계별로 쪼개는 중이에요.')·steps-log 4행(2034:98~2035:107, done 2/미완 2). 헤드라인 프레임 밖 이탈 없음(D-loading-04 복구분 유지 확인).
+- G3: export_node_as_image(2031:85, PNG, scale2) → scripts/ralph-figma/exports/loading.png(780x1688 유효 PNG). ⚠ transcript에 source-screens/loading.png(876x1784)도 있어 base64 추출 시 780x1688만 선별 저장.
+- 게이트: G0/G1(기존 유지)/G2(검수)/G3(export)/G4(초록누수 0=#46b581 0건·진짜초록 fresh#3fa76f는 완료체크만, 영어누수 0, §4b 팔레트) 통과.
+- 원본 영역대응: 상태바→(loading은 헤더·하단탭 없음)→콘텐츠(중앙 스피너·분석 카피·steps-log). ⚠ 의도적 차이: 스피너=아크 대신 피치디스크+테라코타헤드 근사(브리지 fill-alpha 무시), 4스텝 앞 2행 done(app.html:1477 순차 done 스냅샷).
+- nodeId 맵: cook/loading=2031:85 완성(D-loading-01~04 + DONE 검수/export). 다음: NOTE-loading(포스트잇 NOTE/loading-1 + 주석).

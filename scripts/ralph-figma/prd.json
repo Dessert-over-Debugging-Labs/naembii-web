@@ -420,7 +420,8 @@
       "title": "loading 화면 완성 검수 + export",
       "description": "cook/loading가 원본과 영역 대응하는지 확인하고 PNG로 내보낸다(밀스톤).",
       "priority": 30,
-      "passes": false,
+      "passes": true,
+      "notes": "브리지 채널 ihbg56ny(라이브, get_document_info 응답 OK, 페이지 '요리 비서' 939:2). 대상 cook/loading=2031:85(자식: region/상태바2031:86·헤더2031:87(빈 프레임, loading엔 헤더 없음)·콘텐츠2031:88·하단2031:89(빈 프레임, loading엔 탭바 없음)). G2 검수(get_node_info 2031:85): 상태바=9:41(2031:90)+신호2032:91/와이파이2032:92/배터리2032:93(전부 #0a0a0a 우측정렬). 콘텐츠=스피너트랙2032:94(피치 #fbe7de 64x64 r32 중앙 x7635)·활성헤드2032:95(테라코타 #d66b42 12x12 트랙 상단)·분석헤드라인2033:96('레시피를 분석하고 있어요' 20px ink #231a14 abs 7530/568 center 7635.5)·분석부제2033:97('영상을 단계별로 쪼개는 중이에요.' 15px gray #6e6258 abs 7530/610)·steps-log 4행(done 2행: 스텝1 체크2034:98 fresh #3fa76f+글리프2034:99 ✓흰+라벨2034:100 '영상 불러오기' ink, 스텝2 2034:101/102/103 '재료·분량 추출' ink / 미완 2행: 스텝3 체크2034:104 bg#fff7f0 stroke gray2#a99b90+라벨2034:105 '조리 단계 분해' gray2, 스텝4 2034:106+라벨2035:107 '핸즈프리용 재구성' gray2). ✅ G3 export_node_as_image scale2 → scripts/ralph-figma/exports/loading.png(780x1688 유효 PNG, transcript base64 추출, source-screens/loading.png(876x1784) 아님에 주의). G4: 초록누수 0(#46b581 0건, 진짜초록 fresh #3fa76f는 완료 체크만)·영어누수 0(✓·9:41=기호/시간)·§4b 팔레트(피치#fbe7de·테라코타#d66b42·ink#231a14·gray#6e6258·gray2#a99b90·fresh#3fa76f·bg크림#fff7f0). 원본 영역대응: 상태바→(헤더·하단 빈=loading 특성)→콘텐츠(중앙 스피너·카피·steps-log). ⚠ 원본과 의도적 차이: 원본 스피너=링/아크(브리지 fill-alpha 무시로 피치 디스크+테라코타 헤드로 근사), 원본 4스텝 전부 미완이나 여기선 앞 2행 done(app.html:1477 순차 done '분석 진행 중' 스냅샷). 다음: NOTE-loading(포스트잇+주석).",
       "acceptanceCriteria": [
         "cook/loading가 원본 source-screens/loading.png와 영역 대응(상태바→헤더→콘텐츠→하단).",
         "G3: export_node_as_image로 exports/loading.png(scale2) 저장.",
