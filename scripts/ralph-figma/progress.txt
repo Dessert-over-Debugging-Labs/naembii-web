@@ -796,3 +796,14 @@ Started: Wed Jul  1 15:53:56 KST 2026
 - ⚠ 타이머(cic.o 테라코타 #D66B42)와 달리 재료는 cic.d(비활성 #30261D·아이콘 #fff)라 색이 다름(app CSS 632~639 정합).
 - 게이트: G0/G1/G2 read-back(get_node_info 2042:233 → 자식 7 + '재료 보기' 텍스트 노드 2050:70·abs x18583 rel309 정합, 라벨 bottom y3683<region bottom 3712 truncate 없음)/G4(다크 §4b #30261D·#fff·#9a9aa0, 초록 누수 0·영어 누수 0, 12px 라벨·52px 터치). 밀스톤 아님 → export 생략.
 - 다음: D-cook-06(음성/핸즈프리 진입 — 2번째 버튼 center rel x195, cic.o mic 테라코타 + 라벨 '핸즈프리 모드').
+
+---
+## 2026-07-02 - D-cook-06 cook 음성 가이드 진입
+- 브리지 채널 kpgtp6vl(라이브, join+get_document_info OK, 페이지 '요리 비서' 939:2).
+- 대상 region/하단=2042:233(cook/cook=2042:229 자식, 다크 #0a0a0a, D-cook-04에서 h118 확장). 멱등: get_node_info 2042:233 → 기존 자식 7(상단선2050:64·타이머2050:65~67 center x81·재료2050:68~70 center x309)만, 음성/핸즈프리 없음 → 신규 추가.
+- app.html:1169 .cook-ctrl 2번째 버튼 toggleHandsfree()=.cic.o.mic(핸즈프리 음성 진입). ⚠ 미러링 아님: mic .cic.mic{64x64}·svg 28x28(형제 52/22보다 큼), 배경 cic.o=--green(테라코타 #D66B42)·아이콘 --on-green #2A1005. center rel x195(형제 81/195/309), 64원 top rel y10 → 원중심 rel y42(형제 52원 중심 정합).
+- 추가 자식 3: 음성-원=2050:71(64x64 rel x163 y10 #D66B42 r32, center x195/y42), 음성-아이콘=2050:72(28x28 rel x181 y28 #2A1005 r6 mic placeholder, center x195/y42), 음성-라벨=2050:73('음성 가이드' 12px Medium #9a9aa0 rel y80 center~x195, 너비59 bottom y95<118 truncate 없음).
+- ⚠ 라벨 결정: app <small> 리터럴='핸즈프리 모드'이나 스토리 G2 요구 '음성' + 스토리 제목 '음성 가이드 진입' + app CSS line735 '음성 가이드 모달' 어휘 근거로 '음성 가이드' 렌더(D-sheet-03 '레시피 등록하기'→'영상 링크 등록', D-sheet-06 '입력 완료'→'분석 시작' 선례=스토리 G2 라벨 우선).
+- 게이트: G0(kpgtp6vl)/G1/G2 read-back(get_node_info 2042:233 → 자식 10 + '음성 가이드' 텍스트 노드 2050:73·center rel x195 정합, mic 원중심 rel y42=형제 정합)/G4(다크 §4b 주색 #D66B42(초록 아님)·on-green #2A1005·라벨 #9a9aa0, 초록 누수 0=#46b581/#e3f3ec 0건·영어 누수 0, 12px 라벨·64px 터치) 통과. 밀스톤 아님 → export 생략.
+- nodeId 맵 갱신: region/하단(2042:233) 자식 완성 = 상단선2050:64 · 타이머(원2050:65/아이콘2050:66/라벨2050:67 center x81) · 재료(원2050:68/아이콘2050:69/라벨2050:70 center x309) · 음성(원2050:71/아이콘2050:72/라벨2050:73 center x195). cook-ctrl 3버튼 완성.
+- 다음: cook-DONE(밀스톤): cook/cook 전수 read-back + export exports/cook.png.
