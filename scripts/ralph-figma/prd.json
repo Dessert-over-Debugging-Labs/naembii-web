@@ -724,13 +724,14 @@
       "title": "cook3: 현재 단계 카드(1단계.육수 준비하기 1/5 + 리스트3)",
       "description": "cook/cook3 안에 '현재 단계 카드(1단계.육수 준비하기 1/5 + 리스트3)' 요소를 정밀하게 그린다. 원본 source-screens/cook3.png 대비 위치·간격·타이포 정합.",
       "priority": 52,
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "멱등: cook/cook3(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
         "G2: '1단계. 육수 준비하기' 텍스트 노드가 cook/cook3 안에 존재.",
         "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
         "nodeId 기록 후 한글 커밋."
-      ]
+      ],
+      "notes": "브리지 채널 ihbg56ny(라이브). 대상 region/콘텐츠=2041:164(cook/cook3=2041:161 자식, 다크 #0A0A0A, abs 6760/1540 390x660). 멱등: get_node_info로 기존 자식 25(영상3+미리보기2+단계도트5+카운터+톤칩12+스와이프3... 정확히 영상영역/썸네일/미리보기배지/텍스트+단계도트1~5+카운터+톤칩1~4(칩+닷+라벨)+스와이프힌트3)만 확인 → 단계 카드 없어 신규 추가. app.html:2064~2074 .scard.active(#cook3 CSS :538~615) 대응. 스와이프힌트(바닥 rel y382) 아래 rel y392에 활성 단계 카드 배치. 추가 자식 15: 단계카드=2042:198(rect rel x16 y392 358x214 panel #111111 라운드16 stroke cook-accent #f8f8f4 1.5px=active border), 단계제목=2042:199('1단계. 육수 준비하기' 20px w800 ink #f8f8f4 rel x32 y408 → abs 6792/1948, 프레임 내부; pl-letter+title 합성=화이트톤에서 accent=ink 동일색이라 1노드), 단계배지=2042:200(rect rel x304 y406 54x26 #FFFFFF a0.13=cook-accent-soft 라운드12 stroke #FFFFFF a0.16=cook-line 1px), 단계배지텍스트=2042:201('1 / 5' 12px w700 #f8f8f4 rel x315 y410), 단계리스트1-닷=2042:202(24x24 rel x32 y448 #f8f8f4=cook-accent 라운드12)/번호=2042:203('1' 12px w800 on-accent #0b0b0b rel x40 y451)/텍스트=2042:204('냄비에 물 250ml를 붓는다' 16px w600 #f8f8f4 rel x68 y450), 단계리스트2-닷=2042:205(y484)/번호=2042:206('2')/텍스트=2042:207('코인 육수 1개를 넣어 녹인다' y486), 단계리스트3-닷=2042:208(y520)/번호=2042:209('3')/텍스트=2042:210('멸치액젓 1큰술로 감칠맛을 더한다' y522), 단계영상아이콘=2042:211(14x14 rel x32 y562 #f8f8f4 라운드3 video placeholder)/단계영상참조=2042:212('0:00 ~ 0:35 · 원본 구간' 12px w800 muted #a7a7a7 rel x54 y561). subs는 app.html:2056 steps[0](육수 준비하기 A단계)에서 인용. G0(채널 ihbg56ny)/G1/G2 read-back(get_node_info 2042:199 → '1단계. 육수 준비하기' 텍스트 노드 abs 6792/1948 프레임 내부 정합)/G4(다크 panel #111111·ink #f8f8f4·muted #a7a7a7·on-accent #0b0b0b·cook-accent-soft/line=white a0.13/0.16, 초록 #46B581 누수 0·영어 누수 0, 16/20/12px·라운드16·24px 도트) 통과. 밀스톤 아님 → export 생략. 다음: D-cook3-08(하단 컨트롤 4 타이머/핸즈프리 꺼짐/재료/요리 완성, region/하단=2041:165)."
     },
     {
       "id": "D-cook3-08",

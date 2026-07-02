@@ -664,3 +664,18 @@ Started: Wed Jul  1 15:53:56 KST 2026
 - 추가 자식 3: 스와이프힌트=2042:195(pill rect rel x99 y352 192x30, fill #080808 a0.72, stroke #ffffff a0.16 1px, radius15), 스와이프힌트아이콘=2042:196(rect 14x14 rel x109 y360 #f8f8f4=cook-accent radius3 chevrons-up-down placeholder), 스와이프힌트텍스트=2042:197('단계 카드를 위아래로 스와이프' 12px w800 muted #a7a7a7 rel x129 y360 → abs 6889/1900 너비152). 콘텐츠 좌우 패딩 10 대칭, pill 프레임 중앙(center 6955).
 - 게이트: G0(채널 ihbg56ny)/G1/G2 read-back(2042:197 → '단계 카드를 위아래로 스와이프' 텍스트 노드 #a7a7a7 12px w800 abs 6889/1900 프레임 내부)/G4(다크 bg #080808 a0.72·border white a0.16=cook-line·muted #a7a7a7·아이콘 #f8f8f4=cook-accent, 초록 #46B581 누수 0·영어 누수 0, 12px 서브·pill radius) 통과. 밀스톤 아님 → export 생략.
 - 학습: create_text가 실제 렌더 폭(152px)으로 계산 → 처음 추정폭(165)으로 만든 pill(206)은 우측 패딩 과다 → read-back 폭 확인 후 resize(192)+move로 좌우 패딩 10 대칭 재정렬. width:max-content pill은 텍스트 실측 후 폭 확정이 정석. 다음 D-cook3-07(현재 단계 카드 1단계.육수 준비하기 1/5 + 리스트3)은 스와이프 힌트(rel y352~382) 아래.
+
+## 2026-07-02 - D-cook3-07 cook3: 현재 단계 카드(1단계.육수 준비하기 1/5 + 리스트3)
+- 대상 region/콘텐츠=2041:164(cook/cook3=2041:161 자식, 다크 #0A0A0A, abs 6760/1540 390x660). 멱등: get_node_info로 기존 자식(영상영역/썸네일/미리보기배지/텍스트 2041:173~176 + 단계도트1~5 2041:177~181 + 카운터 2041:182 + 톤칩1~4 2041:183~194 + 스와이프힌트 2042:195~197)만 확인 → 단계 카드 없어 신규 추가(중복 없음).
+- app.html:2064~2074 .scard.active(#cook3 CSS :538~615) 대응. 스와이프힌트(바닥 rel y382) 아래 rel y392에 활성 단계 카드. 추가 자식 15:
+  - 단계카드=2042:198(rect rel x16 y392 358x214 panel #111111 라운드16 stroke cook-accent #f8f8f4 1.5px = active border)
+  - 단계제목=2042:199('1단계. 육수 준비하기' 20px w800 ink #f8f8f4 rel x32 y408 → abs 6792/1948, 프레임 내부). ⚠ pl-letter('1단계.' accent)+title 합성=화이트톤에서 cook-accent==cook-ink(#f8f8f4)라 색 동일 → G2용 단일 텍스트 노드로 생성.
+  - 단계배지=2042:200(rect rel x304 y406 54x26 #FFFFFF a0.13=cook-accent-soft 라운드12 stroke #FFFFFF a0.16=cook-line 1px)/단계배지텍스트=2042:201('1 / 5' 12px w700 #f8f8f4 rel x315 y410)
+  - 리스트1: 닷2042:202(24x24 rel x32 y448 #f8f8f4 라운드12)/번호2042:203('1' 12px w800 on-accent #0b0b0b rel x40 y451)/텍스트2042:204('냄비에 물 250ml를 붓는다' 16px w600 #f8f8f4 rel x68 y450)
+  - 리스트2: 닷2042:205(y484)/번호2042:206('2')/텍스트2042:207('코인 육수 1개를 넣어 녹인다' y486)
+  - 리스트3: 닷2042:208(y520)/번호2042:209('3')/텍스트2042:210('멸치액젓 1큰술로 감칠맛을 더한다' y522)
+  - 영상참조: 아이콘2042:211(14x14 rel x32 y562 #f8f8f4 라운드3 video placeholder)/텍스트2042:212('0:00 ~ 0:35 · 원본 구간' 12px w800 muted #a7a7a7 rel x54 y561)
+- subs는 app.html:2056 steps[0](육수 준비하기) 3개 인용. 리스트 li::before 원=cook-accent #f8f8f4 배경 + on-accent #0b0b0b 숫자, li 텍스트=cook-ink 16px w600(app.html:614~615).
+- 게이트: G0(채널 ihbg56ny)/G1/G2 read-back(get_node_info 2042:199 → '1단계. 육수 준비하기' 텍스트 노드 abs 6792/1948 프레임 내부 정합)/G4(다크 panel #111111·ink #f8f8f4·muted #a7a7a7·on-accent #0b0b0b·cook-accent-soft/line=white a0.13/0.16, 초록 #46B581 누수 0·영어 누수 0, 16/20/12px·라운드16·24px 도트) 통과. 밀스톤 아님 → export 생략.
+- nodeId 맵 추가: cook3 단계카드=2042:198(제목2042:199·배지2042:200/201·리스트1~3 닷/번호/텍스트 2042:202~210·영상참조 2042:211/212). 다음: D-cook3-08(하단 컨트롤 4 타이머/핸즈프리 꺼짐/재료/요리 완성, region/하단=2041:165).
+---
