@@ -878,3 +878,38 @@ Started: Wed Jul  1 15:53:56 KST 2026
 - ⚠ 학습: exports/*.png는 gitignore(비커밋) 로컬 아티팩트. MCP export_node_as_image 응답이 인라인 이미지로 렌더돼 base64 바이트를 Bash로 디스크에 파이프 불가 → cook2.png 파일 미생성(커밋 무영향, G3 증거=export 실행 성공+육안 정합). 과거 밀스톤(cook/home/detail/sheet)은 응답 base64가 텍스트로 노출됐을 때 저장한 케이스.
 - G4: 초록 누수 0·영어 누수 0(D단계=app 레시피 단계문자 A~E 원문)·§4b 다크 팔레트·상태바→헤더→콘텐츠→하단 영역 대응.
 - ⚠ v1(SEC/A|SEC/B)↔v2(cook-v2/*) 병렬 세트 상존(정본 미결). cook2=레거시 정적 스냅샷이라 prd 권위 소스대로 v1 진행. 다음: NOTE-cook2(cook/cook2 우측 포스트잇+주석).
+
+---
+## 2026-07-03 - NOTE-cook2 시도 — 브리지 미응답으로 G0 실패(그리기 없음)
+- 대상 스토리: NOTE-cook2(cook/cook2=2050:77 우측 옆 포스트잇 NOTE/cook2-1 + 핵심 요소 주석). NOTE-cook(2050:74) 패턴 재사용 예정이었음(240x180 #FFE8A3 r12, cook/cook2 우변 abs 10250 오른쪽 40px 갭 → abs 10290/1434, SEC/B 우변 10680 내부).
+- G0: join_channel kpgtp6vl **성공**(WS 응답)이나 get_document_info **3회 전부 timeout** + get_node_info(2050:77) timeout. WS 서버는 살아있으나 TalkToFigma 플러그인↔Figma 커맨드 경로 끊김(과거 D-home-01 다회 실패와 동일 증상).
+- 조치: CODEX §1 G0 실패 규칙대로 **아무것도 그리지 않음**. NOTE-cook2 passes:false 유지, prd 갱신·커밋 없음.
+- 재개 조건(사용자 조치): Figma 데스크톱에서 TalkToFigma 플러그인 창을 연 채 채널 kpgtp6vl로 Connect(창 유지). 복구 후 멱등: SEC/B(2036:111)에 NOTE/cook2-1 신규(cook/cook2 2050:77 우변 오른쪽) + 주석 2건(헤더 '핸즈프리 모드' 2050:177·단계카드 '3단계. 채소 익히기'). 그 전까지 재시도는 G0에서 막힘.
+
+---
+## 2026-07-03 - NOTE-cook2 시도 — 브리지 미응답으로 G0 실패(그리기 없음)
+- 대상 스토리: NOTE-cook2(priority 70, 최저 passes:false actionable). cook/cook2=2050:77(SEC/B 2036:111 자식) 우측 옆에 포스트잇 NOTE/cook2-1(#FFE8A3, 240x180, r12) + 주석 2건('핸즈프리 모드' 헤더·'듣고 있어요…' 등 콘텐츠) 배치 예정이었음. 계획 좌표(NOTE/cook-1 2050:74 패턴): SEC/B 직속, cook/cook2 우변 abs 10250+40갭 → abs 10290/1434(SEC/B 우변 10680 내부, 우변 10530).
+- 선순위 -FULL 3종(sheet-FULL 23.3·loading-FULL 30.3·cook3-FULL 54.3)은 문서화된 의도적 PARK/BLOCKED(v1에 추가할 스크롤 콘텐츠 없음 또는 v1↔v2 정본 미결) → 스킵 유지가 정답. 따라서 NOTE-cook2가 다음 실행 대상.
+- G0: join_channel kpgtp6vl **성공**(2회 조인 모두 WS 응답)이나 get_document_info **4회 전부 timeout** + get_node_info(2050:77) timeout. WS 서버는 살아있으나 Figma 데스크톱 플러그인↔커맨드 경로 끊김(과거 D-home-01 1~23차와 동일 증상).
+- 조치: CODEX §1 G0 실패 규칙대로 **아무것도 그리지 않음**. NOTE-cook2 passes:false 유지, prd 갱신·커밋 없음.
+- 재개 조건(사용자 조치): Figma 데스크톱에서 TalkToFigma 플러그인 창을 열고 채널 kpgtp6vl로 Connect(창 유지). 복구(get_document_info 응답) 확인 후 멱등: SEC/B(2036:111) 직속으로 NOTE/cook2-1 생성 + cook2 헤더/콘텐츠 핵심 노드에 set_annotation.
+
+---
+## 2026-07-03 - NOTE-cook2 시도 — 브리지 미응답으로 G0 실패(그리기 없음)
+- 대상 스토리: NOTE-cook2(cook/cook2=2050:77 우측 포스트잇 NOTE/cook2-1 + 주석). SEC/B(2036:111) 자식, cook/cook2 우변 abs 10250 오른쪽에 240x180 #FFE8A3 포스트잇 배치 예정이었음(parent-rel x~2610 y120 → abs ~10290/1434, SEC/B 우변 10680 내부).
+- G0: join_channel kpgtp6vl **성공**(WS 응답)이나 get_document_info 3회 + get_node_info(2050:77) 2회 **전부 timeout**(재조인 후 재시도 포함). WS 서버(join)는 살아있으나 Figma 데스크톱 플러그인↔커맨드 경로가 죽어 있음(과거 다수 실패와 동일 증상).
+- 조치: CODEX §1 G0 실패 규칙대로 **아무것도 그리지 않음**. NOTE-cook2 passes:false 유지, prd 갱신·커밋 없음.
+- 재개 조건(사용자 조치): Figma 데스크톱에서 TalkToFigma 플러그인 창을 연 채 채널 kpgtp6vl로 Connect(창 유지). 복구 후 멱등: cook/cook2(2050:77) 우측에 NOTE/cook2-1(#FFE8A3 r12) + 제목 '리뷰 코멘트'·본문 '여기에 핸즈프리(cook2) 화면 피드백을 남겨 주세요.' + 주석 2건(nav제목 '핸즈프리 모드' 2050:177·단계카드 '3단계. 채소 익히기' 2050:192 등)을 1콜씩 순차 추가.
+
+## 2026-07-03 - NOTE-cook2 재시도 — 브리지 미응답으로 G0 실패(그리기 없음)
+- G0: join_channel kpgtp6vl 성공(재조인 포함 2회, WS 응답)이나 get_document_info 3회 전부 timeout. 이전 NOTE-cook2 시도와 동일 = 플러그인↔Figma 커맨드 경로 끊김(WS 서버는 살아있음).
+- 조치: CODEX §1대로 아무것도 그리지 않음. NOTE-cook2 passes:false 유지, prd 갱신·커밋 없음.
+- 재개 조건(사용자 조치): Figma 데스크톱에서 TalkToFigma 플러그인 창을 연 채 채널 kpgtp6vl로 Connect. 복구 후 멱등: cook/cook2(2050:77) 우측(부모-상대 x2610 y120 → abs 10290, SEC/B 우변 10680 내부)에 NOTE/cook2-1(#FFE8A3 r12 240x180)+제목 '리뷰 코멘트'·본문 '여기에 핸즈프리(cook2) 화면 피드백을 남겨 주세요.'+주석 2건(nav '핸즈프리 모드' 2050:177·단계카드 '3단계. 채소 익히기' 2050:192)을 1콜씩 순차 추가.
+---
+---
+## 2026-07-03 - NOTE-cook2 cook2 포스트잇 + 주석 배치 (완료)
+- 브리지 채널 607h63ew(라이브, join+get_document_info OK, 페이지 '요리 비서' 939:2). 멱등: SEC/B(2036:111) 직속 자식 확인 → NOTE/cook2-1 없어 신규 create.
+- cook/cook2=2050:77 abs(9860,1434,390,844) 우변 10250. 포스트잇 NOTE/cook2-1=**2066:2**(SEC/B 자식, 부모-상대 x2610 y120 → abs 10290/1434, cook/cook2 우변 오른쪽 40px 갭, 240x180 #FFE8A3 r12, SEC/B 우변 10680 내부 우변 10530). 자식 2: 제목=**2066:3**('리뷰 코멘트' 15px Bold ink #231A14 rel x16 y16), 본문=**2066:4**('핸즈프리(구) 피드백을 남겨 주세요.' 13px Regular gray #6E6258 rel x16 y48, 프레임 내부 맞춤 위해 원문 단축).
+- 주석 2건(set_annotation, 둘 다 success): cook2-nav제목 2050:177('핸즈프리 모드')·cook2-레거시라벨-텍스트 2050:204('레거시 · 보관용 스냅샷').
+- 게이트: G0(채널 607h63ew)/G1/G2 read-back(get_node_info 2066:2 → 자식 2 + '리뷰 코멘트' 텍스트 확인, abs 10290 cook/cook2 우측 정합 / 주석 2건 success)/G4(포스트잇 #FFE8A3·ink #231A14·gray #6E6258 토큰, 15/13px, 초록 누수 0·영어 누수 0) 통과. 밀스톤 아님 → export 생략.
+- 다음: SEC-C(섹션 컨테이너 'C. 완료 · 소셜 · 요리북').

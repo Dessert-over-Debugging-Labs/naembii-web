@@ -4,7 +4,7 @@
   "description": "app.html의 각 화면을 쓰기형 Figma MCP(플러그인 브리지)로 Figma 캔버스에 실제로 그려 넣는다. 화면 1개=스토리 1개, ralph 루프로 자율 구현→green-gate(G0 연결·G1 그리기·G2 read-back·G3 export·G4 정직/토큰) 통과→한글 커밋. 소스 목표 이미지는 scripts/ralph-figma/source-screens/<view>.png, 스토리 상세는 docs/FIGMA_WIREFRAME_STORIES_ko.md. 규칙은 scripts/ralph-figma/CODEX.md.",
   "figma": {
     "page": "요리비서",
-    "channel": "kpgtp6vl",
+    "channel": "607h63ew",
     "frameSize": {
       "w": 390,
       "h": 844
@@ -971,12 +971,13 @@
       "title": "cook2 포스트잇 + 주석 배치",
       "description": "cook/cook2 옆에 리뷰 코멘트용 노란 포스트잇과 핵심 요소 주석을 배치한다.",
       "priority": 70,
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "멱등: cook/cook2 오른쪽 옆에 노란 포스트잇 NOTE/cook2-1(#FFE8A3, 라운드12, '리뷰 코멘트' 자리) 배치.",
         "핵심 요소 1개 이상에 set_annotation 콜아웃 부착.",
         "G2: NOTE/cook2-1 노드와 주석 존재 확인. 한글 커밋."
-      ]
+      ],
+      "notes": "브리지 채널 607h63ew(라이브, join+get_document_info OK, 페이지 '요리 비서' 939:2). 멱등: SEC/B(2036:111) 직속 자식 확인 → NOTE/cook2-1 없어 신규 create. cook/cook2=2050:77 abs(9860,1434,390,844) 우변 10250. 포스트잇 NOTE/cook2-1=2066:2(SEC/B 자식, 부모-상대 x2610 y120 → abs 10290/1434, cook/cook2 우변 10250 오른쪽 40px 갭, 240x180 #FFE8A3 r12, SEC/B 우변 10680 내부 우변 10530). 자식 2: NOTE/cook2-1-제목=2066:3('리뷰 코멘트' 15px Bold ink #231A14 rel x16 y16), NOTE/cook2-1-본문=2066:4('핸즈프리(구) 피드백을 남겨 주세요.' 13px Regular gray #6E6258 rel x16 y48, 프레임 내부 맞춤 위해 원문 단축). 주석(set_annotation) 2건: cook2-nav제목 2050:177('핸즈프리 모드')·cook2-레거시라벨-텍스트 2050:204('레거시 · 보관용 스냅샷') 콜아웃 부착(둘 다 success). G0/G1/G2(get_node_info 2066:2 → 자식 2 + '리뷰 코멘트' 텍스트 확인, abs 10290 cook/cook2 우측 정합 / 주석 2건 success)/G4(포스트잇 #FFE8A3·ink #231A14·gray #6E6258 토큰, 15/13px, 초록 누수 0·영어 누수 0) 통과. 밀스톤 아님 → export 생략. 다음: SEC-C(섹션 컨테이너 C. 완료 · 소셜 · 요리북)."
     },
     {
       "id": "SEC-C",
