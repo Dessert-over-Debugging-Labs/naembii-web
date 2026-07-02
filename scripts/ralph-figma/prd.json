@@ -488,13 +488,14 @@
       "title": "detail: 헤더(뒤로/레시피/공유)",
       "description": "cook/detail 안에 '헤더(뒤로/레시피/공유)' 요소를 정밀하게 그린다. 원본 source-screens/detail.png 대비 위치·간격·타이포 정합.",
       "priority": 35,
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "멱등: cook/detail(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
         "G2: '레시피' 텍스트 노드가 cook/detail 안에 존재.",
         "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
         "nodeId 기록 후 한글 커밋."
-      ]
+      ],
+      "notes": "브리지 채널 ihbg56ny(라이브, get_document_info OK, 페이지 '요리 비서' 939:2). 대상 region/헤더=2036:115(cook/detail=2036:113 자식, abs 6048/1468 390x72). 멱등: get_node_info 2036:115로 children=[] 확인 → 신규 추가. app.html:1041 <div class=nav>(뒤로 chevron-left + 제목 '레시피' + 공유 share-2) 대응. CSS app.html:154 .nav{space-between·padding8/16}, :155 .ic-btn{48x48·radius16·color ink}, :158 svg{24x24}, :159 .title{16px w700}. 추가 자식 3: 뒤로아이콘=2036:122(rect 24x24 rel x24 y24 → abs 6072/1492 ink #231A14 라운드6 chevron-left placeholder), 제목=2036:123('레시피' 16px Bold ink #231A14 rel x174 y26 → abs 6222/1494 width45, 중앙정합=중심 6244.5 vs 프레임중심 6243), 공유아이콘=2036:124(rect 24x24 rel x342 y24 → abs 6390/1492 우변 6414 ink #231A14 라운드6 share-2 placeholder). 아이콘 좌우 24px 대칭 여백. G0/G1/G2(get_node_info 2036:115 → 자식 3 + '레시피' 텍스트 노드 확인, 좌표 프레임 내부 정합)/G4(ink #231A14 토큰, 16px 제목, 영어 누수 0·초록 누수 0) 통과. 밀스톤 아님 → export 생략. 다음 D-detail-03(영상 히어로 썸네일+재생아이콘+미리보기/YouTube 배지)는 region/콘텐츠=2036:116."
     },
     {
       "id": "D-detail-03",
