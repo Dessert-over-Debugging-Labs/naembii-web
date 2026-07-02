@@ -696,13 +696,14 @@
       "title": "cook3: 톤칩4(화이트/허브/스틸/크림)",
       "description": "cook/cook3 안에 '톤칩4(화이트/허브/스틸/크림)' 요소를 정밀하게 그린다. 원본 source-screens/cook3.png 대비 위치·간격·타이포 정합.",
       "priority": 50,
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "멱등: cook/cook3(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
         "G2: '화이트' 텍스트 노드가 cook/cook3 안에 존재.",
         "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
         "nodeId 기록 후 한글 커밋."
-      ]
+      ],
+      "notes": "브리지 채널 ihbg56ny(라이브, join+get_document_info OK, 페이지 '요리 비서' 939:2). 대상 region/콘텐츠=2041:164(cook/cook3=2041:161 자식, 다크 #0A0A0A, abs 6760/1540). 멱등: get_node_info 2041:164로 기존 자식 10(영상영역/썸네일/미리보기2 + 단계도트5 + 카운터)만 확인 → 톤칩 없어 신규 추가. app.html:1122 .cook-tone(flex·gap8·padding0 16 10) + 4×.tone-chip(minH36·radius999·border cook-line·bg cook-panel·12px w850·gap7, .active: border cook-accent·bg cook-accent-soft·color cook-ink) + .tone-dot(14px 원·--dot 색). CSS app.html:527~537. 도트색 app.html:1123~1126: 화이트 #f8f8f4/허브 #76D99E/스틸 #92C5FF/크림 #F3E2BC. 기본 active=mono(화이트). 단계도트(rel y272~) 아래 cook-tone rel y304에 4칩 가로 스택(start x16 gap8): 화이트 x16 w72(active), 허브 x96 w58, 스틸 x162 w58, 크림 x228 w58(우변 rel286<390). 각 칩=pill+닷(14px·y315)+라벨(12px·x+31·y315). 추가 자식 12: 화이트칩=2041:183(pill white a0.13 bg + #f8f8f4 border w1 + radius18)/닷2041:184(#f8f8f4 원r7)/라벨2042:185('화이트' 12px w800 ink #f8f8f4 rel x47 y315→abs 6807/1855 프레임 내부), 허브=칩2042:186(pill panel #111111 radius18, inactive는 stroke 생략=다크 위 무의미)/닷2042:187(#76D99E)/라벨2042:188('허브' muted #a7a7a7), 스틸=칩2042:189/닷2042:190(#92C5FF)/라벨2042:191('스틸'), 크림=칩2042:192/닷2042:193(#F3E2BC)/라벨2042:194('크림'). G0/G1/G2 read-back(get_node_info 2042:185 → '화이트' 텍스트 노드 #f8f8f4·12px w800·abs 6807/1855 프레임 내부 정합)/G4(다크: panel #111111·ink #f8f8f4·muted #a7a7a7·active soft white a0.13·톤 도트 화이트/허브 초록 #76D99E/스틸 #92C5FF/크림 #F3E2BC = CODEX §4b cook3 톤칩색, 초록 #46B581 누수 0·영어 누수 0, 12px 서브·radius pill·14px 도트) 통과. 밀스톤 아님 → export 생략. 다음 D-cook3-06(스와이프 힌트)은 톤칩 아래."
     },
     {
       "id": "D-cook3-06",

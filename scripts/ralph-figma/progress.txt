@@ -649,3 +649,10 @@ Started: Wed Jul  1 15:53:56 KST 2026
 - nodeId 맵 추가: cook3 단계도트 seg1~5=2041:177~181, 단계카운터=2041:182.
 - 다음: D-cook3-05(톤칩4 화이트/허브/스틸/크림) region/콘텐츠 rel y~300.
 ---
+---
+## 2026-07-02 - D-cook3-05 톤칩4(화이트/허브/스틸/크림)
+- 대상 region/콘텐츠=2041:164(cook/cook3=2041:161 자식, 다크 #0A0A0A). 멱등: get_node_info로 기존 자식 10(영상2041:173~176·단계도트2041:177~182)만 확인 → 톤칩 없어 신규 추가.
+- app.html:1122 .cook-tone + 4×.tone-chip(radius999·bg cook-panel·border cook-line·12px w850·gap7) + .tone-dot(14px 원). 단계도트 아래 rel y304, 4칩 가로 스택 start x16 gap8: 화이트 x16 w72(active), 허브 x96 w58, 스틸 x162 w58, 크림 x228 w58.
+- 추가 자식 12: 화이트칩=2041:183(pill white a0.13+#f8f8f4 border w1 radius18)/닷2041:184(#f8f8f4 r7)/라벨2042:185('화이트' 12px w800 #f8f8f4), 허브칩=2042:186(panel #111111 radius18, inactive stroke 생략)/닷2042:187(#76D99E)/라벨2042:188('허브' muted #a7a7a7), 스틸칩=2042:189/닷2042:190(#92C5FF)/라벨2042:191('스틸'), 크림칩=2042:192/닷2042:193(#F3E2BC)/라벨2042:194('크림').
+- 게이트: G0(채널 ihbg56ny)/G1/G2 read-back(2042:185 → '화이트' 텍스트 노드 #f8f8f4 12px w800 abs 6807/1855 프레임 내부)/G4(다크 panel #111111·ink #f8f8f4·muted #a7a7a7·active soft white a0.13, 톤 도트 화이트/허브 #76D99E/스틸 #92C5FF/크림 #F3E2BC=CODEX §4b cook3 톤칩색, 초록 #46B581 누수 0·영어 누수 0, 12px·pill·14px 도트) 통과. 밀스톤 아님 → export 생략.
+- 학습: 다크 화면 inactive 칩 stroke(cook-line white a0.16)는 #0A0A0A 위 무의미 → 생략(active 화이트칩만 #f8f8f4 border=선택 신호). create_text fontColor 인라인으로 라벨 색 지정(set_fill_color 절약). 브리지 콜은 1콜씩 순차(병렬 금지). 다음 D-cook3-06(스와이프 힌트)은 톤칩(rel y304~340) 아래.

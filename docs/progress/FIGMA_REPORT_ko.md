@@ -422,3 +422,4 @@
 - 소스 app.html:1119 .cook-progress(gap4·padding16, 5×.seg flex1 height4 radius2), CSS :523 #cook3 padding-top12·:524 seg=rgba(255,255,255,.14)·:526 .cur=cook-accent(mono #f8f8f4)+glow. JS app.html:2090 로드시 cur=0(1단계) → seg1만 활성('1칸 활성' 정합).
 - **추가 자식 6**: 단계도트1-활성(2041:177, rect 68x4 rel x16 y272 r2 #f8f8f4), 단계도트2~5(2041:178/179/180/181, rect 68x4 rel x88/160/232/304 y272 r2 흰색 a0.14), 단계카운터(2041:182, '1 / 5' 12px w700 muted #a7a7a7, abs 7096/1822 우변 7120<7150). 5칸 flex 등분(폭68·gap4·spacing72).
 - **게이트**: G0(채널 ihbg56ny)·G2(read-back: 2041:182 '1 / 5' 텍스트 #a7a7a7·프레임 내부, 2041:177 활성도트 #f8f8f4 abs 6776/1812)·G4(다크: 활성 #f8f8f4·비활성 흰 a0.14·muted #a7a7a7, 12px, 초록 누수 0·영어 누수 0='1 / 5'는 숫자) 통과. 밀스톤 아님 → export 생략.
+- **D-cook3-05** cook3 톤칩4(화이트/허브/스틸/크림): region/콘텐츠(2041:164)에 4칩 가로 스택 추가 — 화이트(active·#f8f8f4 border) x16, 허브 #76D99E, 스틸 #92C5FF, 크림 #F3E2BC 도트. 노드 2041:183~2042:194(12). G2 '화이트' 텍스트 확인.
