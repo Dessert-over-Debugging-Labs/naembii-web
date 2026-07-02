@@ -916,7 +916,8 @@
       "title": "cook2: 상태바(다크)",
       "description": "cook/cook2 안에 '상태바(다크)' 요소를 정밀하게 그린다. 원본 source-screens/cook2.png 대비 위치·간격·타이포 정합.",
       "priority": 66,
-      "passes": false,
+      "passes": true,
+      "notes": "브리지 채널 kpgtp6vl(라이브, get_document_info 응답 OK, 페이지 '요리 비서' 939:2). 대상 cook/cook2=2050:77(다크 #0a0a0a, SEC/B 자식) region/상태바=2050:78(비어 있어 신규 추가·멱등). cook 상태바(2042:234~237) 밝은색 패턴 재사용. 추가 자식 4: 상태바-시간=2050:172('9:41' 15px SemiBold #f8f8f4 rel x24 y14 → abs 9884/1448), 상태바-신호=2050:173(rect 18x12 rel x300 y18 #f8f8f4), 상태바-와이파이=2050:174(rect 16x12 rel x322 y18 #f8f8f4), 상태바-배터리=2050:175(rect 24x12 rel x342 y18 #f8f8f4, 우변 10226<프레임 우변 10250 내부). 아이콘 우측 정렬. G0/G1/G2(get_node_info 2050:78 → 자식 4 + '9:41' 텍스트 노드·좌표 정합)/G4(다크 #0a0a0a·밝은 #f8f8f4 토큰, 15px, 초록 누수 0·영어 누수 0) 통과. 밀스톤 아님 → export 생략. 다음 D-cook2-02(핸즈프리 정적 스냅샷)는 region/콘텐츠=2050:80.",
       "acceptanceCriteria": [
         "멱등: cook/cook2(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
         "G2: '9:41' 텍스트 노드가 cook/cook2 안에 존재.",
