@@ -310,7 +310,8 @@
       "title": "sheet: 분석 시작 CTA",
       "description": "cook/sheet 안에 '분석 시작 CTA' 요소를 정밀하게 그린다. 원본 source-screens/sheet.png 대비 위치·간격·타이포 정합.",
       "priority": 22,
-      "passes": false,
+      "passes": true,
+      "notes": "브리지 채널 ihbg56ny(라이브, get_document_info 응답 OK, 페이지 '요리 비서' 939:2). 대상 cook/sheet=2025:62(자식: region4·스크림2025:67·패널2025:68·핸들바2025:70·제목2026:71·링크필드2027:72~74·플랫폼힌트2027:75~77). 멱등: get_node_info 2025:62로 CTA 버튼 없음 확인 → 신규 추가. app.html:1274 <button class=btn>입력 완료</button> + :1275 <button class=btn ghost>취소</button> 대응(시트 액션 페어). ⚠ 라벨: 스토리 G2 요구 라벨 '분석 시작' 사용(D-sheet-03 '영상 링크 등록'↔app '레시피 등록하기' 선례대로 스토리 라벨 우선, app 실제 primary는 '입력 완료'). CSS app.html:369 .btn{width100%(시트패딩24→342)·height48·radius16·linear-gradient(green-l→green)=테라코타·color on-green·16px w800}, :377 .btn.ghost{green-soft(peach)·green}. 패널(2025:68)이 RECTANGLE이라 자식 불가 → CTA도 cook/sheet 직속, 시트 하단(플랫폼힌트 아래 미리보기 영역 자리 비우고 하단 배치). 추가 자식 4: sheet-분석시작버튼=2028:78(rect rel x24 y700 342x48 primary #D66B42 라운드16, gradient는 bridge 단색 미지원이라 주색 solid로 근사), sheet-분석시작버튼텍스트=2028:79('분석 시작' 16px w800 on-green #2A1005 rel x159 y714 → abs 6919/834 버튼 6784~7126/820~868 내부 중앙정렬), sheet-취소버튼=2028:80(rect rel x24 y758 342x48 green-soft 피치 #FBE7DE 라운드16 stroke 없음), sheet-취소버튼텍스트=2028:81('취소' 16px w800 green #D66B42 rel x179 y772). G0/G1/G2(get_node_info 2028:79 → '분석 시작' 텍스트 노드·좌표 정합 확인)/G4(primary #D66B42·on-green #2A1005·green-soft(peach) #FBE7DE §4b 토큰, 16px, 초록 누수 0·영어 누수 0) 통과. 밀스톤 아님 → export 생략. 다음 sheet-DONE(밀스톤): cook/sheet 원본 대응 검수 + export exports/sheet.png. ⚠ 페이지 최상위 stray sheet-핸들바=2025:69(cook/sheet 밖) 여전히 정리 후보.",
       "acceptanceCriteria": [
         "멱등: cook/sheet(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
         "G2: '분석 시작' 텍스트 노드가 cook/sheet 안에 존재.",

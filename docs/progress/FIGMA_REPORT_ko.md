@@ -216,3 +216,13 @@
 - **다음**: D-sheet-06(분석 시작 CTA = app.html:1274 `<button class=btn>입력 완료</button>`) — 시트 하단, cook/sheet 직속.
 
 ---
+
+### [D-sheet-06] sheet: 분석 시작 CTA · 2026-07-02
+
+- **무엇을**: `cook/sheet` 바텀시트 하단에 주 CTA 버튼과 취소 버튼(액션 페어)을 그림. app.html:1274 `<button class=btn>입력 완료</button>` + :1275 `<button class=btn ghost>취소</button>` 대응. ⚠ 라벨은 스토리 G2 요구 라벨 **'분석 시작'** 사용(D-sheet-03에서 app '레시피 등록하기'↔시트 제목 '영상 링크 등록'로 스토리 라벨을 우선한 선례와 동일; app 실제 primary는 '입력 완료').
+- **어떻게(멱등)**: `get_node_info` cook/sheet(2025:62) → 기존 자식(region 4 + 스크림 2025:67 + 패널 2025:68 + 핸들 2025:70 + 제목 2026:71 + 링크필드 2027:72~74 + 플랫폼힌트 2027:75~77)에 CTA 버튼 부재 확인 후 신규 추가. 패널이 RECTANGLE이라 자식 불가 → cook/sheet 직속, 시트 하단(플랫폼힌트 아래 미리보기 영역 자리 비우고 배치). `sheet-분석시작버튼`=2028:78(rect rel x24 y700 342×48, primary #D66B42, 라운드16 — gradient는 bridge 단색 미지원이라 주색 solid 근사), `sheet-분석시작버튼텍스트`=2028:79('분석 시작', 16px w800 on-green #2A1005, abs 6919/834 버튼 내부 중앙정렬), `sheet-취소버튼`=2028:80(rect rel x24 y758 342×48, green-soft(peach) #FBE7DE, 라운드16), `sheet-취소버튼텍스트`=2028:81('취소', 16px w800 green #D66B42).
+- **주의**: `.btn` gradient(green-l→green)는 브리지 단색 fill로 주색 solid 근사. 텍스트 중앙정렬은 `create_text` 기본 LEFT라 x=버튼중앙−텍스트폭/2로 수동 센터.
+- **게이트**: G0 ✅(채널 `ihbg56ny`) / G1 ✅(버튼 2 + 텍스트 2 = 4) / G2 ✅(`get_node_info` 2028:79 → characters '분석 시작', fill #2a1005, 16px w800, abs 6919/834 버튼 6784~7126/820~868 내부 중앙) / G4 ✅(primary #D66B42·on-green #2A1005·green-soft(peach) #FBE7DE 토큰, 16px, 초록 누수 0·영어 누수 0). 밀스톤 아님 → export 생략.
+- **다음**: sheet-DONE(밀스톤) — cook/sheet 원본 대응 검수 + export `exports/sheet.png`, 최상위 stray `sheet-핸들바`(2025:69) 정리 검토.
+
+---
