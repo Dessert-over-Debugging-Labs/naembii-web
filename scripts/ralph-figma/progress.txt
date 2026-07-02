@@ -845,3 +845,11 @@ Started: Wed Jul  1 15:53:56 KST 2026
 - cook 상태바(2042:234~237) 밝은색 패턴 재사용. 추가 자식 4: 상태바-시간=2050:172('9:41' 15px SemiBold #f8f8f4 rel x24 y14 → abs 9884/1448), 상태바-신호=2050:173(rect 18x12 rel x300 y18 #f8f8f4), 상태바-와이파이=2050:174(rect 16x12 rel x322 y18 #f8f8f4), 상태바-배터리=2050:175(rect 24x12 rel x342 y18 #f8f8f4, 우변 10226<프레임 우변 10250).
 - 게이트: G0/G1/G2(get_node_info 2050:78 → 자식 4 + '9:41' 텍스트 노드·좌표 정합)/G4(다크 #0a0a0a·밝은 #f8f8f4 토큰, 15px, 초록 누수 0·영어 누수 0) 통과. 밀스톤 아님 → export 생략.
 - ⚠ v1(SEC/A|SEC/B)↔v2(cook-v2/*) 병렬 세트 상존(정본 미결). cook2=레거시 정적 스냅샷이라 중복 위험 낮아 prd 권위 소스대로 v1 진행. 다음: D-cook2-02(핸즈프리 정적 스냅샷, region/콘텐츠=2050:80).
+
+---
+## 2026-07-02 - cook3-FULL (PARK: v1에 추가할 스크롤 콘텐츠 없음) / 대상 cook/cook3=2041:161
+- G0 연결 OK(채널 kpgtp6vl, 페이지 '요리 비서' 939:2). 이 스토리 notes 최초 판정(이전 notes 비어 있었음).
+- 판정 기준(중요) = **스크롤 스택 vs 스와이프 카루셀**: app.html cook3 view(app.html:1119~1153, 다음 view 1156 시작→전체 완독)는 statusbar·nav·cook-video·cook-progress·cook-tone·swipe-hint·cook-body(carousel)·vp-timer·cook-ctrl의 **고정 풀스크린 조리 HUD**. body(.cook-body>#cookTrack3)=makeCarousel **위아래 스와이프 카루셀**로 단계 카드 **한 번에 1장**만 표시(리터럴 '단계 카드를 위아래로 스와이프').
+- ⇒ 844 초과로 세로 적층돼 스크롤로 드러나는 **접힌 콘텐츠가 없음**(스와이프 전환 ≠ 스크롤 스택). detail-FULL(재료·단계·후기 세로 적층=actionable)과 달리 **loading-FULL과 동일 no-op**. v1 cook/cook3(2041:161, SEC/B 2036:111 자식, 390x844, K-cook3~cook3-DONE 완성·NOTE/cook3-1 2042:226)에 -FULL로 확장할 하단 콘텐츠 자체가 없음.
+- 조치: 억지로 늘리면 빈 프레임/중복(G4 위배)이라 **passes:false 유지(가짜 통과 금지)**. cook-v2/cook3(2043:528) 실측 생략(그리는 게 없으므로 중복 판정 불필요, advisor 확인). 밀스톤 아님·그리기 없음 → export 없음.
+- ⚠ v1(SEC/A|SEC/B)↔v2(cook-v2/*) 정본 미결은 park를 막지 않음(prd=권위 소스). 이번 이터레이션 = cook3-FULL 판정 확정(향후 재심 방지). 다음 actionable: D-cook2-02(cook2 핸즈프리 정적 스냅샷, region/콘텐츠 2050:80).

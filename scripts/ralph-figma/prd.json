@@ -1527,7 +1527,8 @@
         "resize_node로 cook/cook3 높이를 전체 콘텐츠에 맞춰 확장(고정 844 아님). 하단탭바/플로팅 CTA는 최하단 또는 고정 주석.",
         "G2 read-back으로 하단 콘텐츠 노드 존재 확인. G3: exports/cook3.png 갱신.",
         "한글 커밋."
-      ]
+      ],
+      "notes": "⛔ PARK(v1에 추가할 스크롤 콘텐츠 없음, loading-FULL과 동일 사유). 2026-07-02 최초 판정. G0 연결 OK(채널 kpgtp6vl, 페이지 '요리 비서' 939:2). 핵심 판정 기준=스크롤 스택 vs 스와이프 카루셀: app.html cook3 view(app.html:1119~1153, 다음 view는 1156에서 시작 → 전체 마크업 완독)는 statusbar·nav·cook-video·cook-progress·cook-tone·swipe-hint·cook-body(carousel)·vp-timer·cook-ctrl로 구성된 **고정 풀스크린 조리 HUD**다. body(.cook-body>.cook-track#cookTrack3)는 makeCarousel 팩토리 기반 **위아래 스와이프 카루셀**로 단계 카드를 **한 번에 1장만** 표시(리터럴 '단계 카드를 위아래로 스와이프' swipe-hint 확인). 즉 844 초과로 세로 적층돼 스크롤로 드러나는 접힌 콘텐츠가 **아예 없음**(스와이프 전환 ≠ 스크롤 스택). detail-FULL(재료·단계·후기 세로 적층=actionable)과 달리 loading-FULL과 동일한 no-op 조건. ⇒ v1 cook/cook3(2041:161, SEC/B 2036:111 자식, 390x844, K-cook3~cook3-DONE로 이미 완성·NOTE/cook3-1 2042:226 동반)에 -FULL로 추가·확장할 하단 콘텐츠 자체가 존재하지 않음. 억지로 늘리면 빈 프레임/중복(G4 위배)이라 passes:false 유지(가짜 통과 금지). cook-v2/cook3(2043:528) 실측은 생략(그리는 게 없으므로 중복 판정 불필요, advisor 확인). v1↔v2 정본 미결은 park를 막지 않음(prd=권위 소스, 이전 이터레이션과 동일 근거). 밀스톤 아님·그리기 없음 → export 없음."
     }
   ]
 }
