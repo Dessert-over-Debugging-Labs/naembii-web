@@ -682,7 +682,8 @@
       "title": "cook3: 단계 도트 5칸(1칸 활성)",
       "description": "cook/cook3 안에 '단계 도트 5칸(1칸 활성)' 요소를 정밀하게 그린다. 원본 source-screens/cook3.png 대비 위치·간격·타이포 정합.",
       "priority": 49,
-      "passes": false,
+      "passes": true,
+      "notes": "브리지 채널 ihbg56ny(라이브, join+get_document_info OK, 페이지 '요리 비서' 939:2, 최상위 SEC/A 2004:14·SEC/B 2036:111). 대상 region/콘텐츠=2041:164(cook/cook3=2041:161 자식, 다크 #0A0A0A, abs 6760/1540 390x660). 멱등: get_node_info 2041:164로 기존 자식 4(영상영역2041:173·썸네일2041:174·미리보기배지2041:175·미리보기텍스트2041:176)만 확인 → 단계도트 없어 신규 추가. app.html:1119 .cook-progress(gap4·padding16 16 8) + 5×.seg(flex1 height4 radius2). CSS app.html:523 #cook3 .cook-progress{cook-bg·padding-top12}, :524 .seg=rgba(255,255,255,.14), :526 .seg.cur=cook-accent(기본 tone mono=#f8f8f4)+glow. app.html:2090 JS가 로드시 cur=0(1단계)로 재계산 → 실제 렌더는 seg1만 활성('1칸 활성'=스토리 타이틀 정합, 정적 마크업의 2 done+1 cur는 override됨). 추가 자식 6: 영상영역(rel y0~260) 아래 cook-progress y260+padtop12=y272. 단계도트1-활성=2041:177(rect rel x16 y272 68x4 radius2 #f8f8f4=cook-accent mono), 단계도트2~5=2041:178/179/180/181(rect rel x88/160/232/304 y272 68x4 radius2 흰색 a0.14=비활성 seg), 5칸 flex 등분(폭68·gap4·spacing72, 우변 rel372<390). 단계카운터=2041:182('1 / 5' 12px w700 muted #a7a7a7 rel x336 y282 → abs 7096/1822 width24 우변 7120<프레임 7150, 도트 아래 우측 정렬 = 5칸 중 1칸 진행 표기). G0/G1/G2 read-back(get_node_info 2041:182 → '1 / 5' 텍스트 노드 #a7a7a7·프레임 내부 정합, 2041:177 활성도트 #f8f8f4 abs 6776/1812 확인)/G4(다크 화면: 활성 #f8f8f4·비활성 흰 a0.14·muted #a7a7a7, 12px, 4px 세그 8px계열 간격, 초록 누수 0·영어 누수 0='1 / 5'는 숫자) 통과. 밀스톤 아님 → export 생략. 다음 D-cook3-05(톤칩4 화이트/허브/스틸/크림)는 region/콘텐츠 도트 아래 cook-tone 영역(rel y~300).",
       "acceptanceCriteria": [
         "멱등: cook/cook3(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
         "G2: '1 / 5' 텍스트 노드가 cook/cook3 안에 존재.",

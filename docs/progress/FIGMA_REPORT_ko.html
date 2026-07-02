@@ -26,6 +26,16 @@
 </blockquote>
 
 <hr>
+<h3>[D-cook3-04] cook3 단계 도트 5칸(1칸 활성) ✅ · 2026-07-02</h3>
+<ul>
+  <li><b>대상</b>: <code>region/콘텐츠</code>(2041:164, <code>cook/cook3</code>=2041:161 자식, 다크 <code>#0A0A0A</code>). 멱등: 기존 자식 4(영상영역 D-cook3-03)만 확인 → 단계도트 신규 추가.</li>
+  <li><b>소스 대응</b>: <code>app.html:1119</code> <code>.cook-progress</code>(gap4·padding16, 5×<code>.seg</code> flex1 height4 radius2), CSS :523 <code>#cook3</code> padding-top12·:524 seg=rgba(255,255,255,.14)·:526 <code>.cur</code>=cook-accent(mono <code>#f8f8f4</code>)+glow. JS <code>app.html:2090</code> 로드시 cur=0(1단계) → seg1만 활성('1칸 활성' 정합).</li>
+  <li><b>추가 자식 6</b>: 단계도트1-활성(2041:177, 68×4 rel x16 y272 r2 <code>#f8f8f4</code>), 단계도트2~5(2041:178/179/180/181, 68×4 rel x88/160/232/304 y272 r2 흰색 a0.14), 단계카운터(2041:182, <code>1 / 5</code> 12px w700 muted <code>#a7a7a7</code>, abs 7096/1822 우변 7120&lt;7150). 5칸 flex 등분(폭68·gap4·spacing72).</li>
+  <li><b>게이트</b>: <span class="gate">G0 ✅(채널 <code>ihbg56ny</code>) / G1 ✅ / G2 ✅(read-back: 2041:182 <code>1 / 5</code> 텍스트 <code>#a7a7a7</code>·프레임 내부, 2041:177 활성도트 <code>#f8f8f4</code> abs 6776/1812) / G4 ✅</span>(다크: 활성 <code>#f8f8f4</code>·비활성 흰 a0.14·muted <code>#a7a7a7</code>·12px·초록 누수 0·영어 누수 0=<code>1 / 5</code>는 숫자). 밀스톤 아님 → export 생략.</li>
+  <li><b>다음</b>: D-cook3-05(톤칩4 화이트/허브/스틸/크림).</li>
+</ul>
+
+<hr>
 <h3>[D-detail-02] detail 헤더(뒤로/레시피/공유) ✅ · 2026-07-02</h3>
 <ul>
   <li><b>무엇을</b>: <code>cook/detail</code> 헤더 내비게이션(뒤로 화살표 + 중앙 '레시피' 제목 + 공유 아이콘)을 <code>app.html:1041</code> <code>.nav</code> 대비 정합 배치.</li>

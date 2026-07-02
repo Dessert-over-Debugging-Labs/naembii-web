@@ -416,3 +416,9 @@
 - 소스 app.html:1118 .cook-video#cook3Video(정적 썸네일 21j8SASqLJU + data-clip 오버레이), CSS :459 height260 bg#000, :887 ::after 하단 배지.
 - **추가 자식 4**: cook3-영상영역(2041:173, rect 390x260 #000000), cook3-영상썸네일(2041:174, rect 390x220 rel y20 #1B1B1B 레터박스 썸네일 placeholder), cook3-미리보기배지(2041:175, rect 358x32 rel x16 y216 #000000 a0.68 라운드12 stroke #ffffff a0.18), cook3-미리보기텍스트(2041:176, '정적 미리보기 · 실제 재생은 실기기에서 확인' 12px w700 #ffffff, abs 6830/1764).
 - **게이트**: G0(채널 ihbg56ny)·G2(read-back: region/콘텐츠 자식 4 + 정직 오버레이 텍스트·프레임 내부)·G4(다크 #000/#1B1B1B, 반투명 검정 오버레이·흰 12px, 초록 누수 0·영어 누수 0, 거짓 '재생 중' 없음) 통과. 밀스톤 아님 → export 생략.
+
+## D-cook3-04 — cook3: 단계 도트 5칸(1칸 활성) · 2026-07-02
+- 대상 **region/콘텐츠**(2041:164, cook/cook3=2041:161 자식, 다크 #0A0A0A). 멱등: 기존 자식 4(영상영역 D-cook3-03)만 확인 → 단계도트 신규 추가.
+- 소스 app.html:1119 .cook-progress(gap4·padding16, 5×.seg flex1 height4 radius2), CSS :523 #cook3 padding-top12·:524 seg=rgba(255,255,255,.14)·:526 .cur=cook-accent(mono #f8f8f4)+glow. JS app.html:2090 로드시 cur=0(1단계) → seg1만 활성('1칸 활성' 정합).
+- **추가 자식 6**: 단계도트1-활성(2041:177, rect 68x4 rel x16 y272 r2 #f8f8f4), 단계도트2~5(2041:178/179/180/181, rect 68x4 rel x88/160/232/304 y272 r2 흰색 a0.14), 단계카운터(2041:182, '1 / 5' 12px w700 muted #a7a7a7, abs 7096/1822 우변 7120<7150). 5칸 flex 등분(폭68·gap4·spacing72).
+- **게이트**: G0(채널 ihbg56ny)·G2(read-back: 2041:182 '1 / 5' 텍스트 #a7a7a7·프레임 내부, 2041:177 활성도트 #f8f8f4 abs 6776/1812)·G4(다크: 활성 #f8f8f4·비활성 흰 a0.14·muted #a7a7a7, 12px, 초록 누수 0·영어 누수 0='1 / 5'는 숫자) 통과. 밀스톤 아님 → export 생략.
