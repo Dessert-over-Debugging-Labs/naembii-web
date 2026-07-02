@@ -159,3 +159,11 @@
 - **다음**: K-sheet(cook/sheet 화면 골격 프레임) — §4b 테라코타로 그릴 것.
 
 ---
+
+### [K-sheet] sheet 화면 골격 프레임 생성 ✅ · 2026-07-02
+- **무엇을**: `cook/sheet` 화면 골격 프레임(390×844, `#FFF7F0`)을 SEC/A 안에 만들고 상태바/헤더/콘텐츠/하단 region 서브프레임을 잡음.
+- **어떻게(멱등)**: `get_node_info` SEC/A(2004:14) → `cook/sheet` 부재 확인 후 신규 create. `cook/sheet`=2025:62(부모-상대 x760 y120 → abs 6760/120, cook/home+NOTE/home-1 우측 옆, SEC/A 6000~7700 내부). region 4개(1콜씩 순차): region/상태바 2025:63(h48)·region/헤더 2025:64(h72)·region/콘텐츠 2025:65(h660)·region/하단 2025:66(h64), 전부 #FFF7F0 세로 스택.
+- **게이트**: G0 ✅(채널 `ihbg56ny`) / G1 ✅(프레임+region 4) / G2 ✅(`get_node_info` 2025:62 → 자식 4 + 절대좌표 정합 abs 6760/120·168·240·900, push-out 없음) / G4 ✅(영어 누수 0·초록 누수 0·#FFF7F0 토큰). 밀스톤 아님 → export 생략.
+- **다음**: D-sheet-01(스크림 반투명 배경) — region 프레임에 자식 추가, §4b 테라코타/다크 팔레트로 그릴 것. ⚠ K-loading 배치 시 SEC/A 폭(1700) 초과 우려 → `resize_node` 필요.
+
+---

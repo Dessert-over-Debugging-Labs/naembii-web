@@ -226,7 +226,8 @@
       "title": "sheet 화면 골격 프레임 생성",
       "description": "cook/sheet 프레임(390x844, 배경 #FFF7F0)을 SEC/A 안에 만들고 상태바/헤더/콘텐츠/하단 region 서브프레임 골격을 잡는다.",
       "priority": 16,
-      "passes": false,
+      "passes": true,
+      "notes": "브리지 채널 ihbg56ny(라이브, get_document_info 응답 OK, 페이지 '요리 비서' 939:2). 멱등: SEC/A(2004:14) 자식 확인 → cook/sheet 없어 신규 create. cook/sheet=2025:62(390x844, #FFF7F0, SEC/A 자식, 부모-상대 x=760 y=120 → 절대 x=6760 y=120. cook/home(우변 abs 6438)+NOTE/home-1(우변 abs 6720) 오른쪽 옆, SEC/A(6000~7700) 내부 OK). region 서브프레임 4개: region/상태바=2025:63(y0-48 h48), region/헤더=2025:64(y48-120 h72), region/콘텐츠=2025:65(y120-780 h660), region/하단=2025:66(y780-844 h64). 상태바→헤더→콘텐츠→하단 세로 스택, 전부 #FFF7F0. G0/G1/G2 read-back(get_node_info 2025:62 → 자식 4 + 절대좌표 정합, push-out 없음)/G4(영어 누수 0·초록 누수 0·#FFF7F0 토큰) 통과. 밀스톤 아님 → export 생략. 이후 D-sheet-* 요소는 이 region 프레임들에 자식으로 추가. ⚠ 다음 화면(K-loading)은 SEC/A 폭(1700, 우변 7700) 초과 우려 → sheet 포스트잇(~abs 7160+) 이후 loading 배치 시 SEC/A resize 필요.",
       "acceptanceCriteria": [
         "멱등: cook/sheet가 이미 있으면 재사용(중복 생성 금지), 없으면 생성해 SEC/A 안에 배치(390x844, 배경 #FFF7F0).",
         "상태바/헤더/콘텐츠/하단 region 서브프레임 골격을 만든다.",
