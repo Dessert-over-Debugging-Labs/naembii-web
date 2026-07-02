@@ -376,3 +376,9 @@
 - **어떻게(주요 노드)**: region/콘텐츠(2036:116) 자식 9개 신규(칩당 배경+아이콘+텍스트) — 칩1 배경2040:146(rect rel x24 y570 96x32 surface #FFFCF7 라운드10 stroke line #DDD1C6 1px)/아이콘2040:147(14x14 primary-l #E1875F 라운드3)/텍스트2040:148('5단계 추출' 12px w800 #7A3A22), 칩2 배경2040:149(rel x128 80x32)/아이콘2040:150/텍스트2040:151('재료 9개' → abs 6205/2120), 칩3 배경2040:152(rel x216 124x32 우변 abs 6388<6438)/아이콘2040:153/텍스트2041:154('타임스탬프 연동' → abs 6293/2120 우변 6373<6438). 팁 카드 아래 rel y570, 간격8.
 - **게이트**: G0(채널 ihbg56ny 라이브)·G1·G2 read-back('재료 9개' 텍스트 노드 2040:151 #7a3a22 12px w800 + '타임스탬프 연동' 2041:154 프레임 내부 정합)·G4(surface·line·primary-l·칩텍스트 #7A3A22 §4b 토큰, 12px, 초록 누수 0·영어 누수 0=9개 숫자) 통과. 밀스톤 아님 → export 생략.
 - **다음**: D-detail-09 — 하단 플로팅 '요리 시작하기' CTA(app.html .cta-fixed), region/하단 또는 콘텐츠 하단.
+
+### [D-detail-09] detail 하단 플로팅 '요리 시작하기' CTA · 2026-07-02
+- **무엇을**: cook/detail 하단 플로팅 시작 버튼(.cta-bar.float-start)을 app.html:1100 대비 정합 배치. chef-hat 아이콘 + '요리 시작하기' 라벨의 테라코타 pill 버튼.
+- **어떻게(주요 노드)**: region/하단(2036:117, abs 6048/2200 390x64) 자식 3개 신규 — detail-요리시작버튼=2041:155(rect rel x52 y3 286x58 primary #D66B42 라운드29 pill, gradient는 bridge 단색 미지원→주색 solid, 중앙정렬), detail-요리시작아이콘=2041:156(20x20 rel x133 y22 on-green #2A1005 라운드5 chef-hat placeholder), detail-요리시작텍스트=2041:157('요리 시작하기' 16px w800 on-green #2A1005 rel x161 y23 → abs 6209/2223 width92). 아이콘+텍스트(center 6241)·버튼(center 6243) 중앙 정렬.
+- **게이트**: G0(채널 ihbg56ny 라이브)·G1·G2 read-back('요리 시작하기' 텍스트 노드 2041:157 #2a1005 16px w800 + region/하단 2036:117 자식 3 확인)·G4(primary #D66B42·on-green #2A1005 §4b 토큰, 16px, 초록 누수 0·영어 누수 0) 통과. 밀스톤 아님 → export 생략.
+- **다음**: detail-DONE — cook/detail 원본 대응 검수 + export exports/detail.png(밀스톤).

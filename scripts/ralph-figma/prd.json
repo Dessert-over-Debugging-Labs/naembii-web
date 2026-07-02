@@ -586,7 +586,8 @@
       "title": "detail: 하단 플로팅 '요리 시작하기' CTA",
       "description": "cook/detail 안에 '하단 플로팅 '요리 시작하기' CTA' 요소를 정밀하게 그린다. 원본 source-screens/detail.png 대비 위치·간격·타이포 정합.",
       "priority": 42,
-      "passes": false,
+      "passes": true,
+      "notes": "브리지 채널 ihbg56ny(라이브, get_document_info OK, 페이지 '요리 비서' 939:2, 최상위 SEC/A 2004:14·SEC/B 2036:111). 대상 region/하단=2036:117(cook/detail=2036:113 자식, abs 6048/2200 390x64). 멱등: get_node_info 2036:117로 children=[] 확인 → 신규 추가. app.html:1100 <div class=cta-bar float-start><button class=btn onclick=startCook()><i lucide=chef-hat>요리 시작하기</button> 대응. CSS app.html:440 .cta-bar.float-start{position absolute·bottom10·z55·pointer-events none}, :445 .btn{width min(286,100%-64)=286·height58·radius999 pill·gap8·centered·animation floatStartCta}, :369 .btn{linear-gradient(green-l→green)=테라코타·color on-green #2A1005·16px w800·chef-hat 아이콘 20x20}. 추가 자식 3: detail-요리시작버튼=2041:155(rect rel x52 y3 286x58 primary #D66B42 라운드29 pill=289... 실 radius29, gradient는 bridge 단색 미지원→주색 solid로 근사, 중앙정렬 x=(390-286)/2=52), detail-요리시작아이콘=2041:156(rect 20x20 rel x133 y22 on-green #2A1005 라운드5 chef-hat placeholder), detail-요리시작텍스트=2041:157('요리 시작하기' 16px w800 on-green #2A1005 rel x161 y23 → abs 6209/2223 width92). 아이콘+텍스트 그룹(abs 6181~6301, center 6241) 버튼(abs 6100~6386, center 6243) 중앙 정렬, 프레임 내부(우변 6438). G0/G1/G2(get_node_info 2041:157 → '요리 시작하기' 텍스트 노드·#2a1005 16px w800·좌표 정합 / 2036:117 자식 3 확인)/G4(primary #D66B42·on-green #2A1005 §4b 토큰, 16px, 초록 누수 0·영어 누수 0) 통과. 밀스톤 아님 → export 생략. 다음 detail-DONE(밀스톤): cook/detail 원본 대응 검수 + export exports/detail.png.",
       "acceptanceCriteria": [
         "멱등: cook/detail(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
         "G2: '요리 시작하기' 텍스트 노드가 cook/detail 안에 존재.",
