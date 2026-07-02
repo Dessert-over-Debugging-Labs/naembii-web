@@ -4,7 +4,7 @@
   "description": "app.html의 각 화면을 쓰기형 Figma MCP(플러그인 브리지)로 Figma 캔버스에 실제로 그려 넣는다. 화면 1개=스토리 1개, ralph 루프로 자율 구현→green-gate(G0 연결·G1 그리기·G2 read-back·G3 export·G4 정직/토큰) 통과→한글 커밋. 소스 목표 이미지는 scripts/ralph-figma/source-screens/<view>.png, 스토리 상세는 docs/FIGMA_WIREFRAME_STORIES_ko.md. 규칙은 scripts/ralph-figma/CODEX.md.",
   "figma": {
     "page": "요리비서",
-    "channel": "ihbg56ny",
+    "channel": "kpgtp6vl",
     "frameSize": {
       "w": 390,
       "h": 844
@@ -1451,6 +1451,72 @@
         "한글 커밋."
       ],
       "notes": "브리지 채널 ihbg56ny(라이브, get_document_info 응답 OK, 페이지 요리 비서 939:2). ✅ 멱등 확인 결과 재색 불필요: 이 보정은 이미 home-DONE(priority 14) iteration이 17노드 set_fill_color로 선(先)적용함. G2 read-back(get_node_info)으로 cook/home(2006:16) 하위 초록(#46b581)·green-soft(#e3f3ec) fill 노드 0건 확인. region/헤더(2006:18): 로고마크2021:4=#d66b42·알림뱃지2021:9=#c99b4a(accent 골드). region/콘텐츠(2006:19): 카테고리아이콘2021:23/26/29/32/35=#d66b42·카테고리원2021:22/25/28/31/34=#fbe7de(peach)·추천섹션아이콘2021:37=#d66b42·카드1썸네일2021:42=#fbe7de·카드1사유2021:43=#e1875f(테라코타 l, 카드2 2023:48과 일치). 상태바(2006:17)·하단(2006:20)엔 애초에 초록 노드 없음. G4: 초록 누수 0·§4b 팔레트 정합. 신규 노드 생성 0(멱등). 다음: NOTE-loading."
+    },
+    {
+      "id": "home-FULL",
+      "title": "home 전체 스크롤 콘텐츠 확장",
+      "description": "cook/home 프레임이 첫 화면(844)만 있어 스크롤 하단 콘텐츠가 빠졌다. app.html의 home view 마크업을 끝까지 읽어 접힌 하단 콘텐츠(추천 카드 아래·하단탭바까지 전체)를 모두 그리고, resize_node로 프레임 높이를 콘텐츠에 맞춰 늘린다(멱등, 기존 노드 재사용).",
+      "priority": 14.3,
+      "passes": true,
+      "acceptanceCriteria": [
+        "app.html home view의 하단(접힌) 콘텐츠 요소를 cook/home에 추가(멱등, 중복 금지).",
+        "resize_node로 cook/home 높이를 전체 콘텐츠에 맞춰 확장(고정 844 아님). 하단탭바/플로팅 CTA는 최하단 또는 고정 주석.",
+        "G2 read-back으로 하단 콘텐츠 노드 존재 확인. G3: exports/home.png 갱신.",
+        "한글 커밋."
+      ],
+      "notes": "브리지 채널 kpgtp6vl(라이브, get_document_info 페이지 '요리 비서' 939:2). 대상 cook/home=2006:16 > region/콘텐츠=2006:19. 멱등: scan/get_node_info로 기존 자식(헤드라인+CTA+검색+카테고리5+추천헤더+추천카드2)만 확인, 인기/오늘 섹션 없음→신규 추가. app.html:980-983 home view 하단 접힌 콘텐츠 이식. 추가 자식 26(부모 2006:19, 부모-상대 좌표): 인기 레시피 섹션 — 아이콘=2050:2(rect18 #d66b42 r4), 제목=2050:3('인기 레시피' 16/800 #0a0a0a rel x50 y553), 전체=2050:4('전체' 13/600 #8a8a8a), 화살표=2050:5('›'); 인기 rcard3(썸네일 124x124 #fbe7de r16 + 제목15/700 + 메타13/500 #6e6258): 순두부찌개=2050:6/7/8(x16 y586), 감바스 알 아히요=2050:9/10/11(x156), 아보카도 비빔밥=2050:12/13/14(x296, 프레임 우변 390에서 h-스크롤 클립). 오늘의 추천 섹션 — 아이콘=2050:15(rect18 #d66b42 r4 rel y770), 제목=2050:16('오늘의 추천' rel y767), 전체=2050:17, 화살표=2050:18; 오늘 rcard3: 명란 파스타=2050:19/20/21(x16 y800), 아보카도 비빔밥=2050:22/23/24(x156), 딸기 티라미수=2050:25/26/27(x296, 클립). 콘텐츠 바닥 rel y972. 프레임 확장(G1b): region/콘텐츠 2006:19 resize 390x978, cook/home 2006:16 resize 390x1162(184+978), region/하단 2006:20 move(0,1098)→abs y1218 bottom1282(하단탭바 홈/등록/요리북 동반 이동, 스크롤 시 고정), SEC/A 2004:14 resize 2300x1292. ⚠ 공간 제약: SEC/B(2036:111) top=abs1300 → cook/home 바닥은 1300 미만 유지 필수(SEC/A가 자식 클립·SEC/B가 위에 렌더). 그래서 썸네일 124(152 아님)로 두 섹션을 window에 압축, cook/home 바닥 abs1282(18px 여유). G0/G1/G1b(전체 스크롤 콘텐츠 세로 클립 0)/G2 read-back(scan_text_nodes 2006:19 → 인기 레시피·오늘의 추천·순두부찌개·감바스 알 아히요·아보카도 비빔밥·명란 파스타·딸기 티라미수 라벨 전부 존재, region/하단 abs 정합)/G3 export exports/home.png(유효 PNG, 전체 렌더 확인: 하단탭바까지 잘림 없음)/G4(§4b 팔레트=테라코타 #d66b42·피치 #fbe7de·ink #0a0a0a·gray #6e6258, 초록 누수 0·영어 누수 0) 통과. ⚠ 관찰: 페이지 최상위에 별개 cook-v2/* 세트(home 2043:391 등, NOTE-v2 동반)가 존재하나 prd/progress 미추적(0건)·ralph 루프는 SEC/A|SEC/B 구세트에 커밋 중이라 스토리 대상=cook/home 2006:16 유지. cook-v2/home도 인기/오늘 섹션 없음(중복 작업 아님). 다음: sheet-FULL 등."
+    },
+    {
+      "id": "sheet-FULL",
+      "title": "sheet 전체 스크롤 콘텐츠 확장",
+      "description": "cook/sheet 프레임이 첫 화면(844)만 있어 스크롤 하단 콘텐츠가 빠졌다. app.html의 sheet view 마크업을 끝까지 읽어 접힌 하단 콘텐츠(바텀시트 전체 높이)를 모두 그리고, resize_node로 프레임 높이를 콘텐츠에 맞춰 늘린다(멱등, 기존 노드 재사용).",
+      "priority": 23.3,
+      "passes": false,
+      "acceptanceCriteria": [
+        "app.html sheet view의 하단(접힌) 콘텐츠 요소를 cook/sheet에 추가(멱등, 중복 금지).",
+        "resize_node로 cook/sheet 높이를 전체 콘텐츠에 맞춰 확장(고정 844 아님). 하단탭바/플로팅 CTA는 최하단 또는 고정 주석.",
+        "G2 read-back으로 하단 콘텐츠 노드 존재 확인. G3: exports/sheet.png 갱신.",
+        "한글 커밋."
+      ]
+    },
+    {
+      "id": "loading-FULL",
+      "title": "loading 전체 스크롤 콘텐츠 확장",
+      "description": "cook/loading 프레임이 첫 화면(844)만 있어 스크롤 하단 콘텐츠가 빠졌다. app.html의 loading view 마크업을 끝까지 읽어 접힌 하단 콘텐츠(전체 콘텐츠)를 모두 그리고, resize_node로 프레임 높이를 콘텐츠에 맞춰 늘린다(멱등, 기존 노드 재사용).",
+      "priority": 30.3,
+      "passes": false,
+      "acceptanceCriteria": [
+        "app.html loading view의 하단(접힌) 콘텐츠 요소를 cook/loading에 추가(멱등, 중복 금지).",
+        "resize_node로 cook/loading 높이를 전체 콘텐츠에 맞춰 확장(고정 844 아님). 하단탭바/플로팅 CTA는 최하단 또는 고정 주석.",
+        "G2 read-back으로 하단 콘텐츠 노드 존재 확인. G3: exports/loading.png 갱신.",
+        "한글 커밋."
+      ]
+    },
+    {
+      "id": "detail-FULL",
+      "title": "detail 전체 스크롤 콘텐츠 확장",
+      "description": "cook/detail 프레임이 첫 화면(844)만 있어 스크롤 하단 콘텐츠가 빠졌다. app.html의 detail view 마크업을 끝까지 읽어 접힌 하단 콘텐츠(재료·단계·후기 등 CTA 아래 전체)를 모두 그리고, resize_node로 프레임 높이를 콘텐츠에 맞춰 늘린다(멱등, 기존 노드 재사용).",
+      "priority": 43.3,
+      "passes": false,
+      "acceptanceCriteria": [
+        "app.html detail view의 하단(접힌) 콘텐츠 요소를 cook/detail에 추가(멱등, 중복 금지).",
+        "resize_node로 cook/detail 높이를 전체 콘텐츠에 맞춰 확장(고정 844 아님). 하단탭바/플로팅 CTA는 최하단 또는 고정 주석.",
+        "G2 read-back으로 하단 콘텐츠 노드 존재 확인. G3: exports/detail.png 갱신.",
+        "한글 커밋."
+      ]
+    },
+    {
+      "id": "cook3-FULL",
+      "title": "cook3 전체 스크롤 콘텐츠 확장",
+      "description": "cook/cook3 프레임이 첫 화면(844)만 있어 스크롤 하단 콘텐츠가 빠졌다. app.html의 cook3 view 마크업을 끝까지 읽어 접힌 하단 콘텐츠(단계 카드 아래·전체 스크롤)를 모두 그리고, resize_node로 프레임 높이를 콘텐츠에 맞춰 늘린다(멱등, 기존 노드 재사용).",
+      "priority": 54.3,
+      "passes": false,
+      "acceptanceCriteria": [
+        "app.html cook3 view의 하단(접힌) 콘텐츠 요소를 cook/cook3에 추가(멱등, 중복 금지).",
+        "resize_node로 cook/cook3 높이를 전체 콘텐츠에 맞춰 확장(고정 844 아님). 하단탭바/플로팅 CTA는 최하단 또는 고정 주석.",
+        "G2 read-back으로 하단 콘텐츠 노드 존재 확인. G3: exports/cook3.png 갱신.",
+        "한글 커밋."
+      ]
     }
   ]
 }
