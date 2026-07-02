@@ -226,3 +226,14 @@
 - **다음**: sheet-DONE(밀스톤) — cook/sheet 원본 대응 검수 + export `exports/sheet.png`, 최상위 stray `sheet-핸들바`(2025:69) 정리 검토.
 
 ---
+
+## sheet-DONE — sheet 화면 완성 검수 + export (밀스톤)
+- **무엇**: `cook/sheet`(2025:62, 자식 18)를 원본 대응 검수하고 PNG로 내보냈다(밀스톤).
+- **정리**: 페이지 최상위에 떠 있던 stray `sheet-핸들바`(2025:69, cook/sheet 밖·D-sheet-02 잔여 중복)를 `delete_node`로 제거 → 현재 페이지 자식은 `SEC/A`(2004:14)뿐.
+- **G2 검수**(`get_node_info` 2025:62): 스크림(#000000 a0.4) → 패널(surface #fffcf7 r24) → 핸들(gray2 #a99b90) → 제목 '영상 링크 등록'(20px ink #231a14) → 링크필드(surface2 #eee4da·line #ddd1c6)+빨강 아이콘(#ff0000)+'링크 붙여넣기' → 플랫폼 힌트(primary-l #e1875f 아이콘 + 'YouTube, Shorts, Instagram…' 2줄 gray #6e6258) → 분석시작(primary #d66b42·on-green #2a1005)+취소(peach #fbe7de·primary #d66b42). 한글 라벨 정합, 초록(#46b581/#e3f3ec) 0건.
+- **G3 export**: `export_node_as_image`(2025:62, PNG scale2) → transcript base64(780×1688 유효 PNG) 추출해 `scripts/ralph-figma/exports/sheet.png` 저장. 렌더 확인: 딤 스크림 위 흰 바텀시트 + 핸들·제목·링크필드·플랫폼 힌트 2줄·분석시작(테라코타)+취소(피치) 정상.
+- **게이트**: G0 ✅(채널 `ihbg56ny`) / G2 ✅ / G3 ✅ / G4 ✅(초록 누수 0·영어 누수 0=플랫폼 고유명·§4b 팔레트).
+- **참고**: region/상태바 등 4개 region 프레임은 비어 있음 — 시트는 스크림+패널 오버레이 모델이라 스토리 범위상 정상(미비 아님).
+- **다음**: NOTE-sheet — cook/sheet 우측 포스트잇 + 주석.
+
+---

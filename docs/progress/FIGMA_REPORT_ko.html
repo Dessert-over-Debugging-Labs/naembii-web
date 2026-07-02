@@ -26,6 +26,18 @@
 </blockquote>
 
 <hr>
+<h3>[sheet-DONE] sheet 화면 완성 검수 + export (밀스톤) ✅ · 2026-07-02</h3>
+<ul>
+  <li><b>무엇을</b>: <code>cook/sheet</code>(2025:62, 자식 18)를 원본 대응 검수하고 PNG로 내보냈다(밀스톤).</li>
+  <li><b>정리</b>: 페이지 최상위에 떠 있던 stray <code>sheet-핸들바</code>(2025:69, cook/sheet 밖·D-sheet-02 잔여 중복)를 <code>delete_node</code>로 제거 → 현재 페이지 자식은 <code>SEC/A</code>(2004:14)뿐.</li>
+  <li><b>G2 검수</b>(<code>get_node_info</code> 2025:62): 스크림(<code>#000000</code> a0.4) → 패널(surface <code>#FFFCF7</code> r24) → 핸들(gray2 <code>#A99B90</code>) → 제목 <code>영상 링크 등록</code>(20px ink <code>#231A14</code>) → 링크필드(surface2 <code>#EEE4DA</code>·line <code>#DDD1C6</code>)+빨강 아이콘(<code>#FF0000</code>)+<code>링크 붙여넣기</code> → 플랫폼 힌트(primary-l <code>#E1875F</code> 아이콘 + <code>YouTube, Shorts, Instagram…</code> 2줄 gray <code>#6E6258</code>) → 분석시작(primary <code>#D66B42</code>·on-green <code>#2A1005</code>)+취소(peach <code>#FBE7DE</code>·primary <code>#D66B42</code>). 한글 라벨 정합, 초록(<code>#46B581</code>/<code>#E3F3EC</code>) 0건.</li>
+  <li><b>G3 export</b>: <code>export_node_as_image</code>(2025:62, PNG scale2) → transcript base64(780×1688 유효 PNG) 추출해 <code>scripts/ralph-figma/exports/sheet.png</code> 저장. 렌더 확인: 딤 스크림 위 흰 바텀시트 + 핸들·제목·링크필드·플랫폼 힌트 2줄·분석시작(테라코타)+취소(피치) 정상.</li>
+  <li><b>게이트</b>: <span class="gate">G0 ✅(채널 <code>ihbg56ny</code>) / G2 ✅ / G3 ✅ / G4 ✅</span>(초록 누수 0·영어 누수 0=플랫폼 고유명·§4b 팔레트).</li>
+  <li><b>참고</b>: region/상태바 등 4개 region 프레임은 비어 있음 — 시트는 스크림+패널 오버레이 모델이라 스토리 범위상 정상(미비 아님).</li>
+  <li><b>다음</b>: NOTE-sheet — cook/sheet 우측 포스트잇 + 주석.</li>
+</ul>
+
+<hr>
 <h3>[D-sheet-05] sheet 플랫폼 배지(YouTube/Instagram) ✅ · 2026-07-02</h3>
 <ul>
   <li><b>무엇을</b>: <code>cook/sheet</code>(2025:62) 링크 입력 필드 아래에 플랫폼 힌트 라인 추가(<code>app.html:1256</code> <code>.paste-note</code> = <code>&lt;i lucide=wand-sparkles&gt;</code> + 'YouTube, Shorts, Instagram 링크를 그대로 붙여넣으세요…'). 실제 앱은 별도 '배지'가 아니라 링크필드 아래 안내 문구이므로 이를 충실히 렌더.</li>
