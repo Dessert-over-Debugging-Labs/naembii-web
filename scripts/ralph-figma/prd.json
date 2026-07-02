@@ -848,7 +848,8 @@
       "title": "cook: 재료 진입",
       "description": "cook/cook 안에 '재료 진입' 요소를 정밀하게 그린다. 원본 source-screens/cook.png 대비 위치·간격·타이포 정합.",
       "priority": 61,
-      "passes": false,
+      "passes": true,
+      "notes": "브리지 채널 kpgtp6vl(라이브, join+get_document_info OK, 페이지 '요리 비서' 939:2). 대상 region/하단=2042:233(cook/cook=2042:229 자식, 다크 #0a0a0a, D-cook-04에서 390x118로 확장됨). 멱등: get_node_info 2042:233 → 기존 자식 4(상단선2050:64·타이머-원2050:65/아이콘2050:66/라벨2050:67)만 확인, 재료 버튼 없음 → 신규 추가. app.html:1168 .cook-ctrl 3번째 버튼 openIngredients() '재료 보기'(cic.d dark-inactive) 대응. D-cook-04 타이머 버튼(center rel x81) 미러링해 3번째 버튼 center rel x309에 배치(3버튼 space-around 중심 81/195/309). 추가 자식 3: 재료-원=2050:68(52x52 rel x283 y16 #30261D=cic.d --dark3 r26, center rel x309), 재료-아이콘=2050:69(22x22 rel x298 y31 #FFFFFF=base .cic svg r6 carrot placeholder, 원 중앙), 재료-라벨=2050:70('재료 보기' 12px Medium #9a9aa0=.cbtn small rel x282 y74, center~309). ⚠ 타이머(cic.o 테라코타 #D66B42)와 달리 재료는 cic.d(비활성 #30261D·아이콘 #fff)라 색이 다름(app CSS 정합). G0/G1/G2 read-back(get_node_info 2042:233 → 자식 7 + '재료 보기' 텍스트 노드 2050:70·abs x18583 rel309 정합, 라벨 bottom y3683<region bottom 3712 truncate 없음)/G4(다크 §4b #30261D·#fff·#9a9aa0, 초록 누수 0=#46b581/#e3f3ec 0건·영어 누수 0, 12px 라벨·52px 터치) 통과. 밀스톤 아님 → export 생략. 다음: D-cook-06(음성/핸즈프리 진입 — 2번째 버튼 center rel x195, cic.o mic 테라코타 + 라벨 '핸즈프리 모드').",
       "acceptanceCriteria": [
         "멱등: cook/cook(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
         "G2: '재료' 텍스트 노드가 cook/cook 안에 존재.",
