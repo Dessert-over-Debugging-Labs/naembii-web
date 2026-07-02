@@ -26,6 +26,15 @@
 </blockquote>
 
 <hr>
+<h3>[NOTE-sheet] sheet 포스트잇 + 주석 배치 ✅ · 2026-07-02</h3>
+<ul>
+  <li><b>무엇을</b>: <code>cook/sheet</code>(2025:62) 오른쪽 옆에 리뷰용 노란 포스트잇 + 핵심 요소 주석 배치.</li>
+  <li><b>어떻게(주요 노드)</b>: 멱등 확인(SEC/A 2004:14 자식 = title·cook/home·NOTE/home-1·cook/sheet, NOTE/sheet-1 부재) 후 신규 생성 — 포스트잇 <code>NOTE/sheet-1</code>(2030:82, SEC/A 자식, 부모-상대 x1170 y120 → abs 7170/120, cook/sheet 우변 abs 7150 옆 20px 갭·SEC/A 우변 7700 내부, 240×180 <code>#FFE8A3</code> 라운드12), 제목 <code>리뷰 코멘트</code>(2030:83, 15px Bold <code>#231A14</code>), 본문 <code>여기에 시트 화면 피드백을 남겨 주세요.</code>(2030:84, 13px Regular <code>#6E6258</code>, 폭 초과분은 <code>set_text_content</code>로 축약). 주석 2건(<code>set_annotation</code>) — 시트 제목(2026:71 '영상 링크 등록')·분석 시작 CTA(2028:78).</li>
+  <li><b>게이트</b>: <span class="gate">G0 ✅(채널 <code>ihbg56ny</code>) / G1 ✅ / G2 ✅(<code>get_node_info</code> 2030:82 → 자식 2 + '리뷰 코멘트' 텍스트·주석 존재) / G4 ✅</span>(포스트잇 <code>#FFE8A3</code>·ink <code>#231A14</code>·gray <code>#6E6258</code> 토큰·영어 누수 0·초록 누수 0). 밀스톤 아님 → export 생략.</li>
+  <li><b>다음</b>: K-loading(cook/loading 골격 프레임, SEC/A 우변 7700 초과 우려 → resize 필요).</li>
+</ul>
+
+<hr>
 <h3>[sheet-DONE] sheet 화면 완성 검수 + export (밀스톤) ✅ · 2026-07-02</h3>
 <ul>
   <li><b>무엇을</b>: <code>cook/sheet</code>(2025:62, 자식 18)를 원본 대응 검수하고 PNG로 내보냈다(밀스톤).</li>

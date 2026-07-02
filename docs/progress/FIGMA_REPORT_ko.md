@@ -237,3 +237,14 @@
 - **다음**: NOTE-sheet — cook/sheet 우측 포스트잇 + 주석.
 
 ---
+
+## NOTE-sheet — sheet 포스트잇 + 주석 배치 (2026-07-02)
+
+- **대상**: `cook/sheet`(2025:62) 오른쪽 옆에 리뷰용 노란 포스트잇 + 핵심 요소 주석.
+- **멱등**: `get_node_info` 2004:14(SEC/A)로 자식 = title·`cook/home`(2006:16)·`NOTE/home-1`(2024:59)·`cook/sheet`(2025:62)만 확인 → `NOTE/sheet-1` 부재 → 신규 생성.
+- **포스트잇**: `NOTE/sheet-1`(2030:82, SEC/A 자식, 부모-상대 x1170 y120 → abs 7170/120, cook/sheet 우변 abs 7150 옆 20px 갭·SEC/A 우변 7700 내부, 240×180 `#FFE8A3` 라운드12). 자식 2 — 제목 `리뷰 코멘트`(2030:83, 15px Bold #231A14)·본문 `여기에 시트 화면 피드백을 남겨 주세요.`(2030:84, 13px Regular #6E6258). ⚠ 본문 최초 문구가 프레임 폭(240) 초과 → `set_text_content`로 축약해 내부 맞춤.
+- **주석**(`set_annotation` 2건, success): 시트 제목(2026:71 '영상 링크 등록')·분석 시작 CTA(2028:78).
+- **게이트**: G0 ✅(채널 `ihbg56ny`) / G1 ✅ / G2 ✅(`get_node_info` 2030:82 → 자식 2 + '리뷰 코멘트' 텍스트·주석 존재) / G4 ✅(포스트잇 #FFE8A3·ink #231A14·gray #6E6258 토큰, 영어 누수 0·초록 누수 0). 밀스톤 아님 → export 생략.
+- **다음**: K-loading — cook/loading 골격 프레임(SEC/A 우변 7700 초과 우려 → resize 필요).
+
+---
