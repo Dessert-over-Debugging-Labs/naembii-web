@@ -248,3 +248,14 @@
 - **다음**: K-loading — cook/loading 골격 프레임(SEC/A 우변 7700 초과 우려 → resize 필요).
 
 ---
+
+## K-loading — loading 화면 골격 프레임 생성 (2026-07-02)
+
+- **대상**: `cook/loading` 프레임(390×844, `#FFF7F0`)을 `SEC/A` 안에 만들고 상태바/헤더/콘텐츠/하단 region 서브프레임 골격을 잡는다.
+- **멱등**: `get_node_info` 2004:14(SEC/A) 자식 확인 → `cook/loading` 부재 → 신규 생성.
+- **SEC/A resize**: 기존 1700폭(우변 7700). `NOTE/sheet-1`(우변 7410) 오른쪽에 loading(390폭) 배치 시 우변 7830>7700 → `resize_node`로 **SEC/A를 width 2300(우변 8300)으로 확장**(향후 `NOTE/loading-1` 여유 포함), 높이 1120 유지.
+- **프레임**: `cook/loading`(2031:85, SEC/A 자식, 부모-상대 x1440 y120 → abs 7440/120, 390×844 `#FFF7F0`). region 서브프레임 4 — 상태바(2031:86, abs 7440/120)·헤더(2031:87, abs 7440/168)·콘텐츠(2031:88, abs 7440/240 h660)·하단(2031:89, abs 7440/900) 세로 스택.
+- **게이트**: G0 ✅(채널 `ihbg56ny`) / G1 ✅ / G2 ✅(`get_node_info` 2031:85 → 자식 4 + 절대좌표 정합, push-out 없음) / G4 ✅(`#FFF7F0` 토큰, 영어 누수 0·초록 누수 0). 밀스톤 아님 → export 생략.
+- **다음**: D-loading-01 — loading 상태바(home 상태바 패턴 재사용).
+
+---
