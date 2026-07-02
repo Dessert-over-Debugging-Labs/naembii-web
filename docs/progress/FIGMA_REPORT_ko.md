@@ -314,3 +314,7 @@
 - **다음**: SEC-B — B 섹션 컨테이너 생성.
 
 ---
+- **SEC-B** (섹션 컨테이너 SEC/B 생성): 'B. 상세 · 조리' 화면군용 연회색 컨테이너 프레임 `SEC/B`=2036:111(3000x1120 #F0F0F0, abs 6000/1300 = SEC/A 아래 180px 갭) 신규 create — 상단 제목 텍스트 `SEC/B-title`=2036:112('B. 상세 · 조리' 40px Bold #0A0A0A, abs 6048/1340). 화면 4개(detail/reviews/cook3/complete)용 폭 3000. G0(ihbg56ny)·G1·G2 read-back(#f0f0f0·3000x1120·제목 텍스트 확인)·G4(연회색 컨테이너·다크 제목·영어/초록 누수 0) 통과. 밀스톤 아님 → export 생략. `passes:true`.
+- **다음**: K-detail — cook/detail 골격 프레임(SEC/B 안).
+
+---

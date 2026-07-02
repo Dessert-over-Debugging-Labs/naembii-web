@@ -506,3 +506,11 @@ Started: Wed Jul  1 15:53:56 KST 2026
 - 게이트: G0/G1/G2(get_node_info 2035:108 → 자식 2 + '리뷰 코멘트' 텍스트 확인, abs 7850 cook/loading 우측 정합 / 주석 success)/G4(포스트잇 #FFE8A3·ink #231A14·gray #6E6258 토큰, 15/13px, 영어 누수 0·초록 누수 0) 통과. 밀스톤 아님 → export 생략.
 - 포스트잇 규약 재확인(NOTE/home-1·NOTE/sheet-1과 동일 패턴): 화면 우변 +20px, y120, 240x180 #FFE8A3 r12, 제목 '리뷰 코멘트'+본문 화면별 피드백 안내. nodeId 맵에 NOTE/loading-1=2035:108 추가.
 - 다음: SEC-B(B 섹션 컨테이너 생성).
+
+---
+## 2026-07-02 - SEC-B 섹션 컨테이너 SEC/B 생성 (B. 상세 · 조리)
+- G0: join_channel ihbg56ny 성공 + get_document_info 응답 OK(페이지 '요리 비서' 939:2, 자식=SEC/A 2004:14뿐).
+- 멱등: get_document_info로 최상위 자식 훑음 → SEC/B 부재 확인 → 신규 create(중복 없음).
+- 대상 nodeId: SEC/B=**2036:111**(3000x1120, 연회색 #F0F0F0, 절대좌표 x=6000 y=1300 = SEC/A(2004:14, y0~1120) 아래 180px 갭, x는 SEC/A와 정렬). 제목 SEC/B-title=**2036:112**('B. 상세 · 조리' 40px Bold #0A0A0A, 부모-상대 x48 y40 → abs 6048/1340, 프레임 내부). 화면 4개(detail/reviews/cook3/complete)용 넉넉한 폭 3000.
+- 게이트: G1(프레임+제목 create) / G2 read-back(get_node_info 2036:111 → #f0f0f0·3000x1120·자식 title 'B. 상세 · 조리' 40px Bold #0a0a0a 확인) / G4(연회색 컨테이너·다크 제목 #0A0A0A·영어 누수 0(B.는 섹션 라벨, SEC/A 'A.' 선례)·초록 누수 0). 밀스톤 아님 → export 생략.
+- 학습: 섹션 컨테이너는 SEC/A 패턴 재사용(연회색 #F0F0F0 프레임 + 40px Bold #0A0A0A 상단 제목). SEC/B는 SEC/A 아래 y1300 배치(세로 스택), 폭 3000(4화면). nodeId 맵에 SEC/B=2036:111 추가. 다음: K-detail(cook/detail 골격 프레임 — SEC/B 안).

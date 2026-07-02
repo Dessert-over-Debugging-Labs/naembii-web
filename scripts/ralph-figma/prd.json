@@ -446,7 +446,8 @@
       "title": "섹션 컨테이너 SEC/B 생성 (B. 상세 · 조리)",
       "description": "그룹 'B. 상세 · 조리' 화면들을 담을 큰 타이틀 컨테이너 프레임 SEC/B를 만든다(네이티브 section 없음 → 컨테이너 프레임으로 섹션 구현).",
       "priority": 32,
-      "passes": false,
+      "passes": true,
+      "notes": "브리지 채널 ihbg56ny(라이브, get_document_info 응답 OK, 페이지 '요리 비서' 939:2, 자식=SEC/A 2004:14뿐). 멱등: get_document_info로 SEC/B 부재 확인 → 신규 create. SEC/B 프레임 nodeId=2036:111(3000x1120, 연회색 #F0F0F0, 절대좌표 x=6000 y=1300 = SEC/A(y0~1120) 아래 180px 갭). 제목 텍스트 nodeId=2036:112('B. 상세 · 조리', 40px Bold #0A0A0A, 부모-상대 x48 y40 → abs 6048/1340, 프레임 내부). 화면 4개(detail/reviews/cook3/complete ~470px+간격80px)용 넉넉한 폭 3000(SEC/A 2300보다 큼, 4화면+포스트잇 여유). G0(채널 ihbg56ny 조인+get_document_info)·G1(프레임+제목 create)·G2 read-back(get_node_info 2036:111 → #f0f0f0·3000x1120·자식 title 'B. 상세 · 조리' 40px Bold #0a0a0a 확인)·G4(연회색 컨테이너·다크 제목·영어 누수 0·초록 누수 0) 통과. 밀스톤 아님 → export 생략. 이후 K-detail 등 B군 화면은 이 SEC/B(2036:111) 안에 배치. 다음: K-detail(cook/detail 골격 프레임).",
       "acceptanceCriteria": [
         "멱등: get_document_info로 SEC/B 존재 확인, 없으면 연회색 배경 컨테이너 프레임 생성 + 상단 제목 텍스트 'B. 상세 · 조리'.",
         "화면 4개가 가로로 들어갈 넉넉한 크기(화면당 ~470px 폭, 간격 80px).",
