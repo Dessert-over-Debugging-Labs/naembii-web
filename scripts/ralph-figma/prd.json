@@ -88,7 +88,8 @@
       "title": "home: 헤드라인",
       "description": "cook/home 안에 '헤드라인' 요소를 정밀하게 그린다. 원본 source-screens/home.png 대비 위치·간격·타이포 정합.",
       "priority": 6,
-      "passes": false,
+      "passes": true,
+      "notes": "브리지 채널 mtaf1yhq. 대상 region/콘텐츠=2006:19(cook/home=2006:16 자식, 390x660, abs 6048/240), 비어 있어 신규 추가(멱등). 헤드라인=2021:11('오늘 뭐 만들까요?' 26px ExtraBold #0A0A0A, rel x24 y16 → abs 6072/256, 프레임 내부 OK). app.html:952 <h1>오늘 뭐 만들까요?</h1> 대응. G0/G1/G2(region/콘텐츠 자식 1 + '오늘 뭐 만들까요?' 텍스트 노드 확인)/G4(다크 토큰·영어 누수 0) 통과. 밀스톤 아님 → export 생략.",
       "acceptanceCriteria": [
         "멱등: cook/home(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
         "G2: '오늘 뭐 만들까요?' 텍스트 노드가 cook/home 안에 존재.",
