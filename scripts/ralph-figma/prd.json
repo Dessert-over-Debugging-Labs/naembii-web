@@ -1054,7 +1054,8 @@
       "title": "complete: 액션(홈으로/다시 요리하기)",
       "description": "cook/complete 안에 '액션(홈으로/다시 요리하기)' 요소를 정밀하게 그린다. 원본 source-screens/complete.png 대비 위치·간격·타이포 정합.",
       "priority": 76,
-      "passes": false,
+      "passes": true,
+      "notes": "브리지 채널 9p9mv14b(라이브, get_document_info 응답 OK, 페이지 '요리 비서' 939:2). 대상 cook/complete=2070:22 · region/콘텐츠=2070:25(abs 7728/4640 390x660). 멱등: get_node_info 2070:25로 기존 자식 12=히어로(2087:31~36)+done-stat(2087:37~42, 바닥 rel y340)만 확인 → 액션 버튼 없음, 신규 추가. app.html:1226 .done-actions(grid 2col gap8 max-width320 중앙) + :1231 ghost '홈으로' 대응. ⚠ 라벨: 스토리 G2 요구 라벨 '홈으로'/'다시 요리하기' 우선(D-sheet-03/06·D-complete-03 선례=스토리 라벨 우선; app 실제 done-actions는 '팁 남기기'(→D-complete-05)/'후기 남기기'/'공유'+ghost '홈으로'라 '다시 요리하기'는 없으나 스토리 라벨대로 이식). CSS app.html:775 .done-actions button(minHeight48·border 1px line·surface·ink·radius14·14px w800). 2열 중앙정렬(max-width320 → 좌우여백 35, 버튼 폭156 간격8): 좌 x35, 우 x199. 추가 자식 4: 완성-홈으로버튼=2088:43(rect rel x35 y360 156x48 surface #FFFCF7 라운드14 stroke line #DDD1C6 1px), 완성-홈으로버튼텍스트=2088:44('홈으로' 14px w800 ink #231A14 rel x94 y376), 완성-다시요리하기버튼=2088:45(rect rel x199 y360 156x48 surface #FFFCF7 라운드14 stroke line #DDD1C6 1px), 완성-다시요리하기버튼텍스트=2088:46('다시 요리하기' 14px w800 ink #231A14 rel x236 y376 → abs 7964/5016 너비81, 버튼2(abs 7927~8083) 중앙·프레임 우변 8118 내부). G0/G1/G2 read-back(get_node_info 2088:46 → '다시 요리하기' 텍스트 노드·좌표 정합 확인)/G4(surface #FFFCF7·line #DDD1C6·ink #231A14 §4b 토큰, 14px, 영어 누수 0·초록 누수 0) 통과. 밀스톤 아님 → export 생략. 다음: D-complete-05(팁 남기기 진입 버튼=app.html:1227 primary '다른 사용자를 위한 팁 남기기', region/콘텐츠 2070:25 액션 아래 rel y~420 또는 위 primary 자리).",
       "acceptanceCriteria": [
         "멱등: cook/complete(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
         "G2: '다시 요리하기' 텍스트 노드가 cook/complete 안에 존재.",
