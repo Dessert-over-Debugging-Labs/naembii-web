@@ -1040,7 +1040,8 @@
       "title": "complete: 요약(소요 시간·난이도·완성 기록)",
       "description": "cook/complete 안에 '요약(소요 시간·난이도·완성 기록)' 요소를 정밀하게 그린다. 원본 source-screens/complete.png 대비 위치·간격·타이포 정합.",
       "priority": 75,
-      "passes": false,
+      "passes": true,
+      "notes": "브리지 채널 9p9mv14b(라이브, get_document_info 응답 OK, 페이지 '요리 비서' 939:2). 대상 cook/complete=2070:22 · region/콘텐츠=2070:25(abs 7728/4640 390x660). 멱등: get_node_info 2070:25로 기존 자식 6=히어로(2087:31~36)만 확인 → done-stat 없음, 신규 추가. app.html:1217 .done-stat(3열 flex gap24, 값 24px w800 fresh-l·라벨 13px gray) 대응. 부제3(2087:36 bottom rel y268) 아래 rel y290(값)/y324(라벨)에 배치. 추가 자식 6(3열=값+라벨): 완성값1=2087:37('완성' 24px w800 fresh-l #69C18F rel x104 y290)·완성라벨1=2087:38('요리 기록' 13px gray #6E6258 rel x92 y324), 팁값2=2087:39('팁 1개' 24px fresh-l rel x176 y290)·팁라벨2=2087:40('참고한 팁' 13px gray rel x174 y324), 시간값3=2087:41('30분' 24px fresh-l rel x260 y290)·시간라벨3=2087:42('소요 시간' 13px gray rel x254 y324 → abs 7982/4964 너비52, 프레임 내부). ⚠ app 라벨은 '조리 시간'이나 스토리 G2 요구 라벨 '소요 시간' 우선(D-sheet-03/06 선례=스토리 라벨 우선). app 실제 3열=완성/요리기록·팁1개/참고한팁·30분/조리시간(값 '난이도' 없음 — 난이도는 detail chip. done-stat엔 없어 3열 그대로 이식). ⚠ 값 색=fresh-l #69C18F(app --fresh-l, 정당한 성공색=초록 누수 아님), #46B581 금지. G0/G1/G2 read-back(get_node_info 2087:42 → '소요 시간' 텍스트 노드·abs 7982/4964 프레임 내부 정합)/G4(fresh-l #69C18F·gray #6E6258 §4b 토큰, 24/13px, 영어 누수 0·#46B581 초록 누수 0) 통과. 밀스톤 아님 → export 생략. 다음: D-complete-04(액션 홈으로/다시 요리하기, region/콘텐츠 2070:25 stat 아래 rel y~360).",
       "acceptanceCriteria": [
         "멱등: cook/complete(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
         "G2: '소요 시간' 텍스트 노드가 cook/complete 안에 존재.",
