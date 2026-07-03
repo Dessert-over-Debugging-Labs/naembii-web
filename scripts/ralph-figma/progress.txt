@@ -941,3 +941,37 @@ Started: Wed Jul  1 15:53:56 KST 2026
 - 추가 자식 4: 상태바-시간=2075:27('9:41' 15px SemiBold #0A0A0A rel x24 y14 → abs 7752/4534), 상태바-신호=2075:28(rect rel x300 y18 18x12 #0A0A0A), 상태바-와이파이=2075:29(rect rel x322 y18 16x12 #0A0A0A), 상태바-배터리=2075:30(rect rel x342 y18 24x12 #0A0A0A, abs 8070~8094 < 프레임 우변 8118). 우측 정렬(여백 24px 대칭).
 - 게이트: G0(채널 607h63ew)/G1/G2 read-back(2070:23 자식 4 + '9:41' 텍스트 노드 확인, 프레임 내부 정합)/G4(다크 #0A0A0A·15px, 영어/초록 누수 0) 통과. 밀스톤 아님 → export 생략.
 - 다음: D-complete-02(완성 히어로 체크 원+'완성!'+요리명, region/콘텐츠=2070:25 중앙).
+
+---
+## 2026-07-03 - D-complete-02 완성 히어로 시도 — 브리지 미응답으로 G0 실패(그리기 없음)
+- 대상 스토리: D-complete-02(complete 완성 히어로 체크 원+'완성!'+요리명). cook/complete=2070:22, region/콘텐츠=2070:25에 자식 추가 예정이었음.
+- 준비 완료(app.html:1211~1216 실측): done-badge 96x96 원 fresh-soft(≈#E0EADC 크림 위 블렌드)·아이콘 fresh-l #69C18F(성공=진짜 초록 --fresh, 허용), h2 '순두부찌개 완성!' 26px w800 ink #231A14, 부제 p 15px gray #6E6258(3줄 분할 예정). region/콘텐츠 중앙 정렬.
+- G0: join_channel 607h63ew **성공**(2회, WS 응답)이나 get_document_info **3회 전부 timeout**(재조인 후 포함) + get_node_info(2070:22) timeout. 과거와 동일 = TalkToFigma 플러그인 미실행/큐 잼(WS 서버만 살아있음).
+- 조치: CODEX §1 G0 실패 규칙대로 **아무것도 그리지 않음**. D-complete-02 passes:false 유지, prd 갱신·커밋 없음.
+- ⛔ 재개 조건(사용자 조치): Figma 데스크톱에서 TalkToFigma 플러그인 창을 열고 채널 607h63ew로 Connect(창 유지). 복구 후 멱등: cook/complete(2070:22)→region/콘텐츠(2070:25)에 완성 히어로(체크원+아이콘+'순두부찌개 완성!'+부제 3줄)만 1콜씩 순차 추가. ⚠ 색: 성공 배지는 fresh(#3FA76F/l #69C18F)—테라코타·#46B581 금지.
+
+---
+## 2026-07-03 - D-complete-02 완성 히어로 시도 — 브리지 미응답으로 G0 실패(그리기 없음)
+- 대상 스토리: D-complete-02(complete 완성 히어로: 체크 원+'완성!'+요리명). cook/complete=2070:22, region/콘텐츠=2070:25에 자식 추가 예정이었음.
+- 준비 완료(app.html:1211~1216 실측): done-badge 96x96 원 배경 --fresh-soft rgba(63,167,111,.16)+아이콘 --fresh-l #69C18F(party-popper), h2 '순두부찌개 완성!' 26px w800 ink #231A14, 본문 15px gray #6E6258. ⚠ 여기 초록은 --fresh(성공)이라 G4 허용(--green=테라코타와 구별).
+- G0: join_channel 607h63ew **성공**(2회 조인 모두 WS 응답)이나 get_document_info **3회 전부 timeout**(재조인 후 재시도 포함). WS 서버는 살아있으나 TalkToFigma 플러그인↔Figma 커맨드 경로 끊김(과거 D-home-01 다수 시도와 동일 증상).
+- 조치: CODEX §1 G0 실패 규칙대로 **아무것도 그리지 않음**. D-complete-02 passes:false 유지, prd 갱신·커밋 없음.
+- 재개 조건(사용자 조치): Figma 데스크톱에서 TalkToFigma 플러그인 창을 연 채 채널 607h63ew로 Connect(창 유지). 복구되면 멱등: cook/complete(2070:22)→region/콘텐츠(2070:25)에 done-badge 원+아이콘+'순두부찌개 완성!'+본문만 1콜씩 순차 추가.
+- 🔁 재시도(동일 iteration 반복): join_channel 607h63ew 성공 후 get_document_info 2회 + get_node_info(2070:25/2070:22) 2회 **전부 timeout**. 증상·조치 동일(그리기 없음, passes:false 유지). 브리지 커맨드 경로 여전히 끊김.
+- 🔁 재시도(2026-07-03 세션): join_channel 607h63ew 성공, 이후 get_document_info 3회 + get_node_info(2070:25) 1회 **전부 timeout**. WS 서버만 살아있고 플러그인 커맨드 경로 끊김(동일 증상). 그리기 없음, D-complete-02 passes:false 유지, 커밋 없음. 준비물은 위 노트 그대로. 복구 시 멱등: cook/complete(2070:22)→region/콘텐츠(2070:25)에 done-badge 원+아이콘+'순두부찌개 완성!'+본문만 1콜씩 순차 추가.
+
+---
+## 2026-07-03 - D-complete-02 완성 히어로 시도 — 브리지 미응답으로 G0 실패(그리기 없음)
+- 대상 스토리: D-complete-02(complete 완성 히어로: 체크 원+'완성!'+요리명). cook/complete=2070:22, region/콘텐츠=2070:25에 자식 추가 예정이었음.
+- 계획(복구 시 멱등 실행): app.html:1213 .done-view 대응. region/콘텐츠(2070:25) 자식 추가 — 완성체크원(rect 96x96 rel x147 y48 radius48, fill fresh #3FA76F a0.16=--fresh-soft, 진짜 초록=성공 강조라 §4b 허용), 완성체크아이콘(rect 48x48 rel x171 y72 radius8 fresh-l #69C18F party-popper placeholder), 완성제목('순두부찌개 완성!' 26px w800 ink #231A14 rel x~100 y160), 완성부제('방금 만든 요리 기록이 요리북에 추가됐어요. 다음에 다시 만들 때 오늘의 메모와 팁을 함께 볼 수 있어요.' 15px gray #6E6258 rel y~210). G2 라벨='완성!'(제목 '순두부찌개 완성!'에 포함).
+- G0: join_channel 607h63ew 성공(2회, WS 응답)이나 get_document_info·get_node_info(2070:25) 전부 timeout(재조인 후 재시도 포함) = TalkToFigma 플러그인 미실행/큐 잼.
+- 조치: CODEX §1 G0 실패 규칙대로 아무것도 그리지 않음. D-complete-02 passes:false 유지, prd 갱신·커밋 없음.
+- ⛔ 재개 조건(사용자 조치): Figma 데스크톱에서 TalkToFigma 플러그인 창을 열고 채널 607h63ew로 Connect(창 유지). 복구되면 위 계획대로 1콜씩 순차 추가.
+
+---
+## 2026-07-03 - D-complete-02 완성 히어로(체크 원+'완성!'+요리명) ✅ 통과
+- 브리지 복구: join_channel **9p9mv14b**(prd figma.channel과 일치) 성공 + get_document_info 응답 OK, 페이지 '요리 비서' 939:2. 과거 미응답(607h63ew) 세션과 달리 이번엔 커맨드 경로 라이브.
+- 대상: cook/complete=2070:22 · region/콘텐츠=2070:25(abs 7728/4640 390x660, children=[] → 신규 추가·멱등). app.html:1213 .done-view 히어로 대응.
+- 추가 자식 6(1콜씩 순차): 완성배지원=**2087:31**(rect 96x96 rel x147 y48 → abs 7875/4688 프레임 중앙 x7923, fresh-soft #3fa76f a0.16 라운드48=app .done-badge 원형), 완성배지아이콘=**2087:32**(rect 40x40 rel x175 y76 fresh-l #69C18F 라운드10 party-popper placeholder), 완성제목=**2087:33**('순두부찌개 완성!' 26px ExtraBold ink #231A14 rel x100 y160 → abs 7828/4800 너비182), 완성부제1=**2087:34**('방금 만든 요리 기록이 요리북에 추가됐어요.' 15px gray #6E6258 rel x48 y206 너비274), 완성부제2=**2087:35**('다음에 다시 만들 때 오늘의 메모와' 15px rel x76 y228 너비215), 완성부제3=**2087:36**('팁을 함께 볼 수 있어요.' 15px rel x111 y250 너비146). ⚠ 브리지 create_text 폭/줄바꿈 미지원 → app.html:1216 긴 부제를 자연 분기점 3줄 분할·각 줄 중앙정렬.
+- 게이트: G0(9p9mv14b)/G1/G2 read-back(get_node_info 2070:25 → 자식 6 + '순두부찌개 완성!' 텍스트 노드 확인, 배지 중앙·전부 프레임 내부 정합)/G4(fresh #3fa76f/#69c18f=성공색 정당·ink #231A14·gray #6E6258 §4b 토큰, 26/15px, 영어 누수 0·#46B581 초록 누수 0) 통과. 밀스톤 아님 → export 생략.
+- 학습: 성공 배지는 반드시 fresh(#3FA76F/l #69C18F, app --fresh) — 테라코타·#46B581 금지(fresh는 §4b 성공색이라 초록 누수 아님). 다음: D-complete-03(요약 done-stat 소요시간·난이도·완성기록, region/콘텐츠 2070:25 히어로 아래 rel y~290).

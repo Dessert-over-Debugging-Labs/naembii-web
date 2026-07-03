@@ -4,7 +4,7 @@
   "description": "app.html의 각 화면을 쓰기형 Figma MCP(플러그인 브리지)로 Figma 캔버스에 실제로 그려 넣는다. 화면 1개=스토리 1개, ralph 루프로 자율 구현→green-gate(G0 연결·G1 그리기·G2 read-back·G3 export·G4 정직/토큰) 통과→한글 커밋. 소스 목표 이미지는 scripts/ralph-figma/source-screens/<view>.png, 스토리 상세는 docs/FIGMA_WIREFRAME_STORIES_ko.md. 규칙은 scripts/ralph-figma/CODEX.md.",
   "figma": {
     "page": "요리비서",
-    "channel": "607h63ew",
+    "channel": "9p9mv14b",
     "frameSize": {
       "w": 390,
       "h": 844
@@ -1026,7 +1026,8 @@
       "title": "complete: 완성 히어로(체크 원 + '완성!' + 요리명)",
       "description": "cook/complete 안에 '완성 히어로(체크 원 + '완성!' + 요리명)' 요소를 정밀하게 그린다. 원본 source-screens/complete.png 대비 위치·간격·타이포 정합.",
       "priority": 74,
-      "passes": false,
+      "passes": true,
+      "notes": "브리지 채널 9p9mv14b(라이브, get_document_info 응답 OK, 페이지 '요리 비서' 939:2. ⚠ prd figma.channel=9p9mv14b가 이번엔 라이브, 과거 607h63ew는 이전 세션). 대상 cook/complete=2070:22 · region/콘텐츠=2070:25(abs 7728/4640 390x660, 비어 있어 신규 추가·멱등: children=[] 확인). app.html:1213 .done-view(padding 48/24 center gap16) 히어로 대응. 추가 자식 6: 완성배지원=2087:31(rect 96x96 rel x147 y48 → abs 7875/4688 프레임 중앙 x7923, fresh-soft rgba(63,167,111,.16)=#3fa76f a0.16 라운드48=app .done-badge 원형), 완성배지아이콘=2087:32(rect 40x40 rel x175 y76 fresh-l #69C18F 라운드10 party-popper placeholder=app .done-badge svg --fresh-l), 완성제목=2087:33('순두부찌개 완성!' 26px ExtraBold ink #231A14 rel x100 y160 → abs 7828/4800 너비182 프레임내부, app.html:1215 h2), 완성부제1=2087:34('방금 만든 요리 기록이 요리북에 추가됐어요.' 15px Regular gray #6E6258 rel x48 y206 너비274), 완성부제2=2087:35('다음에 다시 만들 때 오늘의 메모와' 15px #6E6258 rel x76 y228 너비215), 완성부제3=2087:36('팁을 함께 볼 수 있어요.' 15px #6E6258 rel x111 y250 너비146). ⚠ 브리지 create_text 폭/줄바꿈 미지원 → app.html:1216 긴 부제를 자연 분기점 3줄 분할·각 줄 중앙정렬. ⚠ 성공 배지 색=fresh #3FA76F/l #69C18F(app --fresh)만, 테라코타·#46B581 금지(fresh는 정당한 성공색=초록 누수 아님). G0/G1/G2 read-back(get_node_info 2070:25 → 자식 6 + '순두부찌개 완성!' 텍스트 노드 확인, 배지 중앙·전부 프레임 내부 정합)/G4(fresh #3fa76f/#69c18f·ink #231A14·gray #6E6258 §4b 토큰, 26/15px, 영어 누수 0·#46B581 초록 누수 0) 통과. 밀스톤 아님 → export 생략. 다음: D-complete-03(요약 done-stat 소요시간·난이도·완성기록, region/콘텐츠 2070:25 히어로 아래 rel y~290).",
       "acceptanceCriteria": [
         "멱등: cook/complete(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
         "G2: '완성!' 텍스트 노드가 cook/complete 안에 존재.",
