@@ -1092,3 +1092,12 @@ Started: Wed Jul  1 15:53:56 KST 2026
 - app.html:1236~1251 view#tipWrite 마크업 전수 대응.
 - 게이트: G0(채널 9p9mv14b) / G1·G2 read-back(요소 전부 존재·핵심 한글 라벨 정합) / G3 export exports/tipWrite.png(780x1688 유효 PNG) / G4(초록 누수 0·영어 누수 0·§4b 테라코타 팔레트, 콘텐츠 844 내부).
 - 다음: NOTE-tipWrite(포스트잇 NOTE/tipWrite-1 + 주석).
+
+---
+## 2026-07-03 - NOTE-tipWrite tipWrite 포스트잇 + 주석 배치
+- 브리지 채널 9p9mv14b(라이브, get_document_info OK, 페이지 '요리 비서' 939:2). SEC/C=2070:20 실측 abs x7680 y2872 3000x1120(우변 10680). cook/tipWrite=2089:53 abs 8440/2992(우변 8830), SEC/C 부모-상대 x760 y120.
+- 멱등: get_node_info 2070:20로 SEC/C 자식에 NOTE/tipWrite-1 없음 확인(NOTE/complete-1=2089:50만 존재) → 신규 create.
+- 포스트잇 NOTE/tipWrite-1=**2089:82**(SEC/C 자식, 부모-상대 x1190 y120 → abs 8870/2992, cook/tipWrite 우변 8830 오른쪽 40px 갭, SEC/C 우변 10680 내부 우변 9110. 240x180 #FFE8A3 라운드12). 자식 2: NOTE/tipWrite-1-제목=**2089:83**('리뷰 코멘트' 15px Bold ink #231A14 rel x16 y16), NOTE/tipWrite-1-본문=**2089:84**('여기에 팁 작성 화면 피드백을 남겨 주세요.' 13px Regular gray #6E6258 rel x16 y48 너비229<240).
+- 주석(set_annotation) 2건: 히어로제목 2089:64('다음 사람에게 어떤 팁을 남길까요?')·팁등록텍스트 2089:79('팁 등록' 주 CTA) 콜아웃 부착(둘 다 success).
+- 게이트: G0(채널 9p9mv14b)/G1(프레임+텍스트2+주석2)/G2 read-back(get_node_info 2089:82 → 자식 2 + '리뷰 코멘트' 텍스트 확인, abs 8870 cook/tipWrite 우측 정합·SEC/C 내부 / 주석 2건 success)/G4(포스트잇 #FFE8A3·ink #231A14·gray #6E6258 §4b 토큰, 15/13px, 영어 누수 0·초록 누수 0) 통과. 밀스톤 아님 → export 생략.
+- 다음: K-cookbook(cook/cookbook 골격 프레임, SEC/C 안).
