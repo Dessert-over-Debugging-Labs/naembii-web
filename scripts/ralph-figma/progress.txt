@@ -1145,3 +1145,12 @@ Started: Wed Jul  1 15:53:56 KST 2026
 - 게이트: G0(채널 9p9mv14b 라이브)/G1/G2 read-back(2089:89 자식 8 + '홈' 텍스트 2092:168, abs 프레임 내부)/G4(ink #231A14·오렌지 #F3A23A·light #F8F4EF·highlight #FFFCF7, 10px, 초록/영어 누수 0) 통과. 밀스톤 아님 → export 생략.
 - 다음: cookbook-DONE(밀스톤: cook/cookbook 검수 + export exports/cookbook.png scale2).
 ---
+
+## 2026-07-03 - cookbook-DONE cookbook 완성 검수 + export (밀스톤)
+- 대상: cook/cookbook=2089:85(390x1474, 자식 region/상태바2089:86·헤더2089:87·콘텐츠2089:88(h1290)·하단2089:89). G0 채널 9p9mv14b 라이브.
+- G2 read-back(get_node_info 2089:85) 전 섹션 완결 확인: 상태바 9:41·헤더 요리북+검색·book-head(내가 만든 요리와/저장한 레시피+부제2줄)·stats 3(2/6/3)·filter 4칩(전체 active)·section-t 최근 조리·cooked카드2(순두부찌개·감바스 알 아히요, 완성기록/팁남김/재조리후보/소금줄이기 칩)·section-t 저장한 레시피·grid 6카드·book-note(최근 기록 메모)·하단탭바(홈/등록/요리북 active=요리북).
+- 검수 보정: 원본 source-screens/cookbook.png의 등록(tab-add) 오렌지 솔리드는 stale 스냅샷. 현행 app.html:328 .tab-add{background:transparent} → 등록=투명 light 유지가 정합(home 탭바와 일관), 미비 아님·무보정.
+- G4: 초록 누수 0(#46b581/#e3f3ec 0건, book-note만 --fresh #3fa76f/#69c18f=정당)·영어 누수 0(Chef Mama=RECIPES[3].channel 소스데이터)·§4b 팔레트·상태바→헤더→콘텐츠→하단 영역 대응.
+- G3 export: MCP export_node_as_image는 base64를 image 콘텐츠 블록으로만 반환(파일 추출 불가) → 신규 헬퍼 scripts/ralph-figma/export_node.mjs로 브리지 WS(:3055) join+export 직접 호출해 저장. exports/cookbook.png(780x2948 유효 PNG, 116KB). ⚠ 학습: 이후 밀스톤 export는 이 헬퍼(node export_node.mjs <channel> <nodeId> <scale> <out>)로 파일화.
+- 다음: NOTE-cookbook(포스트잇+주석).
+---

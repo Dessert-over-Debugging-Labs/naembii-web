@@ -1330,7 +1330,8 @@
       "title": "cookbook 화면 완성 검수 + export",
       "description": "cook/cookbook가 원본과 영역 대응하는지 확인하고 PNG로 내보낸다(밀스톤).",
       "priority": 96,
-      "passes": false,
+      "passes": true,
+      "notes": "브리지 채널 9p9mv14b(라이브, get_document_info 응답 OK, 페이지 '요리 비서' 939:2). 대상 cook/cookbook=2089:85(390x1474, 자식: region/상태바2089:86·헤더2089:87·콘텐츠2089:88(h1290)·하단2089:89). G2 read-back(get_node_info 2089:85)으로 전 섹션 완결 확인: 상태바 9:41·헤더 요리북+검색·book-head(내가 만든 요리와/저장한 레시피+부제 2줄)·book-stats 3(2/6/3)·book-filter 4칩(전체 active)·section-t 최근 조리·cooked카드 2(순두부찌개·감바스 알 아히요, 완성 기록/팁 남김/재조리 후보/소금 줄이기 칩)·section-t 저장한 레시피·grid 6카드(순두부찌개/감바스 알 아히요/아보카도 비빔밥/까르보나라/딸기 티라미수/명란 파스타)·book-note(최근 기록 메모)·하단탭바(홈/등록/요리북, active=요리북). G4: 초록 누수 0(#46b581/#e3f3ec 0건, book-note만 --fresh #3fa76f/#69c18f=정당 초록)·영어 누수 0(Chef Mama=RECIPES[3].channel 소스 데이터)·§4b 팔레트(테라코타 #d66b42/#e1875f·피치 #fbe7de·ink #231a14·gray #6e6258·surface #fffcf7·line #ddd1c6·chip #eee4da·다크탭 #231a14·active 오렌지 #f3a23a)·상태바→헤더→콘텐츠→하단 영역 대응. 검수: 원본 source-screens/cookbook.png의 등록(tab-add) 오렌지 솔리드는 stale 스냅샷 — 현행 app.html:328 .tab-add{background:transparent}이라 등록=투명 light 유지(home 탭바와 일관), 미비 아님·무보정. G3 export: MCP export_node_as_image는 base64를 image 콘텐츠 블록으로만 반환(파일 추출 불가) → 신규 헬퍼 scripts/ralph-figma/export_node.mjs로 브리지 WS(:3055) 직접 호출해 저장. exports/cookbook.png(780x2948 유효 PNG, 116KB). 다음: NOTE-cookbook.",
       "acceptanceCriteria": [
         "cook/cookbook가 원본 source-screens/cookbook.png와 영역 대응(상태바→헤더→콘텐츠→하단).",
         "G3: export_node_as_image로 exports/cookbook.png(scale2) 저장.",
