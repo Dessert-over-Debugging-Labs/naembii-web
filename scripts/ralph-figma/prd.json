@@ -1246,7 +1246,8 @@
       "title": "cookbook: 상태바",
       "description": "cook/cookbook 안에 '상태바' 요소를 정밀하게 그린다. 원본 source-screens/cookbook.png 대비 위치·간격·타이포 정합.",
       "priority": 90,
-      "passes": false,
+      "passes": true,
+      "notes": "브리지 채널 9p9mv14b(라이브, get_node_info 응답 OK). 대상 region/상태바=2089:86(cook/cookbook=2089:85 자식, 390x48 abs 9150/2992, 비어 있어 신규 추가·멱등). complete 상태바(2075:27~30)/home(2007:21·2021:2~3) 패턴 재사용. 추가 자식 4: 상태바-시간=2089:90('9:41' 15px SemiBold #0A0A0A rel x24 y14 → abs 9174/3006), 상태바-신호=2089:91(rect rel x300 y18 18x12), 상태바-와이파이=2089:92(rect rel x322 y18 16x12), 상태바-배터리=2089:93(rect rel x342 y18 24x12) 전부 #0A0A0A. 아이콘 우측 정렬(우측 여백 24px 대칭). G0/G1/G2(get_node_info 2089:86 → 자식 4 + '9:41' 텍스트 노드 확인, abs 9174~9516 프레임 9150~9540 내부 정합)/G4(#0A0A0A·15px, 영어 누수 0·초록 누수 0) 통과. 밀스톤 아님 → export 생략. 다음 D-cookbook-02(헤더 '요리북')는 region/헤더=2089:87.",
       "acceptanceCriteria": [
         "멱등: cook/cookbook(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
         "G2: '9:41' 텍스트 노드가 cook/cookbook 안에 존재.",
