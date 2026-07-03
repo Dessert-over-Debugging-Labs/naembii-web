@@ -1122,13 +1122,14 @@
       "title": "tipWrite: 상태바",
       "description": "cook/tipWrite 안에 '상태바' 요소를 정밀하게 그린다. 원본 source-screens/tipWrite.png 대비 위치·간격·타이포 정합.",
       "priority": 81,
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "멱등: cook/tipWrite(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
         "G2: '9:41' 텍스트 노드가 cook/tipWrite 안에 존재.",
         "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
         "nodeId 기록 후 한글 커밋."
-      ]
+      ],
+      "notes": "cook/tipWrite=2089:53 region/상태바=2089:54 자식: 상태바-시간=2089:58(9:41 15px SemiBold #0A0A0A rel x24 y14)·신호=2089:59(rect x300 y18 18x12)·와이파이=2089:60(x322 16x12)·배터리=2089:61(x342 24x12) 전부 #0A0A0A. 우측여백 24px. home/complete 상태바 패턴 재사용."
     },
     {
       "id": "D-tipWrite-02",
