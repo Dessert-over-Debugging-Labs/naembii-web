@@ -1022,3 +1022,13 @@ Started: Wed Jul  1 15:53:56 KST 2026
 - 주석(set_annotation) 2건: 완성제목 2087:33('순두부찌개 완성!')·팁남기기텍스트 2089:49('다른 사용자를 위한 팁 남기기') 콜아웃 부착(둘 다 success).
 - 게이트: G0/G1/G2(get_node_info 2089:50 → 자식 2 + '리뷰 코멘트' 텍스트·#ffe8a3·라운드12·abs 8160 cook/complete 우측 정합 / 주석 2건 success)/G4(포스트잇 #FFE8A3·ink #231A14·gray #6E6258 토큰, 15/13px, 초록 누수 0·영어 누수 0) 통과. 밀스톤 아님 → export 생략.
 - 다음: K-tipWrite(cook/tipWrite 골격 프레임, SEC/C).
+
+---
+## 2026-07-03 - K-tipWrite tipWrite 화면 골격 프레임 생성
+- 브리지 채널 9p9mv14b(라이브, get_document_info OK, 페이지 '요리 비서' 939:2). 대상 섹션 SEC/C=2070:20(abs 7680/2872 3000x1120).
+- 멱등: SEC/C 자식 read-back(get_document_info + get_node_info 2070:20) → cook/tipWrite 없음 확인, 신규 create. ⚠ 파일 top-level cook-v2/tipWrite(2043:695)는 별개 v2 리디자인 네이밍이라 무관(v1 granular 포트와 병렬).
+- cook/tipWrite=**2089:53**(390x844, #FFF7F0, SEC/C 직속 자식, 부모-상대 x=760 y=120 → 절대 x=8440 y=2992). cook/complete(우변 abs 8118)+NOTE/complete-1(우변 abs 8400) 오른쪽 옆 gap 40px, SEC/C(7680~10680) 내부 우변 8830 push-out 없음(K-sheet rel760 선례 동일).
+- region 서브프레임 4개(전부 #FFF7F0): region/상태바=**2089:54**(y0-48 h48)·region/헤더=**2089:55**(y48-120 h72)·region/콘텐츠=**2089:56**(y120-780 h660)·region/하단=**2089:57**(y780-844 h64), 상태바→헤더→콘텐츠→하단 세로 스택.
+- 게이트: G0/G1/G2 read-back(get_node_info 2089:53 → 자식 4 + 절대좌표 정합·push-out 없음)/G4(영어 누수 0·초록 누수 0·#FFF7F0 토큰) 통과. 밀스톤 아님 → export 생략.
+- 이후 D-tipWrite-* 요소는 이 region 프레임에 자식 추가(상태바 2089:54·헤더 2089:55·콘텐츠 2089:56·하단 2089:57).
+- 다음: D-tipWrite-01(상태바 9:41·신호/와이파이/배터리).
