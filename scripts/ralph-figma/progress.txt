@@ -1044,4 +1044,13 @@ Started: Wed Jul  1 15:53:56 KST 2026
 - 대상 region/헤더=2089:55(cook/tipWrite=2089:53 자식, abs 8440/3040 390x72). 멱등: get_node_info 2089:55 children=[] 확인 → 신규 추가. app.html:1238 .nav(뒤로 chevron-left + 제목 '팁 남기기' + 우측 빈 ic-btn aria-hidden) 대응, D-detail-02 헤더 패턴 재사용.
 - 추가 자식 2: 헤더-뒤로아이콘=2089:62(rect 24x24 rel x24 y24 → abs 8464/3064 ink #231A14 라운드6 chevron-left placeholder, 좌측 여백24), 헤더-제목=2089:63('팁 남기기' 16px Bold ink #231A14 rel x163 y26 → abs 8603/3066 width63, center 8634.5≈프레임center 8635 중앙정합). 우측 ic-btn은 app에서 빈 aria-hidden이라 아이콘 생략(좌우 비대칭이지만 앱 마크업 충실).
 - 게이트: G0(채널 9p9mv14b 라이브, 페이지 '요리 비서' 939:2)/G1/G2 read-back(get_node_info 2089:55 → 자식 2 + '팁 남기기' 텍스트 노드 확인, 좌표 정합)/G4(ink #231A14 §4b 토큰·16px·영어 누수 0·초록 누수 0) 통과. 밀스톤 아님 → export 생략.
-- nodeId 맵: region/헤더(2089:55) 자식=뒤로아이콘2089:62·제목2089:63. 다음: D-tipWrite-03(별점 선택, region/콘텐츠=2089:56).
+- nodeId 맵: region/헤더(2089:55) 자식=뒤로아이콘2089:62·제목2089:63. 다음: D-tipWrite-03(히어로, region/콘텐츠=2089:56).
+
+---
+## 2026-07-03 - D-tipWrite-03 tipWrite 히어로(제목+부제) — ⚠ '별점 선택' 오류 스토리 정정
+- ⚠⚠ **스토리 스펙 오류 발견·정정**: 원 D-tipWrite-03 '별점 선택'은 잘못된 템플릿에서 온 오류. app.html #tipWrite(app.html:1235~) + source-screens/tipWrite.png 3중 확인 결과 **tipWrite에 별점 UI 없음** — 별점(star-input aria-label='별점 선택')은 app.html:1398 **후기작성 시트 reviewSheet** 소속이다(05 '사진 첨부'도 동일 오류=reviewSheet의 rv-photo). 실제 tipWrite 콘텐츠 순서=히어로→태그칩→텍스트박스→CTA. G4 정직 원칙상 별점 fabrication 금지 → 03=히어로로 정정, 04/05/06 스펙도 실제 요소(04=태그, 05=텍스트박스, 06=CTA)로 prd.json 일괄 재매핑(G2 라벨 04'맛 조절'·05'청양고추'·06'팁 등록').
+- 대상 region/콘텐츠=2089:56(cook/tipWrite=2089:53 자식, abs 8440/3112 390x660, 진입 시 children=[] 확인 → 신규 추가). app.html:1240 .tip-hero(h2 '다음 사람에게<br>어떤 팁을 남길까요?' 24px w900 ink + p 부제 14px gray line1.55) 대응.
+- 추가 자식 3: 히어로제목=**2089:64**('다음 사람에게\n어떤 팁을 남길까요?' 24px w900 ink #231A14 rel x24 y16 → abs 8464/3128 201x58, br=\n 2줄, 브리지 create_text가 \n 줄바꿈 정상 렌더), 히어로부제1=**2089:65**('내가 실제로 만들어본 뒤 알게 된 조절 포인트를 남겨두면' 14px Regular gray #6E6258 rel x24 y92 → abs 8464/3204 w328), 히어로부제2=**2089:66**('같은 레시피를 보는 사람에게 보여줘요.' 14px Regular #6E6258 rel x24 y116 → abs 8464/3228 w226). ⚠ 브리지 create_text 폭/자동줄바꿈 미지원 → 긴 부제는 자연 분기점에서 2줄 수동 분할(우변 8792<프레임 우변 8830 내부).
+- 게이트: G0(채널 9p9mv14b 라이브, 페이지 '요리 비서' 939:2)/G1/G2 read-back(get_node_info 2089:56 → 자식 3 + '어떤 팁을 남길까요?' 텍스트 노드 확인, 좌표 프레임 내부 정합)/G4(ink #231A14·gray #6E6258 §4b 토큰·24/14px·영어 누수 0·초록 누수 0) 통과. 밀스톤 아님 → export 생략.
+- ⚠ divergence 재플래그(progress line 40): cook-v2/tipWrite(2043:695) 최종본 채택 여부는 여전히 사람 판단 필요. prd passes 권위로 계속 진행하되 v2 미변경.
+- nodeId 맵: region/콘텐츠(2089:56) 자식=히어로제목2089:64·부제1 2089:65·부제2 2089:66. 다음: D-tipWrite-04(팁 유형 태그칩 맛 조절/재료 대체/불 조절/보관, region/콘텐츠 히어로 아래 rel y~160).
