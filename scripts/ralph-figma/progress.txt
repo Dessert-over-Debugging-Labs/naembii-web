@@ -1154,3 +1154,12 @@ Started: Wed Jul  1 15:53:56 KST 2026
 - G3 export: MCP export_node_as_image는 base64를 image 콘텐츠 블록으로만 반환(파일 추출 불가) → 신규 헬퍼 scripts/ralph-figma/export_node.mjs로 브리지 WS(:3055) join+export 직접 호출해 저장. exports/cookbook.png(780x2948 유효 PNG, 116KB). ⚠ 학습: 이후 밀스톤 export는 이 헬퍼(node export_node.mjs <channel> <nodeId> <scale> <out>)로 파일화.
 - 다음: NOTE-cookbook(포스트잇+주석).
 ---
+
+## 2026-07-03 - NOTE-cookbook cookbook 포스트잇 + 주석 배치
+- 브리지 채널 9p9mv14b(라이브, get_document_info 페이지 '요리 비서' 939:2). 대상 SEC/C=2070:20(abs x7680 y2872 w3000 h1620), cook/cookbook=2089:85(abs 9150/2992 w390 우변 9540).
+- 멱등: SEC/C 자식에 NOTE/cookbook-1 없음 확인 → 신규 create. 포스트잇 NOTE/cookbook-1=**2094:173**(SEC/C 자식, 부모-상대 x1900 y120 → abs 9580/2992, cookbook 우변 9540 오른쪽 40px 갭, 240x180 #FFE8A3 라운드12, SEC/C 우변 10680 내부 우변 9820).
+- 자식 2: NOTE/cookbook-1-제목=**2094:174**('리뷰 코멘트' 15px Bold ink #231A14 rel x16 y16), NOTE/cookbook-1-본문=**2094:175**('여기에 요리북 화면 피드백을 남겨 주세요.' 13px Regular gray #6E6258 rel x16 y48). NOTE/complete·tipWrite 포스트잇과 동일 규약.
+- 주석 2건(set_annotation): cookbook-헤더-제목 2089:94('요리북')·cookbook-저장-제목 2091:138('저장한 레시피'), 둘 다 success.
+- 게이트: G0(채널 9p9mv14b 조인+doc info) / G1(포스트잇+제목/본문 생성) / G2 read-back(get_node_info 2094:173 → 자식 2 + '리뷰 코멘트' 텍스트, abs 9580 cookbook 우측 정합 / 주석 success) / G4(#FFE8A3·ink #231A14·gray #6E6258, 15/13px, 초록/영어 누수 0). 밀스톤 아님 → export 생략.
+- 다음: K-reviews(cook/reviews 골격 프레임). SEC/C 우변 10680 여유 확인 필요(reviews frame 배치 시 resize 가능성).
+---
