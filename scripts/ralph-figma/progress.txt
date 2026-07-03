@@ -1014,3 +1014,11 @@ Started: Wed Jul  1 15:53:56 KST 2026
 - G3 export: export_node_as_image(2070:22 PNG scale2) 호출 성공·렌더 시각 확인. ⚠ 이번 세션 브리지 export가 base64 텍스트가 아닌 렌더 이미지로 반환돼 바이트 직접 저장 불가 → get_node_info 값을 픽셀 미러한 standalone HTML을 headless Chrome로 캡처해 exports/complete.png(780x1688=390x844@2x 유효 PNG) 저장.
 - ⚠ divergence: app.html #complete 실화면은 Figma 그래뉼러 포트보다 앞서감(앱엔 '오늘 도움 된 팁' 카드+후기/공유/홈으로-ghost 액션). 앱 렌더는 Figma 프레임을 오버스테이트하므로 사용하지 않고, Figma 프레임 콘텐츠(홈으로/다시요리하기 페어+팁남기기 primary, 팁카드 없음)를 정확히 미러해 저장.
 - 다음: NOTE-complete(cook/complete 우측 노란 포스트잇 NOTE/complete-1 + 핵심 요소 주석).
+---
+## 2026-07-03 - NOTE-complete complete 포스트잇 + 주석 배치
+- 브리지 채널 9p9mv14b(라이브, get_document_info OK, 페이지 '요리 비서' 939:2). 대상 cook/complete=2070:22(SEC/C=2070:20 자식, abs 7728/2992 390x844, 우변 abs 8118).
+- 멱등: SEC/C·cook/complete read-back으로 기존 NOTE/complete 없음 확인 → 신규 create.
+- 포스트잇 NOTE/complete-1=**2089:50**(SEC/C 직속 자식, 부모-상대 x480 y120 → abs 8160/2992, cook/complete 우측 옆 gap 42px, 프레임 상단 정렬. 240x180 #FFE8A3 라운드12). 자식 2: NOTE/complete-1-제목=**2089:51**('리뷰 코멘트' 15px Bold ink #231A14 rel x16 y16), NOTE/complete-1-본문=**2089:52**('여기에 완료 화면 피드백을 남겨 주세요.' 13px Regular gray #6E6258 rel x16 y48).
+- 주석(set_annotation) 2건: 완성제목 2087:33('순두부찌개 완성!')·팁남기기텍스트 2089:49('다른 사용자를 위한 팁 남기기') 콜아웃 부착(둘 다 success).
+- 게이트: G0/G1/G2(get_node_info 2089:50 → 자식 2 + '리뷰 코멘트' 텍스트·#ffe8a3·라운드12·abs 8160 cook/complete 우측 정합 / 주석 2건 success)/G4(포스트잇 #FFE8A3·ink #231A14·gray #6E6258 토큰, 15/13px, 초록 누수 0·영어 누수 0) 통과. 밀스톤 아님 → export 생략.
+- 다음: K-tipWrite(cook/tipWrite 골격 프레임, SEC/C).
