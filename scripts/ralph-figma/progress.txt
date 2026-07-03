@@ -1137,3 +1137,11 @@ Started: Wed Jul  1 15:53:56 KST 2026
 - G1b 오버플로 수용(무잘림): resize_node region/콘텐츠 2089:88 h1170→1290, cook/cookbook 2089:85 h1354→1474, SEC/C 2070:20 h1520→1620(부모 클립 방지). region/하단 2089:89 부모-상대 move_node(0,1410) → abs 9150/4402(bottom 4466=cookbook bottom, SEC/C bottom 4492 클리어). 노트 bottom abs 4372 < content bottom 4402 < cookbook 4466 < SEC/C 4492 무잘림, region/하단 무충돌.
 - 게이트: G0(채널 9p9mv14b 라이브)/G1/G2 read-back(get_nodes_info: 제목 2092:162 '최근 기록 메모' abs 9226/4293·본문2 2092:164 bottom 4352<content, 색 확인)/G4(§4b fresh #3fa76f·#69c18f·ink #231A14·gray #6E6258, 잘못된초록 0·영어 누수 0, 13~14px·8px) 통과. 밀스톤 아님 → export 생략.
 - 다음: D-cookbook-06(하단탭바, region/하단=2089:89 abs 9150/4402 빈 프레임에 다크 플로팅 필 3탭).
+
+## 2026-07-03 - D-cookbook-06 cookbook 하단탭바
+- 대상: region/하단=2089:89(cook/cookbook=2089:85 자식, 390x64 abs 9150/4402). 멱등: get_node_info로 children=[] 확인 → 신규 추가.
+- app.html:1020-1023 .bottom-tabs(다크 플로팅 필 + 3탭). cookbook은 active=요리북(aria-selected=true) → 하이라이트/오렌지를 요리북에 부여(home은 홈이 active).
+- 추가 자식 8: 탭바배경=2092:165(rect x16 y6 358x52 #231A14 r26)·요리북활성하이라이트=2092:166(x264 y12 100x40 #FFFCF7 a0.13 r20)·홈아이콘=2092:167(24x24 x64 y15 #F8F4EF r6)·홈라벨=2092:168('홈' 10px w700 #F8F4EF x68 y41)·등록아이콘=2092:169(24x24 x183 y15 #F8F4EF r6)·등록라벨=2092:170('등록' 10px #F8F4EF x185 y41)·요리북아이콘=2092:171(24x24 x302 y15 #F3A23A r6)·요리북라벨=2092:172('요리북' 10px #F3A23A x298 y41 abs 9448/4443).
+- 게이트: G0(채널 9p9mv14b 라이브)/G1/G2 read-back(2089:89 자식 8 + '홈' 텍스트 2092:168, abs 프레임 내부)/G4(ink #231A14·오렌지 #F3A23A·light #F8F4EF·highlight #FFFCF7, 10px, 초록/영어 누수 0) 통과. 밀스톤 아님 → export 생략.
+- 다음: cookbook-DONE(밀스톤: cook/cookbook 검수 + export exports/cookbook.png scale2).
+---

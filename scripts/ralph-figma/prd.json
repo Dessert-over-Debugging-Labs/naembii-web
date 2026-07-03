@@ -1316,13 +1316,14 @@
       "title": "cookbook: 하단탭바",
       "description": "cook/cookbook 안에 '하단탭바' 요소를 정밀하게 그린다. 원본 source-screens/cookbook.png 대비 위치·간격·타이포 정합.",
       "priority": 95,
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "멱등: cook/cookbook(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
         "G2: '홈' 텍스트 노드가 cook/cookbook 안에 존재.",
         "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
         "nodeId 기록 후 한글 커밋."
-      ]
+      ],
+      "notes": "브리지 채널 9p9mv14b(라이브, get_document_info 응답 OK, 페이지 \"요리 비서\" 939:2). 대상 region/하단=2089:89(cook/cookbook=2089:85 자식, 390x64, abs 9150/4402), 비어 있어 신규 추가(멱등: get_node_info로 children=[] 확인). app.html:1020-1023 .bottom-tabs(다크 플로팅 필 + 3탭 홈/등록/요리북, cookbook은 active=요리북 aria-selected=true) 대응. 추가 자식 8: 탭바배경=2092:165(rect rel x16 y6 358x52 #231A14 ink 라운드26), 요리북활성하이라이트=2092:166(rect rel x264 y12 100x40 #FFFCF7 a0.13 라운드20, 요리북 열중심 314 정렬=app .active bg rgba(255,252,247,.13)), 홈아이콘=2092:167(24x24 rel x64 y15 #F8F4EF 라운드6 home placeholder inactive), 홈라벨=2092:168(\"홈\" 10px w700 #F8F4EF rel x68 y41), 등록아이콘=2092:169(24x24 rel x183 y15 #F8F4EF 라운드6 plus placeholder), 등록라벨=2092:170(\"등록\" 10px #F8F4EF rel x185 y41), 요리북아이콘=2092:171(24x24 rel x302 y15 #F3A23A active 오렌지 라운드6 book-open placeholder), 요리북라벨=2092:172(\"요리북\" 10px #F3A23A rel x298 y41 → abs 9448/4443 프레임 내부). ⚠ home(D-home-10)과 달리 cookbook은 active 탭이 요리북(오른쪽)이라 하이라이트·오렌지 색을 요리북에 부여, 홈/등록은 inactive light. 3탭 등간격(열중심 x75.6/194.9/314.2). G0/G1/G2(get_node_info 2089:89 → 자식 8 + \"홈\" 텍스트 노드 2092:168 확인, abs 좌표 프레임 내부 정합)/G4(다크 ink #231A14·active 오렌지 #F3A23A(app 실색)·light #F8F4EF·highlight #FFFCF7, 10px, 초록 누수 0·영어 누수 0) 통과. 밀스톤 아님 → export 생략. 다음 cookbook-DONE(밀스톤): cook/cookbook 검수 + export exports/cookbook.png scale2."
     },
     {
       "id": "cookbook-DONE",
