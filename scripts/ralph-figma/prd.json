@@ -1356,13 +1356,14 @@
       "title": "reviews 화면 골격 프레임 생성",
       "description": "cook/reviews 프레임(390x844, 배경 #FFF7F0)을 SEC/C 안에 만들고 상태바/헤더/콘텐츠/하단 region 서브프레임 골격을 잡는다.",
       "priority": 98,
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "멱등: cook/reviews가 이미 있으면 재사용(중복 생성 금지), 없으면 생성해 SEC/C 안에 배치(390x844, 배경 #FFF7F0).",
         "상태바/헤더/콘텐츠/하단 region 서브프레임 골격을 만든다.",
         "G2: get_node_info로 cook/reviews 프레임 존재 확인. nodeId를 notes/progress nodeId 맵에 기록.",
         "한글 커밋."
-      ]
+      ],
+      "notes": "브리지 채널 9p9mv14b(라이브, get_document_info 페이지 '요리 비서' 939:2). 멱등: get_document_info+get_node_info(2070:20)로 SEC/C 자식 확인 → cook/reviews 없어 신규 create. cook/reviews=2095:176(390x844, #FFF7F0, SEC/C(2070:20) 자식, 부모-상대 x=2180 y=120 → 절대 x=9860 y=2992. NOTE/cookbook-1(2094:173 우변 9820) 오른쪽 40px 갭, 우변 10250 < SEC/C 우변 10680 내부 OK, 바닥 3836 < SEC/C 바닥 4492). region 서브프레임 4개(전부 #FFF7F0): region/상태바=2095:177(y0-48 abs 9860/2992), region/헤더=2095:178(y48-120 h72 abs 9860/3040), region/콘텐츠=2095:179(y120-780 h660 abs 9860/3112), region/하단=2095:180(y780-844 h64 abs 9860/3772). 세로 스택 push-out 없음. G0/G1/G2 read-back(get_node_info 2095:176 → 자식 4 + 절대좌표 정합)/G4(#FFF7F0 토큰, 영어/초록 누수 0) 통과. 밀스톤 아님 → export 생략. D-reviews-* 요소는 이 region에 자식 추가(상태바=2095:177 9:41 패턴=cookbook 2089:90~93 재사용). 다음: D-reviews-01(reviews 상태바 9:41·신호/와이파이/배터리)."
     },
     {
       "id": "D-reviews-01",
