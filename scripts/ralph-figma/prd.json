@@ -1164,13 +1164,14 @@
       "title": "tipWrite: 팁 유형 태그칩(맛 조절/재료 대체/불 조절/보관)",
       "description": "cook/tipWrite 안에 '팁 유형 태그칩(맛 조절/재료 대체/불 조절/보관)' 요소를 정밀하게 그린다. 원본 source-screens/tipWrite.png 대비 위치·간격·타이포 정합. ⚠ 원 스토리 '텍스트 입력 영역'은 D-tipWrite-05로 이동(실제 화면 순서 히어로→태그→텍스트박스→CTA에 맞춤).",
       "priority": 84,
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "멱등: cook/tipWrite(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
         "G2: '맛 조절' 텍스트 노드가 cook/tipWrite 안에 존재.",
         "G4: 토큰(주색 #D66B42·soft #FBE7DE·칩활성 #7A3A22·line #DDD1C6·gray #6E6258·13px·8px)·한글 준수. app.html:1241 .tip-tags(활성칩 primary-soft 배경+#7A3A22 텍스트, 기본칩 surface+line+gray) 대응.",
         "nodeId 기록 후 한글 커밋."
-      ]
+      ],
+      "notes": "브리지 채널 9p9mv14b(라이브, get_document_info 페이지 '요리 비서' 939:2). 대상 region/콘텐츠=2089:56(cook/tipWrite=2089:53 자식, abs 8440/3112 390x660). 멱등: get_node_info로 기존 자식 3=히어로(제목2089:64+부제1 2089:65+부제2 2089:66)만 확인 → 태그칩 없음. app.html:1241 .tip-tags(pill min-h40 radius999 padding8·12 13px w800, 활성.on=primary-soft #FBE7DE bg+border rgba(240,90,40,.4)+텍스트 #7A3A22, 기본=surface #FFFCF7+line #DDD1C6 1px+gray #6E6258) 대응. 히어로부제2(바닥 rel y133) 아래 rel y160에 가로 1행(flex-wrap gap8, 합폭 291<358 한 줄). 추가 자식 8: 칩1맛조절=2089:67(rect rel x24 y160 68x40 #FBE7DE r20 stroke #F05A28 a0.4 w1 활성)+라벨2089:68('맛 조절' 13px w800 #7A3A22 rel x36 y172), 칩2재료대체=2089:69(rect rel x100 y160 81x40 #FFFCF7 r20 stroke #DDD1C6 w1)+라벨2089:70('재료 대체' #6E6258 rel x112 y172), 칩3불조절=2089:71(rect rel x189 y160 68x40 기본)+라벨2089:72('불 조절' rel x201 y172), 칩4보관=2089:73(rect rel x265 y160 50x40 기본)+라벨2089:74('보관' rel x277 y172). 우변 최대 abs 8755<프레임 우변 8830 push-out 없음. G0/G1/G2(get_node_info 2089:56 → 자식 11(히어로3+칩8), '맛 조절' 텍스트 노드 2089:68 확인, 좌표·색 정합)/G4(primary-soft #FBE7DE·칩활성 #7A3A22·stroke #F05A28·surface #FFFCF7·line #DDD1C6·gray #6E6258 §4b 토큰, 13px, 초록 누수 0·영어 누수 0) 통과. 밀스톤 아님 → export 생략. 다음: D-tipWrite-05(팁 텍스트 입력 박스=app.html:1247 .tip-box surface+line r16 min-h132, region/콘텐츠 칩 아래 rel y~216)."
     },
     {
       "id": "D-tipWrite-05",

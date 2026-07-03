@@ -1054,3 +1054,16 @@ Started: Wed Jul  1 15:53:56 KST 2026
 - 게이트: G0(채널 9p9mv14b 라이브, 페이지 '요리 비서' 939:2)/G1/G2 read-back(get_node_info 2089:56 → 자식 3 + '어떤 팁을 남길까요?' 텍스트 노드 확인, 좌표 프레임 내부 정합)/G4(ink #231A14·gray #6E6258 §4b 토큰·24/14px·영어 누수 0·초록 누수 0) 통과. 밀스톤 아님 → export 생략.
 - ⚠ divergence 재플래그(progress line 40): cook-v2/tipWrite(2043:695) 최종본 채택 여부는 여전히 사람 판단 필요. prd passes 권위로 계속 진행하되 v2 미변경.
 - nodeId 맵: region/콘텐츠(2089:56) 자식=히어로제목2089:64·부제1 2089:65·부제2 2089:66. 다음: D-tipWrite-04(팁 유형 태그칩 맛 조절/재료 대체/불 조절/보관, region/콘텐츠 히어로 아래 rel y~160).
+
+---
+## 2026-07-03 - D-tipWrite-04 팁 유형 태그칩(맛 조절/재료 대체/불 조절/보관)
+- 브리지 채널 9p9mv14b(라이브), 페이지 '요리 비서' 939:2. 대상 region/콘텐츠=2089:56(cook/tipWrite=2089:53 자식). 멱등: 기존 자식 3(히어로)만 → 태그칩 신규 추가.
+- app.html:1241 .tip-tags 대응: pill(radius999→r20, min-h40, padding8·12, 13px w800). 활성.on=primary-soft #FBE7DE bg + border rgba(240,90,40,.4) + 텍스트 #7A3A22; 기본=surface #FFFCF7 + line #DDD1C6 1px + gray #6E6258.
+- 히어로부제2(바닥 rel y133) 아래 rel y160 가로 1행(flex-wrap gap8, 합폭 291<358). 추가 자식 8:
+  - 칩1맛조절=2089:67(rect rel x24 y160 68x40 활성)+라벨2089:68('맛 조절' #7A3A22 rel x36 y172)
+  - 칩2재료대체=2089:69(rect rel x100 y160 81x40 기본)+라벨2089:70('재료 대체' #6E6258 rel x112 y172)
+  - 칩3불조절=2089:71(rect rel x189 y160 68x40 기본)+라벨2089:72('불 조절' rel x201 y172)
+  - 칩4보관=2089:73(rect rel x265 y160 50x40 기본)+라벨2089:74('보관' rel x277 y172)
+- 우변 최대 abs 8755 < 프레임 우변 8830 push-out 없음.
+- 게이트: G0(join+doc info) / G1(칩4=rect8) / G2 read-back(get_node_info 2089:56 → 자식 11(히어로3+칩8), '맛 조절' 텍스트 노드 2089:68 확인, 좌표·색 정합) / G4(§4b primary-soft #FBE7DE·활성 #7A3A22·stroke #F05A28·surface #FFFCF7·line #DDD1C6·gray #6E6258 토큰, 13px, 초록 누수 0·영어 누수 0). 밀스톤 아님 → export 생략.
+- 다음: D-tipWrite-05(팁 텍스트 입력 박스=app.html:1247 .tip-box surface+line r16 min-h132, 칩 아래 rel y~216).
