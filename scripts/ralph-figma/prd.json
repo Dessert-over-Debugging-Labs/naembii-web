@@ -1288,13 +1288,14 @@
       "title": "cookbook: 저장한 레시피 섹션",
       "description": "cook/cookbook 안에 '저장한 레시피 섹션' 요소를 정밀하게 그린다. 원본 source-screens/cookbook.png 대비 위치·간격·타이포 정합.",
       "priority": 93,
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "멱등: cook/cookbook(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
         "G2: '저장한 레시피' 텍스트 노드가 cook/cookbook 안에 존재.",
         "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
         "nodeId 기록 후 한글 커밋."
-      ]
+      ],
+      "notes": "브리지 채널 9p9mv14b(라이브). 대상 region/콘텐츠=2089:88(cook/cookbook=2089:85 자식). app.html:1016~1017 .section-t.saved-title(bookmark+저장한 레시피+전체)+.grid#gridMine(RECIPES 6개 2열) 대응. ⚠ create_text는 이 브리지에서 r/g/b 색을 무시(전부 #000000 생성)→ 생성 후 set_fill_color로 14개 텍스트 색 보정 필수(학습). 멱등: get_node_info 2089:88 기존 자식 41(D-cookbook-03까지)만 확인→저장한 레시피 섹션 없음→신규 추가. 추가 자식 22: [섹션헤더 content-rel y430] 저장-아이콘=2091:137(rect 18x18 #d66b42 r4 bookmark placeholder), 저장-제목=2091:138(저장한 레시피 16px w800 ink #231a14 abs 9200/3540=G2 라벨), 저장-전체=2091:139(전체 13px gray #6e6258), 저장-전체화살표=2091:140(› 16px gray). [2열 grid 카드6, 썸네일 171x171 peach #fbe7de r16 + 제목 15px w700 #231a14 + 메타 13px w500 gray #6e6258, colA rel x16/x18 colB x203/x205, 행 thumbY 470/702/934] 카드1 순두부찌개/백종원·2인분=2091:141/142/143, 카드2 감바스 알 아히요/성시경·2인분=2091:144/145/146, 카드3 아보카도 비빔밥/다이어터 레시피·1인분=2091:147/148/149, 카드4 까르보나라/Chef Mama·2인분=2091:150/151/152(⚠Chef Mama=RECIPES[3].channel 원본 소스 데이터=채널명, UI 영어 누수 아님), 카드5 딸기 티라미수/쿠킹트리·4인분=2091:153/154/155, 카드6 명란 파스타/혼밥 레시피·1인분=2091:156/157/158. ⚠ grid 오버플로 수용(G1b 무잘림): resize_node로 region/콘텐츠 2089:88 h660→1170, cook/cookbook 2089:85 h844→1354, SEC/C 2070:20 h1120→1520(부모 클립 방지). region/하단 2089:89 move_node 부모-상대(0,1290)→abs 9150/4282(bottom 4346=cookbook bottom, SEC/C bottom 4392 클리어). G0/G1/G2(get_nodes_info: 저장한 레시피 2091:138 abs 9200/3540·카드1 제목 2091:142·카드6 메타 2091:158 abs 9355/4247 bottom 4263<content bottom 4282 무잘림, 색 보정 후 #231a14/#6e6258/#fbe7de 확인)/G4(§4b ink/gray/peach 팔레트, 초록 #46b581/#e3f3ec 0, 영어 누수 0=Chef Mama는 소스 채널명, 13~16px·8px) 통과. 밀스톤 아님→export 생략. 다음 D-cookbook-05(기록 기반 추천/book-note)는 grid 아래 rel y~1180, 05부터 content 재resize 가능."
     },
     {
       "id": "D-cookbook-05",
