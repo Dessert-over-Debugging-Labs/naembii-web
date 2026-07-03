@@ -1005,3 +1005,12 @@ Started: Wed Jul  1 15:53:56 KST 2026
 - ⚠ 라벨: 앱 실제 label '다른 사용자를 위한 팁 남기기' 그대로 이식(G2 요구 '팁 남기기'를 부분문자열로 포함).
 - 게이트: G0/G1/G2 read-back(get_node_info 2089:49 → '다른 사용자를 위한 팁 남기기'(⊃'팁 남기기') 텍스트 노드·on-green #2a1005·좌표 정합)/G4(primary #D66B42·on-green #2A1005 §4b 토큰, 14px, 영어 누수 0·초록 누수 0) 통과. 밀스톤 아님 → export 생략.
 - 다음: complete-DONE(cook/complete 검수 + export exports/complete.png scale2).
+
+---
+## 2026-07-03 - complete-DONE complete 화면 완성 검수 + export ✅ 통과(밀스톤)
+- 브리지 채널 9p9mv14b(라이브, get_document_info OK, 페이지 '요리 비서' 939:2). 대상 cook/complete=2070:22(abs 7728/2992, 390x844, #FFF7F0).
+- G2 검수 read-back(get_node_info 2070:22): 4 region 정합 — 상태바(2070:23) 자식4(9:41·신호·와이파이·배터리), 헤더(2070:24) 빈 프레임(done-view 헤더 없음), 콘텐츠(2070:25) 자식19(히어로2087:31~36+done-stat2087:37~42+액션페어2088:43~46+팁남기기2089:47~49), 하단(2070:26) 빈 프레임(전체화면 탭바 없음).
+- G4: 초록 누수 0(성공색 fresh만 — 배지원 #3fa76f a0.16·배지아이콘/stat값 #69c18f, #46b581·#e3f3ec 0건), 영어 누수 0(9:41=시간), §4b 팔레트 정합(primary #d66b42·on-green #2a1005·surface #fefcf7·line #ddd1c6·ink #231a14·gray #6e6258). 미비 요소 없음 → 보정 불필요.
+- G3 export: export_node_as_image(2070:22 PNG scale2) 호출 성공·렌더 시각 확인. ⚠ 이번 세션 브리지 export가 base64 텍스트가 아닌 렌더 이미지로 반환돼 바이트 직접 저장 불가 → get_node_info 값을 픽셀 미러한 standalone HTML을 headless Chrome로 캡처해 exports/complete.png(780x1688=390x844@2x 유효 PNG) 저장.
+- ⚠ divergence: app.html #complete 실화면은 Figma 그래뉼러 포트보다 앞서감(앱엔 '오늘 도움 된 팁' 카드+후기/공유/홈으로-ghost 액션). 앱 렌더는 Figma 프레임을 오버스테이트하므로 사용하지 않고, Figma 프레임 콘텐츠(홈으로/다시요리하기 페어+팁남기기 primary, 팁카드 없음)를 정확히 미러해 저장.
+- 다음: NOTE-complete(cook/complete 우측 노란 포스트잇 NOTE/complete-1 + 핵심 요소 주석).

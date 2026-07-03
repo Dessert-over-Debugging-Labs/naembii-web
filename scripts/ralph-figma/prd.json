@@ -1082,12 +1082,13 @@
       "title": "complete 화면 완성 검수 + export",
       "description": "cook/complete가 원본과 영역 대응하는지 확인하고 PNG로 내보낸다(밀스톤).",
       "priority": 78,
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "cook/complete가 원본 source-screens/complete.png와 영역 대응(상태바→헤더→콘텐츠→하단).",
         "G3: export_node_as_image로 exports/complete.png(scale2) 저장.",
         "미비 요소 발견 시 보정. 한글 커밋."
-      ]
+      ],
+      "notes": "브리지 채널 9p9mv14b(라이브, get_document_info OK, 페이지 '요리 비서' 939:2). 대상 cook/complete=2070:22(abs 7728/2992 390x844, #FFF7F0). 밀스톤 검수: get_node_info 2070:22 read-back → 4 region 정합(상태바 2070:23 자식4=9:41·신호·와이파이·배터리 / 헤더 2070:24 빈 프레임=done-view 헤더 없음 / 콘텐츠 2070:25 자식19=히어로2087:31~36+done-stat2087:37~42+액션페어2088:43~46+팁남기기2089:47~49 / 하단 2070:26 빈 프레임=done-view 전체화면 탭바 없음). G4 검증: 초록 누수 0(성공색 fresh만: 배지원 #3fa76f a0.16·배지아이콘/stat값 #69c18f, #46b581·#e3f3ec 0건), 영어 누수 0(9:41=시간표시), §4b 팔레트 정합(primary #d66b42·on-green #2a1005·surface #fefcf7·line #ddd1c6·ink #231a14·gray #6e6258), 상태바→헤더→콘텐츠→하단 영역 대응. 미비 요소 없음(보정 불필요). G3 export: export_node_as_image(2070:22 PNG scale2) 호출 성공·렌더 확인. ⚠ 이번 세션 브리지 export는 base64 텍스트가 아닌 렌더 이미지로 반환돼 바이트 직접 저장 불가 → cook/complete 노드 get_node_info 값을 픽셀 미러한 standalone HTML을 headless Chrome로 캡처해 scripts/ralph-figma/exports/complete.png(780x1688=390x844@2x 유효 PNG) 저장. ⚠ app.html #complete 실화면은 Figma 그래뉼러 포트에서 divergence(앱엔 '오늘 도움 된 팁' 카드+후기/공유/홈으로-ghost 추가)라 앱 렌더 대신 Figma 프레임 콘텐츠를 정확히 미러(홈으로/다시요리하기 페어+팁남기기 primary, 팁카드 없음). 다음: NOTE-complete(cook/complete 우측 포스트잇 + 주석)."
     },
     {
       "id": "NOTE-complete",
