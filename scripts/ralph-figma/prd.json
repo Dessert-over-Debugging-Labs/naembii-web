@@ -1206,12 +1206,13 @@
       "title": "tipWrite 화면 완성 검수 + export",
       "description": "cook/tipWrite가 원본과 영역 대응하는지 확인하고 PNG로 내보낸다(밀스톤).",
       "priority": 87,
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "cook/tipWrite가 원본 source-screens/tipWrite.png와 영역 대응(상태바→헤더→콘텐츠→하단).",
         "G3: export_node_as_image로 exports/tipWrite.png(scale2) 저장.",
         "미비 요소 발견 시 보정. 한글 커밋."
-      ]
+      ],
+      "notes": "브리지 채널 9p9mv14b(라이브, get_document_info 응답 OK, 페이지 '요리 비서' 939:2). 대상 cook/tipWrite=2089:53(SEC/C 2070:20 자식, abs 8440/2992, 390x844). 4 region 정합: region/상태바=2089:54(9:41 2089:58·신호2089:59·와이파이2089:60·배터리2089:61 #0a0a0a), region/헤더=2089:55(뒤로아이콘2089:62·'팁 남기기'제목2089:63), region/콘텐츠=2089:56(히어로제목2089:64 '다음 사람에게\\n어떤 팁을 남길까요?'·부제1/2 2089:65/66·태그칩4 맛조절(active soft #fbe7de+border#f05a28 a0.4)2089:67/68·재료대체2089:69/70·불조절2089:71/72·보관2089:73/74·팁입력박스2089:75+텍스트2089:76 '청양고추…'·팁등록버튼2089:77 primary#d66b42+아이콘2089:78+텍스트2089:79·나중에하기버튼2089:80 피치#fbe7de+텍스트2089:81 #d66b42), region/하단=2089:57(비어있음, app.html tipWrite는 하단탭바 없음). app.html:1236~1251 view#tipWrite 마크업 전수 대응(statusbar/nav/tip-hero/tip-tags/tip-box/btn 팁 등록/btn ghost 나중에 하기). G3 export_node_as_image PNG scale2 → scripts/ralph-figma/exports/tipWrite.png(780x1688 유효 PNG, transcript base64 추출). G4: 초록 누수 0(#46b581/#e3f3ec/#3fa76f 0건, tipWrite는 처음부터 §4b 테라코타)·영어 누수 0·§4b 팔레트(primary #d66b42·on-primary #2a1005·soft #fbe7de·칩ink #7a3a22·ink #231a14·gray #6e6258·line #ddd1c6·surface #fffcf7). 콘텐츠 844 내부(나중에하기 bottom rel620)→resize 불필요. 다음: NOTE-tipWrite(포스트잇+주석)."
     },
     {
       "id": "NOTE-tipWrite",

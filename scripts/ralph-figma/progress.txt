@@ -1082,3 +1082,13 @@ Started: Wed Jul  1 15:53:56 KST 2026
 - 추가 자식 5: 팁등록버튼=**2089:77**(rect rel x24 y392 342x48 primary #D66B42 라운드16 solid), 팁등록아이콘=**2089:78**(rect 18x18 rel x162 y407 on-primary #2A1005 라운드4 send placeholder), 팁등록텍스트=**2089:79**('팁 등록' 16px w800 #2A1005 rel x188 y406 → abs 8628/3518, 아이콘+텍스트 버튼 중앙정합), 나중에하기버튼=**2089:80**(rect rel x24 y452 342x48 ghost peach #FBE7DE 라운드16), 나중에하기텍스트=**2089:81**('나중에 하기' 16px w800 green #D66B42 rel x155 y466). 버튼 바닥 rel y500 abs 3612 push-out 없음.
 - 게이트: G0(join 9p9mv14b+doc info)/G1(rect3+text2)/G2 read-back(get_node_info 2089:79 → '팁 등록' 텍스트 노드·#2a1005·16px·좌표 정합 확인)/G4(주색 solid #D66B42·on-primary #2A1005·ghost soft #FBE7DE+#D66B42 §4b 토큰, 16px·라운드16·48px, 초록 누수 0·영어 누수 0) 통과. 밀스톤 아님 → export 생략.
 - nodeId 맵: region/콘텐츠(2089:56) 자식 CTA=팁등록버튼2089:77·아이콘2089:78·텍스트2089:79·나중에하기버튼2089:80·텍스트2089:81. 다음: tipWrite-DONE(검수+export exports/tipWrite.png scale2).
+
+---
+## 2026-07-03 - tipWrite-DONE tipWrite 화면 완성 검수 + export (밀스톤)
+- 브리지 채널 9p9mv14b(라이브). 대상 cook/tipWrite=2089:53(SEC/C 2070:20 자식, abs 8440/2992). 4 region 전수 read-back 정합:
+  상태바 2089:54(9:41/신호/와이파이/배터리) · 헤더 2089:55(뒤로 2089:62 + '팁 남기기' 2089:63) ·
+  콘텐츠 2089:56(히어로 2089:64 '다음 사람에게 어떤 팁을 남길까요?' + 부제1/2 + 태그칩4 맛조절(active)/재료대체/불조절/보관 + 팁입력박스+텍스트 '청양고추…' + 팁등록 primary#d66b42 + 나중에하기 피치#fbe7de) ·
+  하단 2089:57(비어있음, tipWrite는 탭바 없음).
+- app.html:1236~1251 view#tipWrite 마크업 전수 대응.
+- 게이트: G0(채널 9p9mv14b) / G1·G2 read-back(요소 전부 존재·핵심 한글 라벨 정합) / G3 export exports/tipWrite.png(780x1688 유효 PNG) / G4(초록 누수 0·영어 누수 0·§4b 테라코타 팔레트, 콘텐츠 844 내부).
+- 다음: NOTE-tipWrite(포스트잇 NOTE/tipWrite-1 + 주석).
