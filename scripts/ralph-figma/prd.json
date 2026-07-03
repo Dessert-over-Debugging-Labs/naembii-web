@@ -1068,7 +1068,8 @@
       "title": "complete: 팁 남기기 진입 버튼",
       "description": "cook/complete 안에 '팁 남기기 진입 버튼' 요소를 정밀하게 그린다. 원본 source-screens/complete.png 대비 위치·간격·타이포 정합.",
       "priority": 77,
-      "passes": false,
+      "passes": true,
+      "notes": "브리지 채널 9p9mv14b(라이브, get_document_info 응답 OK, 페이지 '요리 비서' 939:2). 대상 cook/complete=2070:22 · region/콘텐츠=2070:25(abs 7728/4640 390x660). 멱등: get_node_info 2070:25로 기존 자식 16=히어로(2087:31~36)+done-stat(2087:37~42)+액션 페어(2088:43~46, 바닥 rel y408)만 확인 → 팁 남기기 primary 버튼 없음, 신규 추가. app.html:1227 .done-actions button.primary(grid-column 1/-1 full-width, gradient primary-l→primary, color on-green, min-height48 radius14 14px w800, lightbulb 아이콘) 대응. ⚠ 라벨: 앱 실제 label '다른 사용자를 위한 팁 남기기'를 그대로 이식(G2 요구 '팁 남기기'를 부분문자열로 포함). 액션 페어(rel y360~408) 아래 rel y424에 full-width 배치(app에선 primary가 페어 위지만 D-complete-04가 먼저 페어를 y360에 그려 그 아래로). 추가 자식 3: 완성-팁남기기버튼=2089:47(rect rel x35 y424 320x48 primary #D66B42 라운드14, gradient는 bridge 단색 미지원→주색 solid, border 투명이라 stroke 없음), 완성-팁남기기아이콘=2089:48(rect 18x18 rel x90 y439 on-green #2A1005 라운드4 lightbulb placeholder), 완성-팁남기기텍스트=2089:49('다른 사용자를 위한 팁 남기기' 14px w800 on-green #2A1005 rel x116 y440 → abs 7844/5080 너비167, 아이콘+텍스트 7818~8011 버튼 7763~8083 내부 중앙근사). G0/G1/G2 read-back(get_node_info 2089:49 → '다른 사용자를 위한 팁 남기기'(⊃'팁 남기기') 텍스트 노드·on-green #2a1005·좌표 정합 확인)/G4(primary #D66B42·on-green #2A1005 §4b 토큰, 14px, 영어 누수 0·초록 누수 0) 통과. 밀스톤 아님 → export 생략. 다음: complete-DONE(cook/complete 검수 + export exports/complete.png scale2).",
       "acceptanceCriteria": [
         "멱등: cook/complete(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
         "G2: '팁 남기기' 텍스트 노드가 cook/complete 안에 존재.",
