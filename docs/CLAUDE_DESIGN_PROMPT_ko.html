@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>다른 세션용 프롬프트 — Claude 디자인 개선 → Figma</title>
+<style>
+ body{font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:#1a1a1a;background:#faf8f5;line-height:1.75;margin:0;padding:0 16px 80px;word-break:keep-all}
+ main{max-width:880px;margin:0 auto}
+ h1{font-size:23px;margin:32px 0 8px;border-bottom:3px solid #D66B42;padding-bottom:12px}
+ h2{font-size:18px;margin:28px 0 10px}
+ blockquote{background:#fff;border-left:4px solid #D66B42;margin:14px 0;padding:10px 16px;border-radius:0 8px 8px 0}
+ .warn{background:#FFF4E5;border-left:4px solid #E9812B}
+ pre{background:#1e1e1e;color:#eee;padding:14px 16px;border-radius:8px;overflow:auto;font-size:12.5px;line-height:1.6;white-space:pre-wrap}
+ code{font-size:13px} p code,li code{background:#efece6;color:#333;padding:1px 6px;border-radius:5px}
+ ul{padding-left:22px}
+ .copybox{border:2px solid #D66B42;border-radius:10px;padding:4px 14px;background:#fff}
+</style></head><body><main>
+<h1>다른 세션용 프롬프트 — Claude 디자인 개선 → Figma 등록</h1>
+<blockquote>아래 <b>복사용 프롬프트</b>를 <b>새 Claude Code 세션</b>(작업 디렉토리 <code>/Users/osein/cook-assistance-wireframe</code>)에 붙여넣으세요. 원본 1:1 복제가 아니라 <b>모바일 네이티브 관점의 디자인 개선</b>을 Figma에 그립니다.</blockquote>
+
+<blockquote class="warn"><b>⚠️ 충돌 방지</b>: 지금 원본 충실 이식 루프가 Figma 페이지 <b>'요리 비서'</b>에 그리는 중입니다. 디자인 세션은 <b>별도 페이지</b>(예: <code>요리비서 · 디자인개선</code>) 또는 별도 파일에서, <b>플러그인을 따로 Connect(자체 채널)</b>해 작업하세요. 같은 페이지/채널에 붙으면 그리기가 엉킵니다.</blockquote>
+
+<h2>사전 준비 (사용자)</h2>
+<ul>
+<li>브리지 실행: <code>cd /Users/osein/cursor-talk-to-figma-mcp &amp;&amp; ~/.bun/bin/bun run src/socket.ts</code> (이미 실행 중이면 생략).</li>
+<li>Figma에서 <b>디자인 개선용 페이지/파일</b> 열고 플러그인 Connect → 채널 ID 확인.</li>
+<li>새 세션을 레포 루트에서 시작(<code>.mcp.json</code> 로드). 툴 안 보이면 세션 재시작.</li>
+</ul>
+
+<h2>복사용 프롬프트</h2>
+<div class="copybox"><pre>너는 Cookflow(영상 레시피 핸즈프리 요리 어시스턴트, 페르소나 민지)의 와이어프레임을
+"모바일 네이티브 출시급"으로 디자인을 개선하며 Figma에 그려 넣는 디자인 에이전트다.
+원본을 1:1 복제하지 말고, 아래 원칙으로 더 낫게 다듬어 그린다.
+
+[대상/참고]
+- 원본 화면: /Users/osein/cook-assistance-wireframe/app.html 의 view들
+  (home, detail, loading, cook3(주력 조리), complete, tipWrite, cookbook, reviews, sheet(등록), cook/cook2(레거시)).
+- 원본 캡처: scripts/ralph-figma/source-screens/&lt;view&gt;.png
+- 디자인 바이블: docs/_inherited/UI_FEEDBACK_ko.md (반드시 반영)
+- 영상 정직성 교훈: docs/_inherited/FINAL_REPORT_ko.md (거짓 "재생 중" 금지, 상태/폴백 표기)
+
+[Figma 연결]
+- ToolSearch로 TalkToFigma 쓰기 툴 로드(join_channel, get_document_info, create_frame,
+  create_text, create_rectangle, set_fill_color, set_stroke_color, set_corner_radius,
+  set_layout_mode, set_padding, set_item_spacing, move_node, resize_node, clone_node,
+  set_text_content, set_annotation, create_connections, export_node_as_image, get_node_info).
+- join_channel "&lt;디자인개선_페이지의_현재_채널&gt;" 후 get_document_info로 현재 페이지 확인.
+  ⚠️ 반드시 '디자인개선' 전용 페이지에서 작업(원본 이식 루프가 쓰는 '요리 비서' 페이지 건드리지 말 것).
+
+[디자인 개선 원칙 (UI_FEEDBACK + 실제 팔레트)]
+- 실제 팔레트(app.html :root): 주색 #D66B42(테라코타 오렌지, l #E1875F, soft peach #FBE7DE),
+  진짜 초록은 #3FA76F(성공만), 골드 #C99B4A, bg 크림 #F6F0E8, surface #FFFCF7,
+  ink #231A14, gray #6E6258, line #DDD1C6, 다크(조리모드) #050505/#120F0C·panel #111111.
+  ⚠️ app.html의 --green은 --primary(오렌지) 별칭 — 초록으로 칠하지 말 것.
+- 타이포 본문 14~16 / 서브 12~13px, 위계는 weight로. 한글 keep-all 자연 줄바꿈.
+- 8px 그리드, 터치 타깃 48px+, 정보밀도 완화, 고정 하단탭바.
+- 모든 버튼은 의미 있는 액션(dead UI 0). cook3 영상은 정직한 상태/폴백 표기.
+- Auto Layout 적극 사용, 재사용 요소(상태바·하단탭바·카드·버튼)는 컴포넌트로.
+- "개선"이므로 원본 대비 정보구조·여백·대비·컴포넌트 일관성을 실제로 더 낫게. 단, 서비스 의미는 유지.
+
+[작업 방식 — 화면 1개씩]
+1. source-screens/&lt;view&gt;.png와 app.html을 보고, 그 화면의 "개선 포인트"를 2~4개 정한다.
+2. 390x844 프레임 cook-v2/&lt;view&gt; 를 만들고(멱등: 이미 있으면 재사용해 이어 그림, 중복 생성 금지),
+   개선된 레이아웃을 Auto Layout+컴포넌트로 그린다. 좌표: create_*는 부모-상대, move_node는 절대.
+3. 개선 근거를 화면 옆 노란 포스트잇(#FFE8A3) NOTE-v2/&lt;view&gt; 에 적고, 핵심 변경엔 set_annotation 콜아웃.
+4. get_node_info로 read-back(핵심 한글 라벨 텍스트 존재) 검증 후, export_node_as_image로
+   scripts/ralph-figma/exports-v2/&lt;view&gt;.png 저장.
+5. 진행/결정은 docs/progress/FIGMA_DESIGN_v2_ko.md 에 화면별로 한글 기록.
+
+[순서] home → detail → cook3 → complete → sheet → loading → tipWrite → cookbook → reviews → cook → cook2.
+한 번에 한 화면만 끝까지(개선 그리기+주석+export+기록) 하고 다음으로. 승인 기다리지 말고 자율로 끝까지.</pre></div>
+
+<h2>랄프 루프 자동화 시</h2>
+<p>같은 Figma 파일에서 두 루프를 동시에 돌리면 충돌합니다. 자동화하려면 <b>별도 파일/페이지 + 별도 채널 + 별도 감시견</b>을 쓰고 원본 이식 루프와 시간대를 분리하세요.</p>
+</main></body></html>

@@ -1127,3 +1127,13 @@ Started: Wed Jul  1 15:53:56 KST 2026
 - 게이트: G0(9p9mv14b) / G1 / G2(get_nodes_info: '저장한 레시피' 2091:138 + 카드1 제목 2091:142 + 카드6 메타 2091:158 abs 9355/4247 bottom 4263<content bottom 4282 무잘림, 색보정 후 #231a14/#6e6258/#fbe7de 확인) / G4(§4b ink/gray/peach, 초록 #46b581/#e3f3ec 0건, 영어 누수 0 — 'Chef Mama'는 RECIPES[3].channel 원본 채널명=소스 데이터, UI 크롬 영어 아님) 통과. 밀스톤 아님 → export 생략.
 - ⚠ cook-v2/* 중복 패밀리 divergence 플래그 여전히 유효(사람 판단 대기) — 계속 prd.json passes 권위로 진행.
 - 다음: D-cookbook-05(기록 기반 추천/book-note, app.html:1018 .book-note) — grid 아래 rel y~1180, content 재resize 가능.
+
+---
+## 2026-07-03 - D-cookbook-05 cookbook 기록 기반 추천(=최근 기록 메모 book-note)
+- ⚠ 라벨 정합: 스토리 제목 '기록 기반 추천'은 PRD 자동생성 라벨. app.html cookbook view(998~1019) 마크업엔 해당 텍스트 없음. grid(#gridMine) 다음 마지막 폴드 요소는 app.html:1018 .book-note('최근 기록 메모')뿐(D-cookbook-04 핸드오프도 'D-cookbook-05(기록 기반 추천/book-note)'로 매핑). 정직 원칙(CODEX G4·G1b=실제 마크업)에 따라 실제 라벨 '최근 기록 메모'로 그림.
+- 대상 region/콘텐츠=2089:88(cook/cookbook=2089:85 자식). 멱등: get_node_info 2089:88 기존 자식 63(D-cookbook-04까지)만 확인 → book-note 없음 → 신규 자식 6 추가.
+- ⚠ 이 book-note는 --fresh(진짜 초록 #3FA76F / l #69C18F / soft rgba(63,167,111,.16))를 쓰는 정당한 초록 자리(메모·성공 강조, §4b 예외. 잘못된 초록 #46b581/#e3f3ec 아님).
+- 추가 노드: 북노트컨테이너=2092:159(rect rel x16 y1168 358x92, fill fresh a0.14 r16, stroke fresh a0.28 1px = app .book-note 그라데이션 근사), 아이콘박스=2092:160(34x34 rel x30 y1182 fill fresh a0.16 r10 = .bi fresh-soft), 아이콘=2092:161(18x18 rel x38 y1190 fresh-l #69C18F r4 notebook-pen placeholder), 제목=2092:162('최근 기록 메모' 14px w900 ink #231A14 rel x76 y1181 → abs 9226/4293 =G2 라벨), 본문1=2092:163('감바스는 소금을 줄여 다시 만들 후보로 저장됐어요.' 13px w400 gray #6E6258 rel x76 y1205), 본문2=2092:164('다음 조리 때 메모가 먼저 표시됩니다.' 13px w400 gray #6E6258 rel x76 y1224). 긴 본문 2줄 수동분할(브리지 폭/줄바꿈 미지원).
+- G1b 오버플로 수용(무잘림): resize_node region/콘텐츠 2089:88 h1170→1290, cook/cookbook 2089:85 h1354→1474, SEC/C 2070:20 h1520→1620(부모 클립 방지). region/하단 2089:89 부모-상대 move_node(0,1410) → abs 9150/4402(bottom 4466=cookbook bottom, SEC/C bottom 4492 클리어). 노트 bottom abs 4372 < content bottom 4402 < cookbook 4466 < SEC/C 4492 무잘림, region/하단 무충돌.
+- 게이트: G0(채널 9p9mv14b 라이브)/G1/G2 read-back(get_nodes_info: 제목 2092:162 '최근 기록 메모' abs 9226/4293·본문2 2092:164 bottom 4352<content, 색 확인)/G4(§4b fresh #3fa76f·#69c18f·ink #231A14·gray #6E6258, 잘못된초록 0·영어 누수 0, 13~14px·8px) 통과. 밀스톤 아님 → export 생략.
+- 다음: D-cookbook-06(하단탭바, region/하단=2089:89 abs 9150/4402 빈 프레임에 다크 플로팅 필 3탭).

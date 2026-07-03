@@ -9,6 +9,7 @@ export ANDROID_HOME="${ANDROID_HOME:-/Users/osein/Library/Android/sdk}"
 export JAVA_HOME="${JAVA_HOME:-/Users/osein/Library/Java/JavaVirtualMachines/jdk-17.0.9.jdk/Contents/Home}"
 PRD="$SCRIPT_DIR/prd.json"
 LOG="$ROOT/docs/progress/ACTIVITY_LOG_ko.md"
+SESSION_LOG_DIR="$SCRIPT_DIR/session_logs"
 BATCH="${1:-3}"          # 배치당 codex iteration
 MAX_STALL="${2:-3}"      # 진척 없는 배치 연속 한도
 stall=0
@@ -27,6 +28,12 @@ while :; do
   before=$(donecnt)
   "$SCRIPT_DIR/ralph.sh" --tool codex "$BATCH" >/dev/null 2>&1
   after=$(donecnt)
+  latest_log=$(ls -t "$SESSION_LOG_DIR"/*-codex.log 2>/dev/null | head -1)
+  if [ -n "$latest_log" ] && grep -q "failed to initialize in-process app-server client: Operation not permitted" "$latest_log"; then
+    echo "CODEX APP-SERVER PERMISSION FAILURE $(date)"
+    printf '| %s | 중단 | supervisor: 중첩 codex exec가 app-server 권한 문제로 실패. 현재 Codex seatbelt 샌드박스 밖에서 실행 필요. |\n' "$(date '+%Y-%m-%d %H:%M')" >> "$LOG"
+    break
+  fi
   if [ "$after" -le "$before" ]; then stall=$((stall+1)); else stall=0; fi
   echo "batch done $(date) done=$after stall=$stall"
   if [ "$stall" -ge "$MAX_STALL" ]; then

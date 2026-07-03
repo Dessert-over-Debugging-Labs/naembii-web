@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Figma 이식본 ↔ app.html 동일성 점수표</title>
+<style>
+  :root{--bg:#F6F0E8;--surface:#FFFCF7;--ink:#231A14;--gray:#6E6258;--line:#DDD1C6;--primary:#D66B42;--peach:#FBE7DE;--green:#3FA76F;--gold:#C99B4A}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 -apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;word-break:keep-all}
+  .wrap{max-width:900px;margin:0 auto;padding:32px 20px 64px}
+  h1{font-size:24px;line-height:1.35;margin:0 0 6px}
+  .sub{color:var(--gray);margin:0 0 24px;font-size:14px}
+  h2{font-size:18px;margin:32px 0 10px;padding-bottom:6px;border-bottom:2px solid var(--line)}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin:14px 0}
+  table{width:100%;border-collapse:collapse;margin:10px 0;font-size:14px;display:block;overflow-x:auto}
+  th,td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top}
+  th{background:var(--peach);color:#2A1005}
+  td.n{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+  code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  pre{background:#231A14;color:#f4ece4;padding:16px;border-radius:12px;overflow-x:auto;font-size:13px;line-height:1.6}
+  ol,ul{padding-left:22px}
+  li{margin:5px 0}
+  .pill{display:inline-block;background:var(--primary);color:#fff;border-radius:999px;padding:2px 12px;font-size:13px;font-weight:600}
+  .warn{background:#fff5e6;border-left:4px solid var(--gold);padding:12px 14px;border-radius:8px;margin:10px 0}
+  .tag{display:inline-block;background:var(--peach);color:#2A1005;border-radius:6px;padding:1px 8px;font-size:12px;margin-right:4px}
+  strong{color:#2A1005}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Figma 이식본 ↔ app.html 동일성 점수표 <span class="pill">통과 ≥ 95</span></h1>
+  <p class="sub">원본 충실 이식 트랙 <code>cook/&lt;view&gt;</code> 가 <code>app.html</code>의 화면·요소·라벨·플로우와 동일한지 객관 채점 · 95점 넘길 때까지 보정 루프</p>
+
+  <div class="warn"><strong>대상 아님:</strong> 디자인 개선판 <code>cook-v2/*</code>는 의도적으로 원본과 다르므로 이 점수표의 채점 대상이 아닙니다(별도 트랙).</div>
+
+  <h2>채점 원칙 (반드시 준수)</h2>
+  <div class="card">
+    <ol>
+      <li><strong>사실 기반 채점</strong> — 점수는 에이전트 주관이 아니라 Figma <code>scan_text_nodes</code>/<code>get_node_info</code>가 실제 반환한 텍스트·노드 존재/부재로 매긴다(있음/없음 객관 판정).</li>
+      <li><strong>증거 필수</strong> — 리포트는 화면별 <code>기대 N / 발견 M / 누락 [목록]</code>을 반드시 남긴다. 근거 없는 점수는 무효.</li>
+      <li><strong>읽기 전용·적대적 채점기</strong> — 채점 에이전트는 Figma에 쓰지 않는다(불일치 탐색). 보정은 기존 포팅 루프(단일 writer)가 수행 → 트윈 충돌 방지.</li>
+      <li><strong>와이어프레임 의도 반영</strong> — 픽셀 동일성이 아니라 구조·라벨·플로우 동일성. 아이콘 placeholder·폰트 렌더 차이 허용.</li>
+      <li><strong>Ground truth</strong> — <code>docs/verify/CHECKLIST_app_html_ko.md</code> + <code>prd.json</code>의 <code>acceptanceCriteria</code>.</li>
+    </ol>
+  </div>
+
+  <h2>대상 화면 (11)</h2>
+  <p><span class="tag">home</span><span class="tag">detail</span><span class="tag">cook3</span><span class="tag">cook</span><span class="tag">cook2</span><span class="tag">loading</span><span class="tag">complete</span><span class="tag">sheet</span><span class="tag">tipWrite</span><span class="tag">cookbook</span><span class="tag">reviews</span></p>
+
+  <h2>화면별 채점 (각 화면 100점)</h2>
+  <table>
+    <thead><tr><th>차원</th><th class="n">배점</th><th>측정 방법 (객관)</th></tr></thead>
+    <tbody>
+      <tr><td>A. 요소 완전성</td><td class="n">35</td><td>핵심 구조 섹션(상태바/헤더/콘텐츠/하단탭바)이 프레임에 존재. (발견/기대)×35.</td></tr>
+      <tr><td>B. 라벨 일치</td><td class="n">30</td><td>exact 한글 라벨이 <code>scan_text_nodes</code>에 존재. (매칭/기대)×30. 동적 라벨은 대표 1개 인정.</td></tr>
+      <tr><td>C. 레이아웃 순서</td><td class="n">10</td><td>top→bottom 섹션 순서 일치. 어긋난 섹션당 −2.</td></tr>
+      <tr><td>D. 팔레트/모드</td><td class="n">10</td><td>라이트/다크 모드 정확·주색 테라코타·<strong>초록 오용 없음</strong>. 위반당 −3.</td></tr>
+      <tr><td>E. 정직성·dead UI 0</td><td class="n">5</td><td>cook3 거짓 "재생 중" 없음·정직 폴백, 모든 버튼 의미. 위반당 −2.</td></tr>
+      <tr><td>F. 플로우 연결</td><td class="n">10</td><td>진입·진출 <code>create_connections</code> 화살표가 플로우 그래프와 일치. 누락당 −3.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>총점 산출</h2>
+  <div class="card">
+    <ul>
+      <li><strong>화면 점수</strong> = A+B+C+D+E+F (0~100)</li>
+      <li><strong>총점</strong> = 11개 화면 가중 평균. 가중치: 주력 <code>home·detail·cook3</code> = <strong>1.5</strong>, 그 외 = 1.0</li>
+      <li><strong>통과 조건(둘 다)</strong>: ① 총점 ≥ 95 &nbsp;②&nbsp; 모든 화면 ≥ 90 (한 화면이 가려 통과 방지)</li>
+    </ul>
+  </div>
+
+  <h2>채점 + 보정 루프 (95점까지)</h2>
+  <pre>전제 게이트: 포팅 113/113 완료 AND 플러그인 라이브(같은 채널). 미충족이면 중단.
+반복(최대 5라운드):
+  1) 채점(읽기전용): 각 cook/&lt;view&gt;에 join→scan_text_nodes+get_node_info로
+     체크리스트 대비 발견/누락 판정 → 화면점수·총점 계산 →
+     docs/verify/SCORE_REPORT_ko.md 에 증거(발견/누락)와 함께 기록.
+  2) 통과 조건 충족 → 종료(SCORE_PASS).
+  3) 미충족 → 누락 항목마다 prd.json 보정 스토리 생성(passes=false):
+     acceptanceCriteria = "cook/&lt;view&gt;에 &lt;누락 라벨/요소&gt; 추가·수정".
+  4) 기존 포팅 루프(단일 writer)로 보정 스토리 그리기.
+  5) 재채점(1로).
+라운드 상한 도달 시: 남은 갭 명시 + 사람 확인 요청(무한루프 금지).</pre>
+
+  <h2>산출물</h2>
+  <ul>
+    <li><code>docs/verify/CHECKLIST_app_html_ko.md</code> — 화면별 기대 요소/라벨/플로우 (ground truth)</li>
+    <li><code>docs/verify/SCORE_REPORT_ko.md</code> — 라운드별 점수 + 발견/누락 증거</li>
+    <li>보정은 <code>scripts/ralph-figma/prd.json</code> 스토리로 반영되어 포팅 루프가 그린다</li>
+  </ul>
+</div>
+</body>
+</html>

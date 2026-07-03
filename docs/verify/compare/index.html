@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>로컬 vs 깃허브 app.html 디자인 비교</title>
+<style>
+  :root{--bg:#F6F0E8;--surface:#FFFCF7;--ink:#231A14;--gray:#6E6258;--line:#DDD1C6;--primary:#D66B42;--green:#3FA76F}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 -apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;word-break:keep-all}
+  .wrap{max-width:1000px;margin:0 auto;padding:28px 18px 64px}
+  h1{font-size:23px;margin:0 0 6px}
+  .sub{color:var(--gray);margin:0 0 20px;font-size:14px}
+  .summary{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 20px;margin:0 0 26px}
+  .summary table{width:100%;border-collapse:collapse;font-size:14px}
+  .summary th,.summary td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+  .summary th{background:#FBE7DE}
+  .badge{display:inline-block;border-radius:999px;padding:2px 10px;font-size:12px;font-weight:600;color:#fff}
+  .b-local{background:var(--primary)} .b-git{background:var(--green)}
+  .row{margin:22px 0;border-top:2px solid var(--line);padding-top:14px}
+  .row h2{font-size:17px;margin:0 0 10px}
+  .row .only{font-size:12px;color:var(--gray);font-weight:400}
+  .pair{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .col{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px;text-align:center}
+  .col .lab{font-size:13px;font-weight:600;margin-bottom:8px}
+  .col img{width:100%;max-width:320px;height:auto;border-radius:10px;border:1px solid var(--line)}
+  .col.git .lab{color:var(--green)} .col.loc .lab{color:var(--primary)}
+  .missing{display:flex;align-items:center;justify-content:center;min-height:200px;color:var(--gray);font-size:14px;background:#EEE4DA;border-radius:10px}
+  @media(max-width:640px){.pair{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>로컬 vs 깃허브(origin/main) <code>app.html</code> 디자인 비교</h1>
+  <p class="sub">현재 Figma 이식은 <b>로컬</b> 기준으로 그려짐 · 두 버전은 깃 히스토리상 갈라짐(로컬 전용 99커밋 / origin 전용 7커밋)</p>
+
+  <div class="summary">
+    <table>
+      <tr><th>항목</th><th><span class="badge b-local">로컬 (현재 Figma 소스)</span></th><th><span class="badge b-git">깃허브 origin/main</span></th></tr>
+      <tr><td>팔레트</td><td>테라코타 오렌지 #D66B42 / 크림 배경</td><td>초록 계열 + 6색 테마 스위처 + 다크/라이트 토글</td></tr>
+      <tr><td>홈 레이아웃</td><td>히어로 CTA(영상 링크로 바로 요리하기) + 단일 열 "당신만을 위한 추천"</td><td>2열 "나의 레시피" 그리드 + 우하단 FAB(+)</td></tr>
+      <tr><td>하단 내비</td><td>탭바 (홈 / 등록 / 요리북)</td><td>플로팅 액션 버튼(+)</td></tr>
+      <tr><td>화면 수</td><td>10개 (cookbook·tipWrite 포함)</td><td>8개 (cookbook·tipWrite 없음)</td></tr>
+      <tr><td>줄수</td><td>2,410</td><td>2,032</td></tr>
+      <tr><td>최근 방향</td><td>색 팔레트 적용·cook3 유튜브 구간재생·요리북 분리</td><td>디자인 토큰화·다크/라이트 테마·완성화면 폭죽</td></tr>
+    </table>
+  </div>
+
+  <!-- rows injected below -->
+  <div id="rows"></div>
+</div>
+<script>
+  const common = ["home","detail","cook3","complete","cook","cook2","loading","reviews"];
+  const localOnly = ["cookbook","tipWrite"];
+  const label = {home:"홈",detail:"레시피 상세",cook3:"조리 모드(신·주력)",complete:"완성",cook:"조리 모드(구)",cook2:"핸즈프리(구)",loading:"분석 로딩",reviews:"후기",cookbook:"요리북",tipWrite:"팁 작성"};
+  const rows = document.getElementById("rows");
+  function row(v, hasGit){
+    const el = document.createElement("div"); el.className="row";
+    el.innerHTML = `<h2>${label[v]||v} <span class="only">#${v}${hasGit?"":" · 로컬 전용(깃허브에 없음)"}</span></h2>
+      <div class="pair">
+        <div class="col loc"><div class="lab">로컬</div><img loading="lazy" src="./local_${v}.png" alt="local ${v}"></div>
+        <div class="col git"><div class="lab">깃허브 origin/main</div>${hasGit?`<img loading="lazy" src="./github_${v}.png" alt="github ${v}">`:`<div class="missing">이 화면은 깃허브 버전에 없음</div>`}</div>
+      </div>`;
+    rows.appendChild(el);
+  }
+  common.forEach(v=>row(v,true));
+  localOnly.forEach(v=>row(v,false));
+</script>
+</body>
+</html>

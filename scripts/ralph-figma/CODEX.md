@@ -23,15 +23,24 @@
 
 ## 3. Green-gate (통과해야 커밋)
 - **G0 연결**(§1). **G1 그리기**: 스토리가 지정한 요소를 대상 프레임/섹션에 멱등하게 생성·배치.
+- **G1b 전체 스크롤 콘텐츠(중요)**: 프레임 높이는 **고정 844가 아니라 해당 view의 전체 콘텐츠 높이**다. app.html의 해당 view 마크업을 **끝까지** 읽어 스크롤해야 보이는 **하단(접힌) 콘텐츠까지 전부** 그린다(예: detail=재료·단계·후기, home=아래 카드들, cookbook/reviews=리스트 전체). 콘텐츠가 844를 넘으면 `resize_node`로 프레임 높이를 콘텐츠에 맞춰 늘린다. 상태바는 상단, 하단탭바/플로팅 CTA는 콘텐츠 최하단(또는 844 지점)에 두고 "스크롤 시 고정" 주석. 화면이 잘려 보이면 통과 아님.
 - **G2 read-back(하드 게이트)**: `get_node_info`(대상)로 이번 스토리가 추가한 자식 노드가 실제로 존재하고, 지정된 **핵심 한글 라벨**이 텍스트 노드로 있음을 확인. (이게 통과의 핵심 증거)
 - **G3 export(밀스톤만)**: 스토리 id가 `*-DONE`(화면 완성)·`MILE-*`일 때만 `export_node_as_image`(PNG scale2)로 `scripts/ralph-figma/exports/<view>.png` 저장. 그 외 일반 스토리는 export 생략(read-back으로 충분).
-- **G4 정직/토큰**: 영어 누수 0(STEP/Mic 금지), 브랜드 그린 `#46B581`·다크 `#0A0A0A/#161616`·본문 14~16/서브 12~13px·8px 그리드·48px 터치. 빈/중복/깨진 프레임 없음. cook3 영상은 거짓 "재생 중" 금지.
+- **G4 정직/토큰**: 영어 누수 0(STEP/Mic 금지), §4 실제 팔레트 사용·본문 14~16/서브 12~13px·8px 그리드·48px 터치. 빈/중복/깨진 프레임 없음. cook3 영상은 거짓 "재생 중" 금지.
 
 ## 4. 섹션·포스트잇·플로우 (해당 스토리에서만)
 - **섹션**: 네이티브 section 툴이 없으므로 **큰 타이틀 컨테이너 프레임** `SEC/<group>`(연회색 배경 + 상단 제목 텍스트)로 만들고 그 안에 화면 프레임들을 배치.
 - **포스트잇**: 노란 스티키 프레임(배경 `#FFE8A3`, 라운드 12, 그림자, 안에 텍스트) `NOTE/<view>-<n>`를 해당 화면 프레임 **오른쪽 옆**에 배치. 리뷰 코멘트를 달 수 있는 자리.
 - **주석**: 핵심 요소엔 `set_annotation`/`set_multiple_annotations`로 Figma 주석(콜아웃)도 부착.
 - **플로우 연결선**: `create_connections`로 화면 간 흐름 화살표(home→sheet→loading→detail→cook3→complete→tipWrite).
+
+## 4b. 디자인 토큰 (app.html :root line 10~39 실제 값 — G4는 이 팔레트로 판정)
+> ⚠️ **함정**: app.html의 `--green`은 이름만 green이고 실제로는 `--primary`(**테라코타 오렌지**) 별칭이다. **절대 초록(#46B581 등)으로 칠하지 말 것.** 진짜 초록은 `--fresh`뿐이며 fresh/성공 강조에만 소량.
+- **주색 primary(=app의 --green/브랜드)**: `#D66B42`(테라코타 오렌지), l `#E1875F`, soft(peach) `#FBE7DE`. → 로고·카테고리 원/아이콘·주 CTA·섹션 아이콘·추천 사유 텍스트·기본 버튼. 주색 위 텍스트 `#2A1005`.
+- **fresh(진짜 초록)**: `#3FA76F`(l `#69C18F`) — fresh/성공에만. **accent(골드)** `#C99B4A`. **berry** `#E94B6D`.
+- **중립**: bg `#F6F0E8`(크림)·surface `#FFFCF7`·surface2 `#EEE4DA`·ink `#231A14`·gray `#6E6258`·gray2 `#A99B90`·line `#DDD1C6`.
+- **다크(cook/cook2/cook3)**: bg `#050505` 또는 `#120F0C`·panel `#111111`·panel2 `#1B1B1B`·ink `#f8f8f4`·muted `#a7a7a7`. cook3 톤칩: 화이트 `#f8f8f4`/허브 `#76D99E`/스틸 `#92C5FF`/크림 `#F3E2BC`.
+- 본문 14~16/서브 12~13px, 8px 그리드, 48px 터치. 한글 카피, 아이콘 placeholder(사각형/벡터).
 
 ## 5. progress / 리포트
 - `progress.txt`: `## [날짜] - [Story] / 대상 nodeId / 추가한 자식(요약) / 게이트(G0/G2[/G3]) / 학습 ---`. 상단 `## Codebase Patterns`에 **nodeId 맵**(`cook/home=2004:2` 식)과 재사용 패턴 누적.

@@ -1302,13 +1302,14 @@
       "title": "cookbook: 기록 기반 추천 섹션",
       "description": "cook/cookbook 안에 '기록 기반 추천 섹션' 요소를 정밀하게 그린다. 원본 source-screens/cookbook.png 대비 위치·간격·타이포 정합.",
       "priority": 94,
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "멱등: cook/cookbook(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
         "G2: '기록 기반 추천' 텍스트 노드가 cook/cookbook 안에 존재.",
         "G4: 토큰(그린 #46B581·다크 #0A0A0A/#161616·본문14~16/서브12~13px·8px·48px)·한글 준수.",
         "nodeId 기록 후 한글 커밋."
-      ]
+      ],
+      "notes": "브리지 채널 9p9mv14b(라이브). ⚠ 라벨 정합: 스토리 제목 '기록 기반 추천'은 PRD 자동생성 라벨이며 app.html cookbook view 마크업에는 해당 텍스트가 없다. grid(#gridMine) 다음 마지막 폴드 요소는 app.html:1018 .book-note('최근 기록 메모')뿐(D-cookbook-04 핸드오프 노트도 'D-cookbook-05(기록 기반 추천/book-note)'로 매핑). 정직 원칙(G4·G1b=실제 마크업)에 따라 실제 라벨 '최근 기록 메모'로 그림. 대상 region/콘텐츠=2089:88(cook/cookbook=2089:85 자식). 멱등: get_node_info 2089:88 기존 자식 63(D-cookbook-04까지)만 확인→book-note 없음→신규 추가. ⚠ 이 book-note는 --fresh(진짜 초록 #3FA76F/l #69C18F/soft rgba(63,167,111,.16))를 쓰는 정당한 초록 자리(메모/성공 강조, CODEX §4b 예외). 추가 자식 6: 북노트컨테이너=2092:159(rect rel x16 y1168 358x92 fill fresh a0.14 r16 stroke fresh a0.28 1px=app .book-note 그라데이션 근사), 아이콘박스=2092:160(rect 34x34 rel x30 y1182 fill fresh a0.16 r10=.bi fresh-soft), 아이콘=2092:161(rect 18x18 rel x38 y1190 fresh-l #69C18F r4 notebook-pen placeholder), 제목=2092:162('최근 기록 메모' 14px w900 ink #231A14 rel x76 y1181 abs 9226/4293=G2 라벨), 본문1=2092:163('감바스는 소금을 줄여 다시 만들 후보로 저장됐어요.' 13px w400 gray #6E6258 rel x76 y1205), 본문2=2092:164('다음 조리 때 메모가 먼저 표시됩니다.' 13px w400 gray #6E6258 rel x76 y1224). ⚠ 긴 본문 2줄 수동분할(브리지 폭/줄바꿈 미지원). G1b 오버플로 수용(무잘림): resize_node region/콘텐츠 2089:88 h1170→1290, cook/cookbook 2089:85 h1354→1474, SEC/C 2070:20 h1520→1620(부모 클립 방지). region/하단 2089:89 move_node 부모-상대(0,1410)→abs 9150/4402(bottom 4466=cookbook bottom, SEC/C bottom 4492 클리어). 노트 bottom abs 4372<content bottom 4402<cookbook 4466<SEC/C 4492 무잘림·region/하단 무충돌. G0/G1/G2(get_nodes_info: 제목 2092:162 '최근 기록 메모' abs 9226/4293·본문2 2092:164 bottom 4352<content 4402, 색 확인)/G4(§4b fresh #3fa76f/#69c18f·ink/gray 팔레트, 잘못된초록 #46b581/#e3f3ec 0, 영어 누수 0, 13~14px·8px) 통과. 밀스톤 아님→export 생략. 다음 D-cookbook-06(하단탭바)은 region/하단=2089:89(abs 9150/4402)."
     },
     {
       "id": "D-cookbook-06",

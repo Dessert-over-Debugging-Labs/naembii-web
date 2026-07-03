@@ -1,0 +1,2045 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>cook — 인터랙티브 프로토타입</title>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  :root{
+    /* ===== 뉴트럴 시맨틱 토큰 (라이트 기본 · data-mode="dark"에서 명암 반전) ===== */
+    --surface:#ffffff;       /* 카드·시트 표면 */
+    --surface-2:#EBEDEF;     /* 입력·비활성 보조 표면 */
+    --border:#ECECEE;        /* 구분선 */
+    --text:#1A1A1C;          /* 본문 텍스트 */
+    --text-sub:#6E6E73;      /* 보조 텍스트 */
+    /* 앱/조리 화면 배경: 모드 + 브랜드 틴트 반응 */
+    --bg:color-mix(in srgb, var(--brand) 8%, #F4F5F6);
+    /* 기존 별칭 → 시맨틱에 연결 (모드 자동 반영) */
+    --ink:var(--text);
+    --gray:var(--text-sub);
+    --gray2:#C7C7CC;
+    --line:var(--border);
+    /* 조리 화면 표면 별칭 (라이트=밝게 / 다크=어둡게 자동 전환) */
+    --dark:var(--bg);         /* 조리 배경 = 앱 배경 */
+    --dark2:var(--surface);   /* 조리 활성 카드·시트·버블 */
+    --dark3:var(--surface-2); /* 조리 비활성 세그·보조 버튼 */
+    /* ===== 브랜드(테마로 교체되는 핵심 색) ===== */
+    --brand:#46B581;        /* Primary base */
+    --brand-l:#69CB9D;      /* 밝은 톤(그라데이션·hover) */
+    --brand-strong:#2C8D60; /* 진한 톤 */
+    --brand-soft:#E7F6EE;   /* 아주 연한 배경 틴트 */
+    --brand-deep:#2C7D58;   /* soft 위 텍스트용 진한 톤 */
+    --brand-rgb:70,181,129; /* 그림자·글로우용 rgb */
+    /* ===== 별칭(하위호환: 기존 --green* 사용처가 브랜드에 자동 연동) ===== */
+    --green:var(--brand);
+    --green-l:var(--brand-l);
+    --green-soft:var(--brand-soft);
+  }
+  /* ===== 테마 프리셋: body[data-theme]로 브랜드 토큰만 교체 ===== */
+  :root[data-theme="tomato"]{--brand:#EF5A3C;--brand-l:#F5836B;--brand-strong:#C7402A;--brand-soft:#FDEBE6;--brand-deep:#B23A26;--brand-rgb:239,90,60;}
+  :root[data-theme="amber"] {--brand:#EA9A16;--brand-l:#F6BE54;--brand-strong:#BE7A0E;--brand-soft:#FDF1DC;--brand-deep:#9A6408;--brand-rgb:234,154,22;}
+  :root[data-theme="teal"]  {--brand:#12A594;--brand-l:#4FC7B8;--brand-strong:#0B7E70;--brand-soft:#DBF3EF;--brand-deep:#0A6A5E;--brand-rgb:18,165,148;}
+  :root[data-theme="blue"]  {--brand:#4C82F7;--brand-l:#7BA5FA;--brand-strong:#2E5FD0;--brand-soft:#E9EFFE;--brand-deep:#2A54BD;--brand-rgb:76,130,247;}
+  :root[data-theme="purple"]{--brand:#8B5CF6;--brand-l:#AC8AF9;--brand-strong:#6A3FD0;--brand-soft:#F1EBFD;--brand-deep:#5B34B8;--brand-rgb:139,92,246;}
+  /* 배경 틴트 OFF: 배경에서 브랜드 틴트만 제거(모드별 순수 중립 배경) */
+  :root[data-tint="off"]{--bg:#F5F5F7;}
+  :root[data-mode="dark"][data-tint="off"]{--bg:#1B1B1D;}
+  /* ===== 다크 모드: 뉴트럴 명암 축만 반전 (브랜드 토큰은 그대로) ===== */
+  :root[data-mode="dark"]{
+    --surface:#2A2A2E;
+    --surface-2:#3A3A3C;
+    --border:rgba(255,255,255,.12);
+    --text:#F2F2F3;
+    --text-sub:#9AA0A6;
+    --gray2:#5A5A5E;
+    --bg:color-mix(in srgb, var(--brand) 14%, #17181A);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Pretendard","Segoe UI",sans-serif;
+    background:#2a2a2e;
+    min-height:100vh;color:var(--ink);overflow-x:auto;
+  }
+  .stage{
+    display:flex;align-items:center;justify-content:center;gap:40px;
+    min-height:100vh;width:max-content;min-width:100%;padding:24px;margin:0 auto;
+  }
+  /* Lucide 아이콘 기본 크기 */
+  svg.lucide{width:22px;height:22px;stroke-width:2;vertical-align:middle;flex:none;}
+
+  /* ===== iPhone 프레임 ===== */
+  .device{
+    width:390px;height:844px;
+    background:#000;border-radius:54px;padding:11px;
+    box-shadow:0 40px 80px rgba(0,0,0,.5),0 0 0 2px #1a1a1a;
+    position:relative;
+  }
+  .screen{
+    width:100%;height:100%;background:var(--bg);
+    border-radius:44px;overflow:hidden;position:relative;
+  }
+  .island{
+    position:absolute;top:11px;left:50%;transform:translateX(-50%);
+    width:120px;height:34px;background:#000;border-radius:20px;z-index:100;
+  }
+  .statusbar{
+    height:54px;display:flex;align-items:flex-end;justify-content:space-between;
+    padding:0 24px 8px;font-size:15px;font-weight:600;color:var(--ink);
+    position:relative;z-index:50;flex:none;
+  }
+  .statusbar.dark{color:var(--text);}
+  .statusbar .icons{display:flex;gap:8px;align-items:center;}
+  .statusbar .icons svg{width:17px;height:17px;}
+
+  /* ===== 화면 시스템 ===== */
+  .view{
+    position:absolute;inset:0;display:none;flex-direction:column;
+    animation:slideIn .32s cubic-bezier(.32,.72,0,1);
+  }
+  .view.active{display:flex;}
+  @keyframes slideIn{from{transform:translateX(28px);opacity:0;}to{transform:translateX(0);opacity:1;}}
+  /* 요리 완성 → 완료 화면이 아래에서 위로 올라오며 등장 (배경+내용 함께) */
+  .view.rise-in{animation:riseIn .5s cubic-bezier(.32,.72,0,1);z-index:300;background:var(--bg);}
+  @keyframes riseIn{from{transform:translateY(100%);}to{transform:translateY(0);}}
+  /* 완성 축하 폭죽 (양쪽 하단에서 발사) */
+  .confetti-piece{position:absolute;bottom:40px;width:8px;height:13px;border-radius:2px;pointer-events:none;z-index:400;opacity:0;will-change:transform,opacity;animation:confettiFly 3s linear forwards;}
+  @keyframes confettiFly{
+    0%{opacity:1;transform:translate(0,0) rotate(0) scale(1);animation-timing-function:cubic-bezier(.1,.62,.3,1);}        /* 발사: 빠르게 솟았다 감속(ease-out) */
+    45%{opacity:1;transform:translate(calc(var(--dx,0)*.5),var(--peak,-300px)) rotate(calc(var(--rot,360deg)*.5)) scale(1);animation-timing-function:cubic-bezier(.4,0,.72,.55);} /* 낙하: 천천히 시작해 중력 가속(ease-in) */
+    80%{opacity:1;}
+    100%{opacity:0;transform:translate(var(--dx,0),var(--fall,90px)) rotate(var(--rot,360deg)) scale(.85);}
+  }
+  .view.dark{background:var(--dark);}
+  .body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+  .body::-webkit-scrollbar{display:none;}
+
+  .nav{display:flex;align-items:center;justify-content:space-between;padding:8px 16px 12px;flex:none;}
+  .nav .ic-btn{width:32px;height:32px;display:flex;align-items:center;justify-content:center;color:var(--ink);cursor:pointer;}
+  .nav.dark .ic-btn{color:var(--text);}
+  .nav .ic-btn svg{width:24px;height:24px;}
+  .nav .title{font-size:16px;font-weight:700;}
+  .nav.dark .title{color:var(--text);}
+
+  .logo{display:flex;align-items:center;gap:8px;font-size:22px;font-weight:800;color:var(--green);}
+  .logo svg{width:24px;height:24px;stroke-width:2.2;}
+  .hd-right{display:flex;align-items:center;gap:10px;}
+  .noti{display:flex;align-items:center;gap:4px;background:var(--green-soft);color:var(--green);font-size:13px;font-weight:800;padding:6px 12px;border-radius:12px;}
+  .noti svg{width:15px;height:15px;}
+
+  /* 검색 */
+  .search{
+    margin:4px 16px 16px;height:48px;background:var(--surface);border-radius:12px;
+    display:flex;align-items:center;gap:8px;padding:0 16px;color:var(--gray);
+    font-size:15px;box-shadow:0 1px 3px rgba(0,0,0,.04);cursor:pointer;
+  }
+  .search svg{width:19px;height:19px;color:var(--gray);}
+
+  /* 카테고리 */
+  .cats{display:flex;gap:16px;overflow-x:auto;padding:0 16px 24px;}
+  .cats::-webkit-scrollbar{display:none;}
+  .cat{display:flex;flex-direction:column;align-items:center;gap:8px;flex:none;cursor:pointer;}
+  .cat .ic{
+    width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    background:var(--green-soft);color:var(--green);
+  }
+  .cat .ic svg{width:24px;height:24px;}
+  .cat span{font-size:12px;font-weight:600;color:var(--text-sub);}
+
+  .section-t{font-size:18px;font-weight:800;padding:0 16px 12px;display:flex;align-items:center;justify-content:space-between;}
+  .section-t .more{font-size:13px;color:var(--gray);font-weight:500;display:flex;align-items:center;gap:2px;}
+  .section-t .more svg{width:15px;height:15px;}
+  .section-t .st-l{display:flex;align-items:center;gap:7px;}
+  .section-t .st-l svg{width:19px;height:19px;color:var(--green);}
+  .hscroll{display:flex;gap:12px;overflow-x:auto;padding:0 16px 24px;}
+  .hscroll::-webkit-scrollbar{display:none;}
+  .hscroll .rcard{width:152px;flex:none;}
+
+  /* 레시피 그리드 */
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 16px 24px;}
+  .rcard{cursor:pointer;}
+  .rcard .thumb{
+    width:100%;aspect-ratio:1;border-radius:16px;overflow:hidden;position:relative;
+    box-shadow:0 4px 14px rgba(0,0,0,.08);
+  }
+  .rcard .thumb img,.hero img,.cook-video img{
+    position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  }
+  .cook-video iframe{
+    position:absolute;inset:0;width:100%;height:100%;border:0;display:block;pointer-events:none;
+  }
+  .rcard .thumb .badge{
+    position:absolute;top:8px;left:8px;background:rgba(0,0,0,.6);color:#fff;
+    font-size:11px;font-weight:700;padding:4px 8px;border-radius:8px;backdrop-filter:blur(4px);
+    display:flex;align-items:center;gap:3px;z-index:2;
+  }
+  .rcard .thumb .badge svg{width:11px;height:11px;}
+  .rcard .thumb .play{
+    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:2;
+    width:42px;height:42px;background:rgba(0,0,0,.32);backdrop-filter:blur(6px);
+    border:1px solid rgba(255,255,255,.45);border-radius:50%;
+    display:flex;align-items:center;justify-content:center;color:#fff;
+  }
+  .rcard .thumb .play svg{width:17px;height:17px;fill:#fff;color:#fff;margin-left:2px;}
+  .rcard .cap{padding:8px 4px 0;}
+  .rcard .cap b{font-size:15px;font-weight:700;display:block;line-height:1.3;}
+  .rcard .cap small{font-size:12px;color:var(--text-sub);}
+  .rcard .thumb .savebtn{position:absolute;top:8px;right:8px;z-index:2;width:28px;height:28px;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);border:none;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;}
+  .rcard .thumb .savebtn svg{width:15px;height:15px;color:#fff;transition:transform .2s;}
+  .rcard .thumb .savebtn.liked svg{color:var(--green);fill:var(--green);}
+  .food1{background:linear-gradient(135deg,#FFB36B,#F15A24);}
+  .food2{background:linear-gradient(135deg,#FF8A8A,#D32F4D);}
+  .food3{background:linear-gradient(135deg,#9AD86B,#3E8E41);}
+  .food4{background:linear-gradient(135deg,#FFD36B,#F1A124);}
+  .food5{background:linear-gradient(135deg,#C39BFF,#7B4FD0);}
+  .food6{background:linear-gradient(135deg,#7BD0E0,#2C7BA0);}
+
+  /* FAB */
+  .fab{
+    position:absolute;right:20px;bottom:24px;width:60px;height:60px;border-radius:20px;
+    background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 8px 24px rgba(0,0,0,.22);z-index:40;cursor:pointer;border:none;transition:transform .15s;
+    background:linear-gradient(135deg,var(--green-l),var(--green));
+  }
+  .fab svg{width:30px;height:30px;}
+  .fab:active{transform:scale(.9);}
+
+  /* ===== 바텀시트 ===== */
+  .scrim{position:absolute;inset:0;background:rgba(0,0,0,.4);z-index:60;opacity:0;pointer-events:none;transition:opacity .3s;}
+  .scrim.show{opacity:1;pointer-events:auto;}
+  .sheet{
+    position:absolute;left:0;right:0;bottom:0;background:var(--surface);z-index:70;
+    border-radius:24px 24px 0 0;padding:12px 24px 32px;
+    transform:translateY(100%);transition:transform .36s cubic-bezier(.32,.72,0,1);
+  }
+  .sheet.show{transform:translateY(0);}
+  .grabber{width:38px;height:5px;background:var(--gray2);border-radius:3px;margin:0 auto 16px;}
+  .sheet h3{font-size:20px;font-weight:800;margin-bottom:8px;}
+  .sheet p.sub{font-size:13px;color:var(--gray);margin-bottom:16px;line-height:1.5;}
+  .field{
+    height:54px;background:var(--bg);border-radius:12px;display:flex;align-items:center;
+    padding:0 16px;gap:10px;font-size:15px;color:var(--gray);
+  }
+  .field svg{width:20px;height:20px;color:#FF0000;}
+  .btn{
+    width:100%;height:54px;background:linear-gradient(135deg,var(--green-l),var(--green));color:#fff;border:none;border-radius:16px;
+    box-shadow:0 6px 18px rgba(0,0,0,.18);
+    font-size:17px;font-weight:700;margin-top:16px;cursor:pointer;transition:transform .12s,opacity .2s;
+    font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;
+  }
+  .btn svg{width:20px;height:20px;}
+  .btn:active{transform:scale(.97);}
+  .btn.ghost{background:var(--green-soft);color:var(--green);box-shadow:none;}
+
+  /* ===== 분석 로딩 ===== */
+  .loading{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:40px;}
+  .spinner{width:64px;height:64px;border:5px solid var(--green-soft);border-top-color:var(--green);border-radius:50%;animation:loadingSpin 1s linear infinite;}
+  @keyframes loadingSpin{to{transform:rotate(360deg);}}
+  .loading h2{font-size:20px;font-weight:800;text-align:center;}
+  .loading p{font-size:15px;color:var(--gray);text-align:center;}
+  .steps-log{margin-top:6px;display:flex;flex-direction:column;gap:10px;width:100%;max-width:280px;}
+  .log-item{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--gray2);transition:color .3s;}
+  .log-item.done{color:var(--ink);}
+  .log-item .chk{width:22px;height:22px;border-radius:50%;border:2px solid var(--gray2);display:flex;align-items:center;justify-content:center;color:#fff;transition:all .3s;}
+  .log-item .chk svg{width:13px;height:13px;opacity:0;}
+  .log-item.done .chk{background:var(--green);border-color:var(--green);}
+  .log-item.done .chk svg{opacity:1;}
+
+  /* ===== 레시피 상세 ===== */
+  .hero{width:100%;height:230px;position:relative;}
+  .hero .play{
+    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:2;
+    width:66px;height:66px;background:rgba(0,0,0,.34);backdrop-filter:blur(10px);
+    border:1.5px solid rgba(255,255,255,.5);border-radius:50%;
+    display:flex;align-items:center;justify-content:center;color:#fff;
+    box-shadow:0 6px 24px rgba(0,0,0,.3);
+  }
+  .hero .play svg{width:26px;height:26px;fill:#fff;color:#fff;margin-left:3px;}
+  .hero .yt-badge{position:absolute;bottom:12px;right:16px;background:#FF0000;color:#fff;font-size:12px;font-weight:700;padding:4px 8px;border-radius:8px;display:flex;align-items:center;gap:4px;z-index:2;}
+  .hero .yt-badge svg{width:14px;height:14px;}
+  .detail-body{background:var(--bg);border-radius:24px 24px 0 0;margin-top:-24px;position:relative;padding:24px 16px 0;}
+  .detail-body h2{font-size:22px;font-weight:800;line-height:1.35;margin-bottom:16px;}
+  .meta{display:flex;gap:12px;margin-bottom:24px;}
+  .meta .chip{flex:1;background:var(--surface);border-radius:16px;padding:12px 8px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.04);display:flex;flex-direction:column;align-items:center;gap:4px;}
+  .meta .chip svg{width:20px;height:20px;color:var(--green);margin-bottom:2px;}
+  .meta .chip .v{font-size:18px;font-weight:800;}
+  .meta .chip .k{font-size:12px;color:var(--text-sub);}
+  .ing-title{font-size:17px;font-weight:800;margin-bottom:12px;}
+  .ing-group-label{font-size:13px;font-weight:700;color:var(--text-sub);margin-bottom:8px;}
+  .ings{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px;}
+  .ing{background:var(--surface);border-radius:12px;padding:12px;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+  .ing .n{font-size:15px;font-weight:700;}
+  .ing .q{font-size:12px;color:var(--text-sub);margin-top:2px;}
+  .reviews{background:var(--surface);border-radius:16px;padding:8px 16px;margin-bottom:24px;}
+  .reviews .r{display:flex;gap:12px;align-items:flex-start;padding:12px 0;}
+  .reviews .r+.r{border-top:1px solid var(--line);}
+  .reviews .av{width:32px;height:32px;border-radius:50%;background:var(--green-soft);display:flex;align-items:center;justify-content:center;color:var(--green);flex:none;}
+  .reviews .av svg{width:18px;height:18px;}
+  .reviews .r .txt{font-size:15px;line-height:1.5;color:var(--text);}
+  .reviews .r .txt .rh{display:flex;align-items:center;gap:6px;margin-bottom:4px;}
+  .reviews .r .txt .rh b{font-size:13px;color:var(--ink);}
+  .reviews .stars{display:flex;gap:1px;color:#FFB400;}
+  .reviews .stars svg{width:13px;height:13px;fill:#FFB400;}
+  .cta-bar{flex:none;padding:16px;background:color-mix(in srgb, var(--surface) 85%, transparent);backdrop-filter:blur(12px);border-top:1px solid var(--line);}
+
+  /* ===== 조리 (다크) ===== */
+  .cook-video{width:100%;height:200px;position:relative;background:#000;}
+  .youtube-mount{position:absolute;inset:0;}
+  .video-fallback{
+    position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:6px;padding:18px;text-align:center;color:#fff;background:#242426;
+    z-index:5;pointer-events:none; /* 배경은 제스처 레이어로 탭 통과, 링크만 클릭 가능 */
+  }
+  .video-fallback svg{width:28px;height:28px;color:var(--green);}
+  .video-fallback b{font-size:15px;font-weight:800;}
+  .video-fallback span{font-size:12px;line-height:1.45;color:rgba(255,255,255,.68);}
+  .video-fallback a{
+    margin-top:5px;padding:8px 12px;border-radius:10px;background:var(--green);color:#fff;
+    font-size:12px;font-weight:800;text-decoration:none;pointer-events:auto;
+  }
+  /* 영상 제스처 레이어 (cook3): 단일 탭=재생/일시정지, 좌/우 더블탭=±10초 */
+  .video-gesture{position:absolute;inset:0;z-index:2;cursor:pointer;}
+  .vg-flash{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(.7);
+    width:60px;height:60px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;
+    display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .18s ease,transform .18s ease;}
+  .vg-flash svg{width:28px;height:28px;}
+  .vg-flash.show{opacity:1;transform:translate(-50%,-50%) scale(1);}
+  .vg-seek{position:absolute;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;gap:2px;
+    color:#fff;font-size:11px;font-weight:800;opacity:0;pointer-events:none;transition:opacity .18s ease;}
+  .vg-seek svg{width:26px;height:26px;}
+  .vg-seek.vg-left{left:34px;}
+  .vg-seek.vg-right{right:34px;}
+  .vg-seek.show{opacity:1;}
+  .cook-progress{display:flex;gap:3px;padding:2px 0 0;}
+  .cook-progress .seg{flex:1;height:4px;border-radius:2px;background:var(--gray2);}
+  .cook-progress .seg.done{background:var(--text);}
+  .cook-progress .seg.cur{background:var(--green);}
+  .cook-body{flex:1;overflow-y:auto;padding:8px 16px 16px;display:flex;flex-direction:column;}
+  .cook-body::-webkit-scrollbar{display:none;}
+  /* 단계 카로셀 (스크롤 시 크기 전환) */
+  #cook .cook-body{justify-content:center;overflow:hidden;padding:0 16px;}
+  .cook-track{position:relative;width:100%;height:100%;}
+  .scard{
+    position:absolute;left:0;right:0;top:50%;
+    background:var(--surface-2);border:1.5px solid transparent;border-radius:16px;padding:16px;
+    transform:translateY(-50%);transform-origin:center;
+    transition:transform .42s cubic-bezier(.32,.72,0,1),opacity .35s ease;
+    cursor:pointer;
+  }
+  .scard.active{background:var(--dark2);border-color:var(--green);box-shadow:0 8px 22px rgba(0,0,0,.28);cursor:default;}
+  .scard:not(.active){padding:16px 56px 16px 16px;border-color:var(--gray2);box-shadow:0 2px 10px rgba(0,0,0,.06);}
+  .sc-side-label{font-size:12px;font-weight:700;color:var(--green);letter-spacing:.3px;margin-bottom:8px;}
+  .scard.active .sc-side-label{display:none;}
+  .sc-arrow{position:absolute;right:14px;top:50%;transform:translateY(-50%);width:32px;height:32px;border-radius:50%;background:rgba(var(--brand-rgb),.18);color:var(--green);display:none;align-items:center;justify-content:center;}
+  .scard:not(.active) .sc-arrow{display:flex;}
+  .sc-arrow svg{width:18px;height:18px;}
+  .sc-arrow .ar-up,.sc-arrow .ar-down{display:flex;}
+  .scard.above .sc-arrow .ar-down{display:none;}
+  .scard.below .sc-arrow .ar-up{display:none;}
+  .scard.static{position:static;transform:none;}
+  #cook2 .cook-body{flex:none;overflow:visible;padding-top:6px;}
+  #cook3 .cook-body{justify-content:center;overflow:hidden;padding:0 16px;position:relative;}
+  .stage-timer{
+    position:absolute;left:16px;right:16px;top:50%;z-index:180;
+    min-height:58px;box-sizing:border-box;padding:9px 11px;border-radius:16px;
+    background:var(--dark2);
+    border:1.5px solid var(--green);
+    box-shadow:0 10px 26px rgba(0,0,0,.3),0 0 0 1px rgba(255,255,255,.06) inset;
+    transform:translateY(calc(-50% - 128px)) scale(.94);
+    opacity:0;pointer-events:none;transition:opacity .24s ease,transform .32s cubic-bezier(.32,.72,0,1);
+  }
+  .stage-timer.show{opacity:1;pointer-events:auto;transform:translateY(calc(-50% - 128px)) scale(1);}
+  .stage-timer.done{background:var(--dark2);}
+  /* 타이머 완료 후 계속 울리는 상태 — 부르르 흔들림 (위치 translateY 유지) */
+  .stage-timer.ringing{animation:ringShake .62s ease-in-out infinite;}
+  @keyframes ringShake{
+    0%,100%{transform:translateY(calc(-50% - 128px)) translateX(0) rotate(0);}
+    20%{transform:translateY(calc(-50% - 128px)) translateX(-2.5px) rotate(-.7deg);}
+    40%{transform:translateY(calc(-50% - 128px)) translateX(2.5px) rotate(.7deg);}
+    60%{transform:translateY(calc(-50% - 128px)) translateX(-1.5px) rotate(-.4deg);}
+    80%{transform:translateY(calc(-50% - 128px)) translateX(1.5px) rotate(.4deg);}
+  }
+  .stimer-main{display:grid;grid-template-columns:38px 38px minmax(0,1fr) auto;align-items:center;gap:10px;}
+  .stimer-btn{width:38px;height:38px;border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--dark3);color:var(--text);cursor:pointer;font-family:inherit;}
+  .stimer-btn svg{width:18px;height:18px;}
+  .stimer-btn.primary{background:var(--green);color:#fff;} /* 초록 버튼 아이콘은 라이트/다크 모두 흰색 */
+  .stimer-btn.danger{background:rgba(var(--brand-rgb),.10);color:var(--text-sub);}
+  .stimer-btn:disabled{opacity:.45;cursor:default;}
+  .stimer-copy{min-width:0;justify-self:end;}
+  .stimer-label{display:flex;align-items:center;gap:7px;color:var(--green);font-size:17px;font-weight:900;line-height:1;white-space:nowrap;}
+  .stimer-label svg{width:18px;height:18px;color:var(--green);}
+  .stimer-note{display:none;}
+  .stimer-time{font-size:32px;font-weight:900;line-height:1;color:var(--text);font-variant-numeric:tabular-nums;letter-spacing:0;text-shadow:none;white-space:nowrap;}
+  /* 완료 카드 (캐러셀 마지막 단계) — 형태는 단계 박스와 동일, 좌측 체크 뱃지 + 테두리를 도는 브랜드 하이라이트로 구분 */
+  .sc-finish .sc-side-label{color:var(--brand);}
+  .sc-finish .sc-title{display:flex;align-items:center;gap:10px;}
+  .fin-badge{width:20px;height:20px;border-radius:50%;background:var(--brand);display:flex;align-items:center;justify-content:center;flex:none;box-shadow:0 2px 8px rgba(var(--brand-rgb),.4);}
+  .fin-badge svg{width:12px;height:12px;color:#fff;stroke-width:2.8;}
+  .scard.sc-finish.active .fin-badge{width:24px;height:24px;}
+  .scard.sc-finish.active .fin-badge svg{width:14px;height:14px;}
+  /* 현재 단계 테두리색이 테두리를 따라 계속 도는 하이라이트 */
+  @property --fin-angle{syntax:"<angle>";initial-value:0deg;inherits:false;}
+  .sc-finish::after{content:"";position:absolute;inset:0;border-radius:16px;padding:2px;pointer-events:none;z-index:3;
+    background:conic-gradient(from var(--fin-angle), transparent 0deg 250deg, var(--brand) 305deg, transparent 355deg);
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;
+    mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude;
+    animation:finSpin 3s linear infinite;}
+  @keyframes finSpin{to{--fin-angle:360deg;}}
+  .cook-hint{
+    position:absolute;inset:0;z-index:190;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:32px 32px 100px;text-align:center;color:var(--text);background:rgba(226,228,233,.88);backdrop-filter:blur(3px);
+    opacity:0;pointer-events:none;transition:opacity .3s ease;
+  }
+  .cook-hint.show{opacity:1;pointer-events:auto;}
+  :root[data-mode="dark"] .cook-hint{background:rgba(18,18,20,.78);}
+  .hint-gesture{position:relative;width:84px;height:110px;display:flex;align-items:center;justify-content:center;color:#fff;margin-bottom:18px;}
+  .hint-gesture .hand{width:36px;height:36px;color:var(--text);animation:hintSwipeHand 1.55s ease-in-out infinite;}
+  .hint-gesture .ar{position:absolute;top:0;left:50%;width:36px;height:36px;color:var(--green);transform:translateX(-50%);animation:hintSwipeArrow 1.55s ease-in-out infinite;}
+  .hint-copy{display:flex;flex-direction:column;align-items:center;gap:8px;line-height:1.2;}
+  .hint-copy b{font-size:24px;font-weight:900;color:var(--text);}
+  .hint-copy span{font-size:15px;font-weight:800;color:var(--text-sub);}
+  .hint-never{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);display:inline-flex;align-items:center;gap:5px;background:none;border:none;color:var(--text-sub);font-family:inherit;font-size:12px;font-weight:700;padding:6px;cursor:pointer;}
+  .hint-never svg{width:14px;height:14px;}
+  .hint-never:active{transform:translateX(-50%) scale(.94);}
+  .hint-dismiss{margin-top:22px;font-size:12px;font-weight:700;color:var(--text-sub);}
+  @keyframes hintSwipeHand{0%,100%{transform:translateY(22px) scale(.98);opacity:.7;}45%{transform:translateY(-18px) scale(1.05);opacity:1;}}
+  @keyframes hintSwipeArrow{0%,100%{transform:translateX(-50%) translateY(22px);opacity:.18;}45%{transform:translateX(-50%) translateY(-12px);opacity:1;}}
+  /* 핸즈프리 모드: 얇은 듣고있어요 바 + 대화창 */
+  .hf-listen{margin:4px 16px 8px;background:var(--dark2);border-radius:12px;padding:8px 14px;display:flex;align-items:center;gap:10px;}
+  .hf-listen .wave span{width:2.5px;}
+  .hf-listen-t{font-size:12px;font-weight:600;color:var(--text-sub);}
+  .hf-exit{margin-left:auto;border:none;background:var(--dark3);color:var(--text);font-size:12px;font-weight:700;padding:6px 12px;border-radius:12px;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:4px;white-space:nowrap;}
+  .hf-exit svg{width:13px;height:13px;}
+  .hf-exit:active{background:#4a4a50;}
+  .hf-timer{margin-left:auto;display:flex;align-items:center;gap:5px;font-size:13px;font-weight:800;color:var(--green);}
+  .hf-timer svg{width:15px;height:15px;}
+  .hf-chat{flex:1;overflow-y:auto;padding:4px 16px 16px;display:flex;flex-direction:column;gap:12px;}
+  .hf-chat::-webkit-scrollbar{display:none;}
+  .chat-row{display:flex;gap:8px;max-width:86%;align-items:flex-end;}
+  .chat-row.ai{align-self:flex-start;}
+  .chat-row.user{align-self:flex-end;}
+  .chat-av{width:28px;height:28px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;flex:none;}
+  .chat-av svg{width:15px;height:15px;}
+  .bubble{padding:10px 14px;border-radius:16px;font-size:15px;line-height:1.45;}
+  .bubble.ai{background:var(--dark2);color:var(--text);border-bottom-left-radius:4px;}
+  .bubble.user{background:var(--green);color:#fff;border-bottom-right-radius:4px;}
+  .sc-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
+  .sc-title{font-size:15px;font-weight:700;color:var(--text);line-height:1.3;transition:font-size .3s ease;}
+  .scard.active .sc-title{font-size:20px;font-weight:800;color:var(--text);}
+  .phase-label{font-size:12px;font-weight:700;color:var(--green);margin:14px 0 8px;letter-spacing:.3px;}
+  .step-cur{background:var(--dark2);border:1.5px solid var(--green);border-radius:18px;padding:18px;margin-bottom:14px;}
+  .step-cur .num{font-size:12px;color:var(--green);font-weight:700;margin-bottom:8px;}
+  .step-cur .tx{font-size:21px;font-weight:800;color:var(--text);line-height:1.45;}
+  .step-next{display:flex;gap:12px;padding:13px 4px;color:var(--text-sub);font-size:15px;line-height:1.4;border-bottom:1px solid var(--dark3);}
+  .step-next .n{color:var(--text-sub);font-weight:700;flex:none;}
+  /* 조리 단계 텍스트 */
+  .pl-letter{color:var(--green);}
+  .step-badge{font-size:12px;font-weight:700;color:var(--green);background:rgba(var(--brand-rgb),.16);padding:4px 12px;border-radius:12px;flex:none;margin-top:2px;display:none;}
+  .scard.active .step-badge{display:block;}
+  .sub-list{list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:12px;max-height:0;opacity:0;overflow:hidden;margin-top:0;transition:max-height .42s ease,opacity .3s ease,margin-top .42s ease;}
+  .scard.active .sub-list{max-height:260px;opacity:1;margin-top:16px;}
+  .sub-list li{counter-increment:s;display:flex;gap:12px;align-items:flex-start;color:var(--text);font-size:16px;font-weight:600;line-height:1.45;}
+  .sub-list li::before{content:counter(s);width:24px;height:24px;border-radius:50%;background:var(--green);color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex:none;margin-top:1px;}
+
+  .listening{margin:0 18px;background:var(--dark2);border-radius:16px;padding:14px 18px;display:flex;align-items:center;gap:14px;}
+  .wave{display:flex;align-items:center;gap:3px;height:24px;}
+  .wave span{width:3px;background:var(--green);border-radius:2px;animation:wv 1s ease-in-out infinite;}
+  .wave span:nth-child(1){height:8px;}.wave span:nth-child(2){height:18px;animation-delay:.15s;}
+  .wave span:nth-child(3){height:24px;animation-delay:.3s;}.wave span:nth-child(4){height:14px;animation-delay:.45s;}
+  .wave span:nth-child(5){height:20px;animation-delay:.2s;}
+  @keyframes wv{0%,100%{transform:scaleY(.4);}50%{transform:scaleY(1);}}
+  .listening .lt{font-size:14px;color:var(--text);}
+  .listening .lt small{display:block;color:var(--text-sub);font-size:11px;margin-top:2px;}
+
+  .cook-ctrl{flex:none;display:flex;align-items:center;justify-content:space-around;padding:16px 24px 24px;background:var(--surface);border-top:1px solid var(--border);}
+  .cbtn{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;border:none;background:none;font-family:inherit;}
+  .cbtn .cic{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+  .cbtn .cic svg{width:22px;height:22px;color:#fff;}
+  .cbtn .cic.o{background:var(--green);}
+  .cbtn .cic.d{background:var(--dark3);}
+  /* 보조 표면(dark3=surface-2) 위 아이콘은 모드 따라 명암 반전 */
+  .cbtn .cic.d svg,.cbtn .cic.mic.off svg{color:var(--text);}
+  .cbtn .cic.mic{width:64px;height:64px;animation:pulse 2s infinite;}
+  .cbtn .cic.mic svg{width:28px;height:28px;}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(var(--brand-rgb),.5);}70%{box-shadow:0 0 0 16px rgba(var(--brand-rgb),0);}100%{box-shadow:0 0 0 0 rgba(var(--brand-rgb),0);}}
+  .cbtn small{font-size:12px;color:var(--text-sub);}
+  .cbtn .cic.mic.off{animation:none;background:var(--dark3);}
+  .cbtn.ai-assistant-btn small{color:var(--green);font-weight:800;}
+  .cbtn .cic.ai-assistant{
+    width:64px;height:64px;position:relative;overflow:visible;
+    background:
+      radial-gradient(58% 72% at 26% 22%, rgba(255,255,255,.34), rgba(255,255,255,0) 62%),
+      radial-gradient(62% 76% at 78% 82%, rgba(var(--brand-rgb),.36), rgba(var(--brand-rgb),0) 64%),
+      linear-gradient(135deg,var(--brand-l) 0%,var(--brand) 55%,var(--brand-strong) 100%);
+    box-shadow:0 8px 24px rgba(0,0,0,.24);
+    animation:aiFloat 3.2s ease-in-out infinite;
+  }
+  .cbtn .cic.ai-assistant::before{
+    content:"";position:absolute;inset:-11px;border-radius:50%;pointer-events:none;opacity:.78;
+    background:
+      radial-gradient(circle at 18% 30%, rgba(255,255,255,.90) 0 2px, transparent 3px),
+      radial-gradient(circle at 82% 20%, color-mix(in srgb, var(--brand) 60%, #fff) 0 3px, transparent 4px),
+      radial-gradient(circle at 76% 82%, rgba(255,255,255,.72) 0 2px, transparent 3px),
+      radial-gradient(circle at 28% 84%, color-mix(in srgb, var(--brand) 55%, #fff) 0 2px, transparent 3px);
+    animation:aiDroplets 3s ease-in-out infinite;
+  }
+  .cbtn .cic.ai-assistant::after{
+    content:"";position:absolute;inset:-6px;border-radius:50%;pointer-events:none;
+    border:1.5px solid rgba(var(--brand-rgb),.45);
+    animation:aiRing 2.6s ease-out infinite;
+  }
+  .cbtn .cic.ai-assistant svg{width:30px;height:30px;color:#fff;stroke-width:2.2;position:relative;z-index:1;}
+  @keyframes aiFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-3px);}}
+  @keyframes aiDroplets{
+    0%,100%{transform:translateY(0) rotate(0deg);opacity:.62;}
+    45%{transform:translateY(-5px) rotate(8deg);opacity:1;}
+  }
+  @keyframes aiRing{0%{transform:scale(.9);opacity:.65;}80%,100%{transform:scale(1.24);opacity:0;}}
+  /* 조리 모드(신) 실시간 음성 패널 */
+  #cook3 .cook-ctrl{display:block;padding:0;height:156px;width:100%;min-width:0;margin:0;align-self:stretch;box-sizing:border-box;position:relative;overflow:hidden;}
+  .ctrl-buttons{display:flex;align-items:center;justify-content:space-around;height:100%;box-sizing:border-box;padding:16px 24px 24px;}
+  .vpanel{position:absolute;top:0;bottom:0;left:-1px;right:-1px;z-index:3;box-sizing:border-box;padding:16px 19px 22px;
+    display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;
+    width:auto;height:auto;min-width:0;max-width:none;margin:0;transform:none;border-radius:0;overflow:hidden;
+    background:
+      radial-gradient(65% 95% at 18% 30%, rgba(255,255,255,.22), rgba(255,255,255,0) 62%),
+      radial-gradient(58% 90% at 86% 76%, rgba(255,255,255,.17), rgba(255,255,255,0) 64%),
+      linear-gradient(135deg,var(--brand-l) 0%,var(--brand) 50%,var(--brand-strong) 100%);
+    background-size:170% 150%,155% 145%,100% 100%;
+    background-position:0% 18%,100% 82%,50% 50%;
+    animation:vpFogDrift 15s ease-in-out infinite;
+    visibility:hidden;pointer-events:none;}
+  .vpanel.open{visibility:visible;pointer-events:auto;}
+  @keyframes vpFogDrift{
+    0%,100%{background-position:0% 18%,100% 82%,50% 50%;}
+    35%{background-position:52% 30%,34% 66%,50% 50%;}
+    70%{background-position:100% 14%,0% 88%,50% 50%;}
+  }
+  /* 테마 비교 바 (앱 밖 컨트롤) */
+  .theme-bar{position:fixed;top:24px;left:24px;z-index:500;display:flex;gap:8px;align-items:center;
+    background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border:1px solid #e0e0e0;border-radius:14px;padding:8px 12px;box-shadow:0 4px 16px rgba(0,0,0,.25);}
+  .theme-bar b{font-size:12px;font-weight:800;color:#1A1A1C;margin-right:2px;}
+  .theme-swatch{width:26px;height:26px;border-radius:50%;border:2px solid transparent;cursor:pointer;padding:0;transition:transform .12s;box-shadow:0 1px 3px rgba(0,0,0,.2);}
+  .theme-swatch:active{transform:scale(.9);}
+  .theme-swatch.active{border-color:#1A1A1C;}
+  .youtube-sound-toggle,.tint-toggle,.mode-toggle,.dev-timer{position:fixed;left:24px;z-index:500;background:#fff;border:1px solid #e0e0e0;border-radius:10px;padding:10px 14px;font-size:13px;font-weight:700;color:#1A1A1C;cursor:pointer;font-family:inherit;box-shadow:0 4px 16px rgba(0,0,0,.25);}
+  .dev-timer{top:216px;display:flex;align-items:center;gap:7px;}
+  .dev-timer svg{width:16px;height:16px;color:var(--brand);}
+  .dev-timer:active{transform:scale(.96);}
+  .tint-toggle{top:120px;}
+  .mode-toggle{top:168px;display:flex;align-items:center;gap:7px;}
+  .mode-toggle svg{width:16px;height:16px;color:var(--brand);}
+  .tint-toggle:active,.mode-toggle:active{transform:scale(.96);}
+  .youtube-sound-toggle{top:72px;display:flex;align-items:center;gap:7px;}
+  .youtube-sound-toggle svg{width:16px;height:16px;color:var(--green);}
+  .youtube-sound-toggle.muted{background:#2C2C2E;border-color:#3A3A3C;color:#fff;}
+  .youtube-sound-toggle.muted svg{color:#fff;}
+  .youtube-sound-toggle:active{transform:scale(.96);}
+  @keyframes aurora{0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}
+  .vp-aurora{display:none;}
+  .vp-close{position:absolute;top:8px;right:12px;z-index:2;width:28px;height:28px;border:none;background:none;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .vp-close svg{width:16px;height:16px;}
+  /* 마이크(음소거) 버튼 — X 왼쪽 */
+  .vp-mic{position:absolute;top:8px;right:48px;z-index:2;width:28px;height:28px;border:none;background:none;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .vp-mic svg{width:17px;height:17px;}
+  .vpanel.mic-muted .vp-mic{color:#FF8A8A;} /* 음소거 시 붉은 톤 */
+  .vpanel.mic-muted .vp-wave span{animation-play-state:paused;opacity:.45;}
+  /* 아래로 내리기 버튼 — 패널 위쪽 가운데 */
+  .vp-collapse{position:absolute;top:5px;left:50%;transform:translateX(-50%);z-index:2;width:34px;height:24px;border:none;background:none;color:rgba(255,255,255,.82);display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .vp-collapse svg{width:22px;height:22px;}
+  .vp-collapse:active{transform:translateX(-50%) translateY(1px);}
+  .vp-user{position:relative;z-index:1;flex:none;width:100%;font-size:16px;font-weight:800;color:#fff;margin-bottom:9px;min-height:21px;line-height:1.28;letter-spacing:0;text-shadow:0 1px 4px rgba(0,0,0,.3);}
+  .vp-ai{position:relative;z-index:1;flex:none;width:100%;font-size:19px;font-weight:700;color:#fff;line-height:1.42;min-height:54px;letter-spacing:0;text-shadow:0 1px 6px rgba(0,0,0,.4);}
+  .vp-thinking-wave{display:inline-flex;align-items:center;gap:5px;height:24px;padding-top:8px;}
+  .vp-thinking-wave span{width:4px;height:4px;border-radius:50%;background:#fff;animation:vpDotWave 1.05s ease-in-out infinite;}
+  .vp-thinking-wave span:nth-child(2){animation-delay:.1s;}
+  .vp-thinking-wave span:nth-child(3){animation-delay:.2s;}
+  .vp-thinking-wave span:nth-child(4){animation-delay:.3s;}
+  .vp-thinking-wave span:nth-child(5){animation-delay:.4s;}
+  @keyframes vpDotWave{
+    0%,100%{opacity:.45;transform:translateY(2px) scale(.9);}
+    45%{opacity:1;transform:translateY(-4px) scale(1);}
+  }
+  /* 대기(듣는 중): 가운데 크게 */
+  .vpanel.idle{justify-content:center;align-items:center;}
+  .vpanel.idle .vp-user{font-size:24px;font-weight:800;color:#fff;text-align:center;margin:0;min-height:0;line-height:1.25;letter-spacing:0;text-shadow:0 1px 8px rgba(0,0,0,.22);}
+  .vpanel.idle .vp-ai{display:none;}
+  .vp-wave{display:none;position:relative;z-index:1;}
+  .vpanel.idle .vp-wave{display:flex;justify-content:center;margin-bottom:16px;transform:scale(1.2);}
+  .vp-wave span{background:#fff;animation:wv 1s ease-in-out infinite;}
+  .cbtn .cic .wave{height:22px;}
+  .cbtn .cic .wave span{width:3px;background:#fff;}
+  .cbtn.hf-on small{color:var(--green);font-weight:800;}
+  /* 재료 보기 바텀시트 */
+  .ing-sheet{position:absolute;inset:0;z-index:150;display:none;}
+  .ing-sheet.show{display:block;}
+  .ing-scrim{position:absolute;inset:0;background:rgba(0,0,0,.5);}
+  .ing-panel{position:absolute;left:0;right:0;bottom:0;z-index:1;background:var(--surface);border-radius:24px 24px 0 0;padding:12px 16px calc(24px + env(safe-area-inset-bottom));animation:sheetUp .34s cubic-bezier(.32,.72,0,1);}
+  @keyframes sheetUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
+  .ing-grab{width:38px;height:5px;background:var(--gray2);border-radius:3px;margin:0 auto 16px;}
+  .ing-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+  .ing-h b{font-size:20px;font-weight:800;color:var(--ink);}
+  .ing-h span{cursor:pointer;color:var(--gray);display:flex;}
+  .ing-h span svg{width:20px;height:20px;}
+  .ing-sheet .ings{margin-bottom:0;}
+  /* 타이머 시트 */
+  .ts-row{display:flex;align-items:center;justify-content:center;gap:24px;margin:8px 0 16px;}
+  .ts-pm{width:48px;height:48px;border-radius:50%;border:none;background:var(--bg);color:var(--ink);display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .ts-pm:active{background:var(--gray2);}
+  .ts-pm svg{width:22px;height:22px;}
+  .ts-num{display:flex;align-items:baseline;gap:6px;min-width:96px;justify-content:center;}
+  .ts-num b{font-size:48px;font-weight:800;color:var(--ink);line-height:1;}
+  .ts-num span{font-size:16px;color:var(--gray);font-weight:700;}
+  .ts-presets{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:4px;}
+  .ts-presets button{height:40px;border:none;border-radius:12px;background:var(--green-soft);color:var(--green);font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;}
+  .ts-presets button:active{transform:scale(.96);}
+  /* 카운트다운 중인 타이머 버튼 */
+  .cbtn .cic.o.running{box-shadow:0 0 0 2px var(--green),0 0 14px rgba(var(--brand-rgb),.6);}
+
+  /* ===== 음성 가이드 모달 ===== */
+  .vmodal{position:absolute;inset:0;z-index:160;display:none;flex-direction:column;background:rgba(0,0,0,.78);backdrop-filter:blur(3px);}
+  .vmodal.show{display:flex;}
+  #cook.voice-open .cook-ctrl{opacity:0;pointer-events:none;}
+  .vmodal .vtop{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:16px;}
+  .vmodal .vtop h2{color:#fff;font-size:24px;font-weight:800;text-align:center;line-height:1.4;}
+  .vmodal .vclose{position:absolute;top:60px;right:24px;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.2);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .vmodal .vclose svg{width:18px;height:18px;}
+  .vcard{background:var(--surface);border-radius:24px 24px 0 0;padding:24px 24px 32px;}
+  .vcard .vh{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+  .vcard .vh b{font-size:18px;font-weight:800;}
+  .vcard .vh .x{cursor:pointer;color:var(--gray);display:flex;}
+  .vcard .vh .x svg{width:20px;height:20px;}
+  .vcmd{display:flex;gap:14px;align-items:center;padding:13px 0;border-bottom:1px solid var(--line);}
+  .vcmd .ve{width:42px;height:42px;border-radius:13px;background:var(--green-soft);display:flex;align-items:center;justify-content:center;color:var(--green);flex:none;}
+  .vcmd .ve svg{width:20px;height:20px;}
+  .vcmd .vtxt b{font-size:15px;font-weight:700;display:block;}
+  .vcmd .vtxt small{font-size:12px;color:var(--gray);}
+  /* 핸즈프리 명령 가이드: 카테고리 + 칩 */
+  .vcats{display:flex;flex-direction:column;gap:16px;max-height:46vh;overflow-y:auto;margin-bottom:8px;}
+  .vcats::-webkit-scrollbar{display:none;}
+  .vcat-h{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:800;color:var(--ink);margin-bottom:8px;}
+  .vci{width:26px;height:26px;border-radius:8px;background:var(--green-soft);color:var(--green);display:flex;align-items:center;justify-content:center;flex:none;}
+  .vci svg{width:15px;height:15px;}
+  .vchips{display:flex;flex-wrap:wrap;gap:8px;}
+  .vchips span{background:var(--green-soft);color:var(--brand-deep);font-size:13px;font-weight:600;padding:8px 12px;border-radius:12px;}
+
+  /* ===== 영상 설정 모달 (중앙 팝업) ===== */
+  .vset{position:absolute;inset:0;z-index:200;display:none;align-items:center;justify-content:center;padding:24px;}
+  .vset.show{display:flex;}
+  .vset-scrim{position:absolute;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(2px);}
+  .vset-card{position:relative;z-index:1;width:100%;max-width:320px;background:var(--surface);color:var(--text);
+    border-radius:22px;padding:20px;box-shadow:0 24px 60px rgba(0,0,0,.4);animation:vsetPop .28s cubic-bezier(.18,.89,.32,1.28);}
+  @keyframes vsetPop{from{opacity:0;transform:scale(.9);}to{opacity:1;transform:scale(1);}}
+  .vset-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+  .vset-head b{font-size:18px;font-weight:800;color:var(--text);}
+  .vset-head .x{cursor:pointer;color:var(--text-sub);display:flex;}
+  .vset-head .x svg{width:20px;height:20px;}
+  .vset-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0 8px;}
+  .vset-label{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:700;color:var(--text);}
+  .vset-label svg{width:18px;height:18px;color:var(--brand);}
+  .vset-sub{display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding-bottom:8px;border-bottom:1px solid var(--border);margin-bottom:2px;}
+  .vset-sub.collapsed{display:none;}
+  .vset-row+.vset-sub{padding-bottom:12px;}
+  .vset-mini{font-size:12px;font-weight:700;color:var(--text-sub);margin-right:4px;}
+  /* 토글 스위치 */
+  .vset-switch{width:44px;height:26px;border-radius:14px;border:none;background:var(--gray2);position:relative;cursor:pointer;padding:0;transition:background .2s;flex:none;}
+  .vset-switch span{position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.3);}
+  .vset-switch.on{background:var(--brand);}
+  .vset-switch.on span{left:21px;}
+  /* 선택 칩 */
+  .vchip{background:var(--surface-2);color:var(--text-sub);border:1.5px solid transparent;border-radius:11px;
+    font-family:inherit;font-size:13px;font-weight:700;padding:8px 14px;cursor:pointer;transition:all .15s;}
+  .vchip.on{background:var(--green-soft);color:var(--brand-deep);border-color:var(--brand);}
+  .vchip:active{transform:scale(.95);}
+  /* 볼륨 슬라이더 */
+  .vset-sub input[type=range]{flex:1;min-width:120px;accent-color:var(--brand);height:4px;cursor:pointer;}
+  .vset-sub em{font-style:normal;font-size:13px;font-weight:800;color:var(--text-sub);min-width:34px;text-align:right;}
+
+  /* ===== 완료 ===== */
+  #complete{background:var(--bg);}
+  .done-view{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:13px;padding:24px 24px 28px;text-align:center;}
+  .done-badge{width:76px;height:76px;border-radius:50%;background:var(--brand-soft);color:var(--brand);display:flex;align-items:center;justify-content:center;position:relative;flex:none;animation:pop .5s cubic-bezier(.18,.89,.32,1.28);}
+  .done-badge::after{content:"";position:absolute;inset:-8px;border-radius:50%;border:2px solid var(--brand);opacity:.2;}
+  .done-badge svg{width:38px;height:38px;}
+  @keyframes pop{from{transform:scale(0);}to{transform:scale(1);}}
+  .done-view h2{font-size:25px;font-weight:800;color:var(--text);letter-spacing:-.3px;}
+  .done-view p{font-size:15px;color:var(--text-sub);line-height:1.6;}
+  /* 완료 통계 카드 */
+  .done-stats{display:flex;gap:10px;width:100%;max-width:320px;margin:6px 0 2px;}
+  .ds-card{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:14px 6px;display:flex;flex-direction:column;align-items:center;gap:6px;}
+  .ds-ic{width:32px;height:32px;border-radius:50%;background:var(--brand-soft);color:var(--brand);display:flex;align-items:center;justify-content:center;}
+  .ds-ic svg{width:17px;height:17px;}
+  .ds-card b{font-size:19px;font-weight:800;color:var(--text);line-height:1;}
+  .ds-card small{font-size:11px;color:var(--text-sub);}
+  /* 후기 유도 */
+  .done-review{width:100%;max-width:320px;display:flex;align-items:center;gap:11px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:12px 14px;cursor:pointer;font-family:inherit;transition:transform .12s;}
+  .done-review:active{transform:scale(.98);}
+  .done-review .dr-stars{display:flex;gap:1px;color:#FFB400;flex:none;}
+  .done-review .dr-stars svg{width:15px;height:15px;fill:#FFB400;}
+  .done-review .dr-txt{flex:1;text-align:left;font-size:14px;font-weight:700;color:var(--text);}
+  .done-review>svg{width:18px;height:18px;color:var(--text-sub);flex:none;}
+  /* 액션 버튼 */
+  .done-actions{width:100%;max-width:320px;display:flex;flex-direction:column;gap:10px;margin-top:8px;}
+  .done-actions .btn{margin-top:0;}
+
+  .toast{
+    position:absolute;left:50%;bottom:120px;transform:translateX(-50%) translateY(20px);
+    background:rgba(0,0,0,.88);color:#fff;padding:12px 16px;border-radius:12px;font-size:14px;
+    z-index:300;opacity:0;pointer-events:none;transition:all .3s;display:flex;align-items:center;gap:8px;white-space:nowrap;
+  }
+  .toast svg{width:16px;height:16px;color:var(--green);}
+
+  /* ===== 소셜: 좋아요 · 후기 ===== */
+  @keyframes likePop{0%{transform:scale(1);}40%{transform:scale(1.35);}100%{transform:scale(1);}}
+  .pop svg{animation:likePop .35s ease;}
+  /* 홈 카드 소셜 줄 */
+  .rcard .social{display:flex;align-items:center;gap:12px;margin-top:6px;font-size:12px;color:var(--text-sub);font-weight:600;}
+  .rcard .social span{display:flex;align-items:center;gap:4px;}
+  .rcard .social em{font-style:normal;}
+  .rcard .social .like{cursor:pointer;}
+  .rcard .social svg{width:15px;height:15px;color:var(--text-sub);}
+  .rcard .social .like.liked svg{color:#F2557B;fill:#F2557B;}
+  /* 상세 좋아요 바 */
+  .dsocial{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
+  .dsocial .sbtn{display:flex;align-items:center;gap:7px;background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:9px 16px;font-size:14px;font-weight:700;color:var(--ink);cursor:pointer;font-family:inherit;}
+  .dsocial .sbtn svg{width:18px;height:18px;color:var(--text-sub);}
+  .dsocial .sbtn.like.liked{border-color:var(--green);color:var(--green);background:var(--green-soft);}
+  .dsocial .sbtn.like.liked svg{color:var(--green);fill:var(--green);}
+  /* 제목행 + 저장 아이콘 + 평점 */
+  .dhead{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;}
+  .dhead h2{flex:1;margin-bottom:0;}
+  .dsave{flex:none;display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;cursor:pointer;font-family:inherit;padding:2px;}
+  .dsave svg{width:27px;height:27px;color:var(--text-sub);transition:transform .2s;}
+  .dsave em{font-style:normal;font-size:12px;font-weight:700;color:var(--text-sub);}
+  .dsave.liked svg{color:var(--green);fill:var(--green);}
+  .dsave.liked em{color:var(--green);}
+  .drating{display:flex;align-items:center;gap:6px;margin-bottom:20px;font-size:16px;font-weight:800;color:var(--ink);}
+  .drating svg{width:18px;height:18px;color:#FFB400;fill:#FFB400;}
+  .drating .rc{font-size:13px;font-weight:600;color:var(--text-sub);margin-left:2px;}
+  /* 상세 섹션 탭바 (스티키) */
+  .dtabs{position:sticky;top:0;z-index:5;display:flex;gap:4px;background:var(--bg);padding:6px 0 10px;margin-bottom:8px;border-bottom:1px solid var(--line);}
+  .dtab{flex:1;border:none;background:none;font-family:inherit;font-size:14px;font-weight:700;color:var(--text-sub);padding:9px 0;cursor:pointer;position:relative;}
+  .dtab.active{color:var(--ink);}
+  .dtab.active::after{content:"";position:absolute;left:50%;bottom:-11px;transform:translateX(-50%);width:64%;height:3px;background:var(--green);border-radius:2px;}
+  /* 평점 요약 */
+  .rsum{background:var(--surface);border-radius:16px;padding:16px;margin-bottom:16px;display:flex;gap:16px;align-items:center;}
+  .rsum .avg{text-align:center;flex:none;min-width:72px;}
+  .rsum .avg .n{font-size:32px;font-weight:800;line-height:1;}
+  .rsum .avg .st{display:flex;gap:1px;justify-content:center;margin-top:4px;color:#FFB400;}
+  .rsum .avg .st svg{width:13px;height:13px;fill:#FFB400;}
+  .rsum .avg .cnt{font-size:12px;color:var(--text-sub);margin-top:4px;}
+  .rsum .dist{flex:1;display:flex;flex-direction:column;gap:5px;}
+  .rsum .drow{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text-sub);}
+  .rsum .drow .lab{width:26px;flex:none;font-weight:700;}
+  .rsum .drow .bar{flex:1;height:6px;background:var(--line);border-radius:3px;overflow:hidden;}
+  .rsum .drow .bar i{display:block;height:100%;background:var(--green);border-radius:3px;}
+  .rsum .drow .num{width:16px;text-align:right;flex:none;}
+  /* 후기 사진 / 전체보기 버튼 */
+  .reviews .r .txt .rphoto{margin-top:8px;width:88px;height:88px;border-radius:12px;object-fit:cover;display:block;}
+  .rev-more{width:100%;text-align:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px;font-size:14px;font-weight:700;color:var(--ink);cursor:pointer;font-family:inherit;margin-bottom:12px;}
+  .rev-empty{padding:18px 0;color:var(--text-sub);font-size:14px;text-align:center;}
+  /* 후기 작성 시트 */
+  .rv-label{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:8px;}
+  .star-input{display:flex;gap:10px;justify-content:center;margin:6px 0 18px;}
+  .star-input span{cursor:pointer;}
+  .star-input svg{width:38px;height:38px;color:var(--gray2);transition:color .12s;}
+  .star-input span.on svg{color:#FFB400;fill:#FFB400;}
+  .rv-text{width:100%;min-height:88px;border:1px solid var(--line);border-radius:12px;padding:12px;font-size:15px;font-family:inherit;color:var(--ink);background:var(--bg);resize:none;line-height:1.5;}
+  .rv-text:focus{outline:none;border-color:var(--green);}
+  .rv-photo{margin-top:12px;display:flex;gap:10px;align-items:center;}
+  .rv-photo label{width:64px;height:64px;border-radius:12px;border:1.5px dashed var(--gray2);display:flex;align-items:center;justify-content:center;color:var(--gray);cursor:pointer;flex:none;}
+  .rv-photo label svg{width:22px;height:22px;}
+  .rv-photo input{display:none;}
+  .rv-photo .prev{width:64px;height:64px;border-radius:12px;object-fit:cover;}
+  /* 상세 요약 글 */
+  .dsummary{font-size:15px;line-height:1.65;color:var(--text);margin-bottom:20px;}
+  /* 상세 조리 순서 */
+  .rsteps{display:flex;flex-direction:column;gap:12px;margin-bottom:24px;}
+  .rstep{background:var(--surface);border-radius:12px;padding:14px 16px;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+  .rstep-h{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+  .rstep-no{width:26px;height:26px;border-radius:8px;background:var(--green-soft);color:var(--green);font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;flex:none;}
+  .rstep-h b{font-size:15px;font-weight:800;}
+  .rstep-time{margin-left:auto;flex:none;display:flex;align-items:center;gap:4px;font-size:12px;font-weight:700;color:var(--text-sub);}
+  .rstep-time svg{width:11px;height:11px;color:var(--text-sub);}
+  .rstep-subs{list-style:none;display:flex;flex-direction:column;gap:7px;}
+  .rstep-subs li{display:flex;gap:9px;font-size:14px;color:var(--text);line-height:1.45;}
+  .rstep-subs li::before{content:"•";color:var(--green);font-weight:800;flex:none;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  /* ===== 우측 화면 네비게이터 ===== */
+  .sidenav{display:flex;flex-direction:column;gap:8px;width:210px;flex:none;}
+  .sidenav .sn-title{color:#fff;font-size:12px;font-weight:700;opacity:.55;letter-spacing:.5px;margin-bottom:6px;padding-left:4px;}
+  .sn-item{display:flex;align-items:center;gap:11px;background:rgba(255,255,255,.07);color:#fff;border:1px solid rgba(255,255,255,.12);border-radius:13px;padding:11px 13px;cursor:pointer;font-size:13.5px;font-weight:600;font-family:inherit;text-align:left;transition:all .15s;}
+  .sn-item:hover{background:rgba(255,255,255,.15);transform:translateX(-3px);}
+  .sn-item.active{background:var(--green);border-color:var(--green);box-shadow:0 6px 18px rgba(0,0,0,.28);}
+  .sn-num{width:23px;height:23px;border-radius:50%;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex:none;}
+  .sn-item.active .sn-num{background:rgba(255,255,255,.32);}
+  .sn-sub{font-size:11px;color:#fff;opacity:.45;padding:6px 4px 0;line-height:1.5;}
+</style>
+<style id="ref-clean">.theme-bar,.tint-toggle,.youtube-sound-toggle,.mode-toggle,.dev-timer,#themeBar,#tintToggle{display:none!important}</style>
+</head>
+<body>
+<button class="youtube-sound-toggle" id="youtubeSoundToggle" onclick="toggleCookYoutubeSound()"><i data-lucide="volume-2"></i><span>5번 영상 소리: 켜짐</span></button>
+<button class="tint-toggle" id="tintToggle" onclick="toggleTint()">배경 틴트: 켜짐</button>
+<button class="dev-timer" onclick="startUnifiedTimer(5,true)"><i data-lucide="timer"></i>타이머 5초</button>
+<button class="mode-toggle" id="modeToggle" onclick="toggleMode()"><i data-lucide="sun"></i><span>모드: 라이트</span></button>
+<div class="theme-bar" id="themeBar">
+  <b>테마</b>
+  <button class="theme-swatch active" style="background:#46B581" onclick="setTheme('',this)" title="그린(기본)"></button>
+  <button class="theme-swatch" style="background:#EF5A3C" onclick="setTheme('tomato',this)" title="토마토"></button>
+  <button class="theme-swatch" style="background:#EA9A16" onclick="setTheme('amber',this)" title="허니"></button>
+  <button class="theme-swatch" style="background:#12A594" onclick="setTheme('teal',this)" title="틸"></button>
+  <button class="theme-swatch" style="background:#4C82F7" onclick="setTheme('blue',this)" title="블루"></button>
+  <button class="theme-swatch" style="background:#8B5CF6" onclick="setTheme('purple',this)" title="퍼플"></button>
+</div>
+<div class="stage">
+<div class="device">
+  <div class="island"></div>
+  <div class="screen">
+
+    <!-- 1. 홈 -->
+    <div class="view active" id="home">
+      <div class="statusbar"><span>9:41</span><span class="icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
+      <div class="nav"><div class="logo"><i data-lucide="chef-hat"></i>cook</div><div class="hd-right"><div class="noti"><i data-lucide="bell"></i>268</div><div class="ic-btn"><i data-lucide="circle-user-round"></i></div></div></div>
+      <div class="body">
+        <div class="search" onclick="toast('검색은 프로토타입에서 생략')"><i data-lucide="search"></i>먹고 싶은 요리를 검색해보세요</div>
+        <div class="cats">
+          <div class="cat"><div class="ic"><i data-lucide="chef-hat"></i></div><span>쉐프</span></div>
+          <div class="cat"><div class="ic"><i data-lucide="trending-up"></i></div><span>급상승</span></div>
+          <div class="cat"><div class="ic"><i data-lucide="soup"></i></div><span>한식</span></div>
+          <div class="cat"><div class="ic"><i data-lucide="utensils-crossed"></i></div><span>분식</span></div>
+          <div class="cat"><div class="ic"><i data-lucide="fish"></i></div><span>일식</span></div>
+          <div class="cat"><div class="ic"><i data-lucide="pizza"></i></div><span>양식</span></div>
+          <div class="cat"><div class="ic"><i data-lucide="cake-slice"></i></div><span>디저트</span></div>
+        </div>
+        <div class="section-t"><span class="st-l"><i data-lucide="bookmark"></i>나의 레시피</span><span class="more">전체 <i data-lucide="chevron-right"></i></span></div>
+        <div class="grid" id="gridMine"></div>
+        <div class="section-t"><span class="st-l"><i data-lucide="flame"></i>인기 레시피</span><span class="more">전체 <i data-lucide="chevron-right"></i></span></div>
+        <div class="hscroll" id="popScroll"></div>
+        <div class="section-t"><span class="st-l"><i data-lucide="sparkles"></i>오늘의 추천</span><span class="more">전체 <i data-lucide="chevron-right"></i></span></div>
+        <div class="hscroll" id="recScroll"></div>
+      </div>
+      <button class="fab" onclick="openSheet()"><i data-lucide="plus"></i></button>
+    </div>
+
+    <!-- 2. 분석 로딩 -->
+    <div class="view" id="loading">
+      <div class="statusbar"><span>9:41</span><span class="icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
+      <div class="loading">
+        <div class="spinner"></div>
+        <div><h2>레시피를 분석하고 있어요</h2><p>영상을 단계별로 쪼개는 중...</p></div>
+        <div class="steps-log">
+          <div class="log-item" id="lg1"><div class="chk"><i data-lucide="check"></i></div>영상 불러오기</div>
+          <div class="log-item" id="lg2"><div class="chk"><i data-lucide="check"></i></div>재료·분량 추출</div>
+          <div class="log-item" id="lg3"><div class="chk"><i data-lucide="check"></i></div>조리 단계 분해</div>
+          <div class="log-item" id="lg4"><div class="chk"><i data-lucide="check"></i></div>핸즈프리용 재구성</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. 레시피 상세 -->
+    <div class="view" id="detail">
+      <div class="statusbar"><span>9:41</span><span class="icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
+      <div class="nav"><div class="ic-btn" onclick="show('home')"><i data-lucide="chevron-left"></i></div><div class="title">레시피</div><div class="ic-btn" onclick="toast('공유 링크가 복사되었어요','share-2')"><i data-lucide="share-2"></i></div></div>
+      <div class="body">
+        <div class="hero">
+          <img src="https://i.ytimg.com/vi/21j8SASqLJU/mqdefault.jpg" onerror="this.style.display='none'">
+          <div class="play"><i data-lucide="play"></i></div>
+          <div class="yt-badge"><i data-lucide="youtube"></i>YouTube</div>
+        </div>
+        <div class="detail-body">
+          <div class="dhead">
+            <h2>백종원이 알려주는<br>칼칼한 순두부찌개</h2>
+            <button class="dsave like" id="detLike" onclick="toggleLike(event,'21j8SASqLJU')"><i data-lucide="bookmark"></i><em id="detLikeN">0</em></button>
+          </div>
+          <div class="drating" id="detRating"></div>
+          <p class="dsummary">고추참치로 감칠맛을 빠르게 잡고, 순두부와 계란을 넣어 몽글몽글하게 끓이는 간단한 순두부찌개예요. 파기름을 먼저 내고 양파와 애호박을 더해 국물 맛을 자연스럽게 채웁니다.</p>
+          <div class="meta">
+            <div class="chip"><i data-lucide="timer"></i><div class="v">30분</div><div class="k">조리시간</div></div>
+            <div class="chip"><i data-lucide="users"></i><div class="v">2인분</div><div class="k">분량</div></div>
+            <div class="chip"><i data-lucide="gauge"></i><div class="v">쉬움</div><div class="k">난이도</div></div>
+          </div>
+          <div class="dtabs">
+            <button class="dtab active" data-sec="sec-ing" onclick="detailTab('sec-ing')">재료</button>
+            <button class="dtab" data-sec="sec-steps" onclick="detailTab('sec-steps')">레시피</button>
+            <button class="dtab" data-sec="detRevTitle" onclick="detailTab('detRevTitle')">리뷰</button>
+          </div>
+          <div class="ing-title" id="sec-ing">재료 11개</div>
+          <div class="ing-group-label">주재료</div>
+          <div class="ings">
+            <div class="ing"><div class="n">순두부</div><div class="q">1팩</div></div>
+            <div class="ing"><div class="n">고추참치</div><div class="q">1캔</div></div>
+            <div class="ing"><div class="n">양파</div><div class="q">1/2개</div></div>
+            <div class="ing"><div class="n">애호박</div><div class="q">조금</div></div>
+            <div class="ing"><div class="n">대파</div><div class="q">조금</div></div>
+            <div class="ing"><div class="n">계란</div><div class="q">1개</div></div>
+            <div class="ing"><div class="n">팽이버섯</div><div class="q">조금</div></div>
+          </div>
+          <div class="ing-group-label">양념</div>
+          <div class="ings">
+            <div class="ing"><div class="n">식용유</div><div class="q">2숟갈</div></div>
+            <div class="ing"><div class="n">고춧가루</div><div class="q">1숟갈</div></div>
+            <div class="ing"><div class="n">멸치액젓</div><div class="q">1숟갈</div></div>
+            <div class="ing"><div class="n">국간장</div><div class="q">1숟갈</div></div>
+            <div class="ing"><div class="n">후추</div><div class="q">조금</div></div>
+          </div>
+          <div class="ing-title" id="sec-steps" style="margin-top:8px;">레시피</div>
+          <div class="rsteps" id="detSteps"></div>
+          <div class="ing-title" id="detRevTitle" style="margin-top:8px;">후기</div>
+          <div id="detSummary"></div>
+          <div class="reviews" id="detReviews"></div>
+          <button class="rev-more" id="detMore" onclick="show('reviews')" style="display:none;"></button>
+          <button class="btn ghost" onclick="openReviewSheet()" style="margin-bottom:8px;"><i data-lucide="pencil"></i>후기 쓰기</button>
+        </div>
+      </div>
+      <div class="cta-bar"><button class="btn" onclick="startCook()"><i data-lucide="chef-hat"></i>요리 시작하기</button></div>
+    </div>
+
+    <!-- 후기 전체보기 -->
+    <div class="view" id="reviews">
+      <div class="statusbar"><span>9:41</span><span class="icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
+      <div class="nav"><div class="ic-btn" onclick="show('detail')"><i data-lucide="chevron-left"></i></div><div class="title">후기</div><div class="ic-btn"></div></div>
+      <div class="body" style="padding:0 16px;">
+        <div id="revSummary"></div>
+        <div class="reviews" id="revAll"></div>
+      </div>
+      <div class="cta-bar"><button class="btn" onclick="openReviewSheet()"><i data-lucide="pencil"></i>후기 쓰기</button></div>
+    </div>
+
+    <!-- 4-A. 조리 모드 (기본 조리 모드 복제 스냅샷) -->
+    <div class="view dark" id="cook3">
+      <div class="statusbar dark"><span>9:41</span><span class="icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
+      <div class="nav dark"><div class="ic-btn" onclick="show('detail')"><i data-lucide="chevron-left"></i></div><div class="title" style="font-size:14px;">조리 모드</div><div class="ic-btn" onclick="openVideoSettings()"><i data-lucide="settings"></i></div></div>
+      <div class="cook-video">
+        <div class="youtube-mount" id="cook3Youtube" data-video-id="CgapOjKdo9I" data-title="순두부찌개 조리 영상"></div>
+        <div class="video-gesture" id="videoGesture" onclick="onVideoTap(event)">
+          <div class="vg-seek vg-left" id="vgLeft"><i data-lucide="rotate-ccw"></i><span>-10초</span></div>
+          <div class="vg-seek vg-right" id="vgRight"><i data-lucide="rotate-cw"></i><span>+10초</span></div>
+          <div class="vg-flash" id="vgFlash"><i data-lucide="play"></i></div>
+        </div>
+      </div>
+      <div class="cook-progress">
+        <div class="seg cur"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div>
+      </div>
+      <div class="cook-body">
+        <div class="cook-track" id="cookTrack3"></div>
+        <div class="stage-timer" id="stageTimer" aria-live="polite">
+          <div class="stimer-main">
+            <button class="stimer-btn primary" id="stageTimerPause" onclick="toggleStageTimerPause()" aria-label="타이머 일시정지"><i data-lucide="pause"></i></button>
+            <button class="stimer-btn danger" id="stageTimerCancel" onclick="cancelStageTimer()" aria-label="타이머 취소"><i data-lucide="x"></i></button>
+            <div class="stimer-copy">
+              <div class="stimer-label"><i data-lucide="timer"></i>타이머</div>
+            </div>
+            <div class="stimer-time" id="stageTimerTime">3:00</div>
+          </div>
+        </div>
+        <div class="cook-hint" id="cookHint" onclick="hideCookHint()">
+          <div class="hint-gesture"><i class="hand" data-lucide="hand-pointer"></i><i class="ar" data-lucide="chevrons-up"></i></div>
+          <div class="hint-copy"><b>위로 스와이프하세요</b><span>다음 단계 카드도 터치할 수 있어요</span></div>
+          <button class="hint-never" onclick="dismissHintForever(event)"><i data-lucide="x"></i>다시 보지 않기</button>
+          <div class="hint-dismiss">탭해서 닫기</div>
+        </div>
+      </div>
+      <div class="cook-ctrl" id="cook3Ctrl">
+        <div class="ctrl-buttons">
+          <button class="cbtn" onclick="openTimer()"><div class="cic o js-timer-btn"><i data-lucide="timer"></i></div><small class="js-timer-label">타이머</small></button>
+          <button class="cbtn ai-assistant-btn" id="hf3" onclick="toggleHf3()"><div class="cic ai-assistant"><i data-lucide="bot"></i></div><small>AI 비서</small></button>
+          <button class="cbtn" onclick="openIngredients()"><div class="cic d"><i data-lucide="carrot"></i></div><small>재료 보기</small></button>
+        </div>
+        <div class="vpanel" id="vpanel">
+          <div class="vp-aurora"></div>
+          <button class="vp-collapse" onclick="toggleHf3()"><i data-lucide="chevron-down"></i></button>
+          <button class="vp-mic" onclick="toggleVpMic()"><i data-lucide="mic"></i></button>
+          <button class="vp-close" onclick="toggleHf3()"><i data-lucide="x"></i></button>
+          <div class="wave vp-wave"><span></span><span></span><span></span><span></span><span></span></div>
+          <div class="vp-user" id="vpUser">듣고 있어요</div>
+          <div class="vp-ai" id="vpAi"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. 조리 -->
+    <div class="view dark" id="cook">
+      <div class="statusbar dark"><span>9:41</span><span class="icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
+      <div class="nav dark"><div class="ic-btn" onclick="show('detail')"><i data-lucide="chevron-left"></i></div><div class="title" style="font-size:14px;">기본 조리 모드</div><div class="ic-btn" onclick="openVoice()"><i data-lucide="help-circle"></i></div></div>
+      <div class="cook-video"><img src="https://i.ytimg.com/vi/21j8SASqLJU/mqdefault.jpg" onerror="this.style.display='none'"></div>
+      <div class="cook-progress">
+        <div class="seg cur"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div>
+      </div>
+      <div class="cook-body">
+        <div class="cook-track" id="cookTrack"></div>
+      </div>
+      <div class="cook-ctrl">
+        <button class="cbtn" onclick="openTimer()"><div class="cic o js-timer-btn" id="timerBtn"><i data-lucide="timer"></i></div><small class="js-timer-label" id="timerLabel">타이머</small></button>
+        <button class="cbtn" onclick="toggleHandsfree()"><div class="cic o mic" id="hfBtn"><i data-lucide="mic"></i></div><small>핸즈프리 모드</small></button>
+        <button class="cbtn" onclick="openIngredients()"><div class="cic d"><i data-lucide="carrot"></i></div><small>재료 보기</small></button>
+      </div>
+    </div>
+
+    <!-- 4-B. 조리 (보관용 스냅샷) -->
+    <div class="view dark" id="cook2">
+      <div class="statusbar dark"><span>9:41</span><span class="icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
+      <div class="nav dark"><div class="ic-btn" onclick="show('detail')"><i data-lucide="chevron-left"></i></div><div class="title" style="font-size:14px;">핸즈프리 모드</div><div class="ic-btn" onclick="openVoice()"><i data-lucide="help-circle"></i></div></div>
+      <div class="cook-video"><img src="https://i.ytimg.com/vi/21j8SASqLJU/mqdefault.jpg" onerror="this.style.display='none'"></div>
+      <div class="cook-progress">
+        <div class="seg done"></div><div class="seg done"></div><div class="seg cur"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div>
+      </div>
+      <div class="cook-body">
+        <div class="scard active static">
+          <div class="sc-head">
+            <div class="sc-title"><span class="pl-letter">C.</span> 양파 볶기</div>
+            <div class="step-badge">3 / 7</div>
+          </div>
+          <ul class="sub-list">
+            <li>양파 반 개를 깍둑썰기해 넣는다</li>
+            <li>양파가 투명해질 때까지 충분히 볶는다</li>
+          </ul>
+        </div>
+      </div>
+      <div class="hf-listen">
+        <div class="wave"><span></span><span></span><span></span><span></span><span></span></div>
+        <span class="hf-listen-t">듣고 있어요…</span>
+        <span class="hf-timer"><i data-lucide="timer"></i>2:45</span>
+      </div>
+      <div class="hf-chat">
+        <div class="chat-row ai"><div class="chat-av"><i data-lucide="sparkles"></i></div><div class="bubble ai">핸즈프리 모드예요. 궁금한 건 편하게 말씀하세요.</div></div>
+        <div class="chat-row user"><div class="bubble user">다음 단계로 가줘</div></div>
+        <div class="chat-row ai"><div class="chat-av"><i data-lucide="sparkles"></i></div><div class="bubble ai">D단계, 순두부와 물 넣기로 넘어갈게요. 순두부를 넣고 참치캔 한 캔 분량의 물을 부어주세요.</div></div>
+        <div class="chat-row user"><div class="bubble user">간장 없는데 대체할 수 있는 거 있나?</div></div>
+        <div class="chat-row ai"><div class="chat-av"><i data-lucide="sparkles"></i></div><div class="bubble ai">국간장이 없으면 멸치액젓을 조금 더 넣거나 소금으로 간을 맞춰도 돼요. 한 번에 많이 넣지 말고 조금씩 맞춰보세요.</div></div>
+        <div class="chat-row user"><div class="bubble user">타이머 3분 맞춰줘</div></div>
+        <div class="chat-row ai"><div class="chat-av"><i data-lucide="sparkles"></i></div><div class="bubble ai">3분 타이머를 시작했어요. 그동안 대파를 썰어두면 좋아요. ⏱</div></div>
+      </div>
+    </div>
+
+    <!-- 5. 완료 -->
+    <div class="view" id="complete">
+      <div class="statusbar"><span>9:41</span><span class="icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
+      <div class="done-view">
+        <div class="done-badge"><i data-lucide="party-popper"></i></div>
+        <h2>순두부찌개 완성!</h2>
+        <p>화면 한 번 안 만지고 끝까지 해냈어요.<br>맛있게 드세요 👏</p>
+        <div class="done-stats">
+          <div class="ds-card"><span class="ds-ic"><i data-lucide="timer"></i></span><b>30분</b><small>조리 시간</small></div>
+          <div class="ds-card"><span class="ds-ic"><i data-lucide="mic"></i></span><b>5단계</b><small>음성 진행</small></div>
+          <div class="ds-card"><span class="ds-ic"><i data-lucide="hand"></i></span><b>0회</b><small>화면 터치</small></div>
+        </div>
+        <button class="done-review" onclick="openReviewSheet()">
+          <span class="dr-stars"><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i></span>
+          <span class="dr-txt">이 레시피, 후기를 남겨보세요</span>
+          <i data-lucide="chevron-right"></i>
+        </button>
+        <div class="done-actions">
+          <button class="btn" onclick="show('home')">홈으로</button>
+          <button class="btn ghost" onclick="startCook()">다시 요리하기</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 바텀시트 -->
+    <div class="scrim" id="scrim" onclick="closeSheet()"></div>
+    <div class="sheet" id="sheet">
+      <div class="grabber"></div>
+      <h3>레시피 등록하기</h3>
+      <p class="sub">유튜브 링크만 붙여넣으면 단계별 레시피로 만들어드려요</p>
+      <div class="field"><i data-lucide="youtube"></i>https://youtube.com/watch?v=...</div>
+      <button class="btn" onclick="analyze()">입력 완료</button>
+      <button class="btn ghost" onclick="closeSheet()">취소</button>
+    </div>
+
+    <!-- 전역 재료 시트 -->
+    <div class="ing-sheet" id="ingSheet">
+      <div class="ing-scrim" onclick="closeIngredients()"></div>
+      <div class="ing-panel">
+        <div class="ing-grab"></div>
+        <div class="ing-h"><b>재료 11개</b><span onclick="closeIngredients()"><i data-lucide="x"></i></span></div>
+        <div class="ings">
+          <div class="ing"><div class="n">순두부</div><div class="q">1팩</div></div>
+          <div class="ing"><div class="n">고추참치</div><div class="q">1캔</div></div>
+          <div class="ing"><div class="n">양파</div><div class="q">1/2개</div></div>
+          <div class="ing"><div class="n">애호박</div><div class="q">조금</div></div>
+          <div class="ing"><div class="n">대파</div><div class="q">조금</div></div>
+          <div class="ing"><div class="n">계란</div><div class="q">1개</div></div>
+          <div class="ing"><div class="n">팽이버섯</div><div class="q">조금</div></div>
+          <div class="ing"><div class="n">식용유</div><div class="q">2숟갈</div></div>
+          <div class="ing"><div class="n">고춧가루</div><div class="q">1숟갈</div></div>
+          <div class="ing"><div class="n">멸치액젓</div><div class="q">1숟갈</div></div>
+          <div class="ing"><div class="n">국간장</div><div class="q">1숟갈</div></div>
+          <div class="ing"><div class="n">후추</div><div class="q">조금</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 전역 타이머 시트 -->
+    <div class="ing-sheet" id="timerSheet">
+      <div class="ing-scrim" onclick="closeTimer()"></div>
+      <div class="ing-panel">
+        <div class="ing-grab"></div>
+        <div class="ing-h"><b>타이머 설정</b><span onclick="closeTimer()"><i data-lucide="x"></i></span></div>
+        <div class="ts-row">
+          <button class="ts-pm" onclick="tsAdjust(-1)"><i data-lucide="minus"></i></button>
+          <div class="ts-num"><b id="tsMin">3</b><span>분</span></div>
+          <button class="ts-pm" onclick="tsAdjust(1)"><i data-lucide="plus"></i></button>
+        </div>
+        <div class="ts-presets">
+          <button onclick="tsSet(1)">1분</button>
+          <button onclick="tsSet(3)">3분</button>
+          <button onclick="tsSet(5)">5분</button>
+          <button onclick="tsSet(10)">10분</button>
+        </div>
+        <button class="btn" onclick="startCountdown()">시작</button>
+      </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <!-- 영상 설정 모달 (조리 모드: 구간 반복 · 볼륨 · 재생 속도) -->
+    <div class="vset" id="videoSettings">
+      <div class="vset-scrim" onclick="closeVideoSettings()"></div>
+      <div class="vset-card">
+        <div class="vset-head"><b>영상 설정</b><span class="x" onclick="closeVideoSettings()"><i data-lucide="x"></i></span></div>
+        <!-- 구간 반복 -->
+        <div class="vset-row">
+          <div class="vset-label"><i data-lucide="repeat"></i>구간 반복</div>
+          <button class="vset-switch" id="vsLoopSw" onclick="toggleVsLoop()"><span></span></button>
+        </div>
+        <div class="vset-sub collapsed" id="vsLoopCount">
+          <span class="vset-mini">횟수</span>
+          <button class="vchip on" onclick="setVsLoopCount(1,this)">1회</button>
+          <button class="vchip" onclick="setVsLoopCount(2,this)">2회</button>
+          <button class="vchip" onclick="setVsLoopCount(3,this)">3회</button>
+          <button class="vchip" onclick="setVsLoopCount(0,this)">무한</button>
+        </div>
+        <div class="vset-sub collapsed" id="vsLoopEnd">
+          <span class="vset-mini">반복 후</span>
+          <button class="vchip on" onclick="setVsLoopEnd('stop',this)">멈춤</button>
+          <button class="vchip" onclick="setVsLoopEnd('next',this)">다음 단계로</button>
+        </div>
+        <!-- 볼륨 -->
+        <div class="vset-row">
+          <div class="vset-label"><i data-lucide="volume-2"></i>볼륨</div>
+          <button class="vset-switch on" id="vsVolSw" onclick="toggleVsVol()"><span></span></button>
+        </div>
+        <div class="vset-sub" id="vsVolWrap">
+          <input type="range" min="0" max="100" value="100" id="vsVolRange" oninput="setVsVol(this.value)">
+          <em id="vsVolVal">100</em>
+        </div>
+        <!-- 재생 속도 -->
+        <div class="vset-row">
+          <div class="vset-label"><i data-lucide="gauge"></i>재생 속도</div>
+        </div>
+        <div class="vset-sub" id="vsSpeed" style="border-bottom:none;">
+          <button class="vchip on" onclick="setVsSpeed(1,this)">1×</button>
+          <button class="vchip" onclick="setVsSpeed(1.2,this)">1.2×</button>
+          <button class="vchip" onclick="setVsSpeed(1.5,this)">1.5×</button>
+          <button class="vchip" onclick="setVsSpeed(2,this)">2×</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 전역 핸즈프리 명령 가이드 모달 (어느 화면에서든 표시) -->
+    <div class="vmodal" id="voiceModal">
+      <div class="vclose" onclick="closeVoice()"><i data-lucide="x"></i></div>
+      <div class="vtop"><h2>핸즈프리로<br>편하게 말해보세요</h2></div>
+      <div class="vcard">
+        <div class="vh"><b>핸즈프리 모드 명령 가이드</b><span class="x" onclick="closeVoice()"><i data-lucide="x"></i></span></div>
+        <div class="vcats">
+          <div class="vcat">
+            <div class="vcat-h"><div class="vci"><i data-lucide="list-ordered"></i></div>단계 이동</div>
+            <div class="vchips"><span>"다음 단계"</span><span>"이전 단계"</span><span>"3단계로 가줘"</span><span>"처음부터 다시"</span></div>
+          </div>
+          <div class="vcat">
+            <div class="vcat-h"><div class="vci"><i data-lucide="help-circle"></i></div>궁금한 거 물어보기</div>
+            <div class="vchips"><span>"이거 얼마나 익혀?"</span><span>"지금 뭐 하면 돼?"</span><span>"왜 약불로 해?"</span></div>
+          </div>
+          <div class="vcat">
+            <div class="vcat-h"><div class="vci"><i data-lucide="carrot"></i></div>재료 · 대체</div>
+            <div class="vchips"><span>"재료 알려줘"</span><span>"간장 대신 뭐 써?"</span><span>"1인분으로 줄이면?"</span></div>
+          </div>
+          <div class="vcat">
+            <div class="vcat-h"><div class="vci"><i data-lucide="timer"></i></div>타이머</div>
+            <div class="vchips"><span>"타이머 3분"</span><span>"타이머 멈춰"</span><span>"몇 분 남았어?"</span></div>
+          </div>
+          <div class="vcat">
+            <div class="vcat-h"><div class="vci"><i data-lucide="video"></i></div>영상 · 기타</div>
+            <div class="vchips"><span>"방금 거 다시 말해줘"</span><span>"영상 보여줘"</span><span>"핸즈프리 종료"</span></div>
+          </div>
+        </div>
+        <button class="btn" onclick="closeVoice()">알겠어요!</button>
+      </div>
+    </div>
+
+    <!-- 후기 작성 시트 -->
+    <div class="ing-sheet" id="reviewSheet">
+      <div class="ing-scrim" onclick="closeReviewSheet()"></div>
+      <div class="ing-panel">
+        <div class="ing-grab"></div>
+        <div class="ing-h"><b>후기 쓰기</b><span onclick="closeReviewSheet()"><i data-lucide="x"></i></span></div>
+        <div class="rv-label">맛은 어땠나요?</div>
+        <div class="star-input" id="starInput">
+          <span onclick="setStars(1)"><i data-lucide="star"></i></span>
+          <span onclick="setStars(2)"><i data-lucide="star"></i></span>
+          <span onclick="setStars(3)"><i data-lucide="star"></i></span>
+          <span onclick="setStars(4)"><i data-lucide="star"></i></span>
+          <span onclick="setStars(5)"><i data-lucide="star"></i></span>
+        </div>
+        <div class="rv-label">한 줄 후기</div>
+        <textarea class="rv-text" id="rvText" placeholder="레시피는 어땠나요? 팁이 있다면 남겨주세요"></textarea>
+        <div class="rv-photo">
+          <label for="rvPhotoInput"><i data-lucide="camera"></i></label>
+          <input type="file" id="rvPhotoInput" accept="image/*" onchange="onReviewPhoto(this)">
+          <img class="prev" id="rvPhotoPrev" style="display:none;">
+        </div>
+        <button class="btn" onclick="submitReview()">등록</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- 우측 화면 네비게이터 -->
+<div class="sidenav">
+  <div class="sn-title">화면 이동</div>
+  <button class="sn-item" data-screen="home" onclick="nav('home')"><span class="sn-num">1</span>홈</button>
+  <button class="sn-item" data-screen="sheet" onclick="nav('sheet')"><span class="sn-num">2</span>레시피 등록</button>
+  <button class="sn-item" data-screen="loading" onclick="nav('loading')"><span class="sn-num">3</span>분석 로딩</button>
+  <button class="sn-item" data-screen="detail" onclick="nav('detail')"><span class="sn-num">4</span>레시피 상세</button>
+  <button class="sn-item" data-screen="cook3" onclick="nav('cook3')"><span class="sn-num">5</span>조리 모드(신)</button>
+  <button class="sn-item" data-screen="cook" onclick="nav('cook')"><span class="sn-num">6</span>기본 조리 모드(구)</button>
+  <button class="sn-item" data-screen="cook2" onclick="nav('cook2')"><span class="sn-num">7</span>핸즈프리 모드(구)</button>
+  <button class="sn-item" data-screen="voice" onclick="nav('voice')"><span class="sn-num">8</span>핸즈프리 명령 가이드</button>
+  <button class="sn-item" data-screen="complete" onclick="nav('complete')"><span class="sn-num">9</span>완료</button>
+  <button class="sn-item" data-screen="reviews" onclick="nav('reviews')"><span class="sn-num">10</span>후기 전체</button>
+  <div class="sn-sub">번호를 눌러 화면을 바로 이동할 수 있어요. 폰 안에서 직접 조작해도 현재 화면이 표시됩니다.</div>
+</div>
+</div>
+
+<script>
+  function setActiveNav(key){
+    document.querySelectorAll('.sn-item').forEach(b=>b.classList.toggle('active',b.dataset.screen===key));
+  }
+  function nav(key){
+    hf3Reset();
+    switch(key){
+      case 'home': closeSheet();closeVoice();show('home');break;
+      case 'sheet': closeVoice();show('home');openSheet();break;
+      case 'loading': closeSheet();closeVoice();show('loading');break;
+      case 'detail': closeSheet();closeVoice();show('detail');break;
+      case 'cook': closeSheet();closeVoice();cookCar.reset();show('cook');break;
+      case 'cook3': closeSheet();closeVoice();cook3Car.reset();show('cook3');break;
+      case 'cook2': closeSheet();closeVoice();show('cook2');break;
+      case 'voice': closeSheet();show('cook');openVoice();break;
+      case 'complete': closeSheet();closeVoice();show('complete');break;
+      case 'reviews': closeSheet();closeVoice();show('reviews');break;
+    }
+  }
+
+  // 요리 완성: 완료 카드를 위로 밀어 보내고, 완료 화면(9번)을 아래에서 위로 올려 띄운다
+  // 양쪽 하단에서 색종이 폭죽 발사 (토스식)
+  function launchConfetti(){
+    const scr=document.querySelector('.screen'); if(!scr)return;
+    const colors=['#46B581','#F5A524','#EF5A3C','#4C82F7','#8B5CF6','#FFB400','#69CB9D'];
+    [{k:'left',sign:1},{k:'right',sign:-1}].forEach(s=>{
+      for(let i=0;i<26;i++){
+        const p=document.createElement('i');
+        p.className='confetti-piece';
+        p.style.background=colors[Math.floor(Math.random()*colors.length)];
+        p.style[s.k]=(6+Math.random()*22)+'px';
+        p.style.setProperty('--dx',(s.sign*(60+Math.random()*230))+'px');
+        p.style.setProperty('--peak',(-(220+Math.random()*260))+'px'); // 솟구치는 정점
+        p.style.setProperty('--fall',(40+Math.random()*180)+'px');     // 사뿐히 낙하하는 최종 위치
+        p.style.setProperty('--rot',(Math.random()*720-360)+'deg');
+        p.style.animationDelay=(Math.random()*0.2)+'s';
+        scr.appendChild(p);
+        setTimeout(()=>p.remove(),2900);
+      }
+    });
+  }
+  function finishCook(){
+    const cp=document.getElementById('complete');
+    cp.style.animation=''; // 이전에 걸어둔 none 해제
+    cp.classList.add('active','rise-in'); // cook3 위로 완료 화면을 아래→위 슬라이드업
+    setActiveNav('complete');
+    launchConfetti(); // 화면이 올라오며 폭죽
+    setTimeout(()=>{
+      document.querySelectorAll('.view').forEach(v=>{if(v!==cp)v.classList.remove('active');});
+      cp.style.animation='none'; // rise-in 제거 시 slideIn이 재트리거되지 않도록 고정
+      cp.classList.remove('rise-in');
+    },540);
+  }
+  function show(id){
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    const _v=document.getElementById(id); _v.style.animation=''; // finishCook가 고정한 animation:none 해제 → 정상 전환 애니 복구
+    _v.classList.add('active');
+    setActiveNav(id);
+    if(id==='detail')renderDetailSocial();
+    else if(id==='reviews')renderReviewsScreen();
+    else if(id==='home')hydrateHome();
+    else if(id==='cook3')showCookHint();
+    else hideCookHint();
+  }
+  function openSheet(){document.getElementById('scrim').classList.add('show');document.getElementById('sheet').classList.add('show');setActiveNav('sheet');}
+  function closeSheet(){document.getElementById('scrim').classList.remove('show');document.getElementById('sheet').classList.remove('show');}
+
+  function analyze(){
+    closeSheet();show('loading');
+    const logs=['lg1','lg2','lg3','lg4'];
+    logs.forEach(id=>document.getElementById(id).classList.remove('done'));
+    logs.forEach((id,i)=>setTimeout(()=>document.getElementById(id).classList.add('done'),500+i*550));
+    setTimeout(()=>show('detail'),500+logs.length*550+400);
+  }
+  function goDetail(){show('detail');}
+
+  /* ===== 소셜: 좋아요 · 후기 (localStorage) ===== */
+  const DVID='21j8SASqLJU';                 // 상세는 순두부에 바인딩
+  const SOCIAL_KEY='cook.social';
+  const SEED={
+    '21j8SASqLJU':{likes:342,liked:false,reviews:[
+      {user:'요리고수',rating:5,text:'과정 화면이 위로 올라가서 진짜 편했어요. 손 안 씻고 끝!',photo:null,ts:3},
+      {user:'자취왕',rating:4,text:'영상 세트로 보니 실패 안 하고 따라할 수 있었어요.',photo:null,ts:2},
+      {user:'맵찔이',rating:5,text:'고추참치로 하니까 간단한데 국물 맛이 잘 나네요. 또 해먹을 듯!',photo:null,ts:1},
+    ]},
+    'VvM59BXz6Bw':{likes:512,liked:false,reviews:[{user:'와인러버',rating:5,text:'마늘 향 미쳤어요. 바게트 필수!',photo:null,ts:1}]},
+    'eJekYxjFewM':{likes:128,liked:false,reviews:[{user:'다이어터',rating:4,text:'10분 컷 건강식. 굿',photo:null,ts:1}]},
+    'V9KP9Qvb3lI':{likes:276,liked:false,reviews:[{user:'면식수행',rating:5,text:'크림 없이도 진해요',photo:null,ts:2},{user:'주말셰프',rating:4,text:'관찰레 대신 베이컨으로도 충분',photo:null,ts:1}]},
+    'sIBG0KjOcBs':{likes:689,liked:false,reviews:[{user:'홈베이커',rating:5,text:'노오븐이라 너무 쉬워요',photo:null,ts:1}]},
+    'vHU4_QbslRA':{likes:94,liked:false,reviews:[{user:'혼밥러',rating:4,text:'명란만 있으면 끝. 간단!',photo:null,ts:1}]},
+  };
+  let social={};
+  function loadSocial(){try{social=JSON.parse(localStorage.getItem(SOCIAL_KEY))||{};}catch(e){social={};}}
+  function saveSocial(){try{localStorage.setItem(SOCIAL_KEY,JSON.stringify(social));return true;}catch(e){return false;}}
+  function seedSocial(){loadSocial();let ch=false;for(const k in SEED){if(!social[k]){social[k]=JSON.parse(JSON.stringify(SEED[k]));ch=true;}}if(ch)saveSocial();}
+  function getS(vid){return social[vid]||(social[vid]={likes:0,liked:false,reviews:[]});}
+  function esc(s){return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+  function stars(n){let h='';for(let i=0;i<n;i++)h+='<i data-lucide="star"></i>';return h;}
+
+  function reviewsHTML(arr){
+    if(!arr.length)return '<div class="rev-empty">아직 후기가 없어요. 첫 후기를 남겨보세요!</div>';
+    return arr.map(r=>'<div class="r"><div class="av"><i data-lucide="user"></i></div><div class="txt"><div class="rh"><b>'+esc(r.user)+'</b><span class="stars">'+stars(r.rating)+'</span></div>'+esc(r.text)+(r.photo?'<img class="rphoto" src="'+r.photo+'">':'')+'</div></div>').join('');
+  }
+  function summaryHTML(arr){
+    if(!arr.length)return '';
+    const n=arr.length,sum=arr.reduce((a,r)=>a+r.rating,0),avg=sum/n,dist=[0,0,0,0,0];
+    arr.forEach(r=>dist[r.rating-1]++);
+    let rows='';for(let s=5;s>=1;s--){const pct=Math.round(dist[s-1]/n*100);rows+='<div class="drow"><span class="lab">'+s+'★</span><span class="bar"><i style="width:'+pct+'%"></i></span><span class="num">'+dist[s-1]+'</span></div>';}
+    return '<div class="rsum"><div class="avg"><div class="n">'+avg.toFixed(1)+'</div><div class="st">'+stars(Math.round(avg))+'</div><div class="cnt">'+n+'개 후기</div></div><div class="dist">'+rows+'</div></div>';
+  }
+
+  function hydrateHome(){
+    document.querySelectorAll('#home .rcard').forEach(card=>{
+      const s=getS(card.dataset.vid);
+      const like=card.querySelector('.like');
+      if(like)like.classList.toggle('liked',!!s.liked);
+    });
+  }
+  const RECIPES=[
+    {vid:'21j8SASqLJU',name:'순두부찌개',src:'백종원 · 2인분',time:'30분',food:'food1'},
+    {vid:'VvM59BXz6Bw',name:'감바스 알 아히요',src:'성시경 · 2인분',time:'25분',food:'food2'},
+    {vid:'eJekYxjFewM',name:'아보카도 비빔밥',src:'유튜브 쇼츠 · 1인분',time:'15분',food:'food3'},
+    {vid:'V9KP9Qvb3lI',name:'까르보나라',src:'유튜브 · 2인분',time:'40분',food:'food4'},
+    {vid:'sIBG0KjOcBs',name:'딸기 티라미수',src:'쿠킹트리 · 4인분',time:'20분',food:'food5'},
+    {vid:'vHU4_QbslRA',name:'명란 파스타',src:'유튜브 · 1인분',time:'10분',food:'food6'},
+  ];
+  function cardHTML(r){
+    return '<div class="rcard" data-vid="'+r.vid+'" onclick="goDetail()">'+
+      '<div class="thumb '+r.food+'"><img src="https://i.ytimg.com/vi/'+r.vid+'/mqdefault.jpg" onerror="this.style.display=\'none\'">'+
+        '<span class="badge"><i data-lucide="clock"></i>'+r.time+'</span>'+
+        '<button class="savebtn like" onclick="toggleLike(event,\''+r.vid+'\')"><i data-lucide="bookmark"></i></button>'+
+        '<span class="play"><i data-lucide="play"></i></span></div>'+
+      '<div class="cap"><b>'+r.name+'</b><small>'+r.src+'</small></div></div>';
+  }
+  function renderHomeSections(){
+    document.getElementById('gridMine').innerHTML=RECIPES.map(cardHTML).join('');
+    const pop=[...RECIPES].sort((a,b)=>getS(b.vid).likes-getS(a.vid).likes);
+    document.getElementById('popScroll').innerHTML=pop.map(cardHTML).join('');
+    const recIds=['vHU4_QbslRA','eJekYxjFewM','sIBG0KjOcBs','VvM59BXz6Bw'];   // 빠르게 만드는 추천
+    document.getElementById('recScroll').innerHTML=RECIPES.filter(r=>recIds.includes(r.vid)).map(cardHTML).join('');
+    lucide.createIcons();
+  }
+  function renderDetailSocial(){
+    const s=getS(DVID);
+    document.getElementById('detLike').classList.toggle('liked',!!s.liked);
+    document.getElementById('detLikeN').textContent=s.likes;
+    const rn=s.reviews.length,ravg=rn?s.reviews.reduce((a,r)=>a+r.rating,0)/rn:0;
+    document.getElementById('detRating').innerHTML='<i data-lucide="star"></i><b>'+(rn?ravg.toFixed(1):'-')+'</b><span class="rc">'+(rn?'후기 '+rn+'개':'아직 후기 없음')+'</span>';
+    document.getElementById('detRevTitle').textContent='후기 '+s.reviews.length;
+    document.getElementById('detSummary').innerHTML=summaryHTML(s.reviews);
+    document.getElementById('detReviews').innerHTML=reviewsHTML(s.reviews.slice(0,2));
+    const more=document.getElementById('detMore');
+    if(s.reviews.length>2){more.style.display='';more.textContent='후기 전체보기 ('+s.reviews.length+')';}else more.style.display='none';
+    renderSteps();
+    lucide.createIcons();
+  }
+  function renderSteps(){
+    const el=document.getElementById('detSteps');if(!el)return;
+    el.innerHTML=steps.map(s=>'<div class="rstep"><div class="rstep-h"><span class="rstep-no">'+s.letter+'</span><b>'+esc(s.title)+'</b>'+(s.time?'<span class="rstep-time"><i data-lucide="play"></i>'+esc(s.time)+'</span>':'')+'</div><ul class="rstep-subs">'+s.subs.map(t=>'<li>'+esc(t)+'</li>').join('')+'</ul></div>').join('');
+  }
+  const DET_SECS=['sec-ing','sec-steps','detRevTitle'];
+  let tabLock=0;
+  function detailTab(id){
+    const body=document.querySelector('#detail .body'),tabs=document.querySelector('#detail .dtabs'),el=document.getElementById(id);
+    if(!body||!el)return;
+    const off=(tabs?tabs.offsetHeight:0)+4;
+    const top=body.scrollTop+el.getBoundingClientRect().top-body.getBoundingClientRect().top-off;
+    body.scrollTo({top:Math.max(0,top),behavior:'smooth'});
+    setDetTab(id);tabLock=Date.now()+700;   // 클릭 직후 스파이 잠금
+  }
+  function setDetTab(id){document.querySelectorAll('#detail .dtab').forEach(t=>t.classList.toggle('active',t.dataset.sec===id));}
+  function updateDetailTab(){
+    if(Date.now()<tabLock)return;
+    const tabs=document.querySelector('#detail .dtabs');if(!tabs)return;
+    const line=tabs.getBoundingClientRect().bottom+12;let cur=DET_SECS[0];
+    DET_SECS.forEach(id=>{const el=document.getElementById(id);if(el&&el.getBoundingClientRect().top<=line)cur=id;});
+    setDetTab(cur);
+  }
+  function renderReviewsScreen(){
+    const s=getS(DVID);
+    document.getElementById('revSummary').innerHTML=summaryHTML(s.reviews);
+    document.getElementById('revAll').innerHTML=reviewsHTML(s.reviews);
+    lucide.createIcons();
+  }
+  function toggleLike(e,vid){
+    if(e)e.stopPropagation();
+    const s=getS(vid);s.liked=!s.liked;s.likes+=s.liked?1:-1;saveSocial();
+    hydrateHome();
+    if(document.getElementById('detail').classList.contains('active'))renderDetailSocial();
+    const el=e&&e.currentTarget;if(el){el.classList.remove('pop');void el.offsetWidth;el.classList.add('pop');}
+  }
+
+  /* 후기 작성 시트 */
+  let rvStars=0,rvPhoto=null;
+  function openReviewSheet(){
+    rvStars=0;rvPhoto=null;setStars(0);
+    document.getElementById('rvText').value='';
+    document.getElementById('rvPhotoInput').value='';
+    const p=document.getElementById('rvPhotoPrev');p.style.display='none';p.src='';
+    document.getElementById('reviewSheet').classList.add('show');
+  }
+  function closeReviewSheet(){document.getElementById('reviewSheet').classList.remove('show');}
+  function setStars(n){rvStars=n;document.querySelectorAll('#starInput span').forEach((sp,i)=>sp.classList.toggle('on',i<n));}
+  function onReviewPhoto(input){
+    const f=input.files&&input.files[0];if(!f)return;
+    const reader=new FileReader();
+    reader.onload=ev=>downscale(ev.target.result,480,d=>{rvPhoto=d;const p=document.getElementById('rvPhotoPrev');p.src=d;p.style.display='block';});
+    reader.readAsDataURL(f);
+  }
+  function downscale(dataURL,max,cb){
+    const img=new Image();
+    img.onload=()=>{let w=img.width,h=img.height;if(w>max||h>max){const r=Math.min(max/w,max/h);w=Math.round(w*r);h=Math.round(h*r);}
+      const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);cb(c.toDataURL('image/jpeg',0.7));};
+    img.src=dataURL;
+  }
+  function submitReview(){
+    if(!rvStars){toast('별점을 선택해주세요');return;}
+    const text=document.getElementById('rvText').value.trim();
+    if(!text){toast('후기를 입력해주세요');return;}
+    const s=getS(DVID);
+    s.reviews.unshift({user:'나',rating:rvStars,text:text,photo:rvPhoto,ts:Date.now()});
+    let ok=saveSocial();
+    if(!ok){s.reviews[0].photo=null;ok=saveSocial();}   // 용량 초과 시 사진 제외 후 재시도
+    closeReviewSheet();
+    renderDetailSocial();hydrateHome();
+    if(document.getElementById('reviews').classList.contains('active'))renderReviewsScreen();
+    toast(rvPhoto&&!s.reviews[0].photo?'후기 등록(사진은 용량 제외)':'후기가 등록되었어요','check');
+  }
+
+  const steps=[
+    {letter:'A',title:'파기름 내기',time:'0:08 ~ 0:16',subs:['대파를 송송 썰어 준비한다','냄비에 식용유 2숟갈을 두른다','대파를 넣고 향이 올라올 때까지 볶는다']},
+    {letter:'B',title:'고추참치 볶기',time:'0:16 ~ 0:22',subs:['고추참치 한 캔을 냄비에 넣는다','고춧가루 1숟갈을 더해 색을 낸다','참치와 양념이 고루 섞이도록 볶는다']},
+    {letter:'C',title:'양파 볶기',time:'0:22 ~ 0:29',subs:['양파 반 개를 깍둑썰기해 넣는다','양파가 투명해질 때까지 충분히 볶는다']},
+    {letter:'D',title:'순두부와 물 넣기',time:'0:29 ~ 0:37',subs:['순두부 한 봉을 큼직하게 넣는다','참치캔 한 캔 분량의 물을 부어 농도를 맞춘다']},
+    {letter:'E',title:'애호박 넣기',time:'0:38 ~ 0:43',subs:['애호박을 먹기 좋게 조금 썰어 넣는다','국물이 끓는 동안 살짝 익힌다']},
+    {letter:'F',title:'간 맞추고 버섯 넣기',time:'0:43 ~ 0:50',subs:['멸치액젓 1숟갈로 감칠맛을 더한다','국간장 1숟갈로 간을 맞춘다','팽이버섯을 조금 넣고 함께 끓인다']},
+    {letter:'G',title:'계란과 고명으로 마무리',time:'0:50 ~ 0:56',subs:['날계란 1개를 가운데 넣는다','후추를 가볍게 뿌린다','남겨둔 대파를 올리고 끓여 마무리한다']},
+  ];
+  const cookStageLoops={
+    0:{start:8,end:16},
+    1:{start:16,end:22},
+    2:{start:22,end:29},
+    3:{start:29,end:37},
+    4:{start:38,end:43},
+    5:{start:43,end:50},
+    6:{start:50,end:56}
+  };
+  let cook3CurrentStep=0, cookYoutubeLoopTimer=null, cookHintTimer=null, cookYoutubeAutoplayStarted=false, cookYoutubePlayTimer=null, cookYoutubeMuted=true; // 새로고침 시 소리 꺼짐 상태로 시작
+  let cookHintDismissed=false; // "다시 보지 않기" (세션 한정, 저장 안 함)
+  // 영상 조작 상태 (제스처 · 설정 모달)
+  let cook3Playing=false, cook3Time=0, cook3TimeTimer=null, vgTapTimer=null;
+  let vsLoopOn=false, vsLoopCount=1, vsLoopEnd='stop', vsVol=100, vsSpeed=1;
+  let cook3LoopPlayed=0, cook3SuppressSeek=false; // 구간 반복 완료 횟수 · 단계 자동 전환 시 seek 억제(off=영상 이어짐)
+  function makeCarousel(viewId,trackId){
+    const viewEl=document.getElementById(viewId), trackEl=document.getElementById(trackId);
+    const isCook3=viewId==='cook3';
+    const maxIdx=isCook3?steps.length:steps.length-1; // cook3은 완료 카드(index=steps.length)까지 포함
+    let cur=0, scrollLock=false, dragY=null, dragMoved=false;
+    function build(){
+      let html=steps.map((s,i)=>
+        '<div class="scard" data-i="'+i+'">'+
+          '<div class="sc-side-label"></div>'+
+          '<div class="sc-head"><div class="sc-title"><span class="pl-letter">'+s.letter+'.</span> '+s.title+'</div>'+
+          '<div class="step-badge">'+(i+1)+' / '+steps.length+'</div></div>'+
+          '<ul class="sub-list">'+s.subs.map(t=>'<li>'+t+'</li>').join('')+'</ul>'+
+          '<div class="sc-arrow"><span class="ar-up"><i data-lucide="chevron-up"></i></span><span class="ar-down"><i data-lucide="chevron-down"></i></span></div>'+
+        '</div>').join('');
+      if(isCook3){ // 완료를 캐러셀 마지막 "단계 카드"로 편입 (다음 단계 박스와 동일한 형태·크기)
+        html+='<div class="scard sc-finish" data-i="'+steps.length+'" data-finish="1">'+
+          '<div class="sc-side-label"></div>'+
+          '<div class="sc-head"><div class="sc-title"><span class="fin-badge"><i data-lucide="check"></i></span> 요리 완성</div></div>'+
+          '<div class="sc-arrow"><span class="ar-up"><i data-lucide="chevron-up"></i></span><span class="ar-down"><i data-lucide="chevron-down"></i></span></div>'+
+        '</div>';
+      }
+      trackEl.innerHTML=html;
+    }
+    function layout(){
+      trackEl.querySelectorAll('.scard').forEach(card=>{
+        const i=+card.dataset.i, o=i-cur, ao=Math.abs(o);
+        let y,sc,op;
+        if(o===0){y=0;sc=1;op=1;}
+        else{const dir=o<0?-1:1;const dist=ao===1?128:128+(ao-1)*52;y=dir*dist;sc=ao===1?0.9:0.82;op=ao===1?0.62:(ao===2?0.16:0);}
+        card.style.transform='translateY(calc(-50% + '+y+'px)) scale('+sc+')';
+        card.style.opacity=op;card.style.zIndex=100-ao;card.style.pointerEvents=op>0?'auto':'none';
+        card.classList.toggle('active',o===0);card.classList.toggle('above',o<0);card.classList.toggle('below',o>0);
+        const lbl=card.querySelector('.sc-side-label');
+        const fin=card.dataset.finish;
+        if(lbl)lbl.textContent=fin?(o===0?'':'완료'):(o<0?'이전 단계':o>0?'다음 단계':'');
+      });
+      viewEl.querySelectorAll('.cook-progress .seg').forEach((seg,i)=>{seg.className='seg'+(i<cur?' done':i===cur?' cur':'');});
+      if(viewId==='cook3')syncCookYoutubeStage(cur);
+    }
+    function next(){ hideCookHint(); if(cur<maxIdx){cur++;layout(); if(isCook3&&cur===maxIdx)finishCook(); else toast('"다음 단계" 인식됨','check'); } else { if(isCook3)finishCook(); else show('complete'); } }
+    function prev(){ hideCookHint(); if(cur>0){cur--;layout();toast('이전 단계','arrow-left');} }
+    trackEl.addEventListener('click',e=>{ if(dragMoved)return; const c=e.target.closest('.scard'); if(!c)return; hideCookHint(); if(c.dataset.finish){ if(cur!==maxIdx){cur=maxIdx;layout();} finishCook(); return; } const i=+c.dataset.i; if(i!==cur){cur=i;layout();} });
+    viewEl.addEventListener('wheel',e=>{ if(!viewEl.classList.contains('active')||scrollLock)return; if(e.deltaY>12){scrollLock=true;next();setTimeout(()=>scrollLock=false,650);} else if(e.deltaY<-12){scrollLock=true;prev();setTimeout(()=>scrollLock=false,650);} },{passive:true});
+    viewEl.addEventListener('pointerdown',e=>{dragY=e.clientY;dragMoved=false;});
+    viewEl.addEventListener('pointermove',e=>{if(dragY!==null&&Math.abs(e.clientY-dragY)>8)dragMoved=true;});
+    viewEl.addEventListener('pointerup',e=>{ if(dragY===null)return; const dy=e.clientY-dragY; dragY=null; if(Math.abs(dy)>=40){hideCookHint(); if(dy<0)next(); else prev(); } });
+    viewEl.addEventListener('pointercancel',()=>{dragY=null;});
+    document.addEventListener('keydown',e=>{ if(!viewEl.classList.contains('active'))return; if(e.code==='Space'||e.code==='ArrowRight'||e.code==='ArrowDown'){e.preventDefault();next();} else if(e.code==='ArrowUp'||e.code==='ArrowLeft'){e.preventDefault();prev();} });
+    build();layout();
+    return {reset(){cur=0;layout();}, layout, next, prev, advance(){cur=(cur+1)%steps.length;layout();}, goTo(i){cur=Math.max(0,Math.min(maxIdx,i));layout();}};
+  }
+  const cookCar=makeCarousel('cook','cookTrack');
+  const cook3Car=makeCarousel('cook3','cookTrack3');
+  function startCook(){cookCar.reset();show('cook');setTimeout(openVoice,600);}
+  function postCookYoutube(func,args){
+    const frame=document.getElementById('cook3YoutubePlayer');
+    if(!frame||!frame.contentWindow)return false;
+    frame.contentWindow.postMessage(JSON.stringify({event:'command',func:func,args:args||[]}), 'https://www.youtube.com');
+    return true;
+  }
+  function applyCookYoutubeSound(){
+    if(cookYoutubeMuted){
+      postCookYoutube('mute');
+    }else{
+      postCookYoutube('unMute');
+      postCookYoutube('setVolume',[100]);
+    }
+  }
+  function renderCookYoutubeSoundButton(){
+    const btn=document.getElementById('youtubeSoundToggle');
+    if(!btn)return;
+    btn.classList.toggle('muted',cookYoutubeMuted);
+    btn.innerHTML='<i data-lucide="'+(cookYoutubeMuted?'volume-x':'volume-2')+'"></i><span>5번 영상 소리: '+(cookYoutubeMuted?'꺼짐':'켜짐')+'</span>';
+    lucide.createIcons();
+  }
+  function toggleCookYoutubeSound(){
+    cookYoutubeMuted=!cookYoutubeMuted;
+    applyCookYoutubeSound();
+    renderCookYoutubeSoundButton();
+    syncVsVolUI(); // 영상 설정 모달 볼륨 스위치와 동기화
+  }
+
+  /* ===== 영상 화면 제스처 (단일 탭=재생/일시정지, 좌/우 더블탭=±10초) ===== */
+  function cook3StartTimeTracking(){
+    if(cook3TimeTimer)return;
+    cook3TimeTimer=setInterval(()=>{
+      cook3Time+=1; // 재생 시간 자체 추적(로컬 폴백 대비)
+      const loop=cookStageLoops[cook3CurrentStep];
+      if(!loop)return;
+      if(cook3Time>=loop.end){ // 현재 단계 구간 끝 도달
+        if(vsLoopOn){
+          cook3LoopPlayed++;
+          if(vsLoopCount===0||cook3LoopPlayed<vsLoopCount){ // 무한(0) 또는 지정 횟수 남음 → 구간 처음으로
+            cook3Time=loop.start; postCookYoutube('seekTo',[loop.start,true]);
+          }else if(vsLoopEnd==='next'){ cook3AdvanceStage(); } // 지정 횟수 채움 + '다음 단계로'
+          else{ // 지정 횟수 채움 + '멈춤': 구간 처음으로 되돌리고 일시정지(재생 누르면 다시 N회)
+            cook3LoopPlayed=0; cook3Time=loop.start;
+            postCookYoutube('seekTo',[loop.start,true]); postCookYoutube('pauseVideo');
+            cook3Playing=false; cook3StopTimeTracking();
+            vgFlash('pause'); toast('구간 '+vsLoopCount+'회 반복 완료','check');
+          }
+        }else{ cook3AdvanceStage(); } // 반복 off → 다음 단계로 이어짐
+      }
+    },1000);
+  }
+  function cook3StopTimeTracking(){
+    if(cook3TimeTimer){clearInterval(cook3TimeTimer);cook3TimeTimer=null;}
+  }
+  function vgFlash(icon){
+    const f=document.getElementById('vgFlash');
+    if(!f)return;
+    f.innerHTML='<i data-lucide="'+icon+'"></i>';
+    lucide.createIcons();
+    f.classList.remove('show');void f.offsetWidth;f.classList.add('show');
+    clearTimeout(f._t);f._t=setTimeout(()=>f.classList.remove('show'),620);
+  }
+  function vgSeekFlash(side){
+    const el=document.getElementById(side==='left'?'vgLeft':'vgRight');
+    if(!el)return;
+    el.classList.remove('show');void el.offsetWidth;el.classList.add('show');
+    clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),620);
+  }
+  function videoTogglePlay(){
+    cook3Playing=!cook3Playing;
+    if(cook3Playing){postCookYoutube('playVideo');cook3StartTimeTracking();vgFlash('play');toast('재생','play');}
+    else{postCookYoutube('pauseVideo');cook3StopTimeTracking();vgFlash('pause');toast('일시정지','pause');}
+  }
+  function videoSeek(delta){
+    cook3Time=Math.max(0,cook3Time+delta);
+    postCookYoutube('seekTo',[cook3Time,true]);
+    const side=delta<0?'left':'right';
+    vgSeekFlash(side);
+    toast((delta<0?'뒤로':'앞으로')+' 10초','rotate-'+(delta<0?'ccw':'cw'));
+  }
+  function onVideoTap(e){
+    const layer=e.currentTarget;
+    const rect=layer.getBoundingClientRect();
+    const side=(e.clientX-rect.left)<rect.width/2?'left':'right';
+    if(vgTapTimer){ // 260ms 안에 두 번째 탭 → 더블탭(구간 이동)
+      clearTimeout(vgTapTimer);vgTapTimer=null;
+      videoSeek(side==='left'?-10:10);
+    }else{
+      vgTapTimer=setTimeout(()=>{vgTapTimer=null;videoTogglePlay();},260);
+    }
+  }
+
+  /* ===== 영상 설정 모달 ===== */
+  function openVideoSettings(){
+    syncVsVolUI();
+    document.getElementById('videoSettings').classList.add('show');
+    lucide.createIcons();
+  }
+  function closeVideoSettings(){
+    document.getElementById('videoSettings').classList.remove('show');
+  }
+  // 구간 반복 on/off
+  function toggleVsLoop(){
+    vsLoopOn=!vsLoopOn;
+    document.getElementById('vsLoopSw').classList.toggle('on',vsLoopOn);
+    document.getElementById('vsLoopCount').classList.toggle('collapsed',!vsLoopOn);
+    document.getElementById('vsLoopEnd').classList.toggle('collapsed',!vsLoopOn);
+    if(vsLoopOn){startCookYoutubeLoop(cook3CurrentStep);toast('구간 반복 켜짐','repeat');}
+    else{stopCookYoutubeLoop();toast('구간 반복 꺼짐','repeat');}
+  }
+  function setVsLoopCount(n,el){
+    vsLoopCount=n;
+    document.querySelectorAll('#vsLoopCount .vchip').forEach(b=>b.classList.remove('on'));
+    if(el)el.classList.add('on');
+    toast('반복 '+(n===0?'무한':n+'회'),'repeat');
+  }
+  // 반복 종료 후 동작: 'stop'(그 자리 멈춤) | 'next'(다음 단계로)
+  function setVsLoopEnd(mode,el){
+    vsLoopEnd=mode;
+    document.querySelectorAll('#vsLoopEnd .vchip').forEach(b=>b.classList.remove('on'));
+    if(el)el.classList.add('on');
+    toast(mode==='stop'?'반복 후 멈춤':'반복 후 다음 단계로',mode==='stop'?'pause':'chevrons-down');
+  }
+  // 볼륨 on/off + 슬라이더 (좌측 "5번 영상 소리" 토글과 동기화)
+  function toggleVsVol(){
+    cookYoutubeMuted=!cookYoutubeMuted;
+    applyCookYoutubeSound();
+    renderCookYoutubeSoundButton();
+    syncVsVolUI();
+    toast(cookYoutubeMuted?'볼륨 꺼짐':'볼륨 켜짐',cookYoutubeMuted?'volume-x':'volume-2');
+  }
+  function setVsVol(v){
+    vsVol=parseInt(v,10);
+    document.getElementById('vsVolVal').textContent=vsVol;
+    if(!cookYoutubeMuted)postCookYoutube('setVolume',[vsVol]);
+  }
+  function syncVsVolUI(){ // cookYoutubeMuted → 모달 볼륨 스위치/슬라이더 반영
+    const sw=document.getElementById('vsVolSw');const wrap=document.getElementById('vsVolWrap');
+    if(!sw)return;
+    sw.classList.toggle('on',!cookYoutubeMuted);
+    if(wrap)wrap.classList.toggle('collapsed',cookYoutubeMuted);
+  }
+  // 재생 속도
+  function setVsSpeed(rate,el){
+    vsSpeed=rate;
+    postCookYoutube('setPlaybackRate',[rate]);
+    document.querySelectorAll('#vsSpeed .vchip').forEach(b=>b.classList.remove('on'));
+    if(el)el.classList.add('on');
+    toast('재생 속도 '+rate+'×','gauge');
+  }
+  function stopCookYoutubeLoop(){
+    if(cookYoutubeLoopTimer){clearInterval(cookYoutubeLoopTimer);cookYoutubeLoopTimer=null;}
+  }
+  // 해당 단계 구간 시작으로 이동 + 반복 카운트 리셋 (실제 반복/진행은 cook3StartTimeTracking tick이 담당)
+  function startCookYoutubeLoop(stepIndex){
+    const loop=cookStageLoops[stepIndex];
+    if(!loop)return false;
+    cook3LoopPlayed=0;
+    cook3Time=loop.start;
+    postCookYoutube('seekTo',[loop.start,true]);
+    return true;
+  }
+  function syncCookYoutubeStage(stepIndex){
+    cook3CurrentStep=stepIndex;
+    cook3LoopPlayed=0;
+    // 자동 재생 중이고 seek 억제 상태가 아니면 해당 구간 시작으로 정렬(수동 단계 이동 등)
+    if(cookYoutubeAutoplayStarted&&!cook3SuppressSeek)startCookYoutubeLoop(stepIndex);
+  }
+  // 다음 단계로 자동 전환 (반복 off=영상 자연 연속 / on 완료=다음 구간 시작부터)
+  function cook3AdvanceStage(){
+    const nx=cook3CurrentStep+1;
+    if(nx>=steps.length){ cook3StopTimeTracking(); cook3Playing=false; return; } // 마지막 단계 끝 → 정지
+    if(!vsLoopOn)cook3SuppressSeek=true; // 반복 off: 영상 자연 연속(다음 구간으로 점프 안 함)
+    cook3Car.goTo(nx);
+    cook3SuppressSeek=false;
+  }
+  function showCookHint(){
+    const h=document.getElementById('cookHint');
+    if(!h)return;
+    cookYoutubeAutoplayStarted=false;
+    if(cookYoutubePlayTimer){clearInterval(cookYoutubePlayTimer);cookYoutubePlayTimer=null;}
+    stopCookYoutubeLoop();
+    if(cookHintDismissed){ hideCookHint(); return; } // 이번 세션에 "다시 보지 않기" 선택 시 힌트 건너뛰고 바로 영상 재생
+    h.classList.remove('show');
+    void h.offsetWidth;
+    h.classList.add('show');
+    if(cookHintTimer){clearTimeout(cookHintTimer);cookHintTimer=null;} // 자동으로 사라지지 않음 — 사용자 액션(탭/다시 보지 않기/단계 전환)으로만 닫힘
+    lucide.createIcons();
+  }
+  function playCookYoutubeAfterGuide(){
+    const cook=document.getElementById('cook3');
+    const frame=document.getElementById('cook3YoutubePlayer');
+    if(!cook||!cook.classList.contains('active')||!frame||cookYoutubeAutoplayStarted)return;
+    cookYoutubeAutoplayStarted=true;
+    if(cookYoutubePlayTimer)clearInterval(cookYoutubePlayTimer);
+    startCookYoutubeLoop(cook3CurrentStep);
+    let tries=0;
+    const send=()=>{
+      if(!cook.classList.contains('active')){
+        clearInterval(cookYoutubePlayTimer);cookYoutubePlayTimer=null;stopCookYoutubeLoop();return;
+      }
+      tries++;
+      applyCookYoutubeSound();
+      postCookYoutube('playVideo');
+      cook3Playing=true;cook3StartTimeTracking(); // 가이드 종료 후 자동 재생 → 재생 상태 동기화
+      if(tries>=2){clearInterval(cookYoutubePlayTimer);cookYoutubePlayTimer=null;}
+    };
+    send();
+    cookYoutubePlayTimer=setInterval(send,800);
+  }
+  function hideCookHint(){
+    const h=document.getElementById('cookHint');
+    if(h)h.classList.remove('show');
+    if(cookHintTimer){clearTimeout(cookHintTimer);cookHintTimer=null;}
+    playCookYoutubeAfterGuide();
+  }
+  // "다시 보지 않기": 이번 세션 동안 힌트를 다시 띄우지 않음(값 저장 안 함)
+  function dismissHintForever(e){
+    if(e){e.stopPropagation();}
+    cookHintDismissed=true;
+    hideCookHint();
+  }
+  let tsVal=3, timerId=null, timerLeft=0, timerTotal=0, timerPaused=false, stageTimerHideId=null;
+  function openTimer(){document.getElementById('tsMin').textContent=tsVal;document.getElementById('timerSheet').classList.add('show');}
+  function closeTimer(){document.getElementById('timerSheet').classList.remove('show');}
+  function tsAdjust(d){tsVal=Math.max(1,Math.min(99,tsVal+d));document.getElementById('tsMin').textContent=tsVal;}
+  function tsSet(v){tsVal=v;document.getElementById('tsMin').textContent=tsVal;}
+  function fmtTime(s){return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');}
+  function setTimerButtons(on){
+    document.querySelectorAll('.js-timer-label').forEach(l=>{l.textContent='타이머';});
+    document.querySelectorAll('.js-timer-btn').forEach(b=>b.classList.toggle('running',on));
+  }
+  function renderStageTimerControls(done){
+    const pause=document.getElementById('stageTimerPause');
+    if(!pause)return;
+    pause.disabled=!!done;
+    pause.setAttribute('aria-label',timerPaused?'타이머 재개':'타이머 일시정지');
+    const state=timerPaused?'play':'pause';
+    if(pause.dataset.state!==state){
+      pause.dataset.state=state;
+      pause.innerHTML='<i data-lucide="'+state+'"></i>';
+      lucide.createIcons();
+    }
+  }
+  function updateStageTimer(left,total,done){
+    const el=document.getElementById('stageTimer'), time=document.getElementById('stageTimerTime');
+    if(!el||!time)return;
+    el.classList.add('show');el.classList.toggle('done',!!done);
+    time.textContent=done?'완료':fmtTime(Math.max(0,left));
+    renderStageTimerControls(done);
+  }
+  function hideStageTimer(){
+    const el=document.getElementById('stageTimer');
+    if(el)el.classList.remove('show','done','ringing');
+  }
+  function finishTimer(){
+    clearInterval(timerId);timerId=null;timerPaused=false;
+    setTimerButtons(false);
+    updateStageTimer(0,timerTotal,true);
+    const el=document.getElementById('stageTimer');if(el)el.classList.add('ringing'); // 사용자가 멈출 때까지 계속 울림(부르르 흔들림)
+    toast('타이머 완료!','timer');
+  }
+  function timerTick(){
+    timerLeft=Math.max(0,timerLeft-1);
+    if(timerLeft<=0){finishTimer();return;}
+    updateStageTimer(timerLeft,timerTotal,false);
+  }
+  function startUnifiedTimer(seconds,showToast){
+    timerTotal=seconds;timerLeft=seconds;
+    if(stageTimerHideId){clearTimeout(stageTimerHideId);stageTimerHideId=null;}
+    {const _st=document.getElementById('stageTimer');if(_st)_st.classList.remove('ringing');} // 재시작 시 이전 울림 해제
+    if(timerId)clearInterval(timerId);
+    timerPaused=false;
+    setTimerButtons(true);
+    updateStageTimer(timerLeft,timerTotal,false);
+    timerId=setInterval(timerTick,1000);
+    if(showToast)toast(Math.round(seconds/60)+'분 타이머 시작','timer');
+  }
+  function toggleStageTimerPause(){
+    if(!timerTotal||timerLeft<=0)return;
+    timerPaused=!timerPaused;
+    if(timerPaused){
+      if(timerId){clearInterval(timerId);timerId=null;}
+      updateStageTimer(timerLeft,timerTotal,false);
+      toast('타이머 일시정지','pause');
+    }else{
+      updateStageTimer(timerLeft,timerTotal,false);
+      timerId=setInterval(timerTick,1000);
+      toast('타이머 재개','play');
+    }
+  }
+  function cancelStageTimer(){
+    if(timerId){clearInterval(timerId);timerId=null;}
+    if(stageTimerHideId){clearTimeout(stageTimerHideId);stageTimerHideId=null;}
+    timerLeft=0;timerTotal=0;timerPaused=false;
+    setTimerButtons(false);
+    hideStageTimer();
+    toast('타이머 취소','x');
+  }
+  function startCountdown(){
+    closeTimer();
+    startUnifiedTimer(tsVal*60,true);
+  }
+  let handsfree=true;
+  function toggleHandsfree(){
+    handsfree=!handsfree;
+    const btn=document.getElementById('hfBtn');
+    btn.classList.toggle('off',!handsfree);
+    btn.innerHTML='<i data-lucide="'+(handsfree?'mic':'mic-off')+'"></i>';
+    lucide.createIcons();
+    toast(handsfree?'핸즈프리 모드 켜짐 — 음성으로 진행해요':'핸즈프리 모드 꺼짐',handsfree?'mic':'mic-off');
+  }
+  /* 조리 모드(신) 실시간 음성 패널 — 자동 데모 */
+  let hf3On=false, vpi=0, vpTimers=[], vpMicMuted=false;
+  // 대화 패널 마이크 음소거 토글
+  function toggleVpMic(){
+    vpMicMuted=!vpMicMuted;
+    const panel=document.getElementById('vpanel');
+    panel.classList.toggle('mic-muted',vpMicMuted);
+    const btn=panel.querySelector('.vp-mic');
+    if(btn){btn.innerHTML='<i data-lucide="'+(vpMicMuted?'mic-off':'mic')+'"></i>';lucide.createIcons();}
+    if(vpMicMuted){
+      vpClear(); // 진행만 멈춤 — 마지막 대화 내역을 그대로 유지(별도 안내 문구 없음)
+    }else if(hf3On){
+      vpTimers.push(setTimeout(runVp,800)); // 음소거 해제 시 데모 재개
+    }
+    toast(vpMicMuted?'마이크 음소거':'마이크 켜짐',vpMicMuted?'mic-off':'mic');
+  }
+  const vpScript=[
+    {u:'양파 얼마나 익혀야 해?', a:'투명해질 때까지 중불에서 2분 정도면 충분해요.'},
+    {u:'다음 단계로 넘어가줘', a:'네, 다음 단계로 넘어갈게요. 이어서 진행해주세요.', next:true},
+    {u:'간장 없는데 대체할 거 있어?', a:'멸치액젓이나 소금으로 대신해도 돼요. 액젓은 비슷한 양, 소금은 조금씩 넣어보세요.'},
+    {u:'타이머 3분 맞춰줘', a:'3분 타이머를 시작했어요. 그동안 대파를 썰어두면 좋아요.', timer:180},
+  ];
+  function vpClear(){vpTimers.forEach(t=>clearTimeout(t));vpTimers=[];}
+  function vpType(el,text,speed,done){
+    el.textContent='';let i=0;
+    (function step(){
+      if(!hf3On)return;
+      el.textContent=text.slice(0,++i);
+      if(i<text.length)vpTimers.push(setTimeout(step,speed));
+      else if(done)vpTimers.push(setTimeout(done,300));
+    })();
+  }
+  function vpThinking(el){
+    el.innerHTML='<span class="vp-thinking-wave" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></span>';
+  }
+  function runVp(){
+    if(!hf3On)return;
+    const ex=vpScript[vpi%vpScript.length];
+    const panel=document.getElementById('vpanel'), u=document.getElementById('vpUser'), a=document.getElementById('vpAi');
+    panel.classList.remove('idle','thinking','answering');panel.classList.add('listening');
+    a.textContent='';
+    vpType(u,ex.u,45,()=>{                       // ① 사용자 발화 타이핑
+      if(!hf3On)return;
+      panel.classList.remove('listening');panel.classList.add('thinking');
+      vpThinking(a);                               // ② 추론(생각 중)
+      vpTimers.push(setTimeout(()=>{
+        if(!hf3On)return;
+        panel.classList.remove('thinking');panel.classList.add('answering');
+        vpType(a,ex.a,28,()=>{                     // ③ 답변 스트리밍
+          if(!hf3On)return;
+          panel.classList.remove('answering');panel.classList.add('listening');
+          if(ex.timer)startVpTimer(ex.timer);        // 타이머 설정 발화면 타이머 패널 시작
+          if(ex.next)cook3Car.advance();             // "다음 단계" 발화면 실제 카드 전진
+          vpi++;                                    // ④ 답변 유지 후 다음 발화로
+          vpTimers.push(setTimeout(()=>{ if(hf3On){u.textContent='듣고 있어요…';runVp();} },5000));
+        });
+      },900));
+    });
+  }
+  function startVpTimer(sec){
+    startUnifiedTimer(sec,false);
+  }
+  function toggleHf3(){
+    hf3On=!hf3On;
+    const panel=document.getElementById('vpanel');
+    vpClear();
+    hideCookHint();
+    if(hf3On){
+      // 버튼 누르면 즉시 대화 패널 표시 (대기=듣고있어요 가운데 크게)
+      vpMicMuted=false;panel.classList.remove('mic-muted');
+      {const mb=panel.querySelector('.vp-mic');if(mb){mb.innerHTML='<i data-lucide="mic"></i>';lucide.createIcons();}}
+      document.getElementById('vpUser').textContent='듣고 있어요';
+      document.getElementById('vpAi').textContent='';
+      panel.classList.remove('thinking','answering','listening');panel.classList.add('open','idle');
+      vpi=0;
+      vpTimers.push(setTimeout(runVp,1500));      // 잠시 뒤 대화 데모 시작
+    }else{
+      panel.classList.remove('open','idle','listening','thinking','answering');
+    }
+  }
+  function hf3Reset(){
+    vpClear();
+    const panel=document.getElementById('vpanel');if(panel)panel.classList.remove('open','idle','listening','thinking','answering');
+    hf3On=false;
+    closeVideoSettings(); // 화면 이탈 시 영상 설정 모달 닫기
+    cook3StopTimeTracking();cook3Playing=false; // 재생 시간 추적 정리
+  }
+  function openIngredients(){document.getElementById('ingSheet').classList.add('show');}
+  function closeIngredients(){document.getElementById('ingSheet').classList.remove('show');}
+  function openVoice(){document.getElementById('voiceModal').classList.add('show');document.getElementById('cook').classList.add('voice-open');setActiveNav('voice');}
+  function closeVoice(){
+    document.getElementById('voiceModal').classList.remove('show');
+    document.getElementById('cook').classList.remove('voice-open');
+    if(document.getElementById('cook2').classList.contains('active'))setActiveNav('cook2');
+    else if(document.getElementById('cook3').classList.contains('active'))setActiveNav('cook3');
+    else if(document.getElementById('cook').classList.contains('active'))setActiveNav('cook');
+  }
+
+  let tt;
+  function toast(msg,icon){
+    const t=document.getElementById('toast');
+    t.innerHTML=(icon?'<i data-lucide="'+icon+'"></i>':'')+'<span>'+msg+'</span>';
+    lucide.createIcons();
+    t.classList.add('show');
+    clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1800);
+  }
+
+  function initCookYoutube(){
+    const mount=document.getElementById('cook3Youtube');
+    if(!mount)return;
+    const videoId=mount.dataset.videoId;
+    if(!/^https?:$/.test(location.protocol)){
+      mount.innerHTML='<div class="video-fallback"><i data-lucide="play-circle"></i><b>로컬 서버로 열면 영상이 재생돼요</b><span>YouTube 임베드는 파일 직접 열기에서 오류 153이 날 수 있어요.</span><a href="https://youtu.be/'+videoId+'" target="_blank" rel="noopener">YouTube에서 보기</a></div>';
+      lucide.createIcons();
+      return;
+    }
+    const params=new URLSearchParams({
+      rel:'0',
+      modestbranding:'1',
+      controls:'0',
+      disablekb:'1',
+      fs:'0',
+      iv_load_policy:'3',
+      playsinline:'1',
+      enablejsapi:'1',
+      origin:location.origin
+    });
+    const iframe=document.createElement('iframe');
+    iframe.id='cook3YoutubePlayer';
+    iframe.src='https://www.youtube.com/embed/'+videoId+'?'+params.toString();
+    iframe.title=mount.dataset.title||'YouTube video player';
+    iframe.allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+    iframe.referrerPolicy='origin';
+    iframe.allowFullscreen=true;
+    mount.replaceWith(iframe);
+    applyCookYoutubeSound();
+  }
+
+  lucide.createIcons();
+  renderCookYoutubeSoundButton();
+  syncVsVolUI(); // 초기 음소거 상태를 설정 모달 볼륨 UI에도 반영
+  setActiveNav('home');
+  seedSocial();
+  renderHomeSections();
+  hydrateHome();
+  renderDetailSocial();
+  initCookYoutube();
+  {const db=document.querySelector('#detail .body');if(db)db.addEventListener('scroll',updateDetailTab);}
+
+  // 플로우 보드(iframe)에서 특정 화면을 바로 표시하기 위한 해시 처리
+  if(window.self!==window.top){const sn=document.querySelector('.sidenav');if(sn)sn.style.display='none';const yb=document.querySelector('.youtube-sound-toggle');if(yb)yb.style.display='none';const tb=document.querySelector('.theme-bar');if(tb)tb.style.display='none';const tt=document.querySelector('.tint-toggle');if(tt)tt.style.display='none';const mt=document.querySelector('.mode-toggle');if(mt)mt.style.display='none';const dt=document.querySelector('.dev-timer');if(dt)dt.style.display='none';}
+  // 테마 전환: :root[data-theme] 교체로 앱 전체 브랜드 색 변경
+  function setTheme(name,el){
+    document.documentElement.dataset.theme=name;
+    document.querySelectorAll('.theme-swatch').forEach(b=>b.classList.remove('active'));
+    if(el)el.classList.add('active');
+  }
+  // 배경 틴트 켜기/끄기: OFF면 배경을 순수 중립색으로(브랜드 포인트는 유지)
+  function toggleTint(){
+    const el=document.documentElement;
+    const willOff=el.getAttribute('data-tint')!=='off';
+    if(willOff)el.setAttribute('data-tint','off'); else el.removeAttribute('data-tint');
+    document.getElementById('tintToggle').textContent='배경 틴트: '+(willOff?'꺼짐':'켜짐');
+  }
+  // 앱 전역 다크/라이트 모드 토글: :root[data-mode]로 뉴트럴 명암 축 반전(세션 한정, 저장 안 함)
+  function toggleMode(){
+    const el=document.documentElement;
+    const willDark=el.getAttribute('data-mode')!=='dark';
+    if(willDark)el.setAttribute('data-mode','dark'); else el.removeAttribute('data-mode');
+    const btn=document.getElementById('modeToggle');
+    btn.innerHTML=(willDark?'<i data-lucide="moon"></i><span>모드: 다크</span>':'<i data-lucide="sun"></i><span>모드: 라이트</span>');
+    if(window.lucide)lucide.createIcons();
+  }
+  function applyHash(){
+    const h=location.hash.replace('#','');
+    if(!h)return;
+    closeSheet();closeVoice();closeIngredients();closeTimer();hf3Reset();
+    switch(h){
+      case 'home': show('home');break;
+      case 'sheet': show('home');openSheet();break;
+      case 'loading': show('loading');break;
+      case 'detail': show('detail');break;
+      case 'cook': cookCar.reset();show('cook');break;
+      case 'ingredients': cookCar.reset();show('cook');openIngredients();break;
+      case 'timer': cookCar.reset();show('cook');openTimer();break;
+      case 'voice': cookCar.reset();show('cook');openVoice();break;
+      case 'cook3': cook3Car.reset();show('cook3');break;
+      case 'cook2': show('cook2');break;
+      case 'complete': show('complete');break;
+      case 'reviews': show('reviews');break;
+    }
+  }
+  window.addEventListener('hashchange',applyHash);
+  applyHash();
+
+</script>
+<script>
+(function(){function apply(){var r=document.documentElement;
+ r.setAttribute('data-theme','tomato');   // 레드(토마토 #EF5A3C)
+ r.setAttribute('data-tint','off');        // 배경 틴트 꺼짐
+ r.removeAttribute('data-mode');           // 라이트
+ ['themeBar','tintToggle','soundToggle','modeToggle','devTimer'].forEach(function(id){var e=document.getElementById(id);if(e)e.remove();});
+ document.querySelectorAll('.theme-bar,.tint-toggle,.youtube-sound-toggle,.mode-toggle,.dev-timer').forEach(function(e){e.remove();});
+}
+window.addEventListener('load',function(){apply();setTimeout(apply,300);});
+document.addEventListener('DOMContentLoaded',apply);
+})();
+</script>
+</body>
+</html>

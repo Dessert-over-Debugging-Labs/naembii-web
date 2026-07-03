@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>app.html 화면별 기대 요소·라벨 체크리스트</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: #F6F0E8;
+      color: #231A14;
+      line-height: 1.6;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background-color: #FFFCF7;
+      border-radius: 8px;
+      padding: 2rem;
+      box-shadow: 0 1px 3px rgba(35, 26, 20, 0.1);
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin: 0 0 0.5rem 0;
+      color: #231A14;
+      word-break: keep-all;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin: 2rem 0 1rem 0;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid #D66B42;
+      color: #231A14;
+      word-break: keep-all;
+    }
+
+    h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin: 1.5rem 0 0.75rem 0;
+      color: #231A14;
+      word-break: keep-all;
+    }
+
+    .intro {
+      background-color: #FBE7DE;
+      border-left: 4px solid #D66B42;
+      padding: 1rem;
+      margin: 1.5rem 0;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      word-break: keep-all;
+    }
+
+    .intro p {
+      margin: 0.5rem 0;
+    }
+
+    p {
+      margin: 0.5rem 0 1rem 0;
+      word-break: keep-all;
+    }
+
+    ul, ol {
+      margin: 1rem 0 1rem 1.5rem;
+      word-break: keep-all;
+    }
+
+    li {
+      margin: 0.5rem 0;
+      word-break: keep-all;
+    }
+
+    code {
+      font-family: 'Monaco', 'Courier New', monospace;
+      background-color: #F6F0E8;
+      padding: 0.2em 0.4em;
+      border-radius: 3px;
+      font-size: 0.9em;
+      color: #D66B42;
+    }
+
+    pre {
+      background-color: #F6F0E8;
+      border: 1px solid #DDD1C6;
+      border-radius: 4px;
+      padding: 1rem;
+      overflow-x: auto;
+      margin: 1rem 0;
+      font-family: 'Monaco', 'Courier New', monospace;
+      font-size: 0.85rem;
+      line-height: 1.4;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      overflow-x: auto;
+    }
+
+    table th {
+      background-color: #FBE7DE;
+      color: #231A14;
+      padding: 0.75rem;
+      text-align: left;
+      font-weight: 600;
+      border: 1px solid #DDD1C6;
+      word-break: keep-all;
+    }
+
+    table td {
+      padding: 0.75rem;
+      border: 1px solid #DDD1C6;
+      word-break: keep-all;
+    }
+
+    table tr:nth-child(even) {
+      background-color: #FFFCF7;
+    }
+
+    table tr:nth-child(odd) {
+      background-color: #F6F0E8;
+    }
+
+    .card {
+      background-color: #FFFCF7;
+      border: 1px solid #DDD1C6;
+      border-radius: 6px;
+      padding: 1rem;
+      margin: 1rem 0;
+    }
+
+    .card-header {
+      background-color: #FBE7DE;
+      padding: 0.75rem;
+      border-radius: 4px 4px 0 0;
+      font-weight: 600;
+      color: #231A14;
+      margin: -1rem -1rem 1rem -1rem;
+      word-break: keep-all;
+    }
+
+    .tag {
+      display: inline-block;
+      background-color: #D66B42;
+      color: #FFFCF7;
+      padding: 0.25rem 0.5rem;
+      border-radius: 3px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-right: 0.5rem;
+      margin-bottom: 0.5rem;
+      word-break: keep-all;
+    }
+
+    .dynamic-marker {
+      display: inline-block;
+      background-color: #E1875F;
+      color: #FFFCF7;
+      padding: 0.15rem 0.4rem;
+      border-radius: 2px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-left: 0.3rem;
+      word-break: keep-all;
+    }
+
+    .section {
+      margin: 2rem 0;
+    }
+
+    .subsection {
+      background-color: #FFFCF7;
+      padding: 1.5rem;
+      margin: 1rem 0;
+      border-left: 3px solid #D66B42;
+      border-radius: 4px;
+    }
+
+    .warning {
+      background-color: #FBE7DE;
+      border-left: 4px solid #E94B6D;
+      padding: 1rem;
+      margin: 1rem 0;
+      border-radius: 4px;
+    }
+
+    .flow-diagram {
+      background-color: #F6F0E8;
+      border: 1px solid #DDD1C6;
+      padding: 1.5rem;
+      margin: 1rem 0;
+      border-radius: 6px;
+      font-family: 'Monaco', 'Courier New', monospace;
+      font-size: 0.9rem;
+      overflow-x: auto;
+      word-break: keep-all;
+    }
+
+    strong {
+      font-weight: 600;
+      color: #D66B42;
+    }
+
+    em {
+      font-style: italic;
+      color: #6E6258;
+    }
+
+    .meta {
+      font-size: 0.9rem;
+      color: #6E6258;
+      margin: 0.5rem 0;
+      word-break: keep-all;
+    }
+
+    .palette-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 0.75rem 0;
+      word-break: keep-all;
+    }
+
+    .palette-swatch {
+      width: 60px;
+      height: 40px;
+      border-radius: 4px;
+      border: 1px solid #DDD1C6;
+      flex-shrink: 0;
+    }
+
+    .section-title-bar {
+      background-color: #FBE7DE;
+      padding: 0.75rem 1rem;
+      border-radius: 4px;
+      margin: 1.5rem 0 1rem 0;
+      font-weight: 600;
+      color: #231A14;
+      word-break: keep-all;
+    }
+
+    .flow-content {
+      background-color: #FFFCF7;
+      padding: 1rem;
+      margin: 0.5rem 0;
+      border-left: 2px solid #D66B42;
+      word-break: keep-all;
+    }
+
+    .toc {
+      background-color: #F6F0E8;
+      border-radius: 6px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .toc h3 {
+      margin-top: 0;
+    }
+
+    .toc ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .toc li {
+      margin: 0.5rem 0;
+      padding-left: 1.5rem;
+      position: relative;
+    }
+
+    .toc li:before {
+      content: "→";
+      position: absolute;
+      left: 0;
+      color: #D66B42;
+      font-weight: bold;
+    }
+
+    .toc a {
+      color: #D66B42;
+      text-decoration: none;
+    }
+
+    .toc a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 1rem;
+      }
+
+      h1 {
+        font-size: 1.5rem;
+      }
+
+      h2 {
+        font-size: 1.25rem;
+      }
+
+      table {
+        font-size: 0.9rem;
+      }
+
+      table th, table td {
+        padding: 0.5rem;
+      }
+    }
+
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: #120F0C;
+      }
+
+      .container {
+        background-color: #1C1712;
+        color: #FFFCF7;
+      }
+
+      h1, h2, h3 {
+        color: #FFFCF7;
+      }
+
+      p, li {
+        color: #FFFCF7;
+      }
+
+      code {
+        background-color: #050505;
+        color: #FBE7DE;
+      }
+
+      pre {
+        background-color: #050505;
+        border-color: #DDD1C6;
+        color: #FFFCF7;
+      }
+
+      table th {
+        background-color: #FBE7DE;
+        color: #231A14;
+      }
+
+      table td {
+        border-color: #DDD1C6;
+      }
+
+      table tr:nth-child(odd) {
+        background-color: #1C1712;
+      }
+
+      table tr:nth-child(even) {
+        background-color: #262220;
+      }
+
+      .card {
+        background-color: #1C1712;
+        border-color: #DDD1C6;
+      }
+
+      .card-header {
+        background-color: #D66B42;
+        color: #1C1712;
+      }
+
+      .subsection {
+        background-color: #1C1712;
+      }
+
+      .palette-swatch {
+        border-color: #DDD1C6;
+      }
+
+      .intro, .warning {
+        background-color: #D66B42;
+        color: #1C1712;
+      }
+
+      .flow-diagram, .toc {
+        background-color: #050505;
+        border-color: #DDD1C6;
+      }
+
+      .section-title-bar {
+        background-color: #D66B42;
+        color: #1C1712;
+      }
+
+      .flow-content {
+        background-color: #1C1712;
+        border-color: #D66B42;
+      }
+
+      em {
+        color: #E1875F;
+      }
+
+      .meta {
+        color: #C99B4A;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>app.html 그라운드-트루스 체크리스트</h1>
+    <p style="margin-bottom: 2rem; font-size: 0.95rem;">(Figma 이식 채점용)</p>
+
+    <div class="intro">
+      <p><strong>출처:</strong> <code>/Users/osein/cook-assistance-wireframe/app.html</code> (마크업·CSS <code>:root</code>·JS <code>nav</code>/<code>show</code>/<code>applyHash</code>), <code>scripts/ralph-figma/prd.json</code>, <code>docs/FIGMA_WIREFRAME_STORIES_ko.md</code>.</p>
+      <p><strong>원칙:</strong> 모든 라벨은 app.html에서 <strong>그대로 인용</strong>. <code>[동적]</code> = JS가 주입/치환하는 텍스트(정적 마크업에 없음). 팔레트는 app.html <code>:root</code> 실측값 기준.</p>
+    </div>
+
+    <div class="toc">
+      <h3>목차</h3>
+      <ul>
+        <li><a href="#palette">팔레트/모드</a></li>
+        <li><a href="#home">home</a></li>
+        <li><a href="#detail">detail (레시피 상세, 순두부 바인딩)</a></li>
+        <li><a href="#cook3">cook3 (주력 신 조리모드, 다크)</a></li>
+        <li><a href="#cook">cook (레거시 구 조리모드, 다크)</a></li>
+        <li><a href="#cook2">cook2 (레거시 핸즈프리 정적 스냅샷, 다크)</a></li>
+        <li><a href="#loading">loading (영상 분석 로딩)</a></li>
+        <li><a href="#complete">complete (완료)</a></li>
+        <li><a href="#tipwrite">tipWrite (팁 남기기)</a></li>
+        <li><a href="#cookbook">cookbook (요리북)</a></li>
+        <li><a href="#reviews">reviews (후기 전체)</a></li>
+        <li><a href="#sheet">sheet (영상 링크 등록 바텀시트)</a></li>
+        <li><a href="#flow">플로우 그래프</a></li>
+      </ul>
+    </div>
+
+    <section id="palette" class="section">
+      <h2>팔레트/모드 (전역 기준, app.html:10~39)</h2>
+
+      <h3>라이트(크림)</h3>
+      <div class="palette-row">
+        <div class="palette-swatch" style="background-color: #F6F0E8; border: 2px solid #D66B42;"></div>
+        <span><code>--bg:#F6F0E8</code></span>
+      </div>
+      <div class="palette-row">
+        <div class="palette-swatch" style="background-color: #FFFCF7;"></div>
+        <span><code>--surface:#FFFCF7</code></span>
+      </div>
+      <div class="palette-row">
+        <div class="palette-swatch" style="background-color: #231A14;"></div>
+        <span><code>--ink:#231A14</code></span>
+      </div>
+      <div class="palette-row">
+        <div class="palette-swatch" style="background-color: #6E6258;"></div>
+        <span><code>--gray:#6E6258</code></span>
+      </div>
+      <div class="palette-row">
+        <div class="palette-swatch" style="background-color: #DDD1C6;"></div>
+        <span><code>--line:#DDD1C6</code></span>
+      </div>
+      <p class="meta">적용: home, cookbook, loading, detail, reviews, complete, tipWrite, sheet.</p>
+
+      <h3>다크</h3>
+      <p><code>.view.dark</code>는 <code>--bg:#120F0C</code>, <code>--surface:#1C1712</code>. cook3는 자체 토큰 <code>--cook-bg:#050505</code>/<code>--cook-panel:#111111</code>.</p>
+      <p class="meta">적용: cook3, cook, cook2.</p>
+
+      <h3>주색 및 액센트</h3>
+      <ul>
+        <li><strong>테라코타(주색):</strong> <code>--primary:#D66B42</code>, <code>--primary-l:#E1875F</code></li>
+        <li><strong>⚠ 초록 혼동:</strong> <code>--green:var(--primary)</code> = <strong>초록 아님, 테라코타</strong>. 진짜 초록은 성공색 <code>--fresh:#3FA76F</code>뿐.</li>
+        <li><strong>골드:</strong> <code>--accent:#C99B4A</code></li>
+        <li><strong>베리:</strong> <code>--berry:#E94B6D</code></li>
+      </ul>
+
+      <div class="warning">
+        <strong>⚠️ 팔레트 불일치(중요):</strong> prd.json 대부분의 acceptanceCriteria가 "그린 #46B581"을 토큰으로 명시하지만, app.html <code>:root</code>에는 #46B581이 <strong>없다</strong>. prd 후반 스토리(<code>home-DONE</code>, <code>FIX-home-color</code>)가 이를 인정하고 테라코타 #D66B42로 보정. 채점 시 app.html 실측(#D66B42)이 정답.
+      </div>
+    </section>
+
+    <section id="home" class="section">
+      <h2>home</h2>
+      <p class="meta"><strong>prd 대응:</strong> F0, SEC-A, K-home, D-home-01~10, home-DONE, NOTE-home, FIX-home-color, home-FULL</p>
+
+      <h3>핵심 구조 (top→bottom, app.html:951~995)</h3>
+      <ul>
+        <li>상태바 (<code>.statusbar</code>) — 9:41 + 신호/와이파이/배터리 아이콘</li>
+        <li>헤더 (<code>.nav.home-nav</code>) — 브랜드 락업(로고마크+워드마크+부제) + 헤드라인 + 우측 알림/프로필 아이콘</li>
+        <li>본문 (<code>.body</code>)
+          <ul>
+            <li>퀵임포트 오렌지 카드 (<code>.quick-import</code>)</li>
+            <li>검색바 (<code>.search</code>)</li>
+            <li>카테고리 원형칩 스크롤 (<code>.cats</code>) — <strong>7개</strong></li>
+            <li>섹션 "당신만을 위한 추천" (<code>.section-t</code>) + 리스트 <code>#personalList</code></li>
+            <li>섹션 "인기 레시피" + 가로스크롤 <code>#popScroll</code></li>
+            <li>섹션 "오늘의 추천" + 가로스크롤 <code>#recScroll</code></li>
+          </ul>
+        </li>
+        <li>FAB (<code>.fab</code>, CSS <code>display:none</code> — 기본 숨김)</li>
+        <li>하단 탭바 (<code>.bottom-tabs</code>) — 홈/등록/요리북</li>
+      </ul>
+
+      <h3>핵심 한글 라벨 (verbatim)</h3>
+      <ul>
+        <li><strong>브랜드:</strong> <code>Cookflow</code> (워드마크, 영어 브랜드), <code>영상 레시피 요리 도우미</code> (부제)</li>
+        <li><strong>헤드라인:</strong> <code>오늘 뭐 만들까요?</code> (마크업은 <code>오늘 뭐 만들까요&lt;em&gt;?&lt;/em&gt;</code>)</li>
+        <li><strong>퀵임포트:</strong> <code>영상 링크로 바로 요리하기</code> / <code>재료, 단계, 구간을 먼저 확인하고 시작</code></li>
+        <li><strong>검색바:</strong> <code>먹고 싶은 요리를 검색해보세요</code></li>
+        <li><strong>카테고리 7:</strong> <code>셰프</code> <code>급상승</code> <code>한식</code> <code>분식</code> <code>일식</code> <code>양식</code> <code>디저트</code></li>
+        <li><strong>섹션 제목:</strong> <code>당신만을 위한 추천</code> · <code>인기 레시피</code> · <code>오늘의 추천</code>, 각 <code>전체</code> 더보기</li>
+        <li><strong>추천 카드 <span class="dynamic-marker">동적</span>, <code>#personalList</code>←<code>personalHTML</code>/PERSONAL_RECS+RECIPES, app.html:1832~1847,1867:</strong>
+          <ul>
+            <li>카드1: 사유 <code>뜨끈한 국물 요리를 요즘 많이 땡겨하시네요?</code> / 제목 <code>순두부찌개</code> / 메타 <code>백종원 · 2인분 · 30분 · 기록 기반</code></li>
+            <li>카드2: 사유 <code>새우 들어간 레시피를 자주 저장한 당신을 위한 추천</code> / 제목 <code>감바스 알 아히요</code> / 메타 <code>성시경 · 2인분 · 25분 · 기록 기반</code></li>
+          </ul>
+        </li>
+        <li><strong>인기/오늘의 추천 카드 <span class="dynamic-marker">동적</span>, <code>#popScroll</code>/<code>#recScroll</code>←<code>cardHTML</code>/RECIPES:</strong> <code>순두부찌개</code>(백종원·2인분) <code>감바스 알 아히요</code>(성시경) <code>아보카도 비빔밥</code>(다이어터 레시피·1인분) <code>까르보나라</code>(Chef Mama) <code>딸기 티라미수</code>(쿠킹트리·4인분) <code>명란 파스타</code>(혼밥 레시피·1인분) 등</li>
+        <li><strong>하단 탭:</strong> <code>홈</code> <code>등록</code> <code>요리북</code></li>
+      </ul>
+
+      <h3>버튼/인터랙션 → 목적지</h3>
+      <ul>
+        <li>추천/인기 카드 <code>onclick=goDetail(vid)</code> → <strong>detail</strong> (goDetail→setActiveRecipe→show('detail')); ⚠ detail은 항상 순두부에 바인딩</li>
+        <li>퀵임포트 카드 <code>openSheet()</code> → <strong>sheet</strong>(바텀시트 오픈)</li>
+        <li>FAB <code>openSheet()</code> → <strong>sheet</strong> (단 CSS로 숨김)</li>
+        <li>하단 탭 홈 <code>appTab('home')</code>→home / 등록 <code>appTab('add')</code>→<strong>sheet</strong>(openSheet) / 요리북 <code>appTab('book')</code>→<strong>cookbook</strong></li>
+        <li><strong>의미 없는 stub(토스트만, dead-UI 주의):</strong> 검색바 <code>toast('검색은 프로토타입에서 생략했어요')</code>; 카테고리칩 <code>homeCategory()</code>→토스트; 섹션 전체 <code>homeMore()</code>→토스트; 알림 <code>toast('새 레시피 추천 3개가 있어요')</code>; 프로필 <code>appTab('settings')</code>→색상 시트</li>
+      </ul>
+
+      <h3>팔레트/모드</h3>
+      <p>라이트(크림). 주색 테라코타. ⚠ prd D-home-06 초기 노트가 카테고리/추천을 초록(#46B581)으로 그렸다가 <code>home-DONE</code>/<code>FIX-home-color</code>에서 테라코타로 보정 → 정답은 테라코타.</p>
+    </section>
+
+    <section id="detail" class="section">
+      <h2>detail (레시피 상세, 순두부 바인딩)</h2>
+      <p class="meta"><strong>prd 대응:</strong> SEC-B, K-detail, D-detail-01~09, detail-DONE, NOTE-detail, detail-FULL</p>
+
+      <h3>핵심 구조 (app.html:1043~1105)</h3>
+      <ul>
+        <li>상태바</li>
+        <li>헤더 (<code>.nav</code>) — 뒤로(‹) / 제목 <code>레시피</code> / 공유(share-2)</li>
+        <li>본문
+          <ul>
+            <li>영상 히어로 (<code>.hero</code>) — 썸네일 + 재생아이콘 + 정직 배지 + 플랫폼 배지</li>
+            <li>상세 본문 (<code>.detail-body</code>): 제목+저장버튼(<code>.dhead</code>) / 평점 <code>#detRating</code> / 설명 문단 / <code>먼저 만든 사람의 팁</code> 스트립 / 추출 요약칩(<code>.extract-summary</code>) / 메타칩3(<code>.meta</code>) / 탭(<code>.dtabs</code>) / 재료(주재료·양념) / 레시피 스텝 <code>#detSteps</code> / 후기 영역</li>
+          </ul>
+        </li>
+        <li>하단 플로팅 CTA (<code>.cta-bar.float-start</code>)</li>
+      </ul>
+
+      <h3>핵심 한글 라벨</h3>
+      <ul>
+        <li><strong>헤더:</strong> <code>레시피</code></li>
+        <li><strong>정직 배지:</strong> <code>정적 미리보기</code> (<code>#detailVideoHonesty</code>), <strong>플랫폼 배지:</strong> <code>YouTube</code> (<code>#detailPlatformBadge</code>, <span class="dynamic-marker">동적</span>—소스별 치환)</li>
+        <li><strong>제목:</strong> <code>백종원이 알려주는 칼칼한 순두부찌개</code> (<code>#detailTitle</code>, 마크업 <code>&lt;br&gt;</code> 포함)</li>
+        <li><strong>저장수:</strong> <code>#detLikeN</code> 초기 <code>0</code> <span class="dynamic-marker">동적</span> — ⚠ prd D-detail-04 "저장수 342"와 불일치(app 실제는 social localStorage 기반, 정적 342 아님)</li>
+        <li><strong>평점 <code>#detRating</code>, 후기 목록 <code>#detReviews</code>/<code>#detSummary</code>, 레시피 스텝 <code>#detSteps</code> 모두 <span class="dynamic-marker">동적</span></strong> (<code>renderDetailSocial</code>). prd "⭐4.7 후기 3개"는 시드값 기준</li>
+        <li><strong>설명:</strong> <code>칼칼한 국물에 몽글몽글한 순두부가 어우러지는…</code> (<code>#detailSummary</code>)</li>
+        <li><strong>팁 스트립:</strong> <code>먼저 만든 사람의 팁</code> / <code>청양고추는 반만 넣어도 충분히 칼칙해요. 남은 국물에는 밥을 넣어 마무리해도 좋아요.</code></li>
+        <li><strong>추출 요약칩:</strong> <code>5단계 추출</code> <code>재료 9개</code> <code>타임스탬프 연동</code></li>
+        <li><strong>메타칩:</strong> <code>30분</code>/<code>조리시간</code>, <code>2인분</code>/<code>분량</code>, <code>쉬움</code>/<code>난이도</code></li>
+        <li><strong>탭:</strong> <code>재료</code> <code>레시피</code> <code>리뷰</code></li>
+        <li><strong>재료 그룹:</strong> <code>재료 9개</code>, <code>주재료</code>(순두부/양파/애호박/청양고추/계란), <code>양념</code>(다진마늘/진간장/멸치액젓/코인육수) — 정적 마크업 존재</li>
+        <li><strong>후기 영역:</strong> <code>후기</code>, 버튼 <code>후기 쓰기</code></li>
+        <li><strong>CTA:</strong> <code>요리 시작하기</code></li>
+      </ul>
+
+      <h3>버튼/인터랙션 → 목적지</h3>
+      <ul>
+        <li>뒤로 <code>show('home')</code> → <strong>home</strong></li>
+        <li>히어로 <code>videoFallback()</code> → 토스트(정직 안내), 네비게이션 아님</li>
+        <li>저장 <code>toggleLike()</code> → 좋아요 토글(localStorage)</li>
+        <li>공유 <code>toast('공유 링크가 복사되었어요')</code> → stub</li>
+        <li>후기 쓰기 <code>openReviewSheet()</code> → 후기 작성 시트</li>
+        <li><code>#detMore</code> <code>show('reviews')</code> → <strong>reviews</strong> (⚠ <code>display:none</code> 기본—리뷰 임계 넘을 때만 노출)</li>
+        <li><strong>CTA <code>요리 시작하기</code> <code>startCook()</code> → cook3</strong> (cook3Car.reset→show('cook3'))</li>
+      </ul>
+
+      <h3>정직성 요소</h3>
+      <ul>
+        <li><code>정적 미리보기</code> 배지(거짓 재생 표기 금지). 재생아이콘은 장식.</li>
+      </ul>
+
+      <h3>팔레트/모드</h3>
+      <p>라이트(크림). CTA 버튼 테라코타 그라데이션.</p>
+    </section>
+
+    <section id="cook3" class="section">
+      <h2>cook3 (주력 신 조리모드, 다크)</h2>
+      <p class="meta"><strong>prd 대응:</strong> K-cook3, D-cook3-01~08, cook3-DONE, NOTE-cook3, cook3-FULL</p>
+
+      <h3>핵심 구조 (app.html:1119~1153)</h3>
+      <ul>
+        <li>상태바(다크)</li>
+        <li>헤더(<code>.nav.dark</code>) — 뒤로 / 제목 <code>조리 모드</code>(14px) / 도움말(help-circle 아이콘, 텍스트 없음)</li>
+        <li>영상 영역(<code>.cook-video</code> + <code>#cook3Player</code>)</li>
+        <li>단계 진행 도트(<code>.cook-progress</code>) — 5칸(done,done,cur,공,공)</li>
+        <li>톤 선택칩(<code>.cook-tone</code>) — 4개</li>
+        <li>스와이프 힌트(<code>.cook-swipe-hint</code>)</li>
+        <li>단계 카드 캐러셀(<code>.cook-body</code>><code>#cookTrack3</code>) <span class="dynamic-marker">동적</span>—makeCarousel.build()</li>
+        <li>타이머 배지(<code>#vpTimer</code>)</li>
+        <li>하단 컨트롤(<code>.cook-ctrl</code>) — 4버튼 / 핸즈프리 켜면 음성패널(<code>#vpanel</code>)로 morph</li>
+      </ul>
+
+      <h3>핵심 한글 라벨</h3>
+      <ul>
+        <li><strong>헤더:</strong> <code>조리 모드</code></li>
+        <li><strong>톤칩4:</strong> <code>화이트</code> <code>허브</code> <code>스틸</code> <code>크림</code></li>
+        <li><strong>스와이프 힌트:</strong> <code>단계 카드를 위아래로 스와이프</code></li>
+        <li><strong>타이머 배지:</strong> <code>3:00</code> / <code>타이머</code></li>
+        <li><strong>하단 컨트롤4:</strong> <code>타이머</code> / <code>핸즈프리 꺼짐</code> / <code>재료</code> / <code>요리 완성</code></li>
+        <li><strong>단계 카드 <span class="dynamic-marker">동적</span>, steps 배열 app.html:2107~2113, build():</strong> <code>1단계.</code>~<code>5단계.</code> 접두 + 제목 <code>육수 준비하기</code>/<code>고추기름 내기</code>/<code>채소 익히기</code>/<code>순두부 끓이기</code>/<code>마무리하기</code>, 배지 <code>1 / 5</code>…<code>5 / 5</code>, 서브 리스트(예: <code>냄비에 물 250ml를 붓는다</code>), 구간참조 <code>0:00 ~ 0:35 · YouTube 구간</code></li>
+        <li><strong>음성패널(핸즈프리 ON):</strong> 정직 라벨 <code>음성 인식 시뮬레이션</code>, <code>듣고 있어요</code>(<code>#vpUser</code> 초기), AI 답변 <code>#vpAi</code> <span class="dynamic-marker">동적</span>, vpScript</li>
+      </ul>
+
+      <h3>버튼/인터랙션 → 목적지</h3>
+      <ul>
+        <li>뒤로 <code>show('detail')</code> → <strong>detail</strong></li>
+        <li>도움말 <code>openVoice()</code> → 음성 가이드 모달</li>
+        <li>영상 <code>videoFallback()</code> → 토스트(정직 안내)</li>
+        <li>톤칩 <code>setCookTone()</code> → 색상 버전 전환(같은 화면)</li>
+        <li>타이머 <code>openTimer()</code> / 재료 <code>openIngredients()</code> → 시트</li>
+        <li>핸즈프리 <code>toggleHf3()</code> → 음성패널 morph(같은 화면)</li>
+        <li><strong><code>요리 완성</code> <code>finishCooking()</code> → complete</strong> (hf3Reset→show('complete'))</li>
+        <li>캐러셀: 스와이프/휠/클릭으로 단계 이동. <strong>마지막 단계에서 next()→<code>finishCooking()</code>→complete</strong>. ⚠ 이전/다음 버튼 없음(스와이프 페이싱).</li>
+      </ul>
+
+      <h3>정직성 요소 (핵심)</h3>
+      <ul>
+        <li><strong>영상:</strong> <code>.cook-video</code> <code>data-clip="정적 미리보기 · 실제 재생은 실기기에서 확인"</code> (app.html:1122) — <strong>속성값</strong>, 정적 DOM 텍스트 아님(JS 소비).</li>
+        <li><strong>CLAUDE.md 명시:</strong> cook3는 재생 가능 환경(데스크톱/실기기)에서 <strong>실제 YouTube 구간 재생</strong>하고 캡션이 <code>N단계 … 원본 영상 재생 중</code>으로 바뀜 → 이 "재생 중"은 <strong>진짜 재생</strong>이라 정직(가짜 상태 아님). 재생 불가 시 정적 썸네일 + 정직 폴백 유지(try-real-else-honest).</li>
+        <li><strong>음성패널</strong> <code>음성 인식 시뮬레이션</code>(시뮬레이션 명시).</li>
+      </ul>
+
+      <h3>팔레트/모드</h3>
+      <p>다크. cook3 전용 토큰(<code>--cook-bg:#050505</code>/<code>--cook-panel:#111111</code>), 톤별 액센트(mono #f8f8f4/herb #76D99E/steel #92C5FF/cream #F3E2BC). 완성 원형 버튼은 성공색 <code>--fresh</code> 초록.</p>
+    </section>
+
+    <section id="cook" class="section">
+      <h2>cook (레거시 구 조리모드, 다크)</h2>
+      <p class="meta"><strong>prd 대응:</strong> K-cook, D-cook-01~06, cook-DONE, NOTE-cook</p>
+
+      <h3>핵심 구조 (app.html:1156~1171)</h3>
+      <ul>
+        <li>상태바(다크) / 헤더(뒤로/제목/도움말) / 영상(<code>.cook-video</code>) / 진행 도트5 / 캐러셀(<code>#cookTrack</code> <span class="dynamic-marker">동적</span>) / 하단 컨트롤 3버튼</li>
+      </ul>
+
+      <h3>핵심 한글 라벨</h3>
+      <ul>
+        <li><strong>헤더 제목:</strong> <code>기본 조리 모드</code></li>
+        <li><strong>하단 컨트롤3:</strong> <code>타이머</code> / <code>핸즈프리 모드</code> / <code>재료 보기</code></li>
+        <li><strong>단계 카드:</strong> cook3와 동일 steps 배열 <span class="dynamic-marker">동적</span></li>
+      </ul>
+
+      <h3>버튼/인터랙션 → 목적지</h3>
+      <ul>
+        <li>뒤로 <code>show('detail')</code> → <strong>detail</strong></li>
+        <li>도움말 <code>openVoice()</code>, 타이머 <code>openTimer()</code>, 핸즈프리 <code>toggleHandsfree()</code>, 재료 <code>openIngredients()</code> (전부 같은 화면 시트/토글)</li>
+        <li>⚠ <strong>인앱 진입점 없음</strong>: <code>startCook()</code>은 cook3만 감. cook은 사이드바 <code>nav('cook')</code>/<code>#cook</code>(또는 <code>#ingredients</code>/<code>#timer</code>)로만 도달 = 레거시/개발용.</li>
+      </ul>
+
+      <h3>팔레트/모드</h3>
+      <p>다크(<code>.view.dark</code>, #120F0C).</p>
+    </section>
+
+    <section id="cook2" class="section">
+      <h2>cook2 (레거시 핸즈프리 정적 스냅샷, 다크)</h2>
+      <p class="meta"><strong>prd 대응:</strong> K-cook2, D-cook2-01~03, cook2-DONE, NOTE-cook2</p>
+
+      <h3>핵심 구조 (app.html:1174~1208)</h3>
+      <ul>
+        <li>상태바(다크) / 헤더(뒤로/제목/도움말) / 영상 / 진행 도트5 / <strong>정적</strong> 단계 카드1(<code>.scard.active.static</code>) / 듣기 바(<code>.hf-listen</code>) / 채팅(<code>.hf-chat</code>) — 전부 정적 마크업</li>
+      </ul>
+
+      <h3>핵심 한글 라벨 (전부 정적)</h3>
+      <ul>
+        <li><strong>헤더 제목:</strong> <code>핸즈프리 모드</code></li>
+        <li><strong>단계 카드:</strong> <code>3단계.</code> <code>채소 익히기</code>, 배지 <code>3 / 5</code>, 서브 <code>양파 1/2개를 넣고 볶는다</code>/<code>애호박 1/3개를 넣어 숨을 죽인다</code>/<code>청양고추 1개로 칼칼함을 더한다</code></li>
+        <li><strong>듣기 바:</strong> <code>듣고 있어요…</code>, 타이머 <code>2:45</code></li>
+        <li><strong>채팅 버블:</strong>
+          <ul>
+            <li>AI <code>핸즈프리 모드예요. 궁금한 건 편하게 말씀하세요.</code></li>
+            <li>user <code>다음 단계로 가줘</code></li>
+            <li>AI <code>D단계, 순두부 끓이기로 넘어갈게요. 준비한 육수를 붓고 끓여주세요.</code></li>
+            <li>user <code>간장 없는데 대체할 수 있는 거 있나?</code></li>
+            <li>AI <code>진간장 대신 멸치액젓이나 소금으로 간을 맞춰도 돼요. 액젓은 비슷한 양, 소금은 조금씩 넣어가며 맞춰보세요.</code></li>
+            <li>user <code>타이머 3분 맞춰줘</code></li>
+            <li>AI <code>3분 타이머를 시작했어요. 그동안 대파를 썰어두면 좋아요.</code></li>
+          </ul>
+        </li>
+      </ul>
+
+      <h3>버튼/인터랙션 → 목적지</h3>
+      <ul>
+        <li>뒤로 <code>show('detail')</code> → <strong>detail</strong>. 도움말 <code>openVoice()</code>.</li>
+        <li>⚠ <strong>인앱 진입점 없음</strong>: 사이드바 <code>nav('cook2')</code>/<code>#cook2</code>로만 도달 = 레거시. 채팅/듣기 바는 정적(상호작용 없음).</li>
+      </ul>
+
+      <h3>팔레트/모드</h3>
+      <p>다크.</p>
+    </section>
+
+    <section id="loading" class="section">
+      <h2>loading (영상 분석 로딩)</h2>
+      <p class="meta"><strong>prd 대응:</strong> K-loading, D-loading-01~04, loading-DONE, NOTE-loading, loading-FULL</p>
+
+      <h3>핵심 구조 (app.html:1028~1040)</h3>
+      <ul>
+        <li>상태바 / 중앙 로딩 블록(<code>.loading</code>): 스피너 + 제목·부제 + 단계 로그 4줄(<code>.steps-log</code>)</li>
+      </ul>
+
+      <h3>핵심 한글 라벨</h3>
+      <ul>
+        <li><strong>제목:</strong> <code>레시피를 분석하고 있어요</code></li>
+        <li><strong>부제:</strong> <code>영상을 단계별로 쪼개는 중이에요.</code></li>
+        <li><strong>단계 로그4:</strong> <code>영상 불러오기</code> <code>재료·분량 추출</code> <code>조리 단계 분해</code> <code>핸즈프리용 재구성</code></li>
+      </ul>
+
+      <h3>버튼/인터랙션 → 목적지</h3>
+      <ul>
+        <li>버튼 없음. 자동 전이: <code>analyze()</code>가 <code>show('loading')</code> 후 로그를 순차 <code>.done</code> 처리, <code>setTimeout(()=>show('detail'))</code> → <strong>detail</strong>로 자동 이동.</li>
+      </ul>
+
+      <h3>정직성 요소</h3>
+      <ul>
+        <li>4단계 로그가 순차적으로 done 처리(가짜 즉시완료 아님). <code>.done</code> 상태 <span class="dynamic-marker">동적</span></li>
+      </ul>
+
+      <h3>팔레트/모드</h3>
+      <p>라이트(크림). 스피너/체크 성공색.</p>
+    </section>
+
+    <section id="complete" class="section">
+      <h2>complete (완료)</h2>
+      <p class="meta"><strong>prd 대응:</strong> SEC-C, K-complete, D-complete-01~05, complete-DONE, NOTE-complete</p>
+
+      <h3>핵심 구조 (app.html:1211~1233)</h3>
+      <ul>
+        <li>상태바 / 완료 뷰(<code>.done-view</code>): 배지(party-popper) + 헤드라인 + 설명 + 통계3(<code>.done-stat</code>) + 팁 카드(<code>.done-card</code>) + 액션(<code>.done-actions</code>) + 홈으로 버튼</li>
+      </ul>
+
+      <h3>핵심 한글 라벨</h3>
+      <ul>
+        <li><strong>헤드라인:</strong> <code>순두부찌개 완성!</code></li>
+        <li><strong>설명:</strong> <code>방금 만든 요리 기록이 요리북에 추가됐어요. 다음에 다시 만들 때 오늘의 메모와 팁을 함께 볼 수 있어요.</code></li>
+        <li><strong>통계3:</strong> <code>완성</code>/<code>요리 기록</code>, <code>팁 1개</code>/<code>참고한 팁</code>, <code>30분</code>/<code>조리 시간</code></li>
+        <li><strong>팁 카드:</strong> <code>오늘 도움 된 팁</code> / <code>청양고추는 반만 넣어도 충분히 칼칙해요. 남은 국물에는 밥을 넣어 마무리해도 좋아요.</code></li>
+        <li><strong>액션 버튼:</strong> <code>다른 사용자를 위한 팁 남기기</code> / <code>후기 남기기</code> / <code>공유</code> / <code>홈으로</code></li>
+      </ul>
+
+      <h3>버튼/인터랙션 → 목적지</h3>
+      <ul>
+        <li><code>다른 사용자를 위한 팁 남기기</code> <code>show('tipWrite')</code> → <strong>tipWrite</strong></li>
+        <li><code>후기 남기기</code> <code>openReviewSheet()</code> → 후기 시트</li>
+        <li><code>공유</code> <code>toast('공유 기능은 다음 버전에서 지원해요')</code> → stub</li>
+        <li><code>홈으로</code> <code>show('home')</code> → <strong>home</strong></li>
+      </ul>
+
+      <h3>불일치 (app vs prd)</h3>
+      <ul>
+        <li><strong>prd D-complete-04 라벨 <code>다시 요리하기</code> — app.html에 없음</strong>(액션은 팁/후기/공유/홈으로). "다시 요리하기" 버튼 부재.</li>
+        <li><strong>prd D-complete-03 <code>요약(소요 시간·난이도·완성 기록)</code> — app 통계는 <code>완성</code>/<code>팁 1개</code>/<code>30분</code></strong>(난이도 칩 없음).</li>
+      </ul>
+
+      <h3>팔레트/모드</h3>
+      <p>라이트(크림). 무의미 0-지표 없음(완성/팁1개/30분 유의미).</p>
+    </section>
+
+    <section id="tipwrite" class="section">
+      <h2>tipWrite (팁 남기기)</h2>
+      <p class="meta"><strong>prd 대응:</strong> K-tipWrite, D-tipWrite-01~06, tipWrite-DONE, NOTE-tipWrite</p>
+
+      <h3>핵심 구조 (app.html:1236~1251)</h3>
+      <ul>
+        <li>상태바 / 헤더(뒤로/제목) / 팁 폼(<code>.tip-form</code>): 히어로 문구 + 팁 유형 태그(<code>.tip-tags</code>) + 텍스트박스(<code>.tip-box</code>>textarea) + 등록/나중에 버튼</li>
+      </ul>
+
+      <h3>핵심 한글 라벨</h3>
+      <ul>
+        <li><strong>헤더 제목:</strong> <code>팁 남기기</code></li>
+        <li><strong>히어로:</strong> <code>다음 사람에게 어떤 팁을 남길까요?</code>(마크업 <code>&lt;br&gt;</code>) / <code>내가 실제로 만들어본 뒤 알게 된 조절 포인트를 남겨두면 같은 레시피를 보는 사람에게 보여줘요.</code></li>
+        <li><strong>팁 유형 태그4:</strong> <code>맛 조절</code> <code>재료 대체</code> <code>불 조절</code> <code>보관</code></li>
+        <li><strong>textarea 기본값/placeholder:</strong> <code>청양고추는 반만 넣어도 충분히 칼칙했어요. 남은 국물에는 밥을 넣어 마무리하면 좋아요.</code></li>
+        <li><strong>버튼:</strong> <code>팁 등록</code> / <code>나중에 하기</code></li>
+      </ul>
+
+      <h3>버튼/인터랙션 → 목적지</h3>
+      <ul>
+        <li>뒤로 <code>show('complete')</code> → <strong>complete</strong></li>
+        <li>팁 유형 태그 <code>selectTipTag()</code> → 선택 토글(같은 화면)</li>
+        <li><code>팁 등록</code> <code>submitTip()</code> → 토스트 후 <code>show('complete')</code> → <strong>complete</strong></li>
+        <li><code>나중에 하기</code> <code>show('complete')</code> → <strong>complete</strong></li>
+      </ul>
+
+      <h3>불일치 (app vs prd)</h3>
+      <ul>
+        <li><strong>prd D-tipWrite-03 <code>별점 선택</code>(G2 라벨 <code>별점</code>), D-tipWrite-05 <code>사진 첨부</code>(<code>사진 추가</code>), D-tipWrite-04(<code>팁을 남겨주세요</code>) — app.html에 별점/사진 첨부 UI 없음</strong>. app 실제는 팁 유형 태그4 + textarea. placeholder도 <code>팁을 남겨주세요</code>가 아님(위 인용문).</li>
+      </ul>
+
+      <h3>팔레트/모드</h3>
+      <p>라이트(크림).</p>
+    </section>
+
+    <section id="cookbook" class="section">
+      <h2>cookbook (요리북)</h2>
+      <p class="meta"><strong>prd 대응:</strong> K-cookbook, D-cookbook-01~06, cookbook-DONE, NOTE-cookbook</p>
+
+      <h3>핵심 구조 (app.html:998~1025)</h3>
+      <ul>
+        <li>상태바 / 헤더(제목 + 검색 아이콘) / 본문: 책 헤드(<code>.book-head</code>) + 통계3(<code>.book-stats</code>) + 필터칩(<code>.book-filter</code>) + 섹션 최근 조리(<code>#cookedScroll</code> <span class="dynamic-marker">동적</span>) + 섹션 저장 레시피(<code>#gridMine</code> <span class="dynamic-marker">동적</span>) + 기록 메모(<code>.book-note</code>) / 하단 탭바</li>
+      </ul>
+
+      <h3>핵심 한글 라벨</h3>
+      <ul>
+        <li><strong>헤더:</strong> <code>요리북</code></li>
+        <li><strong>책 헤드:</strong> <code>내가 만든 요리와 저장한 레시피</code>(마크업 <code>&lt;br&gt;</code>) / <code>완성 기록, 다시 만들고 싶은 메뉴, 저장해둔 영상 레시피를 한 곳에서 봅니다.</code></li>
+        <li><strong>통계3:</strong> <code>2</code>/<code>최근 조리</code>, <code>6</code>/<code>저장 레시피</code>, <code>3</code>/<code>남긴 팁</code></li>
+        <li><strong>필터칩4:</strong> <code>전체</code> <code>최근 조리</code> <code>저장한 레시피</code> <code>남긴 팁</code></li>
+        <li><strong>섹션 제목:</strong> <code>최근 조리</code> · <code>저장한 레시피</code>, 각 <code>전체</code></li>
+        <li><strong>기록 메모:</strong> <code>최근 기록 메모</code> / <code>감바스는 소금을 줄여 다시 만들 후보로 저장됐어요. 다음 조리 때 메모가 먼저 표시됩니다.</code></li>
+        <li><strong>최근 조리 카드 <span class="dynamic-marker">동적</span>, COOKED_RECIPES app.html:1840~1843:</strong> <code>순두부찌개</code>(백종원 · 어제 저녁, <code>완성 기록</code>/<code>팁 남김</code>), <code>감바스 알 아히요</code>(성시경 · 지난 주말, <code>재조리 후보</code>/<code>소금 줄이기</code>)</li>
+        <li><strong>저장 레시피 그리드 <span class="dynamic-marker">동적</span>, <code>#gridMine</code>←RECIPES</strong></li>
+        <li><strong>하단 탭:</strong> <code>홈</code> <code>등록</code> <code>요리북</code>(active)</li>
+      </ul>
+
+      <h3>버튼/인터랙션 → 목적지</h3>
+      <ul>
+        <li>헤더 검색 <code>toast('요리북 검색은 다음 버전에서 지원해요')</code> → stub</li>
+        <li>필터칩 <code>bookFilter()</code> → 토스트 stub</li>
+        <li>섹션 전체 <code>homeMore()</code> → 토스트 stub</li>
+        <li>카드 <code>goDetail(vid)</code> → <strong>detail</strong></li>
+        <li>하단 탭 홈→<strong>home</strong> / 등록→<strong>sheet</strong> / 요리북→cookbook</li>
+      </ul>
+
+      <h3>팔레트/모드</h3>
+      <p>라이트(크림).</p>
+    </section>
+
+    <section id="reviews" class="section">
+      <h2>reviews (후기 전체)</h2>
+      <p class="meta"><strong>prd 대응:</strong> K-reviews, D-reviews-01~05, reviews-DONE, NOTE-reviews</p>
+
+      <h3>핵심 구조 (app.html:1108~1116)</h3>
+      <ul>
+        <li>상태바 / 헤더(뒤로/제목/빈 우측) / 본문: 평점 요약 <code>#revSummary</code> <span class="dynamic-marker">동적</span> + 후기 목록 <code>#revAll</code> <span class="dynamic-marker">동적</span> / 하단 CTA 바</li>
+      </ul>
+
+      <h3>핵심 한글 라벨</h3>
+      <ul>
+        <li><strong>헤더 제목:</strong> <code>후기</code></li>
+        <li><strong>CTA 버튼:</strong> <code>후기 쓰기</code></li>
+        <li><strong>평점 요약·후기 카드(작성자/별점/본문/사진) 전부 <span class="dynamic-marker">동적</span></strong> — <code>renderReviewsScreen()</code>가 <code>#revSummary</code>/<code>#revAll</code> 채움(localStorage social 시드). 정적 마크업에 후기 텍스트 없음.</li>
+      </ul>
+
+      <h3>버튼/인터랙션 → 목적지</h3>
+      <ul>
+        <li>뒤로 <code>show('detail')</code> → <strong>detail</strong></li>
+        <li><code>후기 쓰기</code> <code>openReviewSheet()</code> → 후기 작성 시트(제출 <code>submitReview</code>)</li>
+      </ul>
+
+      <h3>팔레트/모드</h3>
+      <p>라이트(크림).</p>
+    </section>
+
+    <section id="sheet" class="section">
+      <h2>sheet (영상 링크 등록 바텀시트)</h2>
+      <p class="meta"><strong>prd 대응:</strong> K-sheet, D-sheet-01~06, sheet-DONE, NOTE-sheet, sheet-FULL</p>
+      <div class="warning">
+        <strong>⚠️ <code>&lt;div class="view"&gt;</code>가 아니라 오버레이 시트</strong>(<code>.scrim</code>#scrim + <code>.sheet</code>#sheet, app.html:1254~1280). home/cookbook 위에 뜸.
+      </div>
+
+      <h3>핵심 구조</h3>
+      <ul>
+        <li>스크림(<code>.scrim</code>, rgba(0,0,0,.4))</li>
+        <li>시트 패널(<code>.sheet</code>): 그래버(<code>.grabber</code>) + 제목 + 부제 + 링크 입력 필드(<code>.field</code>) + 붙여넣기 노트(<code>.paste-note</code>) + 분석 미리보기(<code>.import-preview</code>) + 입력완료/취소 버튼</li>
+      </ul>
+
+      <h3>핵심 한글 라벨</h3>
+      <ul>
+        <li><strong>제목:</strong> <code>레시피 등록하기</code></li>
+        <li><strong>부제:</strong> <code>영상 링크만 붙여넣으면 앱이 출처와 형식을 자동으로 감지해 단계별 레시피로 바꿉니다.</code></li>
+        <li><strong>링크 입력 기본값:</strong> <code>https://youtu.be/21j8SASqLJU</code> (input value)</li>
+        <li><strong>붙여넣기 노트:</strong> <code>YouTube, Shorts, Instagram 링크를 그대로 붙여넣으세요. 어디서 가져왔는지는 따로 입력하지 않아도 됩니다.</code></li>
+        <li><strong>미리보기:</strong> 상태 <code>분석 완료</code>, 제목 <code>백종원이 알려주는 칼칼한 순두부찌개</code>, 메타 <code>백종원 · YouTube · 긴 영상 · 전문 요리사</code>, 정직 라벨 <code>정적 썸네일 미리보기 · 실제 재생은 원본 앱/실기기에서 확인</code>, 태그 <code>5단계</code> <code>재료 9개</code> <code>구간 연결</code> (<span class="dynamic-marker">동적</span>—<code>updateImportPreviewFromUrl</code> 소스별 치환)</li>
+        <li><strong>버튼:</strong> <code>입력 완료</code> / <code>취소</code></li>
+      </ul>
+
+      <h3>버튼/인터랙션 → 목적지</h3>
+      <ul>
+        <li>스크림/<code>취소</code> <code>closeSheet()</code> → 시트 닫힘</li>
+        <li><strong><code>입력 완료</code> <code>analyze()</code> → loading → (자동) detail</strong></li>
+        <li>링크 input <code>updateImportPreviewFromUrl()</code> → 미리보기 갱신</li>
+      </ul>
+
+      <h3>정직성 요소</h3>
+      <ul>
+        <li><code>정적 썸네일 미리보기 · 실제 재생은 원본 앱/실기기에서 확인</code>, 상태 <code>분석 완료</code>(가짜 아님).</li>
+      </ul>
+
+      <h3>불일치 (app vs prd)</h3>
+      <ul>
+        <li><strong>prd G2 라벨: D-sheet-03 <code>영상 링크 등록</code>, D-sheet-06 <code>분석 시작</code>. app 실제는 <code>레시피 등록하기</code>(제목)·<code>입력 완료</code>(버튼)</strong>. prd notes가 스토리 라벨 우선 정책을 명시(=의도적 불일치). 채점 시 app 원문 우선.</li>
+        <li><strong>prd D-sheet-05 "플랫폼 배지(YouTube/Instagram)"는 실제로 배지가 아니라 붙여넣기 힌트 문장</strong>(위 인용).</li>
+      </ul>
+
+      <h3>팔레트/모드</h3>
+      <p>라이트(크림). 링크 아이콘 <code>#FF0000</code>(유튜브 레드). 버튼 테라코타.</p>
+    </section>
+
+    <section id="flow" class="section">
+      <h2>플로우 그래프 (actual nav/show/hash/onclick)</h2>
+
+      <h3>인앱 실사용 플로우 (onclick 핸들러 기준)</h3>
+      <div class="flow-diagram">
+        <div class="flow-content">
+          <code>home → detail</code> : 추천/인기/오늘 카드 <code>goDetail(vid)</code>
+        </div>
+        <div class="flow-content">
+          <code>home → sheet</code> : 퀵임포트 카드·FAB·하단탭 등록 <code>openSheet()</code>
+        </div>
+        <div class="flow-content">
+          <code>sheet → loading</code> : <code>입력 완료</code> <code>analyze()</code> → <code>show('loading')</code>
+        </div>
+        <div class="flow-content">
+          <code>loading → detail</code> : <code>analyze()</code> 내 <code>setTimeout(show('detail'))</code> (자동)
+        </div>
+        <div class="flow-content">
+          <code>detail → cook3</code> : <code>요리 시작하기</code> <code>startCook()</code>
+        </div>
+        <div class="flow-content">
+          <code>detail → home</code> : 뒤로
+        </div>
+        <div class="flow-content">
+          <code>detail → reviews</code> : <code>#detMore</code>(숨김, 조건부) 또는 후기 쓰기 시트
+        </div>
+        <div class="flow-content">
+          <code>cook3 → complete</code> : <code>요리 완성</code> <code>finishCooking()</code> 또는 마지막 단계 next()
+        </div>
+        <div class="flow-content">
+          <code>cook3 → detail</code> : 뒤로
+        </div>
+        <div class="flow-content">
+          <code>complete → tipWrite</code> : <code>다른 사용자를 위한 팁 남기기</code>
+        </div>
+        <div class="flow-content">
+          <code>complete → home</code> : <code>홈으로</code>
+        </div>
+        <div class="flow-content">
+          <code>tipWrite → complete</code> : <code>팁 등록</code>(submitTip)/<code>나중에 하기</code>/뒤로
+        </div>
+        <div class="flow-content">
+          <code>reviews → detail</code> : 뒤로
+        </div>
+        <div class="flow-content">
+          <code>cookbook → detail</code> : 카드 <code>goDetail</code>
+        </div>
+        <div class="flow-content">
+          <strong>하단 탭바(home/cookbook 공통):</strong> <code>홈→home</code>, <code>등록→sheet</code>(openSheet), <code>요리북→cookbook</code>
+        </div>
+      </div>
+
+      <h3>레거시(인앱 진입점 없음 — 사이드바 nav()/#hash 전용)</h3>
+      <div class="flow-diagram">
+        <div class="flow-content">
+          <code>cook</code>, <code>cook2</code> : <code>startCook()</code>은 cook3만 감. cook/cook2는 <code>nav('cook'|'cook2')</code>·<code>#cook</code>/<code>#cook2</code>/<code>#ingredients</code>/<code>#timer</code>로만 도달. 둘 다 뒤로→detail.
+        </div>
+      </div>
+
+      <h3>프로토타입 stub(네비 아님, 토스트만 — dead-UI 아님/의도적)</h3>
+      <div class="flow-diagram">
+        home 검색·카테고리·섹션 전체·알림; cookbook 검색·필터·섹션 전체; detail 공유; complete 공유.
+      </div>
+
+      <h3>prd 플로우(FLOW-01, docs 기준, 참고)</h3>
+      <div class="flow-diagram">
+        <code>home→sheet→loading→detail→cook3→complete→tipWrite</code>, 보조 <code>cookbook</code>/<code>reviews</code>. app.html 실측과 일치(단 detail→cook3 CTA 경유, loading→detail 자동).
+      </div>
+    </section>
+
+  </div>
+</body>
+</html>
