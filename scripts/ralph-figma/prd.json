@@ -1426,7 +1426,8 @@
       "title": "reviews: 후기 작성 CTA",
       "description": "cook/reviews 안에 '후기 작성 CTA' 요소를 정밀하게 그린다. 원본 source-screens/reviews.png 대비 위치·간격·타이포 정합.",
       "priority": 103,
-      "passes": false,
+      "passes": true,
+      "notes": "브리지 채널 9p9mv14b(라이브, join+get_node_info 응답 OK, 페이지 '요리 비서' 939:2). 대상 region/하단=2095:180(cook/reviews=2095:176 자식, 390x64, abs 9860/3772), 비어 있어 신규 추가(멱등: get_node_info children=[] 확인). app.html:1115 .cta-bar>.btn(onclick openReviewSheet, pencil 아이콘 + '후기 쓰기') 대응. .cta-bar=padding16·border-top line·bg rgba(255,248,240,.92); .btn(app.html:369)=w100%(=358)·h48·라운드16·gradient primary(--green-l #E1875F→--green #D66B42)·글자 --on-green #2A1005 16/800·아이콘+라벨 gap8 중앙정렬. 추가 자식 4(부모 2095:180, 부모-상대): 구분선=2097:227(rect x0 y0 390x1 line #DDD1C6 =border-top), 버튼=2097:228(rect x16 y8 358x48 #D66B42 라운드16, 그라디언트는 브리지 단색 근사=주색 solid), 아이콘=2097:229(rect 20x20 x149 y22 #2A1005 라운드4 pencil placeholder), 라벨=2097:230('후기 쓰기' 16/800 #2A1005 x177 y24 → abs 10037/3796 width63). 아이콘+라벨 묶음 center abs≈10054.5 vs 버튼 center 10055 정합(중앙정렬). 버튼 y3780-3828 region(3772-3836) 내부, 전 노드 프레임/region 우변(10250) 내부 클립0. G0/G1/G2 read-back(get_node_info 2095:180 → 자식 4 + '후기 쓰기' TEXT 2097:230 존재, 좌표 정합)/G4(주색 #D66B42(=app --green=테라코타, 초록 아님)·on-green #2A1005·line #DDD1C6 토큰, 16px·48px·8px 그리드, 초록 누수 0·영어 누수 0=pencil은 도형 placeholder) 통과. 밀스톤 아님 → export 생략. 다음: reviews-DONE(밀스톤, cook/reviews 완성 검수 + export exports/reviews.png).",
       "acceptanceCriteria": [
         "멱등: cook/reviews(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
         "G2: '후기 쓰기' 텍스트 노드가 cook/reviews 안에 존재.",

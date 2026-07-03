@@ -1190,3 +1190,12 @@ Started: Wed Jul  1 15:53:56 KST 2026
 - ⚠ create_text auto-width라 본문 350px로 카드 우변(10234)·region 우변(10250) 초과 → resize_node(w282 h40)로 본문 3개(2097:220/223/226) 카드 content 우변(10218) 내부 wrap 보정(가로 클립 0). 카드 바닥 rel y440(abs 3552)<660 → 프레임 resize 불필요, 사진 없음(시드 photo:null).
 - 게이트: G0(채널 조인+doc info)/G1/G1b(리스트 3행 전체·가로 클립 0)/G2 read-back(get_node_info 2095:179 → 신규 18노드 + '요리고수'2097:218·'자취왕'2097:221·'맵찔이'2097:224 TEXT, 프레임 내부 정합)/G4(surface·line·ink·accent #C99B4A·아바타 fresh-soft #E0EEE1/fresh-l #69C18F=후기(성공) 문맥 정직 초록, 금지초록 #46b581/#e3f3ec 0건·stray fill 0·영어 누수 0=★ 기호). 밀스톤 아님 → export 생략.
 - 다음: D-reviews-05(후기 작성 CTA, region/하단=2095:180 또는 콘텐츠 하단, app.html:1114 .cta-bar '후기 쓰기').
+
+## 2026-07-03 - D-reviews-05 (reviews 후기 작성 CTA)
+- 대상 region/하단=2095:180(cook/reviews=2095:176 자식, 390x64 abs 9860/3772), 비어 있어 신규(멱등 children=[] 확인).
+- app.html:1115 .cta-bar>.btn('후기 쓰기' pencil, openReviewSheet). .btn=w358 h48 라운드16 gradient primary·글자 on-green #2A1005 16/800.
+- 추가 자식 4: 구분선2097:227(x0 y0 390x1 line #DDD1C6 border-top)·버튼2097:228(x16 y8 358x48 #D66B42 r16)·아이콘2097:229(20x20 x149 y22 #2A1005 r4 pencil ph)·라벨2097:230('후기 쓰기' 16/800 #2A1005 x177 y24 abs 10037/3796). 아이콘+라벨 center 10054.5≈버튼center 10055 중앙정렬.
+- 게이트 G0/G2(자식 4 + '후기 쓰기' TEXT 존재, 프레임 내부)/G4(주색 #D66B42 테라코타·on-green #2A1005·line, 16/48/8px, 초록·영어 누수 0). 밀스톤 아님 export 생략.
+- nodeId 맵: cook/reviews=2095:176, region/하단=2095:180 → CTA 2097:227~230.
+- 다음: reviews-DONE(밀스톤 export exports/reviews.png).
+---
