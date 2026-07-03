@@ -1260,7 +1260,8 @@
       "title": "cookbook: 헤더(요리북)",
       "description": "cook/cookbook 안에 '헤더(요리북)' 요소를 정밀하게 그린다. 원본 source-screens/cookbook.png 대비 위치·간격·타이포 정합.",
       "priority": 91,
-      "passes": false,
+      "passes": true,
+      "notes": "브리지 채널 9p9mv14b(라이브, get_document_info 응답 OK, 페이지 '요리 비서' 939:2). 대상 region/헤더=2089:87(cook/cookbook=2089:85 자식, 390x72 abs 9150/3040, 비어 있어 신규 추가·멱등). app.html:1000 <div class=nav><div class=title>요리북</div> + 검색 ic-btn(lucide search)> 대응, CSS app.html:154~159 .nav(space-between padding 8/16/12)·.title(16px w700 ink)·.ic-btn(48x48 아이콘 24). 추가 자식 2: cookbook-헤더-제목=2089:94('요리북' 16px Bold ink #231A14 rel x24 y26 → abs 9174/3066, 세로 중앙), cookbook-헤더-검색아이콘=2089:95(rect 24x24 rel x342 y24 ink #231A14 라운드6, search placeholder, 우측 여백 24px=abs 9516 우변). G0/G1/G2(get_node_info 2089:87 → 자식 2 + '요리북' 텍스트 노드 확인, abs 프레임 9150~9540 내부 정합)/G4(ink #231A14·16px 제목, 영어 누수 0·초록 누수 0) 통과. 밀스톤 아님 → export 생략. 다음 D-cookbook-03(최근 조리 섹션)은 region/콘텐츠=2089:88.",
       "acceptanceCriteria": [
         "멱등: cook/cookbook(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
         "G2: '요리북' 텍스트 노드가 cook/cookbook 안에 존재.",
