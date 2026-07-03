@@ -1192,13 +1192,14 @@
       "title": "tipWrite: 등록/나중에 하기 CTA",
       "description": "cook/tipWrite 안에 '등록/나중에 하기 CTA' 요소를 정밀하게 그린다. 원본 source-screens/tipWrite.png 대비 위치·간격·타이포 정합.",
       "priority": 86,
-      "passes": false,
+      "passes": true,
       "acceptanceCriteria": [
         "멱등: cook/tipWrite(notes nodeId 또는 이름검색) 안에 해당 요소가 없으면 추가, 있으면 갱신(중복 금지).",
         "G2: '팁 등록' 텍스트 노드가 cook/tipWrite 안에 존재.",
         "G4: 토큰(주색 solid #D66B42·on-primary #2A1005·ghost soft #FBE7DE+#D66B42·16px·라운드16·48px)·한글 준수. app.html:1249 .btn primary '팁 등록'(send 아이콘)+:1250 .btn.ghost '나중에 하기' 대응(gradient는 bridge 단색 미지원→주색 solid).",
         "nodeId 기록 후 한글 커밋."
-      ]
+      ],
+      "notes": "브리지 채널 9p9mv14b(라이브), 페이지 요리 비서 939:2. 대상 region/콘텐츠=2089:56(cook/tipWrite=2089:53 자식, abs 8440/3112 390x660). 멱등: get_node_info로 기존 자식 13(히어로3 2089:64~66+태그칩8 2089:67~74+박스2 2089:75~76)만 확인 → CTA 없어 신규 추가. 팁입력박스(바닥 rel y376) 아래 rel y392. app.html:1248 button.btn primary(send 아이콘+팁 등록)+:1249 button.btn.ghost(나중에 하기) 대응(gradient→bridge 단색 미지원 주색 solid). 추가 자식 5: 팁등록버튼=2089:77(rect rel x24 y392 342x48 primary #D66B42 라운드16 solid), 팁등록아이콘=2089:78(rect 18x18 rel x162 y407 on-primary #2A1005 라운드4 send placeholder), 팁등록텍스트=2089:79(팁 등록 16px w800 on-primary #2A1005 rel x188 y406 → abs 8628/3518 아이콘+텍스트 버튼 중앙정합), 나중에하기버튼=2089:80(rect rel x24 y452 342x48 ghost peach #FBE7DE 라운드16), 나중에하기텍스트=2089:81(나중에 하기 16px w800 green #D66B42 rel x155 y466). 버튼 바닥 rel y500 abs 3612<프레임우변/하단 push-out 없음. G0/G1/G2(get_node_info 2089:79 → 팁 등록 텍스트 노드·#2a1005·16px·좌표 정합 확인)/G4(주색 solid #D66B42·on-primary #2A1005·ghost soft #FBE7DE+#D66B42 §4b 토큰, 16px·라운드16·48px, 초록 누수 0·영어 누수 0) 통과. 밀스톤 아님 → export 생략. 다음: tipWrite-DONE(검수+export exports/tipWrite.png scale2)."
     },
     {
       "id": "tipWrite-DONE",
