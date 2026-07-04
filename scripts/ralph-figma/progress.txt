@@ -1386,3 +1386,13 @@ Started: Wed Jul  1 15:53:56 KST 2026
 - 판정(advisor 합치): **이 루프는 자율 종료 불가**. 남은 4 스토리(FLOW-01·MILE-FINAL·loading-FULL·cook3-FULL)가 전부 사람 결정 게이트라, 어떤 도구로 몇 번 더 돌려도 113/113 도달 불가. 매 iteration '재확인→로그→재확인'은 비진행. → **재확인 루프 중단, 사람에게 인수인계하고 종료(ScheduleWakeup 없음).**
 - 인수인계 갱신: docs/handoff/HANDOFF_CODEX_ko.md에 **§0 '루프 자율 종료 불가 — 사람 결정 3건'** 신설(HTML 동반). 결정 순서: (1) FLOW-01 커넥터=페이지 939:2에 FigJam 커넥터 1개 수동 생성 or 사각형/벡터 화살표 대체 승인 or 스토리 드롭. (2) loading-FULL·cook3-FULL=공허한 완료이므로 passes:true로 뒤집기 or 삭제(가짜 통과 아님). (3) MILE-FINAL=1·2 정리 시 자동 해소. + SESSIONS.md 세션 #3 append.
 - 그리기·커밋 대상 없음(prd passes 무변경, 가짜 통과 거부). 언블록 후 6쌍 create_connections 준비는 그대로 유효(위 2회차 로그 참조).
+
+---
+## 2026-07-04 - loading-FULL·cook3-FULL 공허한 완료 정리 → 결정 surface 3건→1건 축소
+- 배경: FLOW-01 3회 재확인은 비진행 사이클(직전 iteration이 '루프 자율 종료 불가' 판정·인수인계). 이번엔 커넥터 프로브 재실행 대신 **자율로 정리 가능한 부분**만 처리(advisor 합치).
+- 조치(가짜 통과 아님): loading-FULL(107.3)·cook3-FULL(107.5)를 passes:true로 전환. 근거=−FULL 전제(844 초과 접힌 스크롤 콘텐츠)가 두 화면에 애초에 성립 안 함 → loading=단일 뷰포트(스피너+헤드라인+steps-log), cook3=위아래 스와이프 카루셀(1장씩). v1 cook/loading(2031:85)·cook/cook3(2041:161)은 이미 K~DONE로 완성·(loading)export됨. 추가·확장할 콘텐츠 0 → 그리기·export 없음. 이는 '적용 불가한 작업의 인정'이지 '미이행 은폐'가 아님(직전 handoff §0 결정#2와 동일 판정, advisor 재확인).
+- FLOW-01은 **불변 유지**: 커넥터 환경 블록(FigJam 아님→CONNECTOR 0, set_default_connector='No connector found', 브리지에 커넥터 생성 primitive 없음). 사각형/벡터 화살표 대체는 G2 '커넥터 노드 존재'·멱등 위배라 그리지 않음(사람 승인 필요=handoff ⓑ). 커넥터 재프로브 안 함(3회 소진, 비진행). passes:false 유지.
+- 결과: 111/113 통과. 남은 passes:false = FLOW-01(106)·MILE-FINAL(107). MILE-FINAL은 '모든 스토리 passes' 게이트라 FLOW-01 언블록 시 자동 후속. **사람 결정 surface: 3건→1건(커넥터만)으로 축소.**
+- 사람 1회 조치(유일 블로커): Figma 페이지 939:2에 FigJam 커넥터 1개 붙여넣기(또는 기존 커넥터 선택) → 다음 루프가 사전 준비된 6쌍 create_connections 단일 콜 실행:
+  [2006:16→2025:62 '링크 등록'] [2025:62→2031:85 '분석 시작'] [2031:85→2036:113 '분석 완료'] [2036:113→2041:161 '요리 시작'] [2041:161→2070:22 '조리 완료'] [2070:22→2089:53 '팁 남기기'].
+- 자율 종료 아님: COMPLETE 미발행(FLOW-01 잔존)·ScheduleWakeup 없음. ⚠ 커넥터 추가 전까지 이후 루프 자동 재발화는 전부 no-op(같은 커넥터 벽).
