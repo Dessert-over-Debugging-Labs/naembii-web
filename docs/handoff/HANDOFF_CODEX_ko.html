@@ -201,6 +201,7 @@
 
 <blockquote>
 <p><strong>상태</strong>: <code>app.html</code> Figma 원본 포팅 루프는 <strong>113/113 완료</strong>.<br>
+<strong>정본</strong>: v1 원본 충실 이식(<code>SEC/A·B·C</code> 안 <code>cook/*</code>)을 최종 산출물로 확정했다. <code>cook-v2/*</code>는 디자인 개선 참고안이다.<br>
 상태는 전부 디스크에 durable하게 저장돼 있어(멱등) 어디서든 이어갈 수 있다.<br>
 세션 트래킹: <a href="./SESSIONS.md"><code>SESSIONS.md</code></a> — 새 세션은 시작 시 자기 도구·세션ID를 그 표에 append.</p>
 </blockquote>
@@ -219,7 +220,7 @@
 <p>현재 런타임 채널은 <code>9xw8xz3x</code>로 갱신했다. 다만 완료 산출 기록의 주요 작업은 채널 <code>cjb0km46</code>에서 수행됐다.</p>
 
 <blockquote>
-<p><strong>참고 — v1/v2 정본 결정(부차적)</strong>: <code>요리 비서 - 세인</code> 페이지 최상위에 <code>cook-v2/*</code> 11화면 완전 세트도 공존한다. 원본 포팅 v1 트랙(<code>SEC/A·B·C</code> 안 <code>cook/*</code>)은 <strong>113/113 완료</strong>됐으므로, 남은 것은 <strong>"어느 쪽을 최종 산출물로 볼지"</strong>의 정리 문제다.</p>
+<p><strong>정본 결정(2026-07-05)</strong>: <code>요리 비서 - 세인</code> 페이지 최상위에 <code>cook-v2/*</code> 11화면 완전 세트도 공존하지만, 최종 산출물은 원본 포팅 v1 트랙(<code>SEC/A·B·C</code> 안 <code>cook/*</code>)이다. v2는 디자인 개선 참고안으로만 보존한다.</p>
 </blockquote>
 
 <hr style="margin: 2em 0; border: none; border-top: 1px solid #e2e2e6;">
@@ -264,7 +265,7 @@
 </tbody>
 </table>
 
-<p>→ Codex는 <strong><code>요리비서</code> 페이지의 <code>cook/*</code> 만</strong> 다룬다. 위 두 페이지/프레임은 절대 수정 금지.</p>
+<p>→ Codex는 정본 작업 시 <strong><code>요리 비서 - 세인</code> 페이지의 <code>SEC/A·B·C</code> 안 <code>cook/*</code> 만</strong> 다룬다. 위 두 페이지/프레임은 절대 수정 금지.</p>
 
 <hr style="margin: 2em 0; border: none; border-top: 1px solid #e2e2e6;">
 
@@ -296,20 +297,17 @@ env = { FIGMA_CHANNEL = "&lt;현재_채널&gt;" }
 <p>확인: <code>codex mcp list</code>(또는 해당 서브커맨드)로 TalkToFigma가 보이는지. 안 보이면 Codex의 MCP 등록 방식대로 등록.</p>
 
 <h3>(C) 실행 — 루프</h3>
-<p><code>ralph.sh</code>는 <code>--tool codex</code>를 지원한다(내부적으로 <code>codex exec -C &lt;root&gt; --sandbox workspace-write --ephemeral -</code> 로 <code>CODEX.md</code>를 프롬프트로 투입, 한 iteration=한 스토리):</p>
-<pre><code>cd /Users/osein/cook-assistance-wireframe
-./scripts/ralph-figma/ralph.sh --tool codex 6      # 남은 6 스토리
-</code></pre>
+<p>현재는 <strong>실행하지 않는다.</strong> <code>prd.json</code>이 이미 113/113 완료라 <code>ralph.sh --tool codex</code> 재실행은 중복 작업을 만들 수 있다. 아래 명령은 과거 미완료 시점 재개용으로만 남긴다.</p>
+<p><code>ralph.sh</code>는 <code>--tool codex</code>를 지원하지만, 현재 문서에는 실행 명령을 남기지 않는다.</p>
 <ul>
-<li>매 iteration 후 <code>prd.json</code>의 미완료 수가 0이 되면 자동 종료.</li>
-<li>진행 확인:
-<pre><code>jq -r '"완료 "+([.userStories[]|select(.passes==true)]|length|tostring)+"/113, 다음="+([.userStories[]|select(.passes==false)]|sort_by(.priority)|.[0].id)' scripts/ralph-figma/prd.json
+<li>완료 상태 확인:
+<pre><code>jq -r '"완료 "+([.userStories[]|select(.passes==true)]|length|tostring)+"/"+(.userStories|length|tostring)+", 남은="+([.userStories[]|select(.passes==false)]|length|tostring)' scripts/ralph-figma/prd.json
 </code></pre></li>
 <li>세션 로그: <code>scripts/ralph-figma/session_logs/&lt;타임스탬프&gt;-iter-*-codex.log</code>.</li>
 </ul>
 
 <blockquote>
-<p>참고: 기존 <code>watchdog.sh</code>(플러그인 생사 감시)는 probe에 <code>claude</code>를 쓴다 → <strong>Codex 단독 운용 시엔 watchdog 대신 위 <code>ralph.sh --tool codex</code>를 직접 돌리는 걸 권장</strong>. 감시가 필요하면 probe를 <code>codex exec</code>로 바꾼 변형을 쓰거나, 사람이 진행 확인.</p>
+<p>참고: 기존 <code>watchdog.sh</code>(플러그인 생사 감시)는 probe에 <code>claude</code>를 쓴다. 현재 정본은 이미 완료됐으므로 watchdog도 다시 켜지 않는다.</p>
 </blockquote>
 
 <hr style="margin: 2em 0; border: none; border-top: 1px solid #e2e2e6;">
@@ -332,37 +330,22 @@ env = { FIGMA_CHANNEL = "&lt;현재_채널&gt;" }
 
 <h2>4. Codex에 붙여넣을 상세 프롬프트</h2>
 
-<blockquote>
-<p><code>ralph.sh --tool codex</code>는 자동으로 <code>CODEX.md</code>를 프롬프트로 투입한다. 아래는 <strong>수동으로 codex 세션에 붙여넣어 이어가고 싶을 때</strong> 쓰는 자기완결 프롬프트다. (루프로 돌릴 땐 이 프롬프트 대신 <code>ralph.sh --tool codex</code>를 쓰면 된다.)</p>
-</blockquote>
+<p>현재는 완료 후 정리 세션용 프롬프트를 사용한다. 새 구현 루프를 시작하지 않는다.</p>
 
-<pre><code>너는 cook 와이어프레임을 Figma 캔버스에 정밀 이식하는 자율 에이전트다. 작업 디렉토리는 /Users/osein/cook-assistance-wireframe.
-이번 세션의 목표: 원본 포팅을 107/113 → 113으로 마무리한다. HTML(app.html)은 절대 고치지 않는다.
+<pre><code>너는 /Users/osein/cook-assistance-wireframe 의 Figma 원본 이식 트랙을 이어받는다.
 
-[먼저 할 일]
-0. docs/handoff/SESSIONS.md 표에 이 세션(도구=codex, 세션ID, 오늘 날짜, 현재 채널)을 한 줄 append.
-1. 읽기: scripts/ralph-figma/CODEX.md(규칙·green-gate·팔레트 §4b), scripts/ralph-figma/prd.json(스토리·figma.channel·figma.page="요리비서"), scripts/ralph-figma/progress.txt 상단 ## Codebase Patterns(nodeId 맵), docs/FIGMA_WIREFRAME_STORIES_ko.md(화면 목표), scripts/ralph-figma/source-screens/&lt;view&gt;.png(원본 이미지).
+현재 사실:
+- Figma 페이지는 "요리 비서 - 세인"(id 939:2).
+- 원본 이식 v1은 113/113 passes 완료(F0 -&gt; MILE-FINAL).
+- 최종 정본은 v1 원본 충실 이식이다: SEC/A·SEC/B·SEC/C 안 cook/* 프레임 세트.
+- cook-v2/*는 병렬 디자인 개선 참고안이고, red/*는 레드 재이식 별도 트랙이다.
+- FLOW/01은 프레임+화살표 보드를 유지한다. 네이티브 커넥터 교체는 발표/검수 요구가 있을 때만 별도 작업으로 연다.
 
-[연결(G0)]
-2. ToolSearch로 TalkToFigma 쓰기 툴 로드(join_channel, get_document_info, get_node_info, get_nodes_info, scan_text_nodes, create_frame, create_rectangle, create_text, set_fill_color, set_stroke_color, set_corner_radius, set_layout_mode, set_padding, set_item_spacing, move_node, resize_node, clone_node, set_text_content, set_annotation, set_multiple_annotations, create_connections, export_node_as_image).
-3. join_channel(prd.json .figma.channel) → get_document_info 성공 확인. 실패면 아무것도 그리지 말고 progress에 "브리지 미연결"만 남기고 종료.
-4. 현재 페이지가 "요리비서"인지 확인. 이 페이지의 cook/* 프레임만 다룬다. cook-v2/*(디자인 v2)·red/*(레드) 프레임과 '요리 비서 2','요리비서 레드' 페이지는 절대 건드리지 마라.
-
-[스토리 진행 — 한 번에 하나, 우선순위 낮은 미완료부터]
-5. prd.json에서 passes=false 중 최저 priority 스토리 1개만 골라 그 acceptanceCriteria대로 구현한다. 다음 스토리로 넘어가지 마라.
-   - 남은 스토리 성격: reviews-DONE(검수+export), NOTE-reviews(노란 #FFE8A3 포스트잇+set_annotation), FLOW-01(create_connections로 화면 흐름 화살표: home→sheet→loading→detail→cook3→complete→tipWrite 등), MILE-FINAL(전체 보드 정리·export 시도·최종 리포트), loading-FULL(loading 화면을 접힌 콘텐츠까지 전체 높이로 확장·resize_node).
-6. 멱등: 그리기 전 get_document_info로 대상 프레임을 이름(cook/&lt;view&gt;)·nodeId(notes)로 찾는다. 있으면 그 프레임에 자식만 추가/수정, 없을 때만 create. 절대 중복 프레임 금지.
-7. 좌표: create_*는 부모-상대. move_node는 부모-상대이며 Auto Layout 자식엔 무시됨(레이아웃 해제 후 이동).
-
-[Green-gate]
-8. G2 read-back(하드 게이트): get_node_info로 이번에 추가한 노드와 핵심 한글 라벨이 실제 존재하는지 확인.
-9. G3 export: 스토리가 *-DONE/MILE-* 일 때만 export_node_as_image 시도(디스크 저장 경로 인자 없음 — read-back으로 대체 검증). G4: 영어 누수 0, 팔레트=CODEX §4b(주색 테라코타 #D66B42, 초록 금지·#3FA76F는 성공만), 본문 14~16/서브 12~13px, 8px 그리드, 48px 터치.
-
-[기록·커밋]
-10. 통과 시 해당 스토리만 prd.json passes=true + notes(nodeId) 기록, progress.txt에 한 줄, docs/progress/FIGMA_REPORT_ko.md에 한 줄. 한글 커밋 feat(figma): &lt;id&gt; &lt;요약&gt;. (커밋 실패해도 prd passes 갱신은 필수.)
-11. 모든 스토리 passes=true면 마지막 응답을 정확히 &lt;promise&gt;COMPLETE&lt;/promise&gt;. 아니면 간결 요약만.
-
-[함정 요약] 채널은 재연결마다 바뀜(끊기면 resume.sh) · 플러그인 창 닫힘/절전 시 끊김(caffeinate) · 단일 writer만 · rename 없음 · export 디스크저장 불가 · --green은 오렌지 별칭.
+작업 원칙:
+- ralph-figma 루프를 다시 돌리지 마라. 남은 구현 스토리는 없다.
+- Figma 쓰기 작업을 하기 전에는 TalkToFigma 채널을 새로 확인하고 단일 writer만 둔다.
+- raw 세션 로그/인증/로컬 런타임 상태는 문서나 커밋에 복사하지 않는다.
+- 필요한 문서 정리만 수행하고, 한국어 Conventional Commit 규칙을 따른다.
 </code></pre>
 
 <hr style="margin: 2em 0; border: none; border-top: 1px solid #e2e2e6;">

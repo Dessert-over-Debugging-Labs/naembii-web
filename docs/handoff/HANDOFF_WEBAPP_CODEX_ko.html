@@ -29,14 +29,14 @@
 </ul>
 <p>  AWS 트리거(하나라도 실제로 필요할 때만): 로그인/개인화 저장 · 레시피 수백 개 · 조리세션/음성로그 분석.</p>
 <ul>
-<li><strong>추가 레시피 후보 준비</strong>: <a href="../RECIPES_CANDIDATES.js"><code>docs/RECIPES_CANDIDATES.js</code></a> + <a href="../RECIPES_CANDIDATES_ko.md"><code>docs/RECIPES_CANDIDATES_ko.md</code></a>.</li>
+<li><strong>추가 레시피 통합 완료</strong>: <a href="../RECIPES_CANDIDATES.js"><code>docs/RECIPES_CANDIDATES.js</code></a> + <a href="../RECIPES_CANDIDATES_ko.md"><code>docs/RECIPES_CANDIDATES_ko.md</code></a>.</li>
 </ul>
-<p>  김치볶음밥·계란말이·된장찌개·제육볶음 4종. <strong>요리 내용(재료/단계/subs)은 채웠고, 영상 바인딩(id·channel·start/end)은 <code>TODO(영상)</code></strong> — 정직성 원칙상 지어내지 않음. RECIPES 형식과 일치 확인됨.</p>
+<p>  김치볶음밥(<code>Lf44Fk7H24s</code>)·계란말이(<code>kN89ewZjOR8</code>)·된장찌개(<code>Slj_fM1jQVo</code>)·제육볶음(<code>3oFCGKmzQX8</code>) 4종을 Maangchi 공식 영상과 transcript 타임코드 기반으로 <code>app.html</code>의 <code>RECIPES</code>에 통합했다.</p>
 <h2>3. Codex가 이어서 할 일 (우선순위)</h2>
 <ul>
 <li><strong>A. app.html WIP 상태 파악·정리</strong> — <code>git status</code>/<code>diff</code> 확인. 진행 중 대작업이 있으면 사용자와 커밋/정리 방침 합의 후 진행(가로채지 말 것).</li>
-<li><strong>B. 추가 레시피 완성</strong> — 각 후보 요리의 <strong>임베드 가능</strong> 유튜브 영상 1개 선정 → <code>.claude/skills/recipe-from-youtube</code> 스킬로 단계 구간(start/end 초)·재료 추출 → <code>RECIPES_CANDIDATES.js</code>의 TODO 채움 → <code>app.html</code>의 <code>RECIPES</code>에 통합 → <code>renderHomeSections()</code>의 <code>popIds</code>/<code>recIds</code>에 id 등록 → 조리모드 seek 확인.</li>
-<li><strong>C. ralph-loop 다음 스토리</strong> — <code>scripts/ralph/prd.json</code>의 <code>passes:false</code> 최저 priority 1개를 green-gate 통과시켜 구현→검증→한글 커밋(HANDOFF_ko.md 방식).</li>
+<li><strong>B. 완료 — 추가 레시피 4종 통합</strong> — Maangchi 공식 영상 4개를 실제 <code>id</code>/<code>channel</code>/<code>time</code>/<code>start</code>/<code>end</code> 값으로 채워 <code>RECIPES</code>, <code>popIds</code>, <code>recIds</code>에 반영했다.</li>
+<li><strong>C. 다음 후보 — 새 PRD 스토리 작성 후 green-gate</strong> — 현재 <code>scripts/ralph/prd.json</code>은 28/28 완료다. 새 UI/기능 요구가 생기면 스토리를 먼저 추가하고 1개씩 구현한다.</li>
 <li><strong>D. 배포 준비</strong> — <code>api/</code> 수집처를 <strong>사용자 본인 것으로 전환</strong>(<code>.env</code>의 <code>COOK_BETA_GITHUB_REPO</code>/<code>COOK_BETA_GITHUB_TOKEN</code> 또는 <code>COOK_BETA_WEBHOOK_URL</code>), beta-signup·feedback 폼 e2e 확인.</li>
 </ul>
 <h2>4. 가드레일 (CLAUDE.md·HANDOFF_ko.md 준수)</h2>

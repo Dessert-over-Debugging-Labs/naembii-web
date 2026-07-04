@@ -11,3 +11,4 @@
 | 2026-07-01 02:49 | OPS-C1 | headless Chrome CDP로 home→detail→cook3 실제 클릭, 캐러셀 키 이동, #home/#cook/#cook2/#cook3 라우팅 검증. 콘솔 이슈 0. 사람-눈 실브라우저 확인은 리뷰어 수행 필요. |
 | 2026-07-02 02:25 | 완주 | supervisor: 전 스토리 완료 감지. FINAL_REPORT 단계로. |
 | 2026-07-02 09:23 | 완주 | supervisor: 전 스토리 완료 감지. FINAL_REPORT 단계로. |
+| 2026-07-05 03:00 | 베타 레시피 | Maangchi 공식 영상 4개(김치볶음밥·계란말이·된장찌개·제육볶음)를 transcript 타임코드 기반으로 `RECIPES`에 통합. `node --check`/`diff --check`/Chrome CDP green-gate 통과. |

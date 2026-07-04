@@ -1,31 +1,32 @@
-# 더미 레시피 큐레이션 초안 (RECIPES 후보)
+# 베타 레시피 큐레이션 완료 기록
 
-app.html의 `RECIPES` 배열에 추가할 베타용 더미 레시피 후보. **app.html은 직접 수정하지 않았고**, 여기서 준비한 뒤
-사람이 검증·머지한다. 순두부찌개(`CgapOjKdo9I`)는 이미 있으니 **다른 인기·쉬운 한식 4종**을 골랐다.
+`app.html`의 `RECIPES` 배열에 추가할 후보 4종을 실제 영상 바인딩까지 채워 통합했다.
+정본 데이터는 `app.html`이며, [`docs/RECIPES_CANDIDATES.js`](./RECIPES_CANDIDATES.js)는 같은 내용을 남긴 검증용 스니펫이다.
 
-## 정직성 원칙 (이 repo 규칙)
+## 검증 원칙
 
-- **요리 내용**(재료 main/seasoning, 단계 title·subs)은 요리 상식 기반으로 채움 → 사람이 검토 가능.
-- **영상 바인딩**(`id`=유튜브 영상 id, `channel`, 각 step의 `time`/`start`/`end` 초)은 **영상마다 다르므로 지어내지 않는다.**
-  아래 초안에 `TODO(영상)`로 남겼다. `.claude/skills/recipe-from-youtube` 스킬(자막→챕터→설명란 폴백)로 실제 영상에서
-  구간을 추출해 채운다. 구간이 틀리면 조리모드 seekTo가 깨지므로 반드시 실제 값으로.
-- `food`는 썸네일 그라데이션 클래스(app.html의 정의 확인 후 food1~ 중 선택).
+- 영상은 2026-07-05 KST 기준 `yt-dlp` 메타데이터에서 `availability=public`, `playable_in_embed=True`를 확인했다.
+- 단계 구간은 임의 배분하지 않고, `yt-dlp`로 받은 공개 자막 JSON(`ko`, 계란말이 `en-US`) 타임코드를 Maangchi 공식 레시피 페이지의 조리 순서와 맞춰 산출했다.
+- 설명란에 챕터 타임스탬프는 없었다. 구간 근거는 transcript start time + 공식 recipe directions다.
+- 원문 transcript JSON은 `/private/tmp`에서만 처리했고 repo에 커밋하지 않는다.
 
-## 채우는 절차 (레시피 1개당)
+## 추가한 레시피
 
-1. 그 요리의 **임베드 가능한** 유튜브 영상 1개 선정(전 과정·단계 명확·`embeddable=true`).
-2. recipe-from-youtube 스킬로 단계 구간(start/end 초)·재료를 추출 → 아래 초안의 TODO/subs 보정.
-3. `id`(youtube 영상 id), `channel`, 각 step `time`('m:ss ~ m:ss')·`start`·`end` 채움.
-4. app.html의 `RECIPES`에 추가하고 `renderHomeSections()`의 `popIds`/`recIds`에 id 등록.
-5. 로컬 서버로 조리모드에서 구간 재생 육안 확인(HANDOFF의 green-gate).
+| 요리 | videoId | 채널 | 근거 |
+|---|---|---|---|
+| 김치볶음밥 | `Lf44Fk7H24s` | Maangchi | <https://www.maangchi.com/recipe/kimchi-bokkeumbap> |
+| 계란말이 | `kN89ewZjOR8` | Maangchi | <https://www.maangchi.com/recipe/gyeran-mari> |
+| 된장찌개 | `Slj_fM1jQVo` | Maangchi | <https://www.maangchi.com/recipe/doenjang-jjigae> |
+| 제육볶음 | `3oFCGKmzQX8` | Maangchi | <https://www.maangchi.com/recipe/dwaejigogi-bokkeum> |
 
-## 후보 4종 (요리 내용 확정 / 영상 TODO)
+## 앱 반영
 
-아래 `.js` 스니펫: `docs/RECIPES_CANDIDATES.js`. 요리 내용은 검토용 초안이니 사람이 최종 확인.
+- `RECIPES` 배열에 4개 객체 추가.
+- `renderHomeSections()`의 `popIds`에 4개 모두 등록.
+- `recIds`에는 빠르게 만들기 좋은 김치볶음밥·계란말이와 기존 추천을 함께 노출.
+- 각 step의 `time`/`start`/`end`는 조리모드 seek/loop가 사용할 수 있는 초 단위 값으로 채웠다.
 
-1. **김치볶음밥** — 매우 흔함·초간단·냉장고 재료. 자취/입문 데모에 적합.
-2. **계란말이** — 재료 최소·단계 명확. 실패율 낮아 완주 데모 좋음.
-3. **된장찌개** — 국물 요리 대표·재료 수급 쉬움.
-4. **제육볶음** — 인기·밥도둑·단계 뚜렷(양념→재우기→볶기).
+## 남은 확인
 
-각 후보의 servings/time/difficulty는 요리 기준 합리값으로 넣었고, 영상 선정 후 실제와 맞으면 유지·다르면 보정한다.
+- 로컬 서버에서 상세 화면과 `cook3` 진입을 확인한다.
+- YouTube 실제 재생은 환경/브라우저 정책 영향을 받으므로, 앱의 기존 정직 폴백 정책을 유지한다.

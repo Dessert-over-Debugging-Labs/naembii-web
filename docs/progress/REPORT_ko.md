@@ -342,3 +342,23 @@
 - `MVP-07`: `SOURCE_CASES`/`RECIPE_PRESETS`로 YouTube 긴 영상, YouTube Shorts, Instagram Reels, 전문 요리사, 일반 사용자 케이스 분리.
 - `MVP-07`: 링크 입력값 자동 감지, 등록 시트 분석 상태, 상세/cook3 단계 구간, Instagram 정직 표기 확인.
 - PRD 미완료 0.
+
+### BETA-RECIPES Maangchi 레시피 4종 통합 · 2026-07-05
+
+#### 무엇을
+- `docs/RECIPES_CANDIDATES.js`의 후보 4종(김치볶음밥·계란말이·된장찌개·제육볶음)을 실제 YouTube 영상 ID와 단계 구간으로 채워 `app.html`의 `RECIPES`에 통합했다.
+- 홈 인기 목록(`popIds`)에는 4개 모두, 빠른 추천(`recIds`)에는 김치볶음밥·계란말이를 등록했다.
+- 후보 문서(`RECIPES_CANDIDATES_ko.md/html`)를 TODO 초안에서 완료 기록으로 갱신했다.
+
+#### 어떻게
+- Maangchi 공식 레시피 페이지와 YouTube watch HTML을 대조해 4개 영상의 `playabilityStatus=OK`, `embed.iframeUrl`, 제목/채널/길이를 확인했다.
+- `youtube-transcript-api`를 임시 venv(`/private/tmp`)에 설치해 영어 transcript 타임코드를 가져오고, 공식 레시피 directions와 맞춰 각 step의 `time`/`start`/`end`를 산출했다.
+- 원문 transcript JSON은 repo에 넣지 않고 `/private/tmp`에서만 처리했다.
+
+#### 확인
+- `<script>` 추출 `node --check` 통과.
+- `git diff --check` 통과.
+- 새 영상 ID 4개가 `app.html`과 후보 문서에 반영됐고 이전 영상 placeholder 표기 잔존 없음.
+- Chrome headless CDP 검증 통과: 홈 `popIds`에 4개 모두 노출, 추천 `recIds`에 김치볶음밥·계란말이 노출, `#detail=Lf44Fk7H24s` 상세 5단계/YouTube iframe 확인, `cook3` 김치볶음밥 5단계+완료카드 확인.
+- 앱 예외/console.error 0, lucide 미지원 아이콘 경고 0. 검증 중 기존 `youtube`/`hand-pointer` 미지원 아이콘을 `video`/`hand`로 보정하고 favicon 자동 404 방지를 위해 data favicon을 추가했다.
+- 스크린샷: `scripts/ralph/screenshots/beta-recipes-home.png`, `beta-recipes-detail-kimchi.png`, `beta-recipes-cook3-kimchi.png`.

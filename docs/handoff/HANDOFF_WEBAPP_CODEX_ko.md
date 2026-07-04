@@ -26,14 +26,14 @@
 
 - **베타 방향 확정**: 베타 = **프론트 더미 레시피(`RECIPES`) + 기존 Vercel `api/` 수집기**. **AWS·DB 보류.**
   AWS 트리거(하나라도 실제로 필요할 때만): 로그인/개인화 저장 · 레시피 수백 개 · 조리세션/음성로그 분석.
-- **추가 레시피 후보 준비**: [`docs/RECIPES_CANDIDATES.js`](../RECIPES_CANDIDATES.js) + [`docs/RECIPES_CANDIDATES_ko.md`](../RECIPES_CANDIDATES_ko.md).
-  김치볶음밥·계란말이·된장찌개·제육볶음 4종. **요리 내용(재료/단계/subs)은 채웠고, 영상 바인딩(id·channel·start/end)은 `TODO(영상)`** — 정직성 원칙상 지어내지 않음. RECIPES 형식과 일치 확인됨.
+- **추가 레시피 통합 완료**: [`docs/RECIPES_CANDIDATES.js`](../RECIPES_CANDIDATES.js) + [`docs/RECIPES_CANDIDATES_ko.md`](../RECIPES_CANDIDATES_ko.md).
+  김치볶음밥(`Lf44Fk7H24s`)·계란말이(`kN89ewZjOR8`)·된장찌개(`Slj_fM1jQVo`)·제육볶음(`3oFCGKmzQX8`) 4종을 Maangchi 공식 영상과 transcript 타임코드 기반으로 `app.html`의 `RECIPES`에 통합했다.
 
 ## 3. Codex가 이어서 할 일 (우선순위)
 
 - **A. app.html WIP 상태 파악·정리** — `git status`/`diff` 확인. 진행 중 대작업이 있으면 사용자와 커밋/정리 방침 합의 후 진행(가로채지 말 것).
-- **B. 추가 레시피 완성** — 각 후보 요리의 **임베드 가능** 유튜브 영상 1개 선정 → `.claude/skills/recipe-from-youtube` 스킬로 단계 구간(start/end 초)·재료 추출 → `RECIPES_CANDIDATES.js`의 TODO 채움 → `app.html`의 `RECIPES`에 통합 → `renderHomeSections()`의 `popIds`/`recIds`에 id 등록 → 조리모드 seek 확인.
-- **C. ralph-loop 다음 스토리** — `scripts/ralph/prd.json`의 `passes:false` 최저 priority 1개를 green-gate 통과시켜 구현→검증→한글 커밋(HANDOFF_ko.md 방식).
+- **B. 완료 — 추가 레시피 4종 통합** — Maangchi 공식 영상 4개를 실제 `id`/`channel`/`time`/`start`/`end` 값으로 채워 `RECIPES`, `popIds`, `recIds`에 반영했다.
+- **C. 다음 후보 — 새 PRD 스토리 작성 후 green-gate** — 현재 `scripts/ralph/prd.json`은 28/28 완료다. 새 UI/기능 요구가 생기면 스토리를 먼저 추가하고 1개씩 구현한다.
 - **D. 배포 준비** — `api/` 수집처를 **사용자 본인 것으로 전환**(`.env`의 `COOK_BETA_GITHUB_REPO`/`COOK_BETA_GITHUB_TOKEN` 또는 `COOK_BETA_WEBHOOK_URL`), beta-signup·feedback 폼 e2e 확인.
 
 ## 4. 가드레일 (CLAUDE.md·HANDOFF_ko.md 준수)
@@ -65,9 +65,8 @@
 
 ■ 이번에 할 일: <구체 요청을 적는다. 미지정 시 우선순위:
   (A) app.html WIP 상태 파악·정리(사용자 조율) →
-  (B) docs/RECIPES_CANDIDATES.js의 후보(김치볶음밥·계란말이·된장찌개·제육볶음)를 recipe-from-youtube 스킬로
-      영상 바인딩(id·channel·start/end) 채워 RECIPES에 통합 + popIds/recIds 등록 →
-  (C) scripts/ralph/prd.json의 다음 passes:false 스토리를 green-gate 통과시켜 구현 →
+  (B) 완료됨: 김치볶음밥·계란말이·된장찌개·제육볶음은 Maangchi 공식 영상과 transcript 타임코드로 RECIPES에 통합됨 →
+  (C) 새 요구가 있으면 scripts/ralph/prd.json에 스토리 추가 후 green-gate 통과 →
   (D) api/ 수집처를 사용자 본인 것으로 전환 안내 + beta-signup/feedback e2e 확인.>
 
 ■ 가드레일: 라우팅 3중 동기, 합성클립 함정(.screen/.vpanel transform 금지), 영상 정직성(거짓 재생 금지·타임코드 실제값),

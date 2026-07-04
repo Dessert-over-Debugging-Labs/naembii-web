@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Figma Claude 세션 이어가기 세팅</title>
+<style>
+body{font:15px/1.65 -apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;max-width:920px;margin:0 auto;padding:36px 20px;color:#1a1a1a;background:#fff;word-break:keep-all}
+h1{font-size:28px;border-bottom:2px solid #eee;padding-bottom:10px}
+h2{font-size:21px;margin-top:32px}
+code{background:#f2f2f2;padding:1px 5px;border-radius:4px;font-size:13px}
+pre{background:#1f1f1f;color:#f4f4f4;padding:14px 16px;border-radius:8px;overflow:auto;line-height:1.5}
+pre code{background:none;color:inherit;padding:0}
+table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px}
+th,td{border:1px solid #e3e3e3;padding:8px 10px;text-align:left;vertical-align:top}
+th{background:#f8f8f8}
+blockquote{border-left:4px solid #d66b42;background:#fff7f0;margin:12px 0;padding:10px 14px}
+li{margin:4px 0}
+a{color:#2563eb}
+@media(prefers-color-scheme:dark){body{background:#101010;color:#e8e8e8}th{background:#1b1b1b}td,th{border-color:#333}code{background:#222}blockquote{background:#201812}}
+</style>
+</head>
+<body>
+<h1>Figma Claude 세션 이어가기 세팅</h1>
+<blockquote>목적: Claude Code에서 끝낸 <code>요리 비서 - 세인</code> Figma 원본 이식 트랙을 Codex/Claude 어느 쪽에서도 안전하게 이어받기 위한 최신 기준점이다. raw 세션 로그나 런타임 상태는 복사하지 않는다.</blockquote>
+
+<h2>0. 현재 기준점</h2>
+<table>
+<tr><th>항목</th><th>기준</th></tr>
+<tr><td>repo</td><td><code>/Users/osein/cook-assistance-wireframe</code></td></tr>
+<tr><td>Figma 페이지</td><td><code>요리 비서 - 세인</code> / id <code>939:2</code></td></tr>
+<tr><td>상태 소스</td><td><code>scripts/ralph-figma/prd.json</code></td></tr>
+<tr><td>완료 상태</td><td><strong>113/113 passes</strong>, <code>remaining=0</code></td></tr>
+<tr><td>최종 리포트</td><td><code>docs/progress/FIGMA_REPORT_ko.md</code>, <code>.html</code></td></tr>
+<tr><td>최종 milestone commit</td><td><code>42aa765 feat(figma): MILE-FINAL 전체 보드 export + 최종 리포트 (트랙 종료)</code></td></tr>
+<tr><td>최종 export</td><td><code>board-A.png</code> 1999x1123, <code>board-B.png</code> 1998x746, <code>board-C.png</code> 2000x1080</td></tr>
+<tr><td>정본</td><td>v1 원본 충실 이식(<code>SEC/A·B·C</code> 안 <code>cook/*</code>)</td></tr>
+<tr><td>v2 위치</td><td>병렬 디자인 개선 참고안(<code>cook-v2/*</code>), 정본 아님</td></tr>
+<tr><td>FLOW-01</td><td>현재 프레임+화살표 보드 유지</td></tr>
+</table>
+
+<h2>1. 먼저 읽을 문서</h2>
+<ol>
+<li><a href="./FIGMA_CLAUDE_RESUME_ko.md"><code>FIGMA_CLAUDE_RESUME_ko.md</code></a></li>
+<li><a href="./HANDOFF_CODEX_ko.md"><code>HANDOFF_CODEX_ko.md</code></a> — 현재 기준으로 “루프 재실행 금지”가 반영돼 있다.</li>
+<li><code>scripts/ralph-figma/CODEX.md</code></li>
+<li><code>scripts/ralph-figma/RESUME_ko.md</code></li>
+<li><code>docs/progress/FIGMA_REPORT_ko.md</code></li>
+<li><a href="./SESSIONS.md"><code>SESSIONS.md</code></a></li>
+</ol>
+
+<h2>2. 지금 절대 하지 말 것</h2>
+<ul>
+<li><code>scripts/ralph-figma/ralph.sh</code>를 자동으로 다시 돌리지 않는다. 이미 <code>113/113</code>이다.</li>
+<li><code>cook/*</code>, <code>cook-v2/*</code>, <code>red/*</code> 트랙을 섞어 수정하지 않는다.</li>
+<li>TalkToFigma writer를 동시에 두지 않는다.</li>
+<li>raw Claude/Codex session log, transcript JSONL, auth 파일, 런타임 상태를 문서나 커밋에 복사하지 않는다.</li>
+</ul>
+
+<h2>3. 이어서 할 수 있는 일</h2>
+<table>
+<tr><th>작업</th><th>상태</th><th>실행 기준</th></tr>
+<tr><td>정본 선택</td><td>완료</td><td>v1 원본 충실 이식(<code>SEC/A·B·C</code> 안 <code>cook/*</code>)을 최종 정본으로 확정</td></tr>
+<tr><td>FLOW-01 커넥터</td><td>유지</td><td>현재 프레임+화살표 보드는 충분. 네이티브 커넥터가 요구될 때만 교체</td></tr>
+<tr><td>산출물 정리</td><td>진행 완료</td><td>리포트/핸드오프/세션 문서에 최종 기준 명시</td></tr>
+</table>
+
+<h2>4. Figma 연결이 필요한 경우</h2>
+<pre><code>cd /Users/osein/cook-assistance-wireframe
+./scripts/ralph-figma/resume.sh &lt;플러그인에_표시된_채널&gt;
+jq -r '"완료 "+([.userStories[]|select(.passes==true)]|length|tostring)+"/"+(.userStories|length|tostring)+", 남은="+([.userStories[]|select(.passes==false)]|length|tostring)+", page="+.figma.page+", channel="+.figma.channel' scripts/ralph-figma/prd.json</code></pre>
+
+<h2>5. 후속 세션 붙여넣기 프롬프트</h2>
+<pre><code>너는 /Users/osein/cook-assistance-wireframe 의 Figma 원본 이식 트랙을 이어받는다.
+
+먼저 읽을 것:
+1) docs/handoff/FIGMA_CLAUDE_RESUME_ko.md
+2) docs/handoff/HANDOFF_CODEX_ko.md
+3) scripts/ralph-figma/CODEX.md
+4) scripts/ralph-figma/RESUME_ko.md
+5) docs/progress/FIGMA_REPORT_ko.md
+6) docs/handoff/SESSIONS.md
+
+현재 사실:
+- Figma 페이지는 "요리 비서 - 세인"(id 939:2).
+- 원본 이식 v1은 113/113 passes 완료(F0 -&gt; MILE-FINAL).
+- 최종 milestone commit은 42aa765.
+- ralph-figma 루프를 다시 돌리지 마라. 남은 구현 스토리는 없다.
+
+이번 세션에서 할 수 있는 일:
+A) v1/v2 정본 선택을 문서화한다.
+B) FLOW/01 프레임+화살표 보드를 네이티브 커넥터로 바꿀지 결정한다.
+C) 정본 선택 뒤 필요한 문서에 최종 기준을 반영한다.</code></pre>
+
+<h2>6. 결정 기준</h2>
+<ul>
+<li>v1을 정본으로 확정한다. 원본 <code>app.html</code> 충실도와 세분화된 nodeId/read-back 기록이 강하다.</li>
+<li>v2는 디자인 개선 참고안으로 보존한다. 정본 대체가 아니라 이후 개선 아이디어 비교에 쓴다.</li>
+<li>FLOW-01은 현재 프레임+화살표 보드를 유지한다. 네이티브 커넥터는 발표/검수 요구가 있을 때만 교체한다.</li>
+</ul>
+</body>
+</html>

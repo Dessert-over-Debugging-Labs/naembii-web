@@ -58,3 +58,10 @@ Branch: main
 - 검증: 기존 8899 정적 서버 재사용. 인라인 `<script>` 추출 `node --check` 통과. `console.error|console.warn` grep 결과 없음, 중복 ID 0, `onclick` 함수 누락 0, `getElementById` 대상 누락 0. Chrome headless `--dump-dom`으로 `#home/#cook/#cook2/#cook3` active view가 각각 기대값임을 확인했다. 사람-눈 실브라우저 클릭 확인은 리뷰어가 수행해야 한다.
 - 학습: Chrome headless CDP가 세션에 따라 종료를 지연할 수 있어, 라우팅 검증은 `--dump-dom`+active view 대조를 timeout으로 제한하면 정직한 증거를 남기기 쉽다.
 ---
+
+## 2026-07-05 - BETA-RECIPES / 구현 / 변경파일 / 검증 / 학습
+- 구현: Maangchi 공식 영상 4개(김치볶음밥 Lf44Fk7H24s, 계란말이 kN89ewZjOR8, 된장찌개 Slj_fM1jQVo, 제육볶음 3oFCGKmzQX8)를 `app.html` RECIPES에 통합하고 `popIds`/`recIds`에 등록했다.
+- 변경파일: `app.html`, `docs/RECIPES_CANDIDATES.js`, `docs/RECIPES_CANDIDATES_ko.md`, `docs/RECIPES_CANDIDATES_ko.html`, `docs/progress/REPORT_ko.md`, `docs/progress/ACTIVITY_LOG_ko.md`, `docs/handoff/SESSIONS.md`, `docs/handoff/SESSIONS.html`.
+- 검증: YouTube watch HTML에서 playability/embed 확인, 임시 `youtube-transcript-api`로 transcript 타임코드 수집, `<script>` 추출 `node --check`, `git diff --check`, Chrome headless CDP(홈/상세/cook3, 앱 에러 0, lucide 미지원 아이콘 경고 0) 통과. 스크린샷 `beta-recipes-home.png`, `beta-recipes-detail-kimchi.png`, `beta-recipes-cook3-kimchi.png`.
+- 학습: Maangchi 설명란에는 챕터 타임스탬프가 없어 transcript start time과 공식 recipe directions를 함께 써야 한다. 원문 transcript JSON은 repo에 남기지 않는다.
+---

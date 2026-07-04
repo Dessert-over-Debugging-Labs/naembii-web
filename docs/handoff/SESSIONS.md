@@ -12,6 +12,9 @@
 | 3 | Claude Code (Opus 4.8 1M) | 인터랙티브(스크래치패드 UUID) | 2026-07-04 | **cjb0km46**(포팅) | `FLOW-01` 커넥터 벽 **3회차 재확인**(join OK → `set_default_connector` `No connector found`). **자율 종료 불가 판정** → 루프 대신 사람 결정 3건(§0)으로 인수인계 종료. 그리기·커밋 대상 없음(가짜 통과 거부, 리스케줄 없음). |
 | 4 | Claude Code (Opus 4.8 1M) | `323929bf-d21d-4ad5-82f1-bf9aed546036` | 2026-07-04 | — (**웹앱 트랙**, Figma 아님) | **베타 방향 확정**: 프론트 더미 레시피(app.html `RECIPES`) + 기존 Vercel `api/` 수집기, **AWS 보류**. `docs/RECIPES_CANDIDATES.js`(추가 후보 4종·영상 TODO) 준비. cookflow 계획 정정(실제 제품 프론트=이 repo `app.html`). 웹앱 이어가기 상세 프롬프트: [`HANDOFF_WEBAPP_CODEX_ko.md`](./HANDOFF_WEBAPP_CODEX_ko.md) |
 | 5 | Codex | 현재 세션 | 2026-07-04 | **9xw8xz3x**(포팅) | 새 TalkToFigma 채널을 `.env`·`prd.json`·Codex MCP 설정에 반영. 포팅 상태는 이미 **113/113 완료** 유지. |
+| 6 | Codex | 현재 대화 | 2026-07-05 KST | — (세팅, Figma write 없음) | Claude 완료 요약을 로컬 durable 상태와 대조해 Figma 이어가기 기준점 확정. `FIGMA_CLAUDE_RESUME_ko.md`/`.html` 추가, `prd.json` 113/113·board-A/B/C export 크기·`42aa765` milestone commit 확인. |
+| 7 | Codex | 현재 대화 | 2026-07-05 KST | — (문서 정리, Figma write 없음) | 후속 작업 진행: v1 원본 충실 이식(`SEC/A·B·C` 안 `cook/*`)을 최종 정본으로 확정, `cook-v2/*`는 참고 개선안으로 보존, `FLOW/01` 프레임+화살표 보드 유지로 문서화. |
+| 8 | Codex | `rollout-2026-07-05T02-48-26-019f2e3e-f95d-7b62-b5ac-b92ef95bab7a` | 2026-07-05 KST | — (**웹앱 트랙**, Figma 아님) | 웹앱 트랙 재개. `app.html` WIP 없음 확인 후 Maangchi 공식 영상 4개(김치볶음밥·계란말이·된장찌개·제육볶음)를 transcript 타임코드 기반으로 `RECIPES`에 통합하고 `popIds`/`recIds` 등록. |
 
 ## 세션 ID 확인 방법
 - **Claude Code**: 헤드리스 실행 시 `--session-id <uuid>`. 인터랙티브 세션은 스크래치패드 경로의 UUID.

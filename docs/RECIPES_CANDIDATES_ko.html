@@ -1,32 +1,31 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>더미 레시피 큐레이션 초안</title><style>body{font:15px/1.6 -apple-system,system-ui,sans-serif;max-width:860px;margin:0 auto;padding:32px 20px;color:#1a1a1a;background:#fff}h1{font-size:26px;border-bottom:2px solid #eee;padding-bottom:8px}h2{font-size:20px;margin-top:28px}h3{font-size:16px;color:#333}code{background:#f2f2f2;padding:1px 5px;border-radius:4px;font-size:13px}pre{background:#1e1e1e;color:#e6e6e6;padding:14px 16px;border-radius:8px;overflow:auto}pre code{background:none;color:inherit;padding:0}table{border-collapse:collapse;width:100%;margin:12px 0;font-size:14px}th,td{border:1px solid #e2e2e2;padding:7px 10px;text-align:left;vertical-align:top}th{background:#f7f7f7}blockquote{border-left:4px solid #e0a030;margin:10px 0;padding:8px 14px;color:#7a5b12;background:#fff8e6}a{color:#2563eb}li{margin:3px 0}@media(prefers-color-scheme:dark){body{background:#0f0f0f;color:#e6e6e6}th{background:#1a1a1a}code{background:#222}td,th{border-color:#333}blockquote{background:#2a2410;color:#e6c98a}}</style></head><body>
-<h1>더미 레시피 큐레이션 초안 (RECIPES 후보)</h1>
-<p>app.html의 <code>RECIPES</code> 배열에 추가할 베타용 더미 레시피 후보. <strong>app.html은 직접 수정하지 않았고</strong>, 여기서 준비한 뒤</p>
-<p>사람이 검증·머지한다. 순두부찌개(<code>CgapOjKdo9I</code>)는 이미 있으니 <strong>다른 인기·쉬운 한식 4종</strong>을 골랐다.</p>
-<h2>정직성 원칙 (이 repo 규칙)</h2>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>베타 레시피 큐레이션 완료 기록</title><style>body{font:15px/1.6 -apple-system,system-ui,sans-serif;max-width:860px;margin:0 auto;padding:32px 20px;color:#1a1a1a;background:#fff}h1{font-size:26px;border-bottom:2px solid #eee;padding-bottom:8px}h2{font-size:20px;margin-top:28px}code{background:#f2f2f2;padding:1px 5px;border-radius:4px;font-size:13px}table{border-collapse:collapse;width:100%;margin:12px 0;font-size:14px}th,td{border:1px solid #e2e2e2;padding:7px 10px;text-align:left;vertical-align:top}th{background:#f7f7f7}a{color:#2563eb}li{margin:3px 0}@media(prefers-color-scheme:dark){body{background:#0f0f0f;color:#e6e6e6}th{background:#1a1a1a}code{background:#222}td,th{border-color:#333}}</style></head><body>
+<h1>베타 레시피 큐레이션 완료 기록</h1>
+<p><code>app.html</code>의 <code>RECIPES</code> 배열에 추가할 후보 4종을 실제 영상 바인딩까지 채워 통합했다.</p>
+<p>정본 데이터는 <code>app.html</code>이며, <a href="./RECIPES_CANDIDATES.js"><code>docs/RECIPES_CANDIDATES.js</code></a>는 같은 내용을 남긴 검증용 스니펫이다.</p>
+<h2>검증 원칙</h2>
 <ul>
-<li><strong>요리 내용</strong>(재료 main/seasoning, 단계 title·subs)은 요리 상식 기반으로 채움 → 사람이 검토 가능.</li>
-<li><strong>영상 바인딩</strong>(<code>id</code>=유튜브 영상 id, <code>channel</code>, 각 step의 <code>time</code>/<code>start</code>/<code>end</code> 초)은 <strong>영상마다 다르므로 지어내지 않는다.</strong></li>
+<li>영상은 2026-07-05 KST 기준 YouTube watch HTML에서 <code>playabilityStatus=OK</code>와 <code>embed.iframeUrl</code>을 확인했다.</li>
+<li>단계 구간은 임의 배분하지 않고, <code>youtube-transcript-api</code>로 받은 영어 transcript 타임코드를 Maangchi 공식 레시피 페이지의 조리 순서와 맞춰 산출했다.</li>
+<li>설명란에 챕터 타임스탬프는 없었다. 구간 근거는 transcript start time + 공식 recipe directions다.</li>
+<li>원문 transcript JSON은 <code>/private/tmp</code>에서만 처리했고 repo에 커밋하지 않는다.</li>
 </ul>
-<p>  아래 초안에 <code>TODO(영상)</code>로 남겼다. <code>.claude/skills/recipe-from-youtube</code> 스킬(자막→챕터→설명란 폴백)로 실제 영상에서</p>
-<p>  구간을 추출해 채운다. 구간이 틀리면 조리모드 seekTo가 깨지므로 반드시 실제 값으로.</p>
+<h2>추가한 레시피</h2>
+<table><thead><tr><th>요리</th><th>videoId</th><th>채널</th><th>근거</th></tr></thead><tbody>
+<tr><td>김치볶음밥</td><td><code>Lf44Fk7H24s</code></td><td>Maangchi</td><td><a href="https://www.maangchi.com/recipe/kimchi-bokkeumbap">kimchi-bokkeumbap</a></td></tr>
+<tr><td>계란말이</td><td><code>kN89ewZjOR8</code></td><td>Maangchi</td><td><a href="https://www.maangchi.com/recipe/gyeran-mari">gyeran-mari</a></td></tr>
+<tr><td>된장찌개</td><td><code>Slj_fM1jQVo</code></td><td>Maangchi</td><td><a href="https://www.maangchi.com/recipe/doenjang-jjigae">doenjang-jjigae</a></td></tr>
+<tr><td>제육볶음</td><td><code>3oFCGKmzQX8</code></td><td>Maangchi</td><td><a href="https://www.maangchi.com/recipe/dwaejigogi-bokkeum">dwaejigogi-bokkeum</a></td></tr>
+</tbody></table>
+<h2>앱 반영</h2>
 <ul>
-<li><code>food</code>는 썸네일 그라데이션 클래스(app.html의 정의 확인 후 food1~ 중 선택).</li>
+<li><code>RECIPES</code> 배열에 4개 객체 추가.</li>
+<li><code>renderHomeSections()</code>의 <code>popIds</code>에 4개 모두 등록.</li>
+<li><code>recIds</code>에는 빠르게 만들기 좋은 김치볶음밥·계란말이와 기존 추천을 함께 노출.</li>
+<li>각 step의 <code>time</code>/<code>start</code>/<code>end</code>는 조리모드 seek/loop가 사용할 수 있는 초 단위 값으로 채웠다.</li>
 </ul>
-<h2>채우는 절차 (레시피 1개당)</h2>
-<ol>
-<li>그 요리의 <strong>임베드 가능한</strong> 유튜브 영상 1개 선정(전 과정·단계 명확·<code>embeddable=true</code>).</li>
-<li>recipe-from-youtube 스킬로 단계 구간(start/end 초)·재료를 추출 → 아래 초안의 TODO/subs 보정.</li>
-<li><code>id</code>(youtube 영상 id), <code>channel</code>, 각 step <code>time</code>('m:ss ~ m:ss')·<code>start</code>·<code>end</code> 채움.</li>
-<li>app.html의 <code>RECIPES</code>에 추가하고 <code>renderHomeSections()</code>의 <code>popIds</code>/<code>recIds</code>에 id 등록.</li>
-<li>로컬 서버로 조리모드에서 구간 재생 육안 확인(HANDOFF의 green-gate).</li>
-</ol>
-<h2>후보 4종 (요리 내용 확정 / 영상 TODO)</h2>
-<p>아래 <code>.js</code> 스니펫: <code>docs/RECIPES_CANDIDATES.js</code>. 요리 내용은 검토용 초안이니 사람이 최종 확인.</p>
-<ol>
-<li><strong>김치볶음밥</strong> — 매우 흔함·초간단·냉장고 재료. 자취/입문 데모에 적합.</li>
-<li><strong>계란말이</strong> — 재료 최소·단계 명확. 실패율 낮아 완주 데모 좋음.</li>
-<li><strong>된장찌개</strong> — 국물 요리 대표·재료 수급 쉬움.</li>
-<li><strong>제육볶음</strong> — 인기·밥도둑·단계 뚜렷(양념→재우기→볶기).</li>
-</ol>
-<p>각 후보의 servings/time/difficulty는 요리 기준 합리값으로 넣었고, 영상 선정 후 실제와 맞으면 유지·다르면 보정한다.</p>
+<h2>남은 확인</h2>
+<ul>
+<li>로컬 서버에서 상세 화면과 <code>cook3</code> 진입을 확인한다.</li>
+<li>YouTube 실제 재생은 환경/브라우저 정책 영향을 받으므로, 앱의 기존 정직 폴백 정책을 유지한다.</li>
+</ul>
 </body></html>

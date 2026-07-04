@@ -1,0 +1,46 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Codex 이어가기 프롬프트</title><style>body{font:15px/1.6 -apple-system,system-ui,sans-serif;max-width:860px;margin:0 auto;padding:32px 20px;color:#1a1a1a;background:#fff}h1{font-size:26px;border-bottom:2px solid #eee;padding-bottom:8px}h2{font-size:20px;margin-top:28px}h3{font-size:16px;color:#333}code{background:#f2f2f2;padding:1px 5px;border-radius:4px;font-size:13px}pre{background:#1e1e1e;color:#e6e6e6;padding:14px 16px;border-radius:8px;overflow:auto}pre code{background:none;color:inherit;padding:0}table{border-collapse:collapse;width:100%;margin:12px 0;font-size:14px}th,td{border:1px solid #e2e2e2;padding:7px 10px;text-align:left;vertical-align:top}th{background:#f7f7f7}blockquote{border-left:4px solid #e0a030;margin:10px 0;padding:8px 14px;color:#7a5b12;background:#fff8e6}a{color:#2563eb}li{margin:3px 0}@media(prefers-color-scheme:dark){body{background:#0f0f0f;color:#e6e6e6}th{background:#1a1a1a}code{background:#222}td,th{border-color:#333}blockquote{background:#2a2410;color:#e6c98a}}</style></head><body>
+<h1>Codex 이어가기 프롬프트 (붙여넣기용)</h1>
+<p>아래 코드블록을 <strong>새 Codex 세션에 그대로 붙여넣으면</strong> 이어서 작업할 수 있다. 전체 맥락은</p>
+<p><a href="./HANDOFF_WEBAPP_CODEX_ko.md"><code>HANDOFF_WEBAPP_CODEX_ko.md</code></a>, 세션 로그는 <a href="./SESSIONS.md"><code>SESSIONS.md</code></a>.</p>
+<p>직전 인계: <strong>세션 #4 Claude Code <code>323929bf-d21d-4ad5-82f1-bf9aed546036</code> (2026-07-04)</strong>.</p>
+<pre><code>너는 cook(냄비) 핸즈프리 요리 웹앱을 이어서 고도화한다. 작업 repo는 ~/cook-assistance-wireframe 다.
+이 작업은 Ralph 스토리가 아닌 직접 태스크이며, 자율로 끝까지 진행한다.
+
+■ 시작 전 이 순서로 읽어라(이 repo의 진짜 지침 — 문서보다 코드가 우선):
+  1) HANDOFF_ko.md (루트) — 마스터 지침·ralph-loop 방식·가드레일·상속 자료(docs/_inherited).
+  2) docs/handoff/HANDOFF_WEBAPP_CODEX_ko.md — 웹앱 트랙 인수인계(현재 상태·할 일·가드레일 상세).
+  3) CLAUDE.md — app.html 구조·라우팅(nav/show/applyHash 3중 동기)·cook3 영상·합성클립 함정.
+     ⚠️ CLAUDE.md의 "steps 배열/상세는 순두부 고정" 서술은 stale — 현재는 RECIPES 배열 다건이다(코드가 정답).
+  4) docs/handoff/SESSIONS.md — 시작 시 이 표에 네 세션(Codex, 롤아웃 세션ID, 날짜, "웹앱 트랙", 할 일) 한 줄 append.
+
+■ 확정 사실(이 세션에서 확정, 어기지 말 것)
+- 주력 파일 = app.html(단일 HTML, 빌드툴·프레임워크 없음). React/Next로 옮기거나 다른 repo에 새로 만들지 마라.
+- 데이터 = app.html 안 RECIPES 배열(순두부 CgapOjKdo9I·감바스 VvM59BXz6Bw·아보카도 eJekYxjFewM 등, 실제 videoId·구간 타임코드).
+  형식: {id,name,title,channel,servings,time,difficulty,food,summary,ingredients:{main,seasoning:[{n,q}]},steps:[{letter,title,time,start,end,subs:[]}]}
+- 백엔드 = 이미 Vercel 서버리스 api/(beta-signup.js·feedback.js → GitHub Issue/웹훅, .env). AWS로 다시 만들지 마라.
+- 배포 = Vercel(vercel.json: /→/app.html). 베타 방향 확정: 프론트 더미 레시피 + 기존 api 수집기, AWS 보류.
+- app.html에 대규모 미커밋 WIP가 있을 수 있다 → 시작 즉시 `git status`/`git diff --stat`로 확인하고,
+  진행 중 작업은 덮지 말고 사용자와 커밋/정리 방침을 합의한 뒤 이어가라(가로채지 말 것).
+
+■ 이번에 할 일 (우선순위 — 위에서부터, 사용자가 특정 지시를 주면 그걸 우선):
+  A) app.html WIP 상태 파악·정리 방침 확인(git status/diff, 사용자 조율).
+  B) 완료됨 — 김치볶음밥·계란말이·된장찌개·제육볶음은 Maangchi 공식 영상과 transcript 타임코드로 RECIPES에 통합됨.
+  C) 새 요구가 있으면 scripts/ralph/prd.json에 스토리를 먼저 추가한 뒤 passes:false 최저 priority 1개를 green-gate 통과시켜 구현.
+  D) 배포 준비 — api/ 수집처를 사용자 본인 것으로 전환(.env의 COOK_BETA_GITHUB_REPO/토큰 또는 COOK_BETA_WEBHOOK_URL),
+     beta-signup·feedback 폼 e2e 확인.
+
+■ 가드레일(CLAUDE.md·HANDOFF_ko.md 준수)
+- 화면 추가/변경 시 nav·show·applyHash·사이드바 마크업 3중(4곳) 동기.
+- 합성-클립 함정: .screen/.vpanel에 transform/opacity/will-change 추가 금지(44px 모서리 깨짐). 패널 등장은 visibility 토글.
+- 영상 정직성: 재생 못 하는 환경에서 거짓 "재생 중" 금지 — 정적 썸네일+정직 폴백. 타임코드는 실제 값만.
+- 한국어 카피, 모든 버튼 동작(dead UI 0), 동적 HTML 주입 후 lucide.createIcons() 재호출, z-index 스택 준수.
+- 검증(green-gate): &lt;script&gt; 추출 node --check + 헤드리스 Chrome 스크린샷 + 콘솔 에러 0. 통과해야 커밋. 한글 Conventional Commit.
+- 배포 워크플로우: 수정 → 사용자가 본인 GitHub push → Vercel 배포. 너는 커밋까지만(푸시·배포·시크릿 설정은 사용자).
+
+■ 로컬 확인
+- 서버: `cd ~/cook-assistance-wireframe &amp;&amp; python3 -m http.server 5173` → http://localhost:5173/app.html
+  (file://은 유튜브 임베드 오류 153이라 영상 재생 확인은 반드시 로컬 서버로).
+- 헤드리스 스크린샷: Chrome --headless=new --screenshot=out.png --window-size=438,892 --force-device-scale-factor=2 "http://127.0.0.1:5173/app.html#cook3"
+
+작업 후 로컬로 확인(스크린샷/URL)하고 한국어로 보고한다. SESSIONS.md에 세션 기록을 남겨라.</code></pre>
+</body></html>
