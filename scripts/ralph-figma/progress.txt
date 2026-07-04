@@ -1361,3 +1361,21 @@ Started: Wed Jul  1 15:53:56 KST 2026
 - **언블록 후 단일 콜 준비 완료(6쌍, 순서·라벨 확정)**:
   [2006:16→2025:62 '링크 등록'] [2025:62→2031:85 '분석 시작'] [2031:85→2036:113 '분석 완료'] [2036:113→2041:161 '요리 시작'] [2041:161→2070:22 '조리 완료'] [2070:22→2089:53 '팁 남기기'].
 - 판정: 가짜 통과 금지(G2 '커넥터 노드 존재'는 사각형 근사로 충족 불가·멱등 위배 소지) → FLOW-01 passes:false 유지. FLOW-01 false면 MILE-FINAL·COMPLETE 불가(보드는 그 외 완성).
+
+## 2026-07-04 (재확인) - FLOW-01 환경 블록 여전히 유효 → 사용자 에스컬레이션
+- 새 세션 재시도: join_channel cjb0km46 OK → get_document_info(939:2, childCount 25, CONNECTOR 노드 없음) → set_default_connector(무인자) = 'No connector found in the current page' 동일 실패. 조치 없음(가짜 통과 금지).
+- ⚠ 루프 데드락 확정: FLOW-01(커넥터 환경 블록)뿐 아니라, 설령 언블록돼 FLOW-01이 통과해도 MILE-FINAL은 loading-FULL(107.3)·cook3-FULL(107.5)가 **설계상 no-op으로 passes:false 유지**라 '모든 스토리 passes' 기준을 영구히 못 채움 → 매 iteration이 같은 벽만 재확인. 사용자 결정 2건 필요:
+  1) FLOW-01: 페이지 939:2에 FigJam 커넥터 1개 추가/선택(→ 다음 루프가 준비된 6쌍 create_connections 1콜 실행). 또는 FLOW-01을 범위 밖으로 드롭.
+  2) loading-FULL·cook3-FULL: 확인된 no-op → N/A 처리(스토리 제거) 또는 MILE-FINAL '전체 passes' 기준 완화. 셋 중 하나 전엔 MILE-FINAL·COMPLETE 불가.
+
+---
+## 2026-07-04 - FLOW-01 (화면 간 플로우 연결선) — 환경 블록 재확인(2회차)
+- G0 연결 OK: join_channel cjb0km46 성공 → get_document_info 페이지 '요리 비서 - 세인' 939:2, childCount 25(스트레이 노드 0 유지).
+- 대상 7프레임 전부 존재: cook/home=2006:16·cook/sheet=2025:62·cook/loading=2031:85(SEC/A) / cook/detail=2036:113·cook/cook3=2041:161(SEC/B) / cook/complete=2070:22·cook/tipWrite=2089:53(SEC/C).
+- 재확인 프로브 2콜 모두 일관 실패(프로그래밍 경로 소진):
+  1) set_default_connector(무인자) → "No connector found in the current page. Please create a connector in Figma first or specify a connector ID."
+  2) create_connections([2006:16→2025:62 '링크 등록']) → "No default connector set. (1) FigJam 커넥터를 붙여넣고 set_default_connector 실행, 또는 (2) 페이지의 기존 커넥터 선택 후 set_default_connector."
+- 원인(불변): 이 파일은 FigJam이 아닌 Figma 디자인 파일이라 CONNECTOR 노드가 0개이고, 브리지에는 커넥터를 새로 만드는 툴이 없음(clone 원본도 없음).
+- **사람 1회 조치**: Figma 페이지 939:2에 FigJam 커넥터 1개를 붙여넣기(또는 기존 커넥터 선택) → 다음 루프가 set_default_connector + create_connections(6쌍) 실행하면 통과.
+- 언블록 후 단일 콜 준비 완료(6쌍, 순서·라벨 확정): [2006:16→2025:62 '링크 등록'] [2025:62→2031:85 '분석 시작'] [2031:85→2036:113 '분석 완료'] [2036:113→2041:161 '요리 시작'] [2041:161→2070:22 '조리 완료'] [2070:22→2089:53 '팁 남기기'].
+- passes:false 유지(가짜 통과 금지). FLOW-01 미통과 → MILE-FINAL(모든 스토리 passes 확인) 못 닫음 → COMPLETE 불가. 나머지 loading-FULL·cook3-FULL은 확인된 no-op(park). 그리기 없음 → export 없음.
