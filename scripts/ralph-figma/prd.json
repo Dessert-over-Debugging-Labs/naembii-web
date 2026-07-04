@@ -1467,6 +1467,7 @@
       "description": "create_connections로 주요 사용자 흐름을 화살표로 잇는다.",
       "priority": 106,
       "passes": false,
+      "notes": "⛔ 환경 블록(2026-07-04, 사람의 1회 수동 조치 필요, 가짜 통과 금지). 채널 cjb0km46 라이브(get_document_info 페이지 '요리 비서 - 세인' 939:2, childCount 25). 대상 7프레임 전부 존재 확인: cook/home=2006:16·cook/sheet=2025:62·cook/loading=2031:85(SEC/A) / cook/detail=2036:113·cook/cook3=2041:161(SEC/B) / cook/complete=2070:22·cook/tipWrite=2089:53(SEC/C). 블록 원인: 이 파일은 FigJam이 아닌 Figma 디자인 파일이라 CONNECTOR 노드가 없고, create_connections는 '기본 커넥터'가 있어야 동작함 → 'No default connector set' 에러. set_default_connector(무인자)도 'No connector found in the current page'로 실패(브리지는 커넥터를 새로 만들지 못함, 커넥터 새로 만드는 툴/clone 원본 없음). 프로그래밍 경로 소진(2콜 모두 일관 실패), 3번째 변형 시도 안 함. get_reactions→connector-strategy도 결국 create_connections에서 같은 벽. 스트레이 노드 0(실패 콜은 노드 생성 안 함, childCount 25 유지). **사람 1회 조치**: Figma 페이지 939:2에 FigJam 커넥터 1개를 붙여넣거나(또는 기존 커넥터 선택) → 그 다음 루프가 set_default_connector + create_connections를 실행하면 통과. **언블록 후 단일 콜 준비 완료(6쌍, 순서·라벨 확정)**: [2006:16→2025:62 '링크 등록'] [2025:62→2031:85 '분석 시작'] [2031:85→2036:113 '분석 완료'] [2036:113→2041:161 '요리 시작'] [2041:161→2070:22 '조리 완료'] [2070:22→2089:53 '팁 남기기']. FLOW-01 false면 MILE-FINAL('모든 스토리 passes 확인')도 못 닫음 → COMPLETE 불가. 보드는 그 외 완성. 그리기 없음 → export 없음.",
       "acceptanceCriteria": [
         "create_connections로 home→sheet→loading→detail→cook3→complete→tipWrite 흐름 연결(멱등, 중복 금지).",
         "G2: 커넥터 노드 존재 확인.",

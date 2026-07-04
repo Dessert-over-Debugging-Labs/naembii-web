@@ -1343,3 +1343,21 @@ Started: Wed Jul  1 15:53:56 KST 2026
 - G2 read-back: get_node_info 2111:2 → 자식 2 + '리뷰 코멘트' TEXT 확인, abs 10290/2992 cook/reviews 우측·SEC/C 내부 정합. 주석 2건 success 응답.
 - G4: 포스트잇 #FFE8A3·ink #231A14·gray #6E6258 §4b 토큰, 15/13px, 초록·영어 누수 0. 밀스톤 아님 → export 생략.
 - 판정: G0/G1/G2/G4 전부 통과 → NOTE-reviews passes:true. 남은 미통과: FLOW-01(106)·MILE-FINAL(107)·loading-FULL(107.3 no-op)·cook3-FULL(107.5 no-op). 다음: FLOW-01(화면 간 플로우 연결선).
+
+## 2026-07-04 - FLOW-01 시도 — 기본 커넥터 없음으로 G1 실패(연결선 생성 없음)
+- 대상 스토리: FLOW-01(priority 106). create_connections로 v1 흐름 cook/home(2006:16) → cook/sheet(2025:62) → cook/loading(2031:85) → cook/detail(2036:113) → cook/cook3(2041:161) → cook/complete(2070:22) → cook/tipWrite(2089:53) 연결 예정.
+- G0: join_channel cjb0km46 성공 + get_document_info 응답 OK(페이지 '요리 비서 - 세인' 939:2, PRD figma.page 일치). top-level read-back 기준 SEC/A·SEC/B·SEC/C·cook-v2/*만 있고 기존 connector 노드 없음.
+- G1 실패: create_connections 호출이 `No default connector set` 오류로 거부됨. 이어 set_default_connector(선택/페이지 내 커넥터 탐색)도 `No connector found in the current page`로 실패. TalkToFigma create_connections는 현재 페이지에 FigJam 커넥터를 하나 만들거나 선택해 기본 커넥터로 등록해야만 동작한다.
+- 조치: 연결선/대체 도형을 만들지 않음(가짜 통과 금지). FLOW-01 passes:false 유지, prd.json 갱신·커밋 없음.
+- 재개 조건: Figma에서 현재 페이지에 커넥터 1개를 직접 만들거나 기존 커넥터를 선택한 뒤 set_default_connector가 성공하도록 준비. 그 다음 동일 스토리에서 create_connections를 다시 호출해 6개 연결을 생성하고 G2 read-back으로 connector 존재 확인.
+
+---
+## 2026-07-04 - FLOW-01 화면 간 플로우 연결선 — ⛔ 환경 블록(사람 1회 조치 필요)
+- G0 OK: join_channel cjb0km46 + get_document_info(페이지 '요리 비서 - 세인' 939:2, childCount 25) 라이브.
+- 대상 7프레임 전부 존재 확인: cook/home=2006:16·cook/sheet=2025:62·cook/loading=2031:85(SEC/A) / cook/detail=2036:113·cook/cook3=2041:161(SEC/B) / cook/complete=2070:22·cook/tipWrite=2089:53(SEC/C).
+- 블록: 이 파일은 FigJam이 아닌 Figma 디자인 파일 → CONNECTOR 노드 없음. create_connections는 '기본 커넥터' 필요('No default connector set'). set_default_connector(무인자)도 'No connector found in the current page'로 실패(브리지가 커넥터를 새로 생성 못 함, 커넥터 생성 툴·clone 원본 없음). 프로그래밍 경로 소진(2콜 일관 실패) → 3번째 변형·get_reactions 우회 안 함(결국 같은 벽).
+- 스트레이 노드 0(실패 콜은 노드 생성 안 함), childCount 25 유지.
+- **사람 1회 조치**: Figma 페이지 939:2에 FigJam 커넥터 1개 붙여넣기(또는 기존 커넥터 선택) → 이후 루프가 set_default_connector + create_connections 실행 시 통과.
+- **언블록 후 단일 콜 준비 완료(6쌍, 순서·라벨 확정)**:
+  [2006:16→2025:62 '링크 등록'] [2025:62→2031:85 '분석 시작'] [2031:85→2036:113 '분석 완료'] [2036:113→2041:161 '요리 시작'] [2041:161→2070:22 '조리 완료'] [2070:22→2089:53 '팁 남기기'].
+- 판정: 가짜 통과 금지(G2 '커넥터 노드 존재'는 사각형 근사로 충족 불가·멱등 위배 소지) → FLOW-01 passes:false 유지. FLOW-01 false면 MILE-FINAL·COMPLETE 불가(보드는 그 외 완성).
