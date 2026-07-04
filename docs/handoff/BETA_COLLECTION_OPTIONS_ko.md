@@ -10,7 +10,7 @@
 2. **Google Apps Script webhook + Google Sheets**
    - 커스텀 랜딩 UI를 그대로 유지하면서 시트에 저장하기 좋다.
    - Apps Script에서 Slack 알림, 중복 제거, 태그 분류도 추가하기 쉽다.
-   - 현재 API의 `COOK_BETA_WEBHOOK_URL`에 Apps Script 배포 URL을 넣으면 된다.
+   - 현재 API의 `NAEMBI_BETA_WEBHOOK_URL`에 Apps Script 배포 URL을 넣으면 된다.
 
 3. **Airtable / Make / Zapier / Tally**
    - 비개발 운영자가 보기 좋고 자동화가 쉽다.
@@ -45,11 +45,11 @@ Google Form -> webhook/Apps Script -> GitHub Issue
 5. Vercel 환경변수에 아래 값을 넣는다.
 
 ```bash
-COOK_BETA_GOOGLE_FORM_URL=https://docs.google.com/forms/d/e/FORM_ID/formResponse
-COOK_BETA_GOOGLE_FORM_FIELDS={"kind":"entry.111111","email":"entry.222222","name":"entry.333333","profile":"entry.444444","note":"entry.555555","type":"entry.666666","message":"entry.777777","recipe":"entry.888888","source":"entry.999999","page":"entry.101010","createdAt":"entry.121212"}
+NAEMBI_BETA_GOOGLE_FORM_URL=https://docs.google.com/forms/d/e/FORM_ID/formResponse
+NAEMBI_BETA_GOOGLE_FORM_FIELDS={"kind":"entry.111111","email":"entry.222222","name":"entry.333333","profile":"entry.444444","note":"entry.555555","type":"entry.666666","message":"entry.777777","recipe":"entry.888888","source":"entry.999999","screen":"entry.131313","page":"entry.101010","createdAt":"entry.121212"}
 ```
 
-베타 신청 폼과 피드백 폼을 Google Form에서 분리하고 싶으면 `COOK_BETA_GOOGLE_FORM_FIELDS_BETA`, `COOK_BETA_GOOGLE_FORM_FIELDS_FEEDBACK`을 따로 둔다.
+베타 신청 폼과 피드백 폼을 Google Form에서 분리하고 싶으면 `NAEMBI_BETA_GOOGLE_FORM_FIELDS_BETA`, `NAEMBI_BETA_GOOGLE_FORM_FIELDS_FEEDBACK`을 따로 둔다.
 
 ## 운영 기준
 

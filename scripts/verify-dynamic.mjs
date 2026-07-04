@@ -262,7 +262,7 @@ async function apiValidationChecks() {
 function deployChecks() {
   const gates = [];
   const env = existsSync(resolve(root, '.env.example')) ? read('.env.example') : '';
-  const requiredEnv = ['COOK_BETA_GOOGLE_FORM_URL', 'COOK_BETA_GOOGLE_FORM_FIELDS', 'COOK_BETA_WEBHOOK_URL', 'COOK_BETA_GITHUB_REPO', 'COOK_BETA_GITHUB_TOKEN'];
+  const requiredEnv = ['NAEMBI_BETA_GOOGLE_FORM_URL', 'NAEMBI_BETA_GOOGLE_FORM_FIELDS', 'NAEMBI_BETA_WEBHOOK_URL', 'NAEMBI_BETA_GITHUB_REPO', 'NAEMBI_BETA_GITHUB_TOKEN'];
   const missingEnv = requiredEnv.filter((name) => !env.includes(name));
   gates.push(missingEnv.length
     ? fail('deploy env contract', `누락: ${missingEnv.join(', ')}`, '.env.example에 배포 수집 환경변수를 문서화한다.')
@@ -485,9 +485,9 @@ function buildScorecard(gates, workflows) {
 
   const deploySignals = [
     gatePassed(gates, 'vercel root rewrite'),
-    includesAll(env, ['COOK_BETA_GOOGLE_FORM_URL', 'COOK_BETA_GOOGLE_FORM_FIELDS'])
-      || includesAll(env, ['COOK_BETA_WEBHOOK_URL'])
-      || includesAll(env, ['COOK_BETA_GITHUB_REPO', 'COOK_BETA_GITHUB_TOKEN']),
+    includesAll(env, ['NAEMBI_BETA_GOOGLE_FORM_URL', 'NAEMBI_BETA_GOOGLE_FORM_FIELDS'])
+      || includesAll(env, ['NAEMBI_BETA_WEBHOOK_URL'])
+      || includesAll(env, ['NAEMBI_BETA_GITHUB_REPO', 'NAEMBI_BETA_GITHUB_TOKEN']),
     includesAll(ignored, ['docs/', 'scripts/', '.env']),
     gatePassed(gates, 'workflow script hook')
   ];

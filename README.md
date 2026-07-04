@@ -56,17 +56,17 @@ npm run verify:visual
 베타 신청과 피드백 저장은 아래 중 하나를 설정합니다. 베타 기간에는 Google Form + Google Sheets를 1순위로 권장합니다.
 
 ```bash
-COOK_BETA_GOOGLE_FORM_URL=https://docs.google.com/forms/d/e/FORM_ID/formResponse
-COOK_BETA_GOOGLE_FORM_FIELDS={"kind":"entry.111111","email":"entry.222222","name":"entry.333333","profile":"entry.444444","note":"entry.555555","type":"entry.666666","message":"entry.777777","recipe":"entry.888888","source":"entry.999999","page":"entry.101010","createdAt":"entry.121212"}
+NAEMBI_BETA_GOOGLE_FORM_URL=https://docs.google.com/forms/d/e/FORM_ID/formResponse
+NAEMBI_BETA_GOOGLE_FORM_FIELDS={"kind":"entry.111111","email":"entry.222222","name":"entry.333333","profile":"entry.444444","note":"entry.555555","type":"entry.666666","message":"entry.777777","recipe":"entry.888888","source":"entry.999999","screen":"entry.131313","page":"entry.101010","createdAt":"entry.121212"}
 ```
 
 대안:
 
 ```bash
-COOK_BETA_WEBHOOK_URL=https://example.com/webhook
-COOK_BETA_GITHUB_REPO=owner/repo
-COOK_BETA_GITHUB_TOKEN=GITHUB_TOKEN_VALUE
-COOK_BETA_GITHUB_LABELS=cook-beta
+NAEMBI_BETA_WEBHOOK_URL=https://example.com/webhook
+NAEMBI_BETA_GITHUB_REPO=owner/repo
+NAEMBI_BETA_GITHUB_TOKEN=GITHUB_TOKEN_VALUE
+NAEMBI_BETA_GITHUB_LABELS=naembi-beta
 ```
 
 전체 예시는 `.env.example`을 확인합니다.

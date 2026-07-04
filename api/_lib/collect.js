@@ -48,8 +48,12 @@ function issueBody(kind, payload) {
   ].join('\n');
 }
 
+function envValue(primary, legacy) {
+  return process.env[primary] || (legacy ? process.env[legacy] : '');
+}
+
 async function sendWebhook(kind, payload) {
-  const url = process.env.COOK_BETA_WEBHOOK_URL;
+  const url = envValue('NAEMBI_BETA_WEBHOOK_URL', 'COOK_BETA_WEBHOOK_URL');
   if (!url) return false;
 
   const response = await fetch(url, {
@@ -67,9 +71,9 @@ async function sendWebhook(kind, payload) {
 
 function parseFieldMap(kind) {
   const specific = kind === 'beta-signup'
-    ? process.env.COOK_BETA_GOOGLE_FORM_FIELDS_BETA
-    : process.env.COOK_BETA_GOOGLE_FORM_FIELDS_FEEDBACK;
-  const raw = specific || process.env.COOK_BETA_GOOGLE_FORM_FIELDS;
+    ? envValue('NAEMBI_BETA_GOOGLE_FORM_FIELDS_BETA', 'COOK_BETA_GOOGLE_FORM_FIELDS_BETA')
+    : envValue('NAEMBI_BETA_GOOGLE_FORM_FIELDS_FEEDBACK', 'COOK_BETA_GOOGLE_FORM_FIELDS_FEEDBACK');
+  const raw = specific || envValue('NAEMBI_BETA_GOOGLE_FORM_FIELDS', 'COOK_BETA_GOOGLE_FORM_FIELDS');
   if (!raw) return null;
 
   try {
@@ -80,7 +84,7 @@ function parseFieldMap(kind) {
 }
 
 async function sendGoogleForm(kind, payload) {
-  const url = process.env.COOK_BETA_GOOGLE_FORM_URL;
+  const url = envValue('NAEMBI_BETA_GOOGLE_FORM_URL', 'COOK_BETA_GOOGLE_FORM_URL');
   const fields = parseFieldMap(kind);
   if (!url || !fields) return false;
 
@@ -112,11 +116,11 @@ async function sendGoogleForm(kind, payload) {
 }
 
 async function createGithubIssue(kind, payload) {
-  const token = process.env.COOK_BETA_GITHUB_TOKEN;
-  const repo = process.env.COOK_BETA_GITHUB_REPO;
+  const token = envValue('NAEMBI_BETA_GITHUB_TOKEN', 'COOK_BETA_GITHUB_TOKEN');
+  const repo = envValue('NAEMBI_BETA_GITHUB_REPO', 'COOK_BETA_GITHUB_REPO');
   if (!token || !repo) return false;
 
-  const labels = (process.env.COOK_BETA_GITHUB_LABELS || `cook-beta,${kind}`)
+  const labels = (envValue('NAEMBI_BETA_GITHUB_LABELS', 'COOK_BETA_GITHUB_LABELS') || `naembi-beta,${kind}`)
     .split(',')
     .map((label) => label.trim())
     .filter(Boolean);
@@ -153,7 +157,7 @@ async function persist(kind, payload) {
   if (await sendGoogleForm(kind, payload)) return 'google-form';
   if (await sendWebhook(kind, payload)) return 'webhook';
   if (await createGithubIssue(kind, payload)) return 'github';
-  throw new Error('수집 저장소가 설정되지 않았습니다. COOK_BETA_GOOGLE_FORM_URL/COOK_BETA_GOOGLE_FORM_FIELDS 또는 COOK_BETA_WEBHOOK_URL 또는 COOK_BETA_GITHUB_TOKEN/COOK_BETA_GITHUB_REPO를 Vercel 환경변수에 설정하세요.');
+  throw new Error('수집 저장소가 설정되지 않았습니다. NAEMBI_BETA_GOOGLE_FORM_URL/NAEMBI_BETA_GOOGLE_FORM_FIELDS 또는 NAEMBI_BETA_WEBHOOK_URL 또는 NAEMBI_BETA_GITHUB_TOKEN/NAEMBI_BETA_GITHUB_REPO를 Vercel 환경변수에 설정하세요.');
 }
 
 function allowCors(req, res) {

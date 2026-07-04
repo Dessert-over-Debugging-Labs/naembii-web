@@ -1,11 +1,11 @@
 # 동적 검증 워크플로우 실행 리포트
 
-- 일시: 2026-07-04T15:59:31.612Z
+- 일시: 2026-07-04T17:42:59.162Z
 - 판정: **PASS**
-- 점수: **100 / 100 (100%)**
-- 통과 기준: **95% 이상**
-- 모드: visual 포함
-- 기준 URL: `http://127.0.0.1:4191/`
+- 점수: **90 / 90 (100%)**
+- 통과 기준: **90% 이상** (시각 검증 미포함 빠른 기준)
+- 모드: static/API/deploy 중심
+- 기준 URL: `http://127.0.0.1:4190/`
 
 ## 왜 빠르게 끝났나
 
@@ -13,8 +13,12 @@
 
 ## 변경 파일
 
+- `.env.example`
 - `README.md`
-- `app.html`
+- `api/_lib/collect.js`
+- `scripts/verify-dynamic.mjs`
+- `docs/handoff/BETA_COLLECTION_OPTIONS_ko.md`
+- `docs/handoff/NOTION_BETA_SETUP_STEPS_ko.md`
 
 ## 선택된 워크플로우
 
@@ -22,9 +26,8 @@
 | --- | --- |
 | core | 항상 실행 |
 | api | api/app 변경 감지 |
-| deploy | full 실행 |
-| docs | full 실행 |
-| visual | --visual 요청 |
+| deploy | 배포 설정 변경 감지 |
+| docs | 검증 문서 변경 감지 |
 
 ## 점수표
 
@@ -34,8 +37,7 @@
 | 베타 전환 흐름 | 15 | 15 | 100% | 5/5 신호 충족 | 모바일/데스크톱/하단 신청 폼과 성공 메시지를 모두 유지한다. |
 | 피드백·레시피 수집 | 15 | 15 | 100% | 5/5 신호 충족 | 베타 피드백과 레시피 요청이 같은 저장 흐름으로 수집되어야 한다. |
 | 앱 미리보기 깊이 | 15 | 15 | 100% | 5/5 신호 충족 | 홈/상세/조리/완료 탭이 랜딩 안에서 바로 전환되어야 한다. |
-| 내부 정보 비노출 | 15 | 15 | 100% | 정적 0건, 시각 0건 | 사용자 화면에서 내부 문서명, 버전 태그, 저장소/배포 구현명을 제거한다. |
-| 반응형·시각 증거 | 10 | 10 | 100% | 5/5 신호 충족 | 모바일/데스크톱 캡처에서 CTA, 앱 미리보기, 카피 신호가 모두 보여야 한다. |
+| 내부 정보 비노출 | 15 | 15 | 100% | 정적 0건, 시각 검증 미실행 | 사용자 화면에서 내부 문서명, 버전 태그, 저장소/배포 구현명을 제거한다. |
 | 배포 준비도 | 10 | 10 | 100% | 4/4 신호 충족 | Vercel 루트, 수집 환경변수, 배포 제외, 검증 스크립트를 유지한다. |
 | 검증 루프 재현성 | 5 | 5 | 100% | 4/4 신호 충족 | 다음 세션에서도 같은 검증자 역할, 점수표, 마지막 리포트를 재사용할 수 있어야 한다. |
 
@@ -58,8 +60,6 @@
 | vercel ignore hygiene | PASS | docs/scripts/.env 배포 제외 확인 | - |
 | workflow script hook | PASS | npm run verify:dynamic 가능 | - |
 | verification docs | PASS | 동적 워크플로우/랜딩 검증 문서 확인 | - |
-| visual capture: mobile | PASS | /tmp/cook-wireframe-v3/dynamic-mobile.png, forbiddenVisibleTerms=[] | - |
-| visual capture: desktop | PASS | /tmp/cook-wireframe-v3/dynamic-desktop.png, forbiddenVisibleTerms=[] | - |
 
 ## 루프 규칙
 
