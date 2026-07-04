@@ -1199,3 +1199,138 @@ Started: Wed Jul  1 15:53:56 KST 2026
 - nodeId 맵: cook/reviews=2095:176, region/하단=2095:180 → CTA 2097:227~230.
 - 다음: reviews-DONE(밀스톤 export exports/reviews.png).
 ---
+
+---
+## 2026-07-03 - reviews-DONE 시도 — 브리지 미응답으로 G0 실패(그리기/export 없음)
+- 대상 스토리: reviews-DONE(밀스톤, priority 104). cook/reviews=2095:176 검수 + export exports/reviews.png 예정이었음.
+- G0: join_channel 9p9mv14b **성공**(2회 조인 모두 WS 응답)이나 실제 Figma 커맨드 전부 timeout: get_document_info ×3, get_node_info(2095:176) ×1. WS 서버(join)는 살아있으나 플러그인↔Figma 커맨드 경로 끊김(과거 D-home-01 다회 실패와 동일 증상).
+- 조치: CODEX §1 G0 실패 규칙대로 **아무것도 그리지 않음**. reviews-DONE passes:false 유지, prd 갱신·커밋 없음.
+- ⛔ 재개 조건(사용자 조치): Figma 데스크톱에서 TalkToFigma 플러그인 창을 연 채 채널 9p9mv14b로 Connect(창 유지). 복구 후 멱등: cook/reviews(2095:176) 전수 read-back(자식 4 region·요소 존재·초록 #46b581/#e3f3ec 0건 확인)→미비 시 보정→export_node.mjs로 exports/reviews.png(scale2) 저장.
+
+---
+## 2026-07-03 - reviews-DONE(밀스톤) 시도 — 브리지 커맨드 경로 미응답으로 G0 실패(그리기/export 없음)
+- 대상 스토리: reviews-DONE(priority 104). cook/reviews=2095:176 검수 + export exports/reviews.png(scale2) 예정이었음.
+- G0: join_channel 9p9mv14b **성공**(WS 응답 2회)이나 get_document_info ×3 + get_node_info(2095:176) ×1 + 재조인 후 재시도 **전부 timeout**. 직전 커밋(D-reviews-05, 채널 9p9mv14b)까지는 라이브였으나 이 iteration 시점엔 플러그인 커맨드 경로 잼(WS join만 성공).
+- 조치: CODEX §1 G0 실패 규칙대로 **아무것도 그리지/export 하지 않음**. reviews-DONE passes:false 유지, prd 갱신·커밋 없음.
+- 재개 조건: Figma 데스크톱에서 TalkToFigma 플러그인 창을 연 채 채널 9p9mv14b로 Connect 후 재시도. 복구되면 멱등: cook/reviews(2095:176) 전수 read-back(상태바→헤더→콘텐츠→하단 정합·초록 누수 0) 후 export_node_as_image PNG scale2 → scripts/ralph-figma/exports/reviews.png(780x1688), transcript base64 추출 저장.
+- ↻ 재시도(동일 iteration 계열): join_channel 9p9mv14b 성공, get_document_info ×3 전부 timeout. 상황 변화 없음 → 아무것도 그리지/커밋하지 않음. 사용자가 플러그인을 채널 9p9mv14b로 Connect하기 전까지 재시도 무의미.
+
+---
+## 2026-07-03 - reviews-DONE(밀스톤) 재시도 — 브리지 커맨드 경로 여전히 미응답으로 G0 실패
+- 대상 스토리: reviews-DONE(priority 104, 잔여 6개 중 최저 priority). cook/reviews=2095:176 검수 + export exports/reviews.png(scale2) 예정.
+- G0: join_channel 9p9mv14b **성공**(WS 응답 2회)이나 get_document_info ×3 + get_node_info(2095:176) ×2 **전부 timeout**. 이전 reviews-DONE 시도들과 완전 동일 = WS join만 살아있고 플러그인↔Figma 커맨드 경로 잼.
+- 조치: CODEX §1 G0 실패 규칙대로 **아무것도 그리지/export 하지 않음**. reviews-DONE passes:false 유지, prd 갱신·커밋 없음.
+- 잔여 스토리(6): reviews-DONE(104)·NOTE-reviews(105)·FLOW-01(106)·MILE-FINAL(107)·loading-FULL(107.3)·cook3-FULL(107.5).
+- 재개 조건(사용자 조치 필수): Figma 데스크톱에서 TalkToFigma 플러그인 창을 연 채 채널 9p9mv14b로 Connect(창 유지). 복구 후 멱등: cook/reviews(2095:176) 전수 read-back(4 region 정합·요소 존재·초록 #46b581/#e3f3ec 0건)→미비 시 보정→export_node_as_image PNG scale2 → exports/reviews.png(780x1688, transcript base64 추출 저장).
+
+---
+## 2026-07-03 - reviews-DONE(밀스톤) 추가 재시도 — 브리지 커맨드 경로 여전히 미응답으로 G0 실패
+- 대상 스토리: reviews-DONE(priority 104, 잔여 6개 중 최저). cook/reviews=2095:176 전수 검수 + export exports/reviews.png(scale2) 예정.
+- G0: join_channel 9p9mv14b **성공**(WS 응답 2회)이나 get_document_info ×3 + get_node_info(2095:176) ×2 **전부 timeout**. 직전 시도들과 완전 동일 = WS join만 살아있고 플러그인↔Figma 커맨드 경로 잼.
+- 조치: CODEX §1 G0 실패 규칙대로 **아무것도 그리지/export 하지 않음**. reviews-DONE passes:false 유지, prd 갱신·커밋 없음.
+- 잔여 스토리(6): reviews-DONE(104)·NOTE-reviews(105)·FLOW-01(106)·MILE-FINAL(107)·loading-FULL(107.3)·cook3-FULL(107.5).
+- ⛔ 재개는 사용자가 Figma 데스크톱에서 TalkToFigma 플러그인 창을 열고 채널 9p9mv14b로 Connect(창 유지)한 뒤에만 가능. 그 전까지 재시도는 계속 G0에서 막힘.
+## 2026-07-03 - reviews-DONE(밀스톤) 재시도 — 브리지 커맨드 경로 여전히 미응답으로 G0 실패
+- 대상 스토리: reviews-DONE(priority 104, 잔여 6개 중 최저). cook/reviews=2095:176 전수 검수 + export exports/reviews.png(scale2) 예정이었음.
+- G0: join_channel 9p9mv14b **성공**(WS 응답)이나 get_document_info ×3 + get_node_info(2095:176) ×1 **전부 timeout**. 이전 reviews-DONE 시도들과 완전 동일 = WS join만 살아있고 플러그인↔Figma 커맨드 경로 잼(5회 연속 동일 증상).
+- 조치: CODEX §1 G0 실패 규칙대로 **아무것도 그리지/export 하지 않음**. reviews-DONE passes:false 유지, prd 갱신·커밋 없음.
+- 잔여 스토리(6): reviews-DONE(104)·NOTE-reviews(105)·FLOW-01(106)·MILE-FINAL(107)·loading-FULL(107.3)·cook3-FULL(107.5).
+- 재개 조건(사용자 조치 필수): Figma 데스크톱에서 TalkToFigma 플러그인 창을 연 채 채널 9p9mv14b로 Connect(창 유지). 복구 후 멱등: cook/reviews(2095:176) 전수 read-back(4 region 정합·요소 존재·초록 #46b581/#e3f3ec 0건)→미비 시 보정→export_node_as_image PNG scale2 → exports/reviews.png(780x1688).
+
+---
+## 2026-07-03 - reviews-DONE(밀스톤 검수+export) 시도 — 브리지 미응답으로 G0 실패(그리기/export 없음)
+- 대상 스토리: reviews-DONE(우선순위 104, 최저 passes:false). cook/reviews=2095:176 전수 read-back + export exports/reviews.png(scale2) 예정이었음.
+- G0: join_channel 9p9mv14b **성공**(WS 응답 2회)이나 get_document_info **3회 전부 timeout**(재조인 후 재시도 포함). 과거 D-home-01 다회 실패와 동일 증상 = TalkToFigma 플러그인 미실행/큐 잼(WS 서버는 살아있으나 플러그인↔Figma 커맨드 경로 끊김).
+- 조치: CODEX §1 G0 실패 규칙대로 **아무것도 그리지 않음**. reviews-DONE passes:false 유지, prd 갱신·커밋 없음.
+- 복구되면 멱등: cook/reviews(2095:176) get_node_info로 4 region + D-reviews-01~05 요소(상태바 9:41·헤더·평점요약 2097:187~208·후기카드 2097:209~226·후기쓰기 CTA) 전수 정합 확인 → 초록 누수(#46b581/#e3f3ec) 0 확인 → export_node_as_image PNG scale2 → exports/reviews.png. **필수 사용자 조치**: Figma 데스크톱에서 TalkToFigma 플러그인 창을 연 채 채널 9p9mv14b로 Connect(창 유지).
+
+## 2026-07-03 - reviews-DONE (G0 미연결 재시도, no-op)
+- 대상 스토리: reviews-DONE(priority 104, 잔여 6개 중 최저 passes:false). cook/reviews=2095:176 전수 read-back + export exports/reviews.png(scale2) 예정이었음.
+- G0: join_channel 9p9mv14b **성공**(WS 응답 2회)이나 get_document_info ×3 + get_node_info(2095:176) ×1 **전부 timeout**. 플러그인 커맨드 경로 잼 지속(WS join만 성공, 플러그인이 커맨드 미응답).
+- CODEX §1 G0 규칙대로 아무것도 그리지 않고 prd passes 유지, no-op 종료. 초록 누수 보정/export 미수행.
+- 재개 조건(사용자 조치 필수): Figma 데스크톱에서 TalkToFigma 플러그인 창을 연 채 채널 9p9mv14b로 Connect(창 유지). 복구 후 멱등: cook/reviews(2095:176) 전수 read-back(4 region 정합·D-reviews-01~05 요소 존재·초록 #46b581/#e3f3ec 0건)→미비 시 보정→export_node_as_image PNG scale2 → exports/reviews.png(780x1688).
+
+---
+## 2026-07-03 - reviews-DONE 시도 — 브리지 미응답으로 G0 실패(그리기 없음)
+- 대상 스토리: reviews-DONE(밀스톤: cook/reviews=2095:176 검수 + export exports/reviews.png scale2).
+- G0: join_channel 9p9mv14b **성공**(2회 조인 모두 WS 응답)이나 get_document_info **3회 전부 timeout**(재조인 후 재시도 포함). WS 서버는 살아있으나 Figma 데스크톱 플러그인↔커맨드 경로가 끊긴 과거와 동일 증상.
+- 조치: CODEX §1 G0 실패 규칙대로 **아무것도 그리지 않음**. reviews-DONE passes:false 유지, prd 갱신·커밋 없음.
+- 복구 후 멱등 재개: cook/reviews(2095:176) 전수 read-back(get_node_info)로 4 region·요소·초록 누수(#46b581/#e3f3ec) 0 확인 → export_node_as_image scale2 → scripts/ralph-figma/exports/reviews.png(transcript base64 추출 저장). 미비 요소 발견 시 보정.
+- ⛔ 남은 스토리 6개(reviews-DONE·NOTE-reviews·FLOW-01·MILE-FINAL·loading-FULL 등)는 전부 G0 복구 전까지 막힘. 재개 조건: Figma 데스크톱에서 TalkToFigma 플러그인 창을 열고 채널 9p9mv14b로 Connect(창 유지).
+
+---
+## 2026-07-03 - reviews-DONE(밀스톤) 시도 — 브리지 미응답으로 G0 실패(그리기/export 없음)
+- 대상 스토리: reviews-DONE(priority 104). cook/reviews=2095:176 검수 + export exports/reviews.png(scale2) 예정.
+- G0: join_channel 9p9mv14b **성공**(2회, WS 응답)이나 Figma 커맨드 전부 timeout: get_document_info ×3, get_node_info(2095:176) 1회 모두 미응답. 과거와 동일 = TalkToFigma 플러그인 미실행/큐 잼(WS 서버만 살아있음).
+- 조치: CODEX §1 G0 실패 규칙대로 **아무것도 그리지 않음**. reviews-DONE passes:false 유지, prd 갱신·커밋 없음.
+- 복구 후 멱등 재개: cook/reviews(2095:176) 자식 전수 read-back(4 region 정합·요소 존재·초록 누수 #46b581/#e3f3ec 0건 확인, D-reviews-*는 §4b 테라코타로 그려 색 보정 불필요 예상) → export_node_as_image PNG scale2 → exports/reviews.png(780x1688) → 커밋. 다음: NOTE-reviews.
+
+---
+## 2026-07-03 - reviews-DONE(밀스톤) 시도 — 브리지 미응답으로 G0 실패(그리기 없음)
+- 대상 스토리: reviews-DONE(priority 104, 최저 passes:false). cook/reviews=2095:176 완성 검수 + export exports/reviews.png(scale2) 예정.
+- G0: join_channel 9p9mv14b **성공**(2회 조인 모두 WS 응답)이나 get_document_info **4회 전부 timeout**(재조인 후 포함) = TalkToFigma 플러그인 커맨드 경로 끊김(과거 D-home-01 1~21차·동일 증상, WS 서버는 살아있음).
+- 조치: CODEX §1 G0 실패 규칙대로 **아무것도 그리지 않음**. reviews-DONE passes:false 유지, prd 갱신·커밋 없음.
+- ⛔ 재개 조건(사용자 조치): Figma 데스크톱에서 TalkToFigma 플러그인 창을 연 채 채널 9p9mv14b로 Connect(창 유지). 복구되면 멱등: cook/reviews(2095:176) 자식(region 상태바2095:177/헤더2095:178/콘텐츠2095:179/하단2095:180) 전수 read-back(get_node_info+scan_text_nodes로 한글 라벨·§4b 팔레트·초록 누수 0 확인) → export_node_as_image PNG scale2 → exports/reviews.png(780x1688) 저장(transcript base64 추출) → passes:true + 커밋. 남은 passes:false: reviews-DONE(104)·NOTE-reviews(105)·FLOW-01(106)·MILE-FINAL(107)·loading-FULL(107.3 park no-op)·cook3-FULL(107.5 park no-op).
+
+---
+## 2026-07-03 - reviews-DONE 시도 — 브리지 미응답으로 G0 실패(그리기 없음)
+- 대상 스토리: reviews-DONE(밀스톤, cook/reviews=2095:176 검수 + export exports/reviews.png scale2). 남은 스토리 6개 중 최저 priority.
+- G0: join_channel 9p9mv14b **성공**(2회, WS 응답)이나 Figma 커맨드 전부 timeout: get_document_info ×4, get_node_info(2095:176) ×1. 재조인 후 재시도 포함 전부 미응답 = TalkToFigma 플러그인 미실행/큐 잼(과거 D-home-01 반복 실패와 동일 증상).
+- 조치: CODEX §1 G0 실패 규칙대로 **아무것도 그리지 않음**. reviews-DONE passes:false 유지, prd 갱신·커밋 없음.
+- 복구 후 멱등 재개: cook/reviews=2095:176 get_node_info로 4 region + D-reviews-01~05 요소 정합 확인 → 미비 보정 → export_node_as_image(PNG scale2) → transcript base64로 exports/reviews.png(780x1688) 저장. **필수 사용자 조치**: Figma 데스크톱에서 TalkToFigma 플러그인 창을 열고 채널 9p9mv14b로 Connect(창 유지).
+
+## 2026-07-03 - reviews-DONE(밀스톤 검수+export) 시도 — 브리지 미응답으로 G0 실패(그리기 없음)
+- 대상 스토리: reviews-DONE(priority 104). cook/reviews=2095:176 read-back(4 region·요소 정합·초록 누수 0) + export exports/reviews.png(scale2) 예정이었음.
+- G0: join_channel 9p9mv14b **성공**(WS 응답, 재조인 포함 2회)이나 Figma 커맨드 전부 timeout: get_document_info ×3, get_node_info(2095:176) ×1. WS 서버는 살아있으나 TalkToFigma 플러그인↔Figma 커맨드 경로 끊김(과거 다수 로그와 동일 증상).
+- 조치: CODEX §1 G0 실패 규칙대로 **아무것도 그리지 않음**. reviews-DONE passes:false 유지, prd 갱신·커밋 없음.
+- 재개 조건(사용자 조치): Figma 데스크톱에서 TalkToFigma 플러그인 창을 연 채 채널 9p9mv14b로 Connect(창 유지). 복구 후 멱등: cook/reviews(2095:176) read-back(자식/요소·초록#46b581·#e3f3ec 0건·한글 라벨 정합) → export_node_as_image PNG scale2 → exports/reviews.png(base64 transcript 추출). 이후 NOTE-reviews·FLOW-01·MILE-FINAL.
+
+---
+## 2026-07-03 - reviews-DONE 시도 — 브리지 미응답으로 G0 실패(그리기 없음)
+- 대상 스토리: reviews-DONE(밀스톤: cook/reviews=2095:176 검수 + export exports/reviews.png). region 상태바2095:177·헤더2095:178·콘텐츠2095:179·하단2095:180. D-reviews-01~05 완료 상태이므로 이번엔 전수 read-back(초록 누수 #46b581/#e3f3ec 0 확인·핵심 한글 라벨 정합)+export만 예정이었음.
+- G0: join_channel 9p9mv14b **성공**(2회 조인 WS 응답)이나 get_document_info 2회 + get_node_info(2095:176) 1회 **전부 timeout**. WS 서버는 살아있으나 Figma 데스크톱 TalkToFigma 플러그인 커맨드 경로 끊김(과거 D-home-01 다수 시도와 동일 증상).
+- 조치: CODEX §1 G0 실패 규칙대로 **아무것도 그리지 않음**. reviews-DONE passes:false 유지, prd 갱신·커밋 없음.
+- 재개 조건(사용자 조치): Figma 데스크톱에서 TalkToFigma 플러그인 창을 연 채 채널 9p9mv14b로 Connect(창 유지). 복구되면 멱등: cook/reviews(2095:176) 전수 read-back → 초록 누수 보정(있으면) → export_node_as_image scale2 → exports/reviews.png. 남은 스토리 6개(reviews-DONE·NOTE-reviews·FLOW-01·MILE-FINAL·loading-FULL·cook3-FULL).
+
+## 2026-07-03 - reviews-DONE 시도 — 브리지 미응답으로 G0 실패(그리기 없음)
+- 대상 스토리: reviews-DONE(밀스톤: cook/reviews 2095:176 검수 + export exports/reviews.png scale2). 남은 스토리 6개(reviews-DONE·NOTE-reviews·FLOW-01·MILE-FINAL·loading-FULL·cook3-FULL).
+- G0: join_channel 9p9mv14b **성공**(WS 응답, 재조인 포함 2회)이나 get_document_info **4회 전부 timeout**. 과거 D-home-01 다회 실패와 동일 증상 = TalkToFigma 플러그인 미실행/큐 잼(WS 서버는 살아있음).
+- 조치: CODEX §1 G0 실패 규칙대로 **아무것도 그리지 않음**. reviews-DONE passes:false 유지, prd 갱신·커밋 없음.
+- 복구 후 멱등 재개: cook/reviews=2095:176 get_node_info 전수 read-back(4 region 2095:177~180 + 요약카드 2097:187~208·리스트카드 2097:209~226·작성CTA 정합, 초록 누수 #46b581/#e3f3ec 0 확인) → export_node_as_image PNG scale2 → transcript base64 추출로 exports/reviews.png 저장.
+- 필수 사용자 조치: Figma 데스크톱에서 TalkToFigma 플러그인 창을 연 채 채널 9p9mv14b로 Connect(창 유지).
+---
+## 2026-07-03 - reviews-DONE 재시도 — 브리지 미응답으로 G0 실패(그리기/export 없음)
+- 대상: reviews-DONE(밀스톤: cook/reviews 2095:176 검수 + export). 남은 스토리 6개(reviews-DONE·NOTE-reviews·FLOW-01·MILE-FINAL·loading-FULL·cook3-FULL).
+- G0: join_channel 9p9mv14b 성공(WS 응답, 재조인 2회)이나 get_document_info 3회 + get_node_info(2095:176) 전부 timeout. 플러그인↔Figma 커맨드 경로 끊김(WS 서버만 살아있음).
+- 조치: CODEX §1대로 아무것도 그리지 않음. reviews-DONE passes:false 유지, 커밋 없음.
+- 필수 사용자 조치: Figma 데스크톱에서 TalkToFigma 플러그인 창을 연 채 채널 9p9mv14b로 Connect(창 유지) 후 재개. 복구되면 멱등: cook/reviews=2095:176 전수 read-back(4 region 2095:177~180 + 요약 2097:187~208 + 리스트 2097:209~226, 초록 #46b581/#e3f3ec 0 확인) → export scale2 → exports/reviews.png.
+---
+## 2026-07-03 - reviews-DONE(밀스톤) 시도 — 브리지 미응답으로 G0 실패(검수/export 없음)
+- 대상 스토리: reviews-DONE(cook/reviews=2095:176 검수 + export exports/reviews.png scale2). 밀스톤이라 read-back·export 필수.
+- G0: join_channel 9p9mv14b **성공**(2회 조인 모두 WS 응답)이나 실제 커맨드 전부 timeout: get_document_info ×3, get_node_info(2095:176) ×1 모두 미응답. 재조인 후 재시도도 timeout. 과거 D-home-01 다회 실패와 동일 증상 = WS 서버는 살아있으나 TalkToFigma 플러그인↔Figma 커맨드 경로 끊김(플러그인 미실행/큐 잼).
+- 조치: CODEX §1 G0 실패 규칙대로 **아무것도 그리지 않음**. reviews-DONE passes:false 유지, prd 갱신·커밋 없음. (밀스톤은 실제 export 없이 통과 불가.)
+- 다음 사용자 액션 필요: Figma 데스크톱에서 TalkToFigma 플러그인 창을 열고 채널 9p9mv14b로 Connect(창 유지). 복구되면 멱등: cook/reviews(2095:176) get_node_info 검수(자식/한글 라벨 정합·초록 누수 0) → export_node_as_image PNG scale2 → exports/reviews.png(transcript base64 추출).
+
+---
+## 2026-07-03 - reviews-DONE — G0 미연결(브리지 커맨드 경로 잼) · 사용자 결정 대기
+- join_channel 9p9mv14b 성공, get_document_info ×2 timeout(직전 D-reviews-05까진 라이브였으나 현재 잼). 그리기/커밋 없음, passes:false 유지.
+- ⛔ 반복 재시도 중단(동일 실패 ~30회 누적, 로그 무의미). 두 가지 사용자 결정 필요 → 아래 사용자 보고 참조:
+  (1) 브리지 재연결: Figma 데스크톱 TalkToFigma 플러그인 창 열고 채널 9p9mv14b Connect.
+  (2) 정본 트랙 결정: v1(prd.json 루프)·v2(cook-v2/*)·신규 red 포트(red-port-prompt.md, 오늘 생성) 중 무엇을 계속할지.
+- 구조적 사실: 잔여 loading-FULL(107.3)·cook3-FULL(107.5)은 확정 no-op(passes:false 영구) → 이 루프는 자력으로 COMPLETE 불가.
+
+---
+## 2026-07-03 - reviews-DONE 검수+export 시도 — 브리지 미응답으로 G0 실패(그리기 없음)
+- 대상 스토리: reviews-DONE(밀스톤: cook/reviews=2095:176 전수 read-back + export exports/reviews.png scale2). D-reviews-01~05는 완료(커밋됨).
+- G0: join_channel 9p9mv14b **성공**(2회 조인 모두 WS 응답)이나 get_document_info 3회·get_node_info(2095:176) 1회 **전부 timeout**(재조인 후 재시도 포함). 과거 D-home-01 다회 실패와 동일 증상 = TalkToFigma 플러그인 커맨드 경로 끊김(WS join만 성공).
+- 조치: CODEX §1 G0 실패 규칙대로 **아무것도 그리지·내보내지 않음**. reviews-DONE passes:false 유지, prd 갱신·커밋 없음.
+- 복구 후 멱등 재개: cook/reviews(2095:176) get_node_info로 4 region(상태바2095:177·헤더2095:178·콘텐츠2095:179·하단2095:180) + D-reviews 요소 전수 확인 → §4b 팔레트/영어 누수 점검 후 export_node_as_image(PNG scale2) → exports/reviews.png. 밀스톤이므로 export 필수.
+- **필수 사용자 조치**: Figma 데스크톱에서 TalkToFigma 플러그인 창을 열고 채널 9p9mv14b로 Connect(창 유지)한 뒤 재개.
+
+---
+## 2026-07-04 - reviews-DONE reviews 화면 완성 검수 + export (밀스톤, 통과)
+- 브리지 복구: 채널 **cjb0km46**(.env FIGMA_CHANNEL·prd figma.channel 일치, 과거 로그의 9p9mv14b는 이전 세션 값). join_channel + get_document_info **정상 응답**(페이지 '요리 비서 - 세인' 939:2, SEC/A·B·C + cook-v2/* 25 children).
+- 대상: cook/reviews=**2095:176**(SEC/C 2070:20 자식). G2 전수 검수(scan_text_nodes → TEXT 26개): 상태바 '9:41'(2096:181)·헤더 '후기'(2096:186)·평점요약 '평균 별점'/'4.7'/'★★★★★'/'3개 후기'(2097:188~191)+분포 5★~1★(개수 2·1·0·0·0)·후기카드3 '요리고수'★5/'자취왕'★4/'맵찔이'★5+본문(2097:218~226)·하단 CTA '후기 쓰기'(2097:230). 4 region 영역 대응(상태바→헤더→콘텐츠→하단), 미비 요소 0 → 보정 없음.
+- G3 export: export_node.mjs(브리지 WS :3055 직접) → **exports/reviews.png(780x1688 유효 PNG, 64000바이트)**. 육안 정합: 상태바→후기 헤더→평점요약카드(분포막대 테라코타 #D66B42)→후기카드3(아바타 fresh 초록=성공/후기 문맥 정직색)→후기 쓰기 CTA(테라코타 버튼), 잘림 없음.
+- G4: 금지초록 #46b581/#e3f3ec **0건**(후기 아바타 fresh #3FA76F류=CODEX §4b 성공 문맥 허용), 영어 누수 0(★=기호), §4b 팔레트(테라코타 #D66B42·surface #FFFCF7·line #DDD1C6·accent #C99B4A·ink #231A14·gray #6E6258·bg #FFF7F0).
+- 판정: G0/G1/G2/G3/G4 전부 통과 → reviews-DONE passes:true. 남은 미통과: NOTE-reviews(105)·FLOW-01(106)·MILE-FINAL(107)·loading-FULL(107.3 no-op)·cook3-FULL(107.5 no-op). 다음: NOTE-reviews.
