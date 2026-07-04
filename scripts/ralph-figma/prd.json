@@ -1453,7 +1453,8 @@
       "title": "reviews 포스트잇 + 주석 배치",
       "description": "cook/reviews 옆에 리뷰 코멘트용 노란 포스트잇과 핵심 요소 주석을 배치한다.",
       "priority": 105,
-      "passes": false,
+      "passes": true,
+      "notes": "브리지 채널 cjb0km46(라이브, .env·prd 일치, get_document_info 응답 OK, 페이지 '요리 비서 - 세인' 939:2). 대상 cook/reviews=2095:176(SEC/C 2070:20 자식, abs 9860/2992 390x844, 우변 abs 10250). SEC/C=2070:20 abs 7680/2872 3000x1620(우변 10680). 멱등: get_document_info로 SEC/C 자식에 NOTE/reviews-1 없음 확인 → 신규 create. 포스트잇 NOTE/reviews-1=2111:2(SEC/C 자식, 부모-상대 x2610 y120 → abs 10290/2992, cook/reviews 우변 10250 +40px 오른쪽·reviews 상단 정렬, 240x180 #FFE8A3 라운드12, 우변 abs 10530 < SEC/C 우변 10680 내부). 자식 2: NOTE/reviews-1-제목=2111:3('리뷰 코멘트' 15px Bold #231A14 rel x16 y16), NOTE/reviews-1-본문=2111:4('여기에 후기 화면 피드백을 남겨 주세요.' 13px Regular #6E6258 rel x16 y48). 주석(set_annotation) 2건: 헤더제목 2096:186('후기')·CTA라벨 2097:230('후기 쓰기') 콜아웃 부착(둘 다 success 응답). G0/G1/G2(get_node_info 2111:2 → 자식 2 + '리뷰 코멘트' 텍스트 확인, abs 10290 cook/reviews 우측 정합·SEC/C 내부 / 주석 2건 success)/G4(포스트잇 #FFE8A3·ink #231A14·gray #6E6258 토큰, 15/13px, 영어 누수 0·초록 누수 0) 통과. 밀스톤 아님 → export 생략. 남은 passes:false: FLOW-01(106)·MILE-FINAL(107)·loading-FULL(107.3 park no-op)·cook3-FULL(107.5 park no-op). 다음: FLOW-01(화면 간 플로우 연결선).",
       "acceptanceCriteria": [
         "멱등: cook/reviews 오른쪽 옆에 노란 포스트잇 NOTE/reviews-1(#FFE8A3, 라운드12, '리뷰 코멘트' 자리) 배치.",
         "핵심 요소 1개 이상에 set_annotation 콜아웃 부착.",

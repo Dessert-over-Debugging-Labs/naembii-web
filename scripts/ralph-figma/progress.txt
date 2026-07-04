@@ -1334,3 +1334,12 @@ Started: Wed Jul  1 15:53:56 KST 2026
 - G3 export: export_node.mjs(브리지 WS :3055 직접) → **exports/reviews.png(780x1688 유효 PNG, 64000바이트)**. 육안 정합: 상태바→후기 헤더→평점요약카드(분포막대 테라코타 #D66B42)→후기카드3(아바타 fresh 초록=성공/후기 문맥 정직색)→후기 쓰기 CTA(테라코타 버튼), 잘림 없음.
 - G4: 금지초록 #46b581/#e3f3ec **0건**(후기 아바타 fresh #3FA76F류=CODEX §4b 성공 문맥 허용), 영어 누수 0(★=기호), §4b 팔레트(테라코타 #D66B42·surface #FFFCF7·line #DDD1C6·accent #C99B4A·ink #231A14·gray #6E6258·bg #FFF7F0).
 - 판정: G0/G1/G2/G3/G4 전부 통과 → reviews-DONE passes:true. 남은 미통과: NOTE-reviews(105)·FLOW-01(106)·MILE-FINAL(107)·loading-FULL(107.3 no-op)·cook3-FULL(107.5 no-op). 다음: NOTE-reviews.
+
+## NOTE-reviews (2026-07-04) — 통과
+- 대상 스토리: NOTE-reviews(priority 105, 최저 passes:false). cook/reviews=2095:176 옆 포스트잇 + 주석.
+- G0: join_channel cjb0km46 성공 + get_document_info 응답 OK(페이지 '요리 비서 - 세인' 939:2, SEC/C 2070:20 존재). 브리지 복구됨(과거 9p9mv14b timeout 해소).
+- 좌표 산정: cook/reviews=2095:176 abs 9860/2992 390x844(우변 10250). SEC/C=2070:20 abs 7680/2872 3000x1620(우변 10680). 포스트잇 부모=SEC/C, 부모-상대 x2610 y120 → abs 10290/2992(reviews 우변 +40px·상단 정렬), 우변 abs 10530 < SEC/C 우변 10680 내부.
+- G1: NOTE/reviews-1=2111:2(SEC/C 자식, 240x180 #FFE8A3 라운드12). 자식 2: 제목 2111:3('리뷰 코멘트' 15px Bold #231A14 rel x16 y16), 본문 2111:4('여기에 후기 화면 피드백을 남겨 주세요.' 13px Regular #6E6258 rel x16 y48). 주석 2건 set_annotation: 헤더제목 2096:186('후기')·CTA라벨 2097:230('후기 쓰기') 둘 다 success.
+- G2 read-back: get_node_info 2111:2 → 자식 2 + '리뷰 코멘트' TEXT 확인, abs 10290/2992 cook/reviews 우측·SEC/C 내부 정합. 주석 2건 success 응답.
+- G4: 포스트잇 #FFE8A3·ink #231A14·gray #6E6258 §4b 토큰, 15/13px, 초록·영어 누수 0. 밀스톤 아님 → export 생략.
+- 판정: G0/G1/G2/G4 전부 통과 → NOTE-reviews passes:true. 남은 미통과: FLOW-01(106)·MILE-FINAL(107)·loading-FULL(107.3 no-op)·cook3-FULL(107.5 no-op). 다음: FLOW-01(화면 간 플로우 연결선).
