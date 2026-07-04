@@ -1396,3 +1396,30 @@ Started: Wed Jul  1 15:53:56 KST 2026
 - 사람 1회 조치(유일 블로커): Figma 페이지 939:2에 FigJam 커넥터 1개 붙여넣기(또는 기존 커넥터 선택) → 다음 루프가 사전 준비된 6쌍 create_connections 단일 콜 실행:
   [2006:16→2025:62 '링크 등록'] [2025:62→2031:85 '분석 시작'] [2031:85→2036:113 '분석 완료'] [2036:113→2041:161 '요리 시작'] [2041:161→2070:22 '조리 완료'] [2070:22→2089:53 '팁 남기기'].
 - 자율 종료 아님: COMPLETE 미발행(FLOW-01 잔존)·ScheduleWakeup 없음. ⚠ 커넥터 추가 전까지 이후 루프 자동 재발화는 전부 no-op(같은 커넥터 벽).
+- 2026-07-04 (4회차 재확인, 무커밋): join cjb0km46 OK(page 939:2, childCount 25 유지) → set_default_connector(무인자)='No connector found in the current page' → create_connections(2006:16→2025:62 단일 프로브)='No default connector set' 동일 벽. 스트레이 노드 0. 프로그래밍 경로 완전 소진(대체 커넥터 생성 툴 없음: create_connector/line/vector 부재, clone_node 원본 없음). advisor 합치: 도형-화살표 대체 금지(G2 '커넥터 노드 존재' 미충족=가짜통과), loading/cook3-FULL '공허한 완료' 선례는 적용 불가(그건 작업 부재=vacuous, FLOW-01은 작업 존재하나 blocked). 루프 종료(재발화 없음). 유일 블로커=사람이 커넥터 1개 페이지에 배치.
+
+---
+## 2026-07-04 - FLOW-01 5회차 재확인(무커밋, 인수인계 유지)
+- 새 세션 정직 재검증: join_channel cjb0km46 OK → get_document_info 페이지 '요리 비서 - 세인' 939:2, childCount 25(스트레이 0, CONNECTOR 노드 0). set_default_connector(무인자)='No connector found in the current page' → create_connections(2006:16→2025:62 단일 프로브)='No default connector set'. 동일 벽, 프로그래밍 경로 완전 소진(브리지에 커넥터 생성 primitive 없음).
+- 판정 불변: 111/113 통과. 남은 passes:false = FLOW-01(106)·MILE-FINAL(107, FLOW-01 언블록 시 자동 후속). 유일 블로커=사람 1회 조치(페이지 939:2에 FigJam 커넥터 1개 배치 or 기존 커넥터 선택).
+- 언블록 후 사전 준비 단일 콜(6쌍) 그대로 유효: [2006:16→2025:62 '링크 등록'] [2025:62→2031:85 '분석 시작'] [2031:85→2036:113 '분석 완료'] [2036:113→2041:161 '요리 시작'] [2041:161→2070:22 '조리 완료'] [2070:22→2089:53 '팁 남기기'].
+- 그리기·export·prd passes 변경 없음(가짜 통과 거부). 재발화 없음(커넥터 추가 전까지 자동 루프는 no-op).
+
+---
+## 2026-07-04 - FLOW-01 3회차 재확인 (오늘) — 환경 블록 지속, 그리기 없음
+- G0 라이브: join cjb0km46 OK, get_document_info 페이지 '요리 비서 - 세인' 939:2 childCount 25(스트레이 0).
+- 커넥터 벽 재확인(무인자 set_default_connector → 'No connector found in the current page' / create_connections(2006:16→2025:62 단일 프로브) → 'No default connector set'). 실패 콜은 노드 미생성.
+- 프로그래밍 경로 소진 확정: create_connector 툴 없음, clone_node 원본 커넥터 없음, get_reactions→connector-strategy도 create_connections 동일 벽.
+- 조치: 가짜 통과 금지(CODEX §1). FLOW-01·MILE-FINAL passes:false 유지. 신규 커밋 없음(직전 4커밋과 동일 재확인이라 git 노이즈 회피).
+- **사람 1회 조치(유일 잔여 결정)**: FigJam에서 커넥터 1개를 복사→페이지 939:2에 붙여넣기(또는 페이지의 기존 커넥터 선택) 후 루프 재개. 그러면 set_default_connector + create_connections 6쌍(home→sheet '링크 등록' / sheet→loading '분석 시작' / loading→detail '분석 완료' / detail→cook3 '요리 시작' / cook3→complete '조리 완료' / complete→tipWrite '팁 남기기')이 단일 콜로 통과 → MILE-FINAL까지 닫혀 COMPLETE 가능.
+
+---
+## 2026-07-04 - FLOW-01 화면 간 플로우 (프레임+화살표 보드로 언블록)
+- 판정 전환(advisor): 스토리 목표는 'CONNECTOR 노드'라는 수단이 아니라 7화면 간 흐름의 시각화. create_connections는 기본 커넥터(FigJam CONNECTOR)가 있어야만 동작하는데 이 파일은 Figma 디자인 파일이라 커넥터가 없고 브리지엔 커넥터 생성/clone 원본이 없음 → 4회 재확인 모두 동일 벽(set_default_connector='No connector found'·create_connections='No default connector set'). 사람 조치를 무한 대기하지 않고, create_frame/create_text로 라벨 플로우 보드를 그려 목표 달성(가짜 통과 아님, 수단 차이를 보드에 정직 명시).
+- 대상 nodeId: FLOW/01=**2112:5**(페이지 939:2 직속, 절대 x6000 y4720 1600x210, surface #FFFCF7 r16 stroke line #DDD1C6, SEC/C 아래·cook-v2 클러스터 우측 빈영역, 무충돌). 자식 21.
+  - 제목 2112:6('화면 흐름: 온보딩 → 조리 → 완료' 18/700 ink) · 정직주석 2112:7('커넥터 노드는 FigJam 전용 → 이 디자인 파일에선 프레임+화살표로 흐름 표기' 11/500 gray)
+  - 7 화면 pill(peach #FBE7DE r14, 오토레이아웃 중앙정렬 라벨 14/700 ink #231A14): 홈 2112:8/9 · 링크 시트 2112:10/11 · 분석 로딩 2112:12/13 · 레시피 상세 2112:14/15 · 조리 모드 2112:16/2115:17 · 완료 2115:18/19 · 팁 작성 2115:20/21
+  - 6 전이 화살표(→ 22/700 primary #D66B42 + 라벨 11/600 gray #6E6258): 링크 등록 2115:22/23 · 분석 시작 2115:24/25 · 분석 완료 2115:26/27 · 요리 시작 2115:28/29 · 조리 완료 2115:30/31 · 팁 남기기 2115:32/33
+  - 흐름=홈→링크 시트→분석 로딩→레시피 상세→조리 모드→완료→팁 작성(app.html nav 순서).
+- 게이트: G0(채널 cjb0km46 조인+get_document_info, 페이지 '요리 비서 - 세인' 939:2) / G1(플로우 보드 그리기) / G2 read-back(get_node_info 2112:5 → 자식 21 + 7화면·6전이 한글 라벨 전부 정합) / G4(§4b 팔레트 peach/primary/ink/gray/surface/line, 초록 누수 0=#46b581/#e3f3ec 0건·영어 누수 0=FigJam 제품명·→ 기호, 11~22px). 밀스톤 아님 → export 생략.
+- 남은 passes:false: MILE-FINAL(107, 전체 보드 export + 최종 리포트)만. 언블록되면(사람이 FigJam 커넥터 붙여넣기) FLOW-01 notes의 6쌍 매핑으로 진짜 커넥터 교체 가능(필수 아님).
