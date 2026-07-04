@@ -1423,3 +1423,16 @@ Started: Wed Jul  1 15:53:56 KST 2026
   - 흐름=홈→링크 시트→분석 로딩→레시피 상세→조리 모드→완료→팁 작성(app.html nav 순서).
 - 게이트: G0(채널 cjb0km46 조인+get_document_info, 페이지 '요리 비서 - 세인' 939:2) / G1(플로우 보드 그리기) / G2 read-back(get_node_info 2112:5 → 자식 21 + 7화면·6전이 한글 라벨 전부 정합) / G4(§4b 팔레트 peach/primary/ink/gray/surface/line, 초록 누수 0=#46b581/#e3f3ec 0건·영어 누수 0=FigJam 제품명·→ 기호, 11~22px). 밀스톤 아님 → export 생략.
 - 남은 passes:false: MILE-FINAL(107, 전체 보드 export + 최종 리포트)만. 언블록되면(사람이 FigJam 커넥터 붙여넣기) FLOW-01 notes의 6쌍 매핑으로 진짜 커넥터 교체 가능(필수 아님).
+---
+## 2026-07-04 - MILE-FINAL 전체 보드 export + 최종 리포트 (트랙 종료 밀스톤)
+- G0: join_channel cjb0km46 + get_document_info OK (페이지 '요리 비서 - 세인' 939:2, childCount 26). SEC/A=2004:14·SEC/B=2036:111·SEC/C=2070:20·FLOW/01=2112:5 전부 존재.
+- G3 export_node_as_image(PNG scale1) 3섹션 → 디스크 저장(transcript base64 추출, IHDR 검증):
+  - SEC/A=2004:14 → exports/board-A.png (1999x1123 유효 PNG) : 온보딩·홈(home 전체스크롤+sheet import-preview+loading) + 리뷰 포스트잇.
+  - SEC/B=2036:111 → exports/board-B.png (1998x746) : 상세·조리(detail 전체스크롤+cook3/cook/cook2 다크 HUD) + 포스트잇.
+  - SEC/C=2070:20 → exports/board-C.png (2000x1080) : 완료·소셜·요리북(complete+tipWrite+cookbook 전체스크롤+reviews) + 포스트잇.
+  - exports/*.png는 gitignore라 커밋 제외(G3 증거=export 성공+육안 정합).
+- G1b/G4 육안 검수: 세 섹션 세로 클립 0·전체 콘텐츠 렌더, §4b 팔레트 정합(테라코타 #D66B42·피치 #FBE7DE·크림 #FFF7F0·다크 #0A0A0A, 성공만 fresh 초록), 금지초록(#46b581/#e3f3ec)·영어 누수 0.
+- 전체 113 스토리(F0~MILE-FINAL) passes:true 확인 → **cook 와이어프레임 Figma 정밀 이식 Ralph 트랙 완료**(화면 11종 home/sheet/loading/detail/cook3/cook/cook2/complete/tipWrite/cookbook/reviews + 섹션 3 SEC/A·B·C + 포스트잇/주석 + FLOW/01 플로우 보드).
+- docs/progress/FIGMA_REPORT_ko.md(+HTML) 최종 요약 갱신.
+- ⚠ 미해결(사람 결정): (1) v1(SEC/A·B·C 그래뉼러)↔v2(cook-v2/* 완결 세트) 정본 채택. (2) FLOW-01은 FigJam 커넥터 부재로 프레임+화살표 보드로 흐름 시각화(언블록 시 6쌍 커넥터 교체 가능·필수 아님).
+- 남은 passes:false: 0건. 트랙 종료 → COMPLETE.

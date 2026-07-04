@@ -1479,7 +1479,8 @@
       "title": "전체 보드 export + 최종 리포트",
       "description": "완성된 전체 보드를 내보내고 최종 리포트를 정리한다.",
       "priority": 107,
-      "passes": false,
+      "passes": true,
+      "notes": "✅ 2026-07-04 통과(트랙 종료 밀스톤). G0(채널 cjb0km46 조인+get_document_info → 페이지 '요리 비서 - 세인' 939:2, childCount 26) 확인. G3 export_node_as_image(PNG scale1) 3섹션: SEC/A=2004:14→exports/board-A.png(1999x1123 유효 PNG, 온보딩·홈: home 전체스크롤+sheet import-preview+loading+리뷰 포스트잇), SEC/B=2036:111→board-B.png(1998x746, 상세·조리: detail 전체스크롤+cook3/cook/cook2 다크 HUD+포스트잇), SEC/C=2070:20→board-C.png(2000x1080, 완료·소셜·요리북: complete+tipWrite+cookbook 전체스크롤+reviews+포스트잇). export 툴=base64 인라인 반환 → 세션 transcript JSONL tool_result 이미지 base64 추출로 디스크 기록(IHDR 치수 검증). exports/*.png는 gitignore라 커밋 제외(G3 증거=export 성공+육안 정합). G1b/G4 육안 검수: 세 섹션 세로 클립 0·전체 콘텐츠 렌더, §4b 팔레트 정합(테라코타 #D66B42·피치 #FBE7DE·크림 #FFF7F0·다크 #0A0A0A, 성공만 fresh 초록), 금지초록(#46b581/#e3f3ec)·영어 누수 0. 전체 113 스토리(F0~MILE-FINAL) passes:true 확인 → cook 와이어프레임 Figma 정밀 이식 Ralph 트랙 완료(화면 11종+섹션 3+포스트잇/주석+FLOW/01 플로우 보드). docs/progress/FIGMA_REPORT_ko.md(+HTML) 최종 요약 갱신. ⚠ 미해결(사람 결정): v1(SEC/A·B·C 그래뉼러)↔v2(cook-v2/* 완결 세트) 정본 채택 / FLOW-01은 FigJam 커넥터 부재로 프레임+화살표 보드로 흐름 시각화(언블록 시 6쌍 커넥터 교체 가능, 필수 아님).",
       "acceptanceCriteria": [
         "각 섹션(SEC/A·B·C) 또는 전체 보드를 export_node_as_image로 exports/board-*.png 저장.",
         "docs/progress/FIGMA_REPORT_ko.md 최종 요약 갱신.",

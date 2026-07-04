@@ -150,5 +150,16 @@
   <li><b>다음</b>: K-tipWrite(cook/tipWrite 골격 프레임, SEC/C).</li>
 </ul>
 <hr>
+<h2>MILE-FINAL — 전체 보드 export + 최종 리포트 ✅ · 2026-07-04 (트랙 완료)</h2>
+<ul>
+  <li><b>무엇을</b>: 완성된 전체 보드를 섹션 단위로 export하고, 모든 스토리 passes 확인 후 트랙을 닫는다(마지막 남은 <code>passes:false</code> 스토리).</li>
+  <li><b>export</b>: G0(채널 <code>cjb0km46</code> + <code>get_document_info</code> → 페이지 &lsquo;요리 비서 - 세인&rsquo; 939:2, childCount 26) 확인 후 <code>export_node_as_image</code>(PNG scale1)로 세 섹션 저장 —
+    <code>SEC/A</code>(2004:14)→<code>exports/board-A.png</code>(1999×1123), <code>SEC/B</code>(2036:111)→<code>board-B.png</code>(1998×746), <code>SEC/C</code>(2070:20)→<code>board-C.png</code>(2000×1080). 유효 PNG(IHDR 검증), transcript base64 추출로 디스크 기록. <code>exports/*.png</code>는 gitignore라 커밋 제외(G3 증거=export 성공+육안 정합).</li>
+  <li><b>육안 검수</b>: 세 섹션 세로 클립 0·전체 콘텐츠 렌더, §4b 팔레트 정합(테라코타 #D66B42·피치 #FBE7DE·크림 #FFF7F0·다크 #0A0A0A, 성공만 fresh 초록), 금지초록(#46b581/#e3f3ec)·영어 누수 0.</li>
+  <li><b>트랙 종료</b>: 전체 113 스토리(F0~MILE-FINAL) <code>passes:true</code> → cook 와이어프레임 Figma 정밀 이식 Ralph 트랙 완료. 화면 11종 + 섹션 3 + 포스트잇/주석 + 플로우 보드(FLOW/01).</li>
+  <li><b>미해결(참고)</b>: (1) v1(SEC/A·B·C 그래뉼러) ↔ v2(cook-v2/* 완결 세트) 정본은 사람 결정. (2) FLOW-01은 FigJam 커넥터 부재로 프레임+화살표 보드로 흐름 시각화(언블록 시 커넥터 교체 가능, 필수 아님).</li>
+  <li><b>게이트</b>: <span class="gate">G0 ✅(cjb0km46) / G1 ✅ / G3 ✅(board-A/B/C 유효 PNG) / G4 ✅</span></li>
+</ul>
+<hr>
 </body>
 </html>
