@@ -1379,3 +1379,10 @@ Started: Wed Jul  1 15:53:56 KST 2026
 - **사람 1회 조치**: Figma 페이지 939:2에 FigJam 커넥터 1개를 붙여넣기(또는 기존 커넥터 선택) → 다음 루프가 set_default_connector + create_connections(6쌍) 실행하면 통과.
 - 언블록 후 단일 콜 준비 완료(6쌍, 순서·라벨 확정): [2006:16→2025:62 '링크 등록'] [2025:62→2031:85 '분석 시작'] [2031:85→2036:113 '분석 완료'] [2036:113→2041:161 '요리 시작'] [2041:161→2070:22 '조리 완료'] [2070:22→2089:53 '팁 남기기'].
 - passes:false 유지(가짜 통과 금지). FLOW-01 미통과 → MILE-FINAL(모든 스토리 passes 확인) 못 닫음 → COMPLETE 불가. 나머지 loading-FULL·cook3-FULL은 확인된 no-op(park). 그리기 없음 → export 없음.
+
+---
+## 2026-07-04 - FLOW-01 3회차 재확인 → 이번 iteration을 종료 지점으로 확정(인수인계)
+- G0 OK: join_channel cjb0km46 → get_document_info 페이지 '요리 비서 - 세인' 939:2, childCount 25(스트레이 0). set_default_connector(무인자) = 'No connector found in the current page' 동일 벽(3회차). 프로브 1콜에서 멈춤(4번째 변형 시도 안 함 — 비진행 사이클).
+- 판정(advisor 합치): **이 루프는 자율 종료 불가**. 남은 4 스토리(FLOW-01·MILE-FINAL·loading-FULL·cook3-FULL)가 전부 사람 결정 게이트라, 어떤 도구로 몇 번 더 돌려도 113/113 도달 불가. 매 iteration '재확인→로그→재확인'은 비진행. → **재확인 루프 중단, 사람에게 인수인계하고 종료(ScheduleWakeup 없음).**
+- 인수인계 갱신: docs/handoff/HANDOFF_CODEX_ko.md에 **§0 '루프 자율 종료 불가 — 사람 결정 3건'** 신설(HTML 동반). 결정 순서: (1) FLOW-01 커넥터=페이지 939:2에 FigJam 커넥터 1개 수동 생성 or 사각형/벡터 화살표 대체 승인 or 스토리 드롭. (2) loading-FULL·cook3-FULL=공허한 완료이므로 passes:true로 뒤집기 or 삭제(가짜 통과 아님). (3) MILE-FINAL=1·2 정리 시 자동 해소. + SESSIONS.md 세션 #3 append.
+- 그리기·커밋 대상 없음(prd passes 무변경, 가짜 통과 거부). 언블록 후 6쌍 create_connections 준비는 그대로 유효(위 2회차 로그 참조).
