@@ -1,0 +1,16 @@
+.env
+.env.*
+.claude/
+.git/
+android-wrapper/
+cheftory_image/
+docs/
+scripts/
+flow.html
+wireframe.html
+wireframe-screens.html
+CLAUDE.md
+HANDOFF_ko.md
+WIREFRAME.md
+node_modules/
+*.log

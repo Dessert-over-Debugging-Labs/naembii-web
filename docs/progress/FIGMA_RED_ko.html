@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Figma RED 이식 진행 기록</title>
+<style>
+  :root{ --brand:#EF5A3C; --soft:#FDEBE6; --ink:#1A1A1C; --sub:#6E6E73; --bg:#F5F5F7; --border:#ECECEE; }
+  *{box-sizing:border-box}
+  body{ font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+        margin:0; background:var(--bg); color:var(--ink); line-height:1.65; }
+  .wrap{ max-width:820px; margin:0 auto; padding:40px 24px 80px; }
+  h1{ font-size:28px; border-bottom:3px solid var(--brand); padding-bottom:12px; }
+  h2{ font-size:20px; margin-top:36px; color:var(--brand); }
+  blockquote{ background:var(--soft); border-left:4px solid var(--brand); margin:16px 0;
+              padding:14px 18px; border-radius:8px; font-size:14px; color:#5a3a30; }
+  blockquote p{margin:4px 0}
+  code{ background:#fff; border:1px solid var(--border); border-radius:5px; padding:1px 6px; font-size:13px; }
+  ul{ padding-left:22px; }
+  li{ margin:5px 0; }
+  .status li{ list-style:none; margin-left:-22px; }
+  .done{ color:#1a7a4a; font-weight:700; }
+  .card{ background:#fff; border:1px solid var(--border); border-radius:14px; padding:8px 22px 20px; margin:18px 0; }
+  .badge{ display:inline-block; background:var(--brand); color:#fff; font-size:12px; font-weight:700;
+          padding:2px 10px; border-radius:20px; vertical-align:middle; margin-left:6px; }
+  hr{ border:none; border-top:1px solid var(--border); margin:32px 0; }
+  .pill{ background:var(--soft); color:var(--brand); border-radius:20px; padding:1px 8px; font-size:13px; font-weight:600; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Figma RED 이식 진행 기록</h1>
+<blockquote>
+  <p>대상: GitHub origin/main Cookflow 앱을 <b>레드(토마토) 테마</b>로 Figma에 1:1 충실 이식.</p>
+  <p>페이지: <b>요리비서 레드</b> (id 2101:231, 레드 전용 빈 페이지 — 가드 통과).</p>
+  <p>채널: pd73rzoe. 기준: <code>ref_&lt;view&gt;.png</code> + <code>CHECKLIST_github_red_ko.md</code>.</p>
+  <p>팔레트: brand #EF5A3C · soft #FDEBE6 · ink #1A1A1C · sub #6E6E73 · bg #F5F5F7 · surface #fff · gold #FFB400.</p>
+  <p>프레임: 390×844, 좌→우 나열(간격 80). 이미지/아이콘은 도구 제약상 중립/브랜드 플레이스홀더로 대체(라벨·구조·팔레트 우선).</p>
+</blockquote>
+
+<h2>진행 상태 — <span class="pill">8/8 완료</span></h2>
+<ul class="status">
+  <li>✅ home — red/home (nodeId 2101:233) @ x=0</li>
+  <li>✅ detail — red/detail (nodeId 2101:330) @ x=470</li>
+  <li>✅ loading — red/loading (nodeId 2101:371) @ x=940</li>
+  <li>✅ complete — red/complete (nodeId 2101:392) @ x=1410</li>
+  <li>✅ reviews — red/reviews (nodeId 2101:426) @ x=1880</li>
+  <li>✅ cook3 — red/cook3 (nodeId 2101:483) @ x=2350 (틴트 ON)</li>
+  <li>✅ cook — red/cook (nodeId 2101:525) @ x=2820 (틴트 ON)</li>
+  <li>✅ cook2 — red/cook 클론 (nodeId 2101:579) @ x=3290 (틴트 ON)</li>
+</ul>
+<p style="font-size:13px;color:var(--sub)">※ 프레임 이름 red/cook2는 도구에 rename 기능이 없어 클론 원본명 red/cook 유지 — nodeId 2101:579로 식별.</p>
+
+<hr>
+
+<div class="card">
+<h2>home <span class="badge">2101:233</span></h2>
+<ul>
+  <li>상태바(9:41 + signal/wifi/battery 3요소)</li>
+  <li>헤더: 로고 <code>cook</code>(chef-hat) · 알림 뱃지 <code>268</code> · 프로필 원형</li>
+  <li>검색바 <code>먹고 싶은 요리를 검색해보세요</code></li>
+  <li>카테고리 원형칩 7: 쉐프 급상승 한식 분식 일식 양식 디저트</li>
+  <li>섹션 <code>나의 레시피</code> + <code>전체 ›</code></li>
+  <li>그리드 6카드(2열 wrap): 순두부찌개·감바스 알 아히요·아보카도 비빔밥·까르보나라·딸기 티라미수·명란 파스타 (저자/인분/조리시간 포함)</li>
+  <li>FAB(+) 우하단. 개발 토글 없음(순수 앱 화면).</li>
+</ul>
+</div>
+
+<div class="card">
+<h2>detail <span class="badge">2101:330</span></h2>
+<ul>
+  <li>헤더(‹ 뒤로 · <code>레시피</code> · 공유 ↗)</li>
+  <li>영상 히어로(플레이스홀더 + 재생원 + <code>YouTube</code> 레드 뱃지)</li>
+  <li>제목 <code>백종원이 알려주는 칼칼한 순두부찌개</code> + 저장 <code>342</code></li>
+  <li>평점 ★ <code>4.7</code> <code>후기 3개</code> · 설명 문단</li>
+  <li>메타칩3: 30분/조리시간 · 2인분/분량 · 쉬움/난이도</li>
+  <li>스티키 탭: 재료(활성) 레시피 리뷰 · 하단 CTA <code>요리 시작하기</code></li>
+</ul>
+</div>
+
+<div class="card">
+<h2>loading <span class="badge">2101:371</span></h2>
+<ul>
+  <li>중앙 스피너 링(brand)</li>
+  <li>제목 <code>레시피를 분석하고 있어요</code> / 부제 <code>영상을 단계별로 쪼개는 중...</code></li>
+  <li>단계 로그4: 영상 불러오기 · 재료·분량 추출 · 조리 단계 분해 · 핸즈프리용 재구성</li>
+</ul>
+</div>
+
+<div class="card">
+<h2>complete <span class="badge">2101:392</span></h2>
+<ul>
+  <li>완료 뱃지(🎉) · 헤드라인 <code>순두부찌개 완성!</code></li>
+  <li>설명 <code>화면 한 번 안 만지고 끝까지 해냈어요. / 맛있게 드세요 👏</code></li>
+  <li>통계3: 30분/조리 시간 · 5단계/음성 진행 · 0회/화면 터치</li>
+  <li>후기 유도 바 <code>★★★★★ 이 레시피, 후기를 남겨보세요 ›</code></li>
+  <li>액션 <code>홈으로</code>(brand) · <code>다시 요리하기</code>(brand-soft)</li>
+</ul>
+</div>
+
+<div class="card">
+<h2>reviews <span class="badge">2101:426</span></h2>
+<ul>
+  <li>헤더(‹ 뒤로 · <code>후기</code>)</li>
+  <li>평점 요약: <code>4.7</code> ★★★★★ <code>3개 후기</code> + 별점 분포 5행(5★=2, 4★=1, brand 막대)</li>
+  <li>후기 카드3: 요리고수 ★★★★★ · 자취왕 ★★★★ · 맵찔이 ★★★★★ (본문 포함)</li>
+  <li>하단 CTA <code>후기 쓰기</code></li>
+</ul>
+</div>
+
+<div class="card">
+<h2>cook3 <span class="badge">2101:483</span> · 틴트 ON</h2>
+<ul>
+  <li>헤더(‹ · <code>조리 모드</code> · 설정 ⚙)</li>
+  <li>영상 블록(#000) 정직 폴백: 재생 링 + <code>로컬 서버로 열면 영상이 재생돼요</code> / <code>YouTube 임베드는 파일 직접 열기에서 오류 153이 날 수 있어요.</code> / <code>YouTube에서 보기</code></li>
+  <li>진행 도트 7(첫 brand)</li>
+  <li>스와이프 힌트: ⌃ / <code>위로 스와이프하세요</code> / <code>다음 단계 카드도 터치할 수 있어요</code> / <code>탭해서 닫기</code> / <code>✕ 다시 보지 않기</code></li>
+  <li>하단 컨트롤3: 타이머 · AI 비서(활성) · 재료 보기</li>
+</ul>
+</div>
+
+<div class="card">
+<h2>cook <span class="badge">2101:525</span> · 틴트 ON</h2>
+<ul>
+  <li>헤더(‹ · <code>기본 조리 모드</code> · 도움말 ⊙)</li>
+  <li>영상 썸네일(+ <code>순두부찌개</code> 노랑 캡션) · 진행 도트 7(첫 brand)</li>
+  <li>활성 단계 카드(brand 테두리): <code>A. 파기름 내기</code> <code>1 / 7</code> + 3 서브(대파 송송 / 식용유 2숟갈 / 향 올라올 때까지)</li>
+  <li>다음 단계 peek <code>B. 고추참치 볶기</code></li>
+  <li>하단 컨트롤3: 타이머 · 핸즈프리 모드(mic) · 재료 보기</li>
+</ul>
+</div>
+
+<div class="card">
+<h2>cook2 <span class="badge">2101:579</span> · 틴트 ON (cook 클론 개조)</h2>
+<ul>
+  <li>헤더(‹ · <code>핸즈프리 모드</code> · 도움말 ⊙)</li>
+  <li>영상 썸네일 · 진행 도트 7(1~3 brand: 2 done + 현재)</li>
+  <li>정적 단계 카드 <code>C. 양파 볶기</code> <code>3 / 7</code> + 2 서브(양파 반 개를 깍둑썰기해 넣는다 / 양파가 투명해질 때까지 충분히 볶는다)</li>
+  <li>듣기 바 <code>듣고 있어요…</code> <code>2:45</code></li>
+  <li>채팅 버블(정적): AI <code>핸즈프리 모드예요. 궁금한 건 편하게 말씀하세요.</code> · user <code>다음 단계로 가줘</code> · AI <code>D단계, 순두부와 물 넣기로 넘어갈게요. 순두부를 넣고 참치캔 한 캔 분량의 물을 부어주세요.</code> · user <code>간장 없는데 대체할 수 있는 거 있나?</code></li>
+</ul>
+</div>
+
+<hr>
+<h2>보정 라운드1 (채점 누락분 추가 · 기존 자식 보존/멱등)</h2>
+<p>채점 리포트 누락 콘텐츠만 기존 프레임에 추가. 신규 프레임·통과 화면(loading/complete/reviews/cook) 미변경.</p>
+<div class="card">
+  <h3>home ✅ (2101:233) — 3섹션 분리</h3>
+  <ul>
+    <li>프레임 844→1400, <code>나의 레시피</code> 그리드(기존 6장) 유지</li>
+    <li>추가 <code>인기 레시피</code> + <code>전체 ›</code> + 가로 카드 2장(순두부찌개/백종원·2인분, 감바스 알 아히요/성시경·2인분)</li>
+    <li>추가 <code>오늘의 추천</code> + <code>전체 ›</code> + 가로 카드 2장(까르보나라/유튜브·2인분, 명란 파스타/유튜브·1인분)</li>
+  </ul>
+</div>
+<div class="card">
+  <h3>detail ✅ (2101:330) — 탭 기본 콘텐츠</h3>
+  <ul>
+    <li>프레임 844→1620, detail-body 확장, CTA <code>요리 시작하기</code> 하단 이동</li>
+    <li>재료 <code>재료 11개</code> + 주재료 7(순두부·고추참치·양파·애호박·대파·계란·팽이버섯) + 양념 5(식용유·고춧가루·멸치액젓·국간장·후추)</li>
+    <li>레시피 스텝 <code>A. 파기름 내기</code>~<code>G. 계란과 고명으로 마무리</code></li>
+    <li>후기 <code>후기 3</code> + <code>★ 4.7 · 후기 3개</code> + <code>✏ 후기 쓰기</code> 버튼</li>
+  </ul>
+</div>
+<div class="card">
+  <h3>cook3 ✅ (2101:483) — 빈 faded-card 채움</h3>
+  <ul>
+    <li>단계 카드 배지 <code>1 / 7</code> + 제목 <code>A. 파기름 내기</code> + 서브(대파를 송송 썰어 준비한다)</li>
+    <li>단계 타이머 배지 <code>⏱ 타이머 · 3:00</code></li>
+    <li>완료 카드 <code>🎉 요리 완성</code></li>
+  </ul>
+</div>
+<div class="card">
+  <h3>cook2 ✅ (2101:579) — 대화 후반 3버블</h3>
+  <ul>
+    <li>프레임 844→1120</li>
+    <li>AI <code>국간장이 없으면 멸치액젓을 조금 더 넣거나 소금으로 간을 맞춰도 돼요. 한 번에 많이 넣지 말고 조금씩 맞춰보세요.</code></li>
+    <li>user <code>타이머 3분 맞춰줘</code></li>
+    <li>AI <code>3분 타이머를 시작했어요. 그동안 대파를 썰어두면 좋아요. ⏱</code></li>
+  </ul>
+</div>
+
+</div>
+</body>
+</html>

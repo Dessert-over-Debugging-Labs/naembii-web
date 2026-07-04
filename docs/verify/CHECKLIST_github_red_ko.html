@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GitHub RED 그라운드-트루스 체크리스트 (app_ref_red.html)</title>
+<style>
+  :root{--brand:#EF5A3C;--bg:#F5F5F7;--surface:#fff;--text:#1A1A1C;--sub:#6E6E73;--line:#ECECEE;}
+  *{box-sizing:border-box;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Pretendard",sans-serif;background:var(--bg);color:var(--text);line-height:1.6;margin:0;padding:32px 16px;}
+  .wrap{max-width:900px;margin:0 auto;}
+  h1{font-size:24px;border-bottom:3px solid var(--brand);padding-bottom:10px;}
+  h2{font-size:20px;margin-top:36px;background:var(--brand);color:#fff;padding:8px 12px;border-radius:8px;}
+  h3{font-size:15px;margin-top:20px;color:var(--brand);}
+  blockquote{background:var(--surface);border-left:4px solid var(--brand);margin:12px 0;padding:12px 16px;border-radius:0 8px 8px 0;color:var(--sub);font-size:14px;}
+  ul{padding-left:22px;}
+  li{margin:4px 0;}
+  code{background:#EBEDEF;padding:2px 6px;border-radius:5px;font-size:13px;font-family:"SF Mono",Menlo,monospace;}
+  .swatch{display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:middle;border:1px solid rgba(0,0,0,.15);margin-right:4px;}
+  hr{border:none;border-top:1px solid var(--line);margin:28px 0;}
+  .warn{color:#C7402A;font-weight:700;}
+  table{border-collapse:collapse;width:100%;font-size:14px;}
+  td,th{border:1px solid var(--line);padding:6px 10px;text-align:left;}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>app_ref_red.html 그라운드-트루스 체크리스트 (GitHub RED 버전)</h1>
+<blockquote>
+출처(단일 파일): <code>docs/verify/reference_red/app_ref_red.html</code><br>
+GitHub origin/main 강제 세팅: <b>테마=tomato(RED)</b> <code>data-theme="tomato"</code>, <b>배경 틴트 OFF</b> <code>data-tint="off"</code>, <b>라이트 모드</b>, DEV 오버레이 토글 DOM 제거(2032~2043행 강제 스크립트).<br>
+원칙: 모든 라벨은 소스에서 그대로 인용. <code>[동적]</code>=JS 주입/치환. 팔레트는 <code>:root</code>+<code>:root[data-theme="tomato"]</code> 실측.
+</blockquote>
+
+<h2>팔레트 / 모드 (전역)</h2>
+<h3>RED 브랜드 토큰 (:root[data-theme="tomato"], line 40)</h3>
+<ul>
+  <li><span class="swatch" style="background:#EF5A3C"></span><code>--brand:#EF5A3C</code> (Primary)</li>
+  <li><span class="swatch" style="background:#F5836B"></span><code>--brand-l:#F5836B</code></li>
+  <li><span class="swatch" style="background:#C7402A"></span><code>--brand-strong:#C7402A</code></li>
+  <li><span class="swatch" style="background:#FDEBE6"></span><code>--brand-soft:#FDEBE6</code></li>
+  <li><span class="swatch" style="background:#B23A26"></span><code>--brand-deep:#B23A26</code></li>
+  <li><code>--brand-rgb:239,90,60</code></li>
+  <li>별칭 <code>--green/--green-l/--green-soft</code> → 전부 RED로 매핑(초록 아님)</li>
+</ul>
+<h3>뉴트럴 / 배경 (라이트 + 틴트 OFF)</h3>
+<ul>
+  <li><span class="swatch" style="background:#F5F5F7"></span><code>--bg:#F5F5F7</code> (틴트 OFF, line 46) · <code>--surface:#ffffff</code> · <code>--surface-2:#EBEDEF</code> · <code>--border:#ECECEE</code> · <code>--text:#1A1A1C</code> · <code>--text-sub:#6E6E73</code></li>
+</ul>
+<h3 class="warn">⚠ "다크" 조리 화면이 강제 라이트에서 라이트로 렌더</h3>
+<ul>
+  <li>cook·cook2·cook3는 <code>class="view dark"</code>지만 <code>.view.dark{background:var(--dark)}</code>→<code>--dark=var(--bg)=#F5F5F7</code>. 다크 반전은 <code>data-mode="dark"</code>에서만 → 강제 라이트라 조리 3화면 배경 #F5F5F7, 카드 #fff, 어두운 글자.</li>
+  <li>영상 블록 <code>.cook-video</code>만 항상 <code>#000</code>.</li>
+  <li><b>결론: 강제 세팅에서 다크모드 전용 화면 없음.</b> (로컬의 #050505/#120F0C 토큰은 이 파일에 없음.)</li>
+</ul>
+
+<hr>
+<h2>home</h2>
+<h3>핵심 구조 (line 801~823)</h3>
+<ul>
+  <li>상태바 <code>9:41</code> + signal/wifi/battery</li>
+  <li>헤더 <code>.nav</code> — 로고 <code>chef-hat + cook</code> / 알림 뱃지 <code>268</code> + 프로필 아이콘</li>
+  <li>본문: 검색바 / 카테고리 7 / 섹션 <code>나의 레시피</code>(#gridMine) / <code>인기 레시피</code>(#popScroll) / <code>오늘의 추천</code>(#recScroll) — 전부 [동적]</li>
+  <li><b>FAB</b>(plus) — 표시됨. (하단 탭바·퀵임포트·헤드라인 없음)</li>
+</ul>
+<h3>핵심 한글 라벨</h3>
+<ul>
+  <li>로고 <code>cook</code> / 알림 <code>268</code> / 검색바 <code>먹고 싶은 요리를 검색해보세요</code></li>
+  <li>카테고리 7: <code>쉐프 급상승 한식 분식 일식 양식 디저트</code></li>
+  <li>섹션: <code>나의 레시피</code> · <code>인기 레시피</code> · <code>오늘의 추천</code>, 각 <code>전체</code></li>
+  <li>카드 [동적, RECIPES line 1335~1342]: <code>순두부찌개</code>(백종원·2인분·30분), <code>감바스 알 아히요</code>(성시경·2인분·25분), <code>아보카도 비빔밥</code>(유튜브 쇼츠·1인분·15분), <code>까르보나라</code>(유튜브·2인분·40분), <code>딸기 티라미수</code>(쿠킹트리·4인분·20분), <code>명란 파스타</code>(유튜브·1인분·10분)</li>
+</ul>
+<h3>버튼/인터랙션 → 목적지</h3>
+<ul>
+  <li>카드 <code>goDetail()</code> → <b>detail</b>(항상 순두부 <code>21j8SASqLJU</code>) · 저장버튼 <code>toggleLike</code></li>
+  <li>FAB <code>openSheet()</code> → <b>sheet</b></li>
+  <li class="warn">dead-UI(핸들러 없음): 카테고리칩·<code>전체</code> more·알림 <code>268</code>·프로필 아이콘</li>
+  <li>stub(토스트): 검색바 <code>검색은 프로토타입에서 생략</code></li>
+</ul>
+
+<hr>
+<h2>detail (순두부 바인딩)</h2>
+<h3>핵심 구조 (line 841~896)</h3>
+<ul>
+  <li>헤더: 뒤로 / <code>레시피</code> / 공유(share-2)</li>
+  <li>히어로: 썸네일 + 재생아이콘(장식) + <code>YouTube</code> 뱃지 (<b class="warn">정직 배지 없음</b>)</li>
+  <li>본문: 제목+저장 / 평점[동적] / 설명 / 메타칩3 / 스티키 탭 / 재료 / 스텝[동적] / 후기 / <code>후기 쓰기</code> / CTA 바</li>
+</ul>
+<h3>핵심 한글 라벨</h3>
+<ul>
+  <li>제목 <code>백종원이 알려주는&lt;br&gt;칼칼한 순두부찌개</code></li>
+  <li>저장수 <code>0</code>→[동적] <code>342</code> · 평점[동적] <code>4.7</code>/<code>후기 3개</code></li>
+  <li>설명: <code>고추참치로 감칠맛을 빠르게 잡고, 순두부와 계란을 넣어 몽글몽글하게 끓이는 간단한 순두부찌개예요. 파기름을 먼저 내고 양파와 애호박을 더해 국물 맛을 자연스럽게 채웁니다.</code></li>
+  <li>메타칩3: <code>30분/조리시간</code> · <code>2인분/분량</code> · <code>쉬움/난이도</code></li>
+  <li>탭: <code>재료 레시피 리뷰</code></li>
+  <li>재료 라벨 <code>재료 11개</code> <span class="warn">(⚠ 실제 정적 항목 12개)</span></li>
+  <li>주재료 7: 순두부(1팩)·고추참치(1캔)·양파(1/2개)·애호박(조금)·대파(조금)·계란(1개)·팽이버섯(조금)</li>
+  <li>양념 5: 식용유(2숟갈)·고춧가루(1숟갈)·멸치액젓(1숟갈)·국간장(1숟갈)·후추(조금)</li>
+  <li>후기 제목[동적] <code>후기 3</code> · CTA <code>요리 시작하기</code></li>
+</ul>
+<h3>버튼/인터랙션 → 목적지</h3>
+<ul>
+  <li>뒤로 → <b>home</b> · 공유 stub · 저장 <code>toggleLike</code> · 탭 스크롤</li>
+  <li><code>#detMore</code> <code>show('reviews')</code> → <b>reviews</b>(숨김·조건부)</li>
+  <li class="warn">CTA <code>요리 시작하기</code> <code>startCook()</code> → <b>cook</b> (⚠ cook3 아님, line 1523)</li>
+</ul>
+<h3>정직성 요소</h3>
+<ul><li>정직 배지 <b>없음</b>. 히어로는 img+재생아이콘+<code>YouTube</code>뿐. (로컬의 정적 미리보기 배지·팁 스트립·추출 요약칩 부재)</li></ul>
+
+<hr>
+<h2>cook3 (조리 모드 신)</h2>
+<h3>핵심 구조 (line 910~959)</h3>
+<ul>
+  <li>헤더: 뒤로 / <code>조리 모드</code> / <b>설정(settings, openVideoSettings)</b></li>
+  <li>영상 <code>#cook3Youtube</code>(<code>data-video-id="CgapOjKdo9I"</code>) + 제스처 레이어(-10초/+10초/재생)</li>
+  <li>진행 도트 <b>7칸</b> / 캐러셀 <code>#cookTrack3</code>[동적] / 타이머 배지 / 스와이프 힌트 오버레이 / 하단 3버튼 ↔ 음성 패널 morph</li>
+  <li class="warn">톤 선택칩 없음</li>
+</ul>
+<h3>핵심 한글 라벨</h3>
+<ul>
+  <li>헤더 <code>조리 모드</code> / 타이머 <code>타이머</code>·<code>3:00</code></li>
+  <li>스와이프 힌트: <code>위로 스와이프하세요</code> / <code>다음 단계 카드도 터치할 수 있어요</code> / <code>다시 보지 않기</code> / <code>탭해서 닫기</code></li>
+  <li>하단 3: <code>타이머</code> / <code>AI 비서</code>(bot) / <code>재료 보기</code></li>
+  <li>단계 카드[동적, steps A~G line 1446~1454], 배지 <code>1 / 7</code>~<code>7 / 7</code>:
+    <ul>
+      <li><code>A. 파기름 내기</code> (0:08~0:16)</li>
+      <li><code>B. 고추참치 볶기</code> (0:16~0:22)</li>
+      <li><code>C. 양파 볶기</code> (0:22~0:29)</li>
+      <li><code>D. 순두부와 물 넣기</code> (0:29~0:37)</li>
+      <li><code>E. 애호박 넣기</code> (0:38~0:43)</li>
+      <li><code>F. 간 맞추고 버섯 넣기</code> (0:43~0:50)</li>
+      <li><code>G. 계란과 고명으로 마무리</code> (0:50~0:56)</li>
+      <li>완료 카드(cook3만): <code>요리 완성</code></li>
+    </ul>
+  </li>
+  <li>음성 대사[동적, vpScript]: <code>양파 얼마나 익혀야 해?</code> / <code>다음 단계로 넘어가줘</code>(next) / <code>간장 없는데 대체할 거 있어?</code> / <code>타이머 3분 맞춰줘</code>(timer)</li>
+</ul>
+<h3>버튼/인터랙션 → 목적지</h3>
+<ul>
+  <li>뒤로 → <b>detail</b> · 설정→영상 설정 모달 · 영상 탭 재생/시크 · 타이머/재료→시트 · <code>AI 비서</code> <code>toggleHf3()</code> morph</li>
+  <li>캐러셀 마지막(완료 카드) <code>next()</code> → <code>finishCook()</code> → <b>complete</b>(rise-in+폭죽)</li>
+  <li class="warn">인앱 진입점 없음 — cook3는 사이드바 <code>nav('cook3')</code>/<code>#cook3</code> 로만</li>
+</ul>
+<h3>정직성 요소</h3>
+<ul>
+  <li>file:// 등 비-http 폴백(line 1947~1951): <code>로컬 서버로 열면 영상이 재생돼요</code> / <code>YouTube 임베드는 파일 직접 열기에서 오류 153이 날 수 있어요.</code> / <code>YouTube에서 보기</code></li>
+  <li>http(s)면 실제 YouTube iframe 생성(try-real-else-honest). cook3 영상 id <code>CgapOjKdo9I</code>(썸네일 21j8SASqLJU와 다름).</li>
+  <li class="warn"><code>정적 미리보기</code>/<code>data-clip</code>/<code>재생 중</code>/<code>음성 인식 시뮬레이션</code> 전부 없음(정직 표기 축소).</li>
+</ul>
+
+<hr>
+<h2>complete (완료)</h2>
+<h3>핵심 구조 (line 1016~1037)</h3>
+<ul><li>배지(party-popper) + 헤드라인 + 설명 + 통계3 + 후기 유도 + 액션 2버튼</li></ul>
+<h3>핵심 한글 라벨</h3>
+<ul>
+  <li>헤드라인 <code>순두부찌개 완성!</code></li>
+  <li>설명 <code>화면 한 번 안 만지고 끝까지 해냈어요.&lt;br&gt;맛있게 드세요 👏</code></li>
+  <li>통계3: <code>30분/조리 시간</code> · <code>5단계/음성 진행</code> <span class="warn">(⚠ 실제 7단계와 불일치)</span> · <code>0회/화면 터치</code></li>
+  <li>후기 유도 <code>이 레시피, 후기를 남겨보세요</code> · 액션 <code>홈으로</code> / <code>다시 요리하기</code></li>
+</ul>
+<h3>버튼/인터랙션 → 목적지</h3>
+<ul>
+  <li>후기 유도 <code>openReviewSheet()</code> · <code>홈으로</code> → <b>home</b></li>
+  <li class="warn"><code>다시 요리하기</code> <code>startCook()</code> → <b>cook</b> (cook3 아님)</li>
+  <li>(로컬의 팁 남기기·팁 카드·공유 버튼 부재)</li>
+</ul>
+
+<hr>
+<h2>cook (기본 조리 모드 구)</h2>
+<h3>핵심 구조 (line 962~977)</h3>
+<ul><li>헤더(뒤로/<code>기본 조리 모드</code>/도움말) / 영상 정적 썸네일 / 진행 도트 <b>7칸</b> / 캐러셀 <code>#cookTrack</code>[동적] / 하단 <b>3버튼</b></li></ul>
+<h3>핵심 한글 라벨</h3>
+<ul>
+  <li>제목 <code>기본 조리 모드</code></li>
+  <li>하단 3: <code>타이머</code> / <code>핸즈프리 모드</code>(mic) / <code>재료 보기</code></li>
+  <li>단계 카드: steps A~G[동적], 완료 카드 없음</li>
+</ul>
+<h3>버튼/인터랙션 → 목적지</h3>
+<ul>
+  <li>뒤로 → <b>detail</b> · 도움말 <code>openVoice()</code> · 타이머/핸즈프리/재료 시트·토글</li>
+  <li>캐러셀 마지막 <code>next()</code> → <code>show('complete')</code> → <b>complete</b></li>
+  <li class="warn">★ 인앱 주 진입점: <code>startCook()</code>(detail CTA·complete)이 cook으로 옴 + 0.6초 뒤 <code>openVoice()</code> 자동. (로컬과 반대)</li>
+</ul>
+
+<hr>
+<h2>cook2 (핸즈프리 모드 구, 정적)</h2>
+<h3>핵심 구조 (line 980~1013)</h3>
+<ul><li>헤더(뒤로/<code>핸즈프리 모드</code>/도움말) / 영상 / 진행 도트 7(2 done,1 cur) / 정적 단계 카드1 / 듣기 바 / 채팅 — 전부 정적</li></ul>
+<h3>핵심 한글 라벨 (전부 정적)</h3>
+<ul>
+  <li>제목 <code>핸즈프리 모드</code> · 단계 <code>C. 양파 볶기</code> 배지 <code>3 / 7</code></li>
+  <li>듣기 바 <code>듣고 있어요…</code> <code>2:45</code></li>
+  <li>채팅: AI <code>핸즈프리 모드예요. 궁금한 건 편하게 말씀하세요.</code> / user <code>다음 단계로 가줘</code> / AI <code>D단계, 순두부와 물 넣기로 넘어갈게요. 순두부를 넣고 참치캔 한 캔 분량의 물을 부어주세요.</code> / user <code>간장 없는데 대체할 수 있는 거 있나?</code> / AI <code>국간장이 없으면 멸치액젓을 조금 더 넣거나 소금으로 간을 맞춰도 돼요. 한 번에 많이 넣지 말고 조금씩 맞춰보세요.</code> / user <code>타이머 3분 맞춰줘</code> / AI <code>3분 타이머를 시작했어요. 그동안 대파를 썰어두면 좋아요. ⏱</code></li>
+</ul>
+<h3>버튼/인터랙션 → 목적지</h3>
+<ul><li>뒤로 → <b>detail</b> · 도움말 <code>openVoice()</code>. <span class="warn">인앱 진입점 없음(nav('cook2')/#cook2 전용)</span>. 채팅/듣기 바 정적.</li></ul>
+
+<hr>
+<h2>loading (영상 분석 로딩)</h2>
+<h3>핵심 구조 (line 826~838)</h3>
+<ul><li>중앙 로딩 블록: 스피너 + 제목·부제 + 단계 로그 4줄</li></ul>
+<h3>핵심 한글 라벨</h3>
+<ul>
+  <li>제목 <code>레시피를 분석하고 있어요</code> · 부제 <code>영상을 단계별로 쪼개는 중...</code></li>
+  <li>로그4: <code>영상 불러오기</code> <code>재료·분량 추출</code> <code>조리 단계 분해</code> <code>핸즈프리용 재구성</code></li>
+</ul>
+<h3>버튼/인터랙션 → 목적지</h3>
+<ul><li>버튼 없음. <code>analyze()</code> 로그 순차 done 후 <code>setTimeout(show('detail'))</code> → <b>detail</b> 자동.</li></ul>
+
+<hr>
+<h2>reviews (후기 전체)</h2>
+<h3>핵심 구조 (line 899~907)</h3>
+<ul><li>헤더(뒤로/<code>후기</code>/빈 우측) / <code>#revSummary</code>[동적] + <code>#revAll</code>[동적] / 하단 CTA</li></ul>
+<h3>핵심 한글 라벨</h3>
+<ul><li>제목 <code>후기</code> · CTA <code>후기 쓰기</code> · 요약/후기 카드 전부 [동적](renderReviewsScreen)</li></ul>
+<h3>버튼/인터랙션 → 목적지</h3>
+<ul><li>뒤로 → <b>detail</b> · <code>후기 쓰기</code> <code>openReviewSheet()</code></li></ul>
+
+<hr>
+<h2>(참고) 오버레이 — 8뷰 위에 뜸</h2>
+<ul>
+  <li><b>sheet</b>: <code>레시피 등록하기</code> / <code>유튜브 링크만 붙여넣으면 단계별 레시피로 만들어드려요</code> / <code>입력 완료</code>(→loading→detail) · <code>취소</code></li>
+  <li><b>ingSheet</b>: <code>재료 11개</code>(⚠ 12항목)</li>
+  <li><b>timerSheet</b>: <code>타이머 설정</code> / <code>3 분</code> / <code>1분 3분 5분 10분</code> / <code>시작</code></li>
+  <li><b>reviewSheet</b>: <code>후기 쓰기</code> / <code>맛은 어땠나요?</code> / <code>한 줄 후기</code> / placeholder <code>레시피는 어땠나요? 팁이 있다면 남겨주세요</code> / <code>등록</code></li>
+  <li><b>voiceModal</b>: <code>핸즈프리로&lt;br&gt;편하게 말해보세요</code> / <code>핸즈프리 모드 명령 가이드</code> / 카테고리 5 / <code>알겠어요!</code></li>
+  <li><b>videoSettings</b>: <code>영상 설정</code> / <code>구간 반복</code> / <code>볼륨</code> / <code>재생 속도</code>(1×·1.2×·1.5×·2×)</li>
+</ul>
+
+<hr>
+<h2>플로우 그래프 (실측)</h2>
+<h3>인앱 실사용 플로우</h3>
+<ul>
+  <li><code>home → detail</code> (goDetail)</li>
+  <li><code>home → sheet</code> (FAB openSheet)</li>
+  <li><code>sheet → loading</code> (입력 완료 analyze)</li>
+  <li><code>loading → detail</code> (자동)</li>
+  <li class="warn"><code>detail → cook</code> (요리 시작하기 startCook)</li>
+  <li><code>detail → home</code> (뒤로) · <code>detail → reviews</code> (#detMore 조건부)</li>
+  <li><code>cook → complete</code> (마지막 단계 next)</li>
+  <li><code>cook → detail</code> (뒤로)</li>
+  <li class="warn"><code>complete → cook</code> (다시 요리하기 startCook)</li>
+  <li><code>complete → home</code> (홈으로)</li>
+  <li><code>cook3 → complete</code> (완료 카드 finishCook)</li>
+  <li><code>cook3 → detail</code> · <code>cook2 → detail</code> · <code>reviews → detail</code> (뒤로)</li>
+</ul>
+<h3>레거시 / 사이드바·해시 전용</h3>
+<ul>
+  <li class="warn"><code>cook3</code>: startCook이 cook으로 가므로 nav('cook3')/#cook3 로만 도달.</li>
+  <li><code>cook2</code>: nav('cook2')/#cook2 로만.</li>
+  <li>해시(applyHash): #home #sheet #loading #detail #cook #ingredients #timer #voice #cook3 #cook2 #complete #reviews</li>
+</ul>
+
+<hr>
+<h2>로컬 대비 주요 차이 (실측)</h2>
+<table>
+<tr><th>항목</th><th>로컬(app.html)</th><th>GitHub RED(app_ref_red.html)</th></tr>
+<tr><td>브랜드 색</td><td>테라코타 <code>#D66B42</code></td><td class="warn"><b>RED <code>#EF5A3C</code></b> (tomato)</td></tr>
+<tr><td>배경</td><td>크림 <code>#F6F0E8</code></td><td>중립 <code>#F5F5F7</code>(틴트 OFF)</td></tr>
+<tr><td>화면 수</td><td>11뷰 (cookbook·tipWrite 포함)</td><td class="warn"><b>8뷰</b> (cookbook·tipWrite 삭제)</td></tr>
+<tr><td>home 네비</td><td>하단 탭바(홈/등록/요리북)+퀵임포트+헤드라인</td><td>FAB 방식, 로고 cook+알림 268 (탭바 없음)</td></tr>
+<tr><td>detail 재료/스텝</td><td>재료 9개 / 5단계</td><td>라벨 11개(실제 12) / 7단계 A~G</td></tr>
+<tr><td>detail 정직 배지</td><td>정적 미리보기 배지·팁 스트립·추출칩</td><td class="warn">모두 제거</td></tr>
+<tr><td>startCook 목적지</td><td>cook3(주력)</td><td class="warn"><b>cook</b> (cook3=사이드바·해시 전용)</td></tr>
+<tr><td>cook3 UI</td><td>톤칩4·하단 4버튼(핸즈프리)·도움말</td><td>톤칩 없음·3버튼(AI 비서)·설정(영상 설정)</td></tr>
+<tr><td>cook3 진행도트</td><td>5칸</td><td>7칸</td></tr>
+<tr><td>정직 표기</td><td>정적 미리보기·data-clip·재생 중·시뮬레이션</td><td class="warn">모두 제거, file:// 폴백만</td></tr>
+<tr><td>complete</td><td>팁 남기기·팁 카드·공유 / 완성·팁1개·30분</td><td>다시 요리하기 / 30분·5단계·0회</td></tr>
+<tr><td>다크 조리화면</td><td>cook3 #050505 / cook·cook2 #120F0C 하드코딩</td><td class="warn">모드 종속 → 강제 라이트에서 라이트 렌더</td></tr>
+</table>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "name": "naembi-web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "node scripts/serve-static.mjs",
+    "serve": "node scripts/serve-static.mjs",
+    "check": "node scripts/check-app-script.mjs",
+    "verify:dynamic": "node scripts/verify-dynamic.mjs",
+    "verify:visual": "node scripts/verify-dynamic.mjs --visual"
+  }
+}

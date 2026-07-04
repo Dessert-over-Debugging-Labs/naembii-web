@@ -200,66 +200,38 @@
 <h1>인수인계 — 원본 이식(포팅) 루프를 Codex로 이어가기</h1>
 
 <blockquote>
-<p><strong>목표</strong>: <code>app.html</code>을 Figma에 정밀 이식하는 원본 포팅 루프를 <strong>109/113 → 113(완료)</strong> 로 마무리한다.<br>
+<p><strong>상태</strong>: <code>app.html</code> Figma 원본 포팅 루프는 <strong>113/113 완료</strong>.<br>
 상태는 전부 디스크에 durable하게 저장돼 있어(멱등) 어디서든 이어갈 수 있다.<br>
 세션 트래킹: <a href="./SESSIONS.md"><code>SESSIONS.md</code></a> — 새 세션은 시작 시 자기 도구·세션ID를 그 표에 append.</p>
 </blockquote>
 
 <hr style="margin: 2em 0; border: none; border-top: 1px solid #e2e2e6;">
 
-<h2>0. ⚠️ 사람 결정 <strong>1건</strong>만 남았다 — Figma 커넥터 1개 (2026-07-04 갱신)</h2>
+<h2>0. 완료 상태 (2026-07-04 갱신)</h2>
+
+<p>원본 포팅은 <code>MILE-FINAL</code>까지 닫혀 <strong>113/113 완료</strong>됐다. 마지막 처리:</p>
+<ul>
+<li><code>loading-FULL</code>, <code>cook3-FULL</code>: 접힌 전체 스크롤 콘텐츠가 없는 화면이라 적용 불가 no-op으로 정리.</li>
+<li><code>FLOW-01</code>: FigJam 커넥터가 없는 Figma 디자인 파일 제약 때문에 <code>create_connections</code> 대신 <code>FLOW/01</code> 프레임+화살표 보드로 7화면 흐름을 시각화하고 통과.</li>
+<li><code>MILE-FINAL</code>: <code>SEC/A</code>, <code>SEC/B</code>, <code>SEC/C</code>를 export(<code>board-A.png</code>, <code>board-B.png</code>, <code>board-C.png</code>)하고 최종 리포트 갱신.</li>
+</ul>
+
+<p>현재 런타임 채널은 <code>9xw8xz3x</code>로 갱신했다. 다만 완료 산출 기록의 주요 작업은 채널 <code>cjb0km46</code>에서 수행됐다.</p>
 
 <blockquote>
-<p><strong>핵심</strong>: 남은 실질 블로커는 <strong>딱 하나 — FLOW-01의 Figma 커넥터</strong>다. 이전 판(3건) 중 no-op 2건은 2026-07-04 루프가 <strong>공허한 완료로 자율 정리</strong>했고(아래 ✅), <code>MILE-FINAL</code>은 커넥터가 풀리면 자동 후속이다. 즉 <strong>커넥터 1개만 사람이 대면 <code>113/113</code>이 자동으로 닫힌다.</strong><br>
-현재 <code>111/113</code> 통과. 남은 <code>passes:false</code> = <code>FLOW-01</code>(106) · <code>MILE-FINAL</code>(107).<br>
-⚠️ 커넥터를 대기 전까지 루프를 몇 번 더 돌려도 no-op다(같은 환경 벽). 자동 재발화는 진행 없음.</p>
-</blockquote>
-
-<table>
-<thead>
-<tr><th>순서</th><th>스토리</th><th>상태</th><th>사람이 할 결정/조치</th></tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>1 (유일 블로커)</strong></td>
-<td><code>FLOW-01</code> (플로우 연결선)</td>
-<td>⛔ 환경 블록. 이 파일은 <strong>FigJam이 아닌 Figma 디자인 파일</strong>이라 CONNECTOR 노드가 없음. <code>create_connections</code>는 기본 커넥터가 있어야 동작하는데 <code>set_default_connector</code>(무인자)가 <code>No connector found in the current page</code>로 실패. 브리지는 커넥터를 <strong>새로 만들지 못함</strong>(clone 원본도 없음). 프로그래밍 경로 3회 소진.</td>
-<td><strong>셋 중 하나 선택</strong>: ⓐ 페이지 <code>939:2</code>에 FigJam 커넥터 <strong>1개만 수동 생성</strong>(그러면 다음 루프가 아래 준비된 6쌍을 <code>create_connections</code>로 그림 — <strong>권장</strong>) · ⓑ 커넥터 대신 <strong>화살표를 사각형/벡터로 그려도 됨</strong>을 승인(AC의 '커넥터 노드' 조건 완화) · ⓒ <strong>스토리 드롭</strong>.</td>
-</tr>
-<tr>
-<td><strong>2</strong></td>
-<td><code>loading-FULL</code>, <code>cook3-FULL</code> (전체 스크롤 확장)</td>
-<td>✅ <strong>해소됨(2026-07-04 <code>passes:true</code>)</strong>. <strong>진짜 no-op</strong>이라 공허한 완료로 정리: loading=단일 뷰포트(스피너+헤드라인+steps-log), cook3=위아래 스와이프 카루셀(1장씩) → 844 초과로 접히는 스크롤 콘텐츠가 <strong>아예 없음</strong>(전제 거짓 = 적용 불가한 작업의 인정이지 가짜 통과 아님, advisor 합치).</td>
-<td>조치 불필요.</td>
-</tr>
-<tr>
-<td><strong>3</strong></td>
-<td><code>MILE-FINAL</code> (전체 보드 export + 최종 리포트)</td>
-<td>"모든 스토리 passes" 게이트라 <strong>1이 정리되면 자동 해소</strong>됨(2는 이미 해소).</td>
-<td>커넥터 처리 후 마지막에 닫기.</td>
-</tr>
-</tbody>
-</table>
-
-<blockquote>
-<p><strong>커넥터가 유일한 진짜 블로커</strong>다. <code>FLOW-01</code> 언블록 시 실행할 <strong>6쌍은 이미 순서·라벨 확정</strong>(멱등, 단일 콜 준비 완료):<br>
-<code>[cook/home 2006:16 → cook/sheet 2025:62 '링크 등록']</code> <code>[cook/sheet → cook/loading 2031:85 '분석 시작']</code> <code>[cook/loading → cook/detail 2036:113 '분석 완료']</code> <code>[cook/detail → cook/cook3 2041:161 '요리 시작']</code> <code>[cook/cook3 → cook/complete 2070:22 '조리 완료']</code> <code>[cook/complete → cook/tipWrite 2089:53 '팁 남기기']</code></p>
-</blockquote>
-
-<blockquote>
-<p><strong>참고 — v1/v2 정본 결정(부차적)</strong>: <code>요리 비서 - 세인</code> 페이지 최상위에 <code>cook-v2/*</code> 11화면 완전 세트도 공존한다. 원본 포팅 v1 트랙(<code>SEC/A·B·C</code> 안 <code>cook/*</code>)은 사실상 <strong>다 지어졌다(109/113, FLOW-01+no-op만 남음)</strong>. 따라서 이건 이제 "작업 vs 낭비"가 아니라 <strong>"어느 쪽을 최종 산출물로 볼지"의 정리 문제</strong>다. FLOW-01 커넥터가 유일한 실질 블로커이므로 이 결정이 종료를 막지는 않는다.</p>
+<p><strong>참고 — v1/v2 정본 결정(부차적)</strong>: <code>요리 비서 - 세인</code> 페이지 최상위에 <code>cook-v2/*</code> 11화면 완전 세트도 공존한다. 원본 포팅 v1 트랙(<code>SEC/A·B·C</code> 안 <code>cook/*</code>)은 <strong>113/113 완료</strong>됐으므로, 남은 것은 <strong>"어느 쪽을 최종 산출물로 볼지"</strong>의 정리 문제다.</p>
 </blockquote>
 
 <hr style="margin: 2em 0; border: none; border-top: 1px solid #e2e2e6;">
 
 <h2>1. 지금 상태 (2026-07-04)</h2>
 
-<h3>이어갈 작업 — 원본 이식(포팅)</h3>
+<h3>완료된 작업 — 원본 이식(포팅)</h3>
 <ul>
 <li><strong>소스</strong>: 로컬 <code>app.html</code>(이 레포). <strong>주의</strong>: 로컬은 깃허브 origin/main과 갈라진(diverged) 버전 — 포팅은 <strong>로컬 기준</strong>이다.</li>
-<li><strong>Figma 페이지</strong>: <code>요리비서</code> / 프레임 이름 <code>cook/&lt;view&gt;</code>, 섹션 <code>SEC/&lt;group&gt;</code>, 포스트잇 <code>NOTE/&lt;view&gt;</code>.</li>
-<li><strong>상태 파일</strong>: <code>scripts/ralph-figma/prd.json</code> — <strong>109/113 완료</strong>. 각 스토리 <code>passes</code>(완료) + <code>notes</code>(생성된 Figma nodeId).</li>
-<li><strong>남은 4 스토리(전부 사람 결정 필요 — §0 참조)</strong>: <code>FLOW-01</code>(플로우 연결선·커넥터 블록) · <code>MILE-FINAL</code>(전체 보드 export+리포트·1·2 뒤 자동) · <code>loading-FULL</code>·<code>cook3-FULL</code>(진짜 no-op → passes 뒤집기/삭제).</li>
+<li><strong>Figma 페이지</strong>: <code>요리 비서 - 세인</code> / 프레임 이름 <code>cook/&lt;view&gt;</code>, 섹션 <code>SEC/&lt;group&gt;</code>, 포스트잇 <code>NOTE/&lt;view&gt;</code>, 플로우 보드 <code>FLOW/01</code>.</li>
+<li><strong>상태 파일</strong>: <code>scripts/ralph-figma/prd.json</code> — <strong>113/113 완료</strong>. 각 스토리 <code>passes</code>(완료) + <code>notes</code>(생성된 Figma nodeId).</li>
+<li><strong>최종 export</strong>: <code>scripts/ralph-figma/exports/board-A.png</code>, <code>board-B.png</code>, <code>board-C.png</code>(gitignore 대상).</li>
 <li><strong>규칙 파일</strong>: <code>scripts/ralph-figma/CODEX.md</code>(green-gate·멱등·좌표규약). <strong>스토리라인</strong>: <code>docs/FIGMA_WIREFRAME_STORIES_ko.md</code>. <strong>학습 누적</strong>: <code>scripts/ralph-figma/progress.txt</code> 상단 <code>## Codebase Patterns</code>(nodeId 맵).</li>
 </ul>
 

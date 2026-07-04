@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SCORE REPORT — Figma red/&lt;view&gt; ↔ GitHub RED 채점</title>
+<style>
+  :root{--brand:#EF5A3C;--soft:#FDEBE6;--ink:#1A1A1C;--sub:#6E6E73;--bg:#F5F5F7;--line:#ECECEE;--pass:#2FA36B}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;line-height:1.65;padding:40px 20px}
+  .wrap{max-width:960px;margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:20px;padding:36px 40px}
+  h1{font-size:24px;margin:0 0 4px;letter-spacing:-.4px}
+  h2{font-size:19px;margin:34px 0 12px;padding-top:20px;border-top:1px solid var(--line)}
+  .pass{display:inline-block;background:var(--pass);color:#fff;font-weight:800;padding:4px 14px;border-radius:999px;font-size:15px}
+  .score{font-size:42px;font-weight:900;color:var(--brand);line-height:1}
+  ul{padding-left:20px}
+  li{margin:5px 0}
+  code{background:var(--soft);color:var(--brand);padding:1px 6px;border-radius:6px;font-size:.9em;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  table{border-collapse:collapse;width:100%;margin:12px 0;font-size:14px}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:center}
+  th{background:var(--soft);color:var(--brand)}
+  td:first-child,th:first-child{text-align:left;font-weight:700}
+  .tot{font-weight:900;color:var(--brand)}
+  .lo{color:var(--brand);font-weight:800}
+  .meta{color:var(--sub);font-size:14px}
+  .kv{display:flex;flex-wrap:wrap;gap:8px 28px;margin:14px 0}
+  .kv div{min-width:200px}
+  .kv b{color:var(--sub);font-weight:600;font-size:13px;display:block}
+  .foot{margin-top:30px;color:var(--sub);font-size:13px;border-top:1px solid var(--line);padding-top:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>SCORE REPORT — Figma <code>red/&lt;view&gt;</code> ↔ GitHub RED 기준 동일성 채점</h1>
+  <p class="meta">읽기 전용·적대적 채점. Figma에는 쓰지 않음(get_document_info·get_node_info·scan_text_nodes만 사용).</p>
+
+  <div class="kv">
+    <div><b>라운드</b>1 (레드 재이식본 최초 채점)</div>
+    <div><b>채널</b>pd73rzoe (join 성공)</div>
+    <div><b>scan 방식</b>scan_text_nodes(8프레임 한글 정상) + get_node_info(fill 실측)</div>
+    <div><b>전제 게이트</b>8/8 프레임 nodeId 유효 → 통과</div>
+    <div><b>총점</b><span class="score">99.7</span> / 100</div>
+    <div><b>통과 여부</b><span class="pass">PASS</span> (총점 ≥95 AND 모든 화면 ≥90)</div>
+  </div>
+
+  <p><strong>팔레트/틴트 실측(프레임 fill 직접 측정)</strong>: 일반 화면 home = <code>#f5f5f7</code>(중립·틴트 OFF). 조리 화면 3개 전부 <code>#fbebe5</code>(웜 브랜드 틴트·틴트 ON) <strong>실측</strong> — cook3(2101:483)·cook(2101:525)·cook2(2101:579) get_node_info로 각각 확인(추론 아님). 브랜드 레드 <code>#ef5a3c</code> 전 화면 일관. 개발 토글(테마/틴트/소리/모드 바) <strong>미검출</strong> → D 위반 없음.</p>
+  <p style="background:var(--soft);border-radius:12px;padding:12px 16px"><strong>⚠ 기준 문서 간 충돌 처리(명시)</strong>: <code>CHECKLIST_github_red_ko.md</code>(라인 17~20)는 강제 라이트+틴트OFF 빌드에서 조리 화면이 <strong>중립 #F5F5F7</strong>로 렌더된다고 기술. 반면 채점 루브릭 D + 참고 PNG(git 최근 수정본)는 조리 화면 <strong>틴트 ON #FDEBE6 계열</strong>을 요구. → <strong>채점 지시인 루브릭 D + 최신 시각 기준</strong>을 채택해 조리 화면 <code>#fbebe5</code>를 정답 판정. 반대 해석(조리 D −3씩)으로 계산해도 총점 ≈98.6·최저 95로 <strong>여전히 PASS</strong>(결론 불변).</p>
+  <p><strong>플로우 근거</strong>: <code>get_reactions</code>(home·detail·cook3) = <strong>0 reactions</strong> → 정적 프레임 포트 확인, F는 진입·진출 인터랙션 요소 존재 기준 보수적 만점.</p>
+
+  <h2>화면별 점수</h2>
+  <table>
+    <tr><th>화면</th><th>가중</th><th>A(35)</th><th>B(30)</th><th>C(10)</th><th>D(10)</th><th>E(5)</th><th>F(10)</th><th>합(100)</th></tr>
+    <tr><td>home</td><td>1.5</td><td>35</td><td>30</td><td>10</td><td>10</td><td>5</td><td>10</td><td class="tot">100</td></tr>
+    <tr><td>detail</td><td>1.5</td><td>35</td><td>30</td><td>10</td><td>10</td><td>5</td><td>10</td><td class="tot">100</td></tr>
+    <tr><td>loading</td><td>1.0</td><td>35</td><td>30</td><td>10</td><td>10</td><td>5</td><td>10</td><td class="tot">100</td></tr>
+    <tr><td>complete</td><td>1.0</td><td>35</td><td>30</td><td>10</td><td>10</td><td>5</td><td>10</td><td class="tot">100</td></tr>
+    <tr><td>reviews</td><td>1.0</td><td>35</td><td>30</td><td>10</td><td>10</td><td>5</td><td>10</td><td class="tot">100</td></tr>
+    <tr><td>cook3</td><td>1.5</td><td class="lo">33</td><td>30</td><td>10</td><td>10</td><td>5</td><td>10</td><td class="tot">98</td></tr>
+    <tr><td>cook</td><td>1.0</td><td>35</td><td>30</td><td>10</td><td>10</td><td>5</td><td>10</td><td class="tot">100</td></tr>
+    <tr><td>cook2</td><td>1.0</td><td>35</td><td>30</td><td>10</td><td>10</td><td>5</td><td>10</td><td class="tot">100</td></tr>
+  </table>
+  <p class="meta">가중평균 = (100·1.5 + 100·1.5 + 98·1.5 + 100·5) / 9.5 = 947 / 9.5 = <strong>99.7</strong>. 최저 화면 = cook3:98.</p>
+
+  <h2>화면별 누락/증거 요약</h2>
+  <ul>
+    <li><strong>home</strong> — 상태바·로고락업(<code>cook</code>+로고햇)·알림뱃지 <code>268</code>·프로필·검색바·카테고리 7칩·나의 레시피 그리드6·인기 레시피·오늘의 추천·FAB. 배경 <code>#f5f5f7</code> 중립. <strong>누락 없음.</strong></li>
+    <li><strong>detail</strong> — 레시피·YouTube·제목·저장수 342·평점 4.7/후기 3개·메타3·탭·재료 11개(주재료7·양념5)·스텝 A~G·후기 3·후기 쓰기·CTA 요리 시작하기. <strong>누락 없음</strong>(후기 개별카드·후기 전체보기는 [동적] 대체 인정).</li>
+    <li><strong>loading</strong> — 레시피를 분석하고 있어요·영상을 단계별로 쪼개는 중...·로그4. <strong>누락 없음.</strong></li>
+    <li><strong>complete</strong> — 순두부찌개 완성!·설명2·통계3(30분/5단계/0회)·후기 유도·홈으로·다시 요리하기. <code>5단계</code>는 의도된 정적 카피(위반 아님). <strong>누락 없음.</strong></li>
+    <li><strong>reviews</strong> — 후기·평점요약(4.7·3개 후기·분포)·후기3(요리고수/자취왕/맵찔이)·후기 쓰기. <strong>누락 없음.</strong></li>
+    <li><strong>cook3</strong> — 조리 모드·설정·정직폴백(로컬 서버로 열면 영상이 재생돼요…)·진행도트 7·단계카드 A·타이머 3:00·스와이프 힌트·컨트롤3(타이머/AI 비서/재료 보기)·완료카드. 배경 <code>#fbebe5</code> 웜 틴트. <strong>A −2</strong>: 영상 제스처 레이어·vpanel morph 대체상태 미표현.</li>
+    <li><strong>cook</strong> — 기본 조리 모드·도움말·영상·진행도트 7·단계카드 A(1/7)+서브3·peek B·컨트롤3(타이머/핸즈프리 모드/재료 보기). 웜 틴트+레드. <strong>누락 없음.</strong></li>
+    <li><strong>cook2</strong> — 핸즈프리 모드·단계카드 C(3/7)·듣기바 듣고 있어요…·2:45·채팅(AI4/user3). <strong>누락 없음.</strong></li>
+  </ul>
+
+  <h2>채점 근거(차원별)</h2>
+  <ul>
+    <li><strong>A 요소 완전성</strong>: 8화면 핵심 구조 섹션 확인. cook3만 상호작용 alt-state 미표현 −2.</li>
+    <li><strong>B 라벨 일치</strong>: exact 한글 라벨 전수 매칭. 동적 라벨 대표 1개 대체 인정. 전부 30/30.</li>
+    <li><strong>C 레이아웃 순서</strong>: 섹션 y좌표 top→bottom 일치. 어긋남 0.</li>
+    <li><strong>D 팔레트/틴트</strong>: 일반=중립 <code>#f5f5f7</code>(home 실측), 조리 3개=웜 틴트 <code>#fbebe5</code>(cook3·cook·cook2 전부 실측), 브랜드 레드 <code>#ef5a3c</code>. 개발 토글 미검출. 위반 0. (기준 문서 충돌은 상단에서 루브릭 채택 명시.)</li>
+    <li><strong>E 정직성·dead UI</strong>: cook3 정직 폴백 존재, 거짓 "재생 중" 없음. 장식 요소는 기준상 의도된 dead-UI. 위반 0.</li>
+    <li><strong>F 플로우 연결</strong>: 정적 포트라 연결선 부재하나 진입·진출 인터랙션 요소 전부 존재 → 보수적 만점.</li>
+  </ul>
+
+  <h2>보정 후보(갭)</h2>
+  <ul>
+    <li><strong>cook3</strong> (유일 갭, −2): 영상 제스처 레이어(<code>-10초</code>/<code>+10초</code>/재생 플래시)·음성패널 morph(<code>#vpanel</code> 듣고 있어요) 정적 프레임 미표현. alt-state 프레임/오버레이로 보강 시 A 만점 회복. 통과 영향 없음(98 ≥ 90).</li>
+    <li>그 외 7개 화면: <strong>보정 필요 갭 없음</strong>.</li>
+  </ul>
+
+  <p class="foot">생성: 적대적 채점 에이전트 · 라운드 1 · PASS (총점 99.7, 최저 cook3:98)</p>
+</div>
+</body>
+</html>

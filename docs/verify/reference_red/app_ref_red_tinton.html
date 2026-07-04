@@ -1,16 +1,10 @@
 <!DOCTYPE html>
-<html lang="ko" data-theme="tomato" data-tint="off">
+<html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#F5F5F7">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>냄비 - 요리 영상 보면서 손 안 대고 따라하기</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>cook — 인터랙티브 프로토타입</title>
 <script src="https://unpkg.com/lucide@latest"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
 <style>
   :root{
     /* ===== 뉴트럴 시맨틱 토큰 (라이트 기본 · data-mode="dark"에서 명암 반전) ===== */
@@ -51,8 +45,6 @@
   /* 배경 틴트 OFF: 배경에서 브랜드 틴트만 제거(모드별 순수 중립 배경) */
   :root[data-tint="off"]{--bg:#F5F5F7;}
   :root[data-mode="dark"][data-tint="off"]{--bg:#1B1B1D;}
-  /* 화면별 틴트: 조리 모드에만 브랜드 틴트 배경 적용(나머지 화면은 위 중립 유지) */
-  #cook3{--bg:color-mix(in srgb, var(--brand) 8%, #F4F5F6);--dark:color-mix(in srgb, var(--brand) 8%, #F4F5F6);}
   /* ===== 다크 모드: 뉴트럴 명암 축만 반전 (브랜드 토큰은 그대로) ===== */
   :root[data-mode="dark"]{
     --surface:#2A2A2E;
@@ -64,36 +56,35 @@
     --bg:color-mix(in srgb, var(--brand) 14%, #17181A);
   }
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-  html{width:100%;height:100%;background:var(--bg);}
   body{
     font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Pretendard","Segoe UI",sans-serif;
-    background:var(--bg);
-    width:100%;height:100vh;height:100dvh;min-height:100vh;min-height:100dvh;
-    color:var(--ink);overflow:hidden;overscroll-behavior:none;
+    background:#2a2a2e;
+    min-height:100vh;color:var(--ink);overflow-x:auto;
   }
   .stage{
-    display:flex;align-items:stretch;justify-content:center;
-    width:100%;min-width:0;height:100vh;height:100dvh;min-height:100vh;min-height:100dvh;
-    padding:0;margin:0 auto;background:var(--bg);
+    display:flex;align-items:center;justify-content:center;gap:40px;
+    min-height:100vh;width:max-content;min-width:100%;padding:24px;margin:0 auto;
   }
   /* Lucide 아이콘 기본 크기 */
   svg.lucide{width:22px;height:22px;stroke-width:2;vertical-align:middle;flex:none;}
 
-  /* ===== 모바일 웹앱 쉘 (실제 폰 전체화면) ===== */
+  /* ===== iPhone 프레임 ===== */
   .device{
-    width:min(100vw,430px);height:100vh;height:100dvh;min-height:100vh;min-height:100dvh;
-    background:transparent;border-radius:0;padding:0;box-shadow:none;position:relative;
+    width:390px;height:844px;
+    background:#000;border-radius:54px;padding:11px;
+    box-shadow:0 40px 80px rgba(0,0,0,.5),0 0 0 2px #1a1a1a;
+    position:relative;
   }
   .screen{
-    width:100%;height:100vh;height:100dvh;min-height:100vh;min-height:100dvh;background:var(--bg);
-    border-radius:0;overflow:hidden;position:relative;
+    width:100%;height:100%;background:var(--bg);
+    border-radius:44px;overflow:hidden;position:relative;
   }
   .island{
-    display:none;
+    position:absolute;top:11px;left:50%;transform:translateX(-50%);
+    width:120px;height:34px;background:#000;border-radius:20px;z-index:100;
   }
   .statusbar{
-    display:none;
-    height:54px;align-items:flex-end;justify-content:space-between;
+    height:54px;display:flex;align-items:flex-end;justify-content:space-between;
     padding:0 24px 8px;font-size:15px;font-weight:600;color:var(--ink);
     position:relative;z-index:50;flex:none;
   }
@@ -104,7 +95,6 @@
   /* ===== 화면 시스템 ===== */
   .view{
     position:absolute;inset:0;display:none;flex-direction:column;
-    padding-top:env(safe-area-inset-top,0);padding-bottom:env(safe-area-inset-bottom,0);
     animation:slideIn .32s cubic-bezier(.32,.72,0,1);
   }
   .view.active{display:flex;}
@@ -125,14 +115,13 @@
   .body::-webkit-scrollbar{display:none;}
 
   .nav{display:flex;align-items:center;justify-content:space-between;padding:8px 16px 12px;flex:none;}
-  .nav-actions{display:flex;align-items:center;gap:10px;}
   .nav .ic-btn{width:32px;height:32px;display:flex;align-items:center;justify-content:center;color:var(--ink);cursor:pointer;}
   .nav.dark .ic-btn{color:var(--text);}
   .nav .ic-btn svg{width:24px;height:24px;}
   .nav .title{font-size:16px;font-weight:700;}
   .nav.dark .title{color:var(--text);}
 
-  .logo{display:flex;align-items:center;gap:7px;font-family:'Jua',sans-serif;font-size:25px;font-weight:400;color:var(--green);}
+  .logo{display:flex;align-items:center;gap:8px;font-size:22px;font-weight:800;color:var(--green);}
   .logo svg{width:24px;height:24px;stroke-width:2.2;}
   .hd-right{display:flex;align-items:center;gap:10px;}
   .noti{display:flex;align-items:center;gap:4px;background:var(--green-soft);color:var(--green);font-size:13px;font-weight:800;padding:6px 12px;border-radius:12px;}
@@ -177,10 +166,7 @@
     position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
   }
   .cook-video iframe{
-    position:absolute;inset:0;width:100%;height:100%;border:0;display:block;pointer-events:none; /* 조리 모드: 컨트롤 없이 표시 전용(음성·단계로 제어) */
-  }
-  .hero iframe{
-    position:absolute;inset:0;width:100%;height:100%;border:0;display:block; /* 상세 영상은 직접 조작 가능 */
+    position:absolute;inset:0;width:100%;height:100%;border:0;display:block;pointer-events:none;
   }
   .rcard .thumb .badge{
     position:absolute;top:8px;left:8px;background:rgba(0,0,0,.6);color:#fff;
@@ -196,7 +182,7 @@
   }
   .rcard .thumb .play svg{width:17px;height:17px;fill:#fff;color:#fff;margin-left:2px;}
   .rcard .cap{padding:8px 4px 0;}
-  .rcard .cap b{font-size:15px;font-weight:700;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+  .rcard .cap b{font-size:15px;font-weight:700;display:block;line-height:1.3;}
   .rcard .cap small{font-size:12px;color:var(--text-sub);}
   .rcard .thumb .savebtn{position:absolute;top:8px;right:8px;z-index:2;width:28px;height:28px;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);border:none;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;}
   .rcard .thumb .savebtn svg{width:15px;height:15px;color:#fff;transition:transform .2s;}
@@ -207,8 +193,6 @@
   .food4{background:linear-gradient(135deg,#FFD36B,#F1A124);}
   .food5{background:linear-gradient(135deg,#C39BFF,#7B4FD0);}
   .food6{background:linear-gradient(135deg,#7BD0E0,#2C7BA0);}
-  .food7{background:linear-gradient(135deg,#FF9EB5,#E24C6E);}
-  .food8{background:linear-gradient(135deg,#FFD86B,#F07A2E);}
 
   /* FAB */
   .fab{
@@ -273,10 +257,7 @@
   .hero .play svg{width:26px;height:26px;fill:#fff;color:#fff;margin-left:3px;}
   .hero .yt-badge{position:absolute;bottom:12px;right:16px;background:#FF0000;color:#fff;font-size:12px;font-weight:700;padding:4px 8px;border-radius:8px;display:flex;align-items:center;gap:4px;z-index:2;}
   .hero .yt-badge svg{width:14px;height:14px;}
-  .detail-body{background:var(--bg);position:relative;z-index:1;padding:18px 16px 100px;}
-  /* 영상↔레시피 경계(seam)에 딱 끼는 풀폭 브랜드색 라인 (양옆 여백 0, 엣지 투 엣지) */
-  .detail-body::before{content:"";position:absolute;top:-2px;left:0;right:0;height:4px;z-index:2;
-    background:linear-gradient(90deg,var(--brand-l),var(--brand));}
+  .detail-body{background:var(--bg);border-radius:24px 24px 0 0;margin-top:-24px;position:relative;padding:24px 16px 0;}
   .detail-body h2{font-size:22px;font-weight:800;line-height:1.35;margin-bottom:16px;}
   .meta{display:flex;gap:12px;margin-bottom:24px;}
   .meta .chip{flex:1;background:var(--surface);border-radius:16px;padding:12px 8px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.04);display:flex;flex-direction:column;align-items:center;gap:4px;}
@@ -285,7 +266,6 @@
   .meta .chip .k{font-size:12px;color:var(--text-sub);}
   .ing-title{font-size:17px;font-weight:800;margin-bottom:12px;}
   .ing-group-label{font-size:13px;font-weight:700;color:var(--text-sub);margin-bottom:8px;}
-  .ing-empty{font-size:14px;color:var(--text-sub);padding:8px 0 4px;}
   .ings{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px;}
   .ing{background:var(--surface);border-radius:12px;padding:12px;box-shadow:0 1px 4px rgba(0,0,0,.04);}
   .ing .n{font-size:15px;font-weight:700;}
@@ -300,13 +280,10 @@
   .reviews .r .txt .rh b{font-size:13px;color:var(--ink);}
   .reviews .stars{display:flex;gap:1px;color:#FFB400;}
   .reviews .stars svg{width:13px;height:13px;fill:#FFB400;}
-  /* 하단 바 없이 버튼만 콘텐츠 위에 둥둥 띄움 */
-  .cta-bar{position:absolute;left:0;right:0;bottom:0;padding:14px 16px;background:none;pointer-events:none;z-index:6;}
-  .cta-bar .btn{pointer-events:auto;box-shadow:0 10px 28px rgba(0,0,0,.24);}
+  .cta-bar{flex:none;padding:16px;background:color-mix(in srgb, var(--surface) 85%, transparent);backdrop-filter:blur(12px);border-top:1px solid var(--line);}
 
   /* ===== 조리 (다크) ===== */
-  /* 영상: 짧은 뷰포트(크롬 툴바 노출 등)에서 자동 축소 — 긴 화면 200px, 짧은 화면 130px까지 */
-  .cook-video{width:100%;height:clamp(130px, 22dvh, 200px);position:relative;background:#000;}
+  .cook-video{width:100%;height:200px;position:relative;background:#000;}
   .youtube-mount{position:absolute;inset:0;}
   .video-fallback{
     position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -321,7 +298,7 @@
     font-size:12px;font-weight:800;text-decoration:none;pointer-events:auto;
   }
   /* 영상 제스처 레이어 (cook3): 단일 탭=재생/일시정지, 좌/우 더블탭=±10초 */
-  .video-gesture{position:absolute;inset:0;z-index:2;cursor:pointer;} /* 탭 → 재생/일시정지 */
+  .video-gesture{position:absolute;inset:0;z-index:2;cursor:pointer;}
   .vg-flash{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(.7);
     width:60px;height:60px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;
     display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .18s ease,transform .18s ease;}
@@ -337,7 +314,7 @@
   .cook-progress .seg{flex:1;height:4px;border-radius:2px;background:var(--gray2);}
   .cook-progress .seg.done{background:var(--text);}
   .cook-progress .seg.cur{background:var(--green);}
-  .cook-body{flex:1;min-height:0;overflow-y:auto;padding:8px 16px 16px;display:flex;flex-direction:column;}
+  .cook-body{flex:1;overflow-y:auto;padding:8px 16px 16px;display:flex;flex-direction:column;}
   .cook-body::-webkit-scrollbar{display:none;}
   /* 단계 카로셀 (스크롤 시 크기 전환) */
   #cook .cook-body{justify-content:center;overflow:hidden;padding:0 16px;}
@@ -393,13 +370,21 @@
   .stimer-label svg{width:18px;height:18px;color:var(--green);}
   .stimer-note{display:none;}
   .stimer-time{font-size:32px;font-weight:900;line-height:1;color:var(--text);font-variant-numeric:tabular-nums;letter-spacing:0;text-shadow:none;white-space:nowrap;}
-  /* 완료 버튼 (캐러셀 마지막) — 미리보기/활성 상관없이 항상 테마색으로 꽉 찬 "요리 완료" 버튼 */
-  .scard.sc-finish{left:26px;right:26px;background:linear-gradient(135deg,var(--brand-l),var(--brand));border-color:transparent;box-shadow:0 10px 22px rgba(var(--brand-rgb),.4);padding:14px 20px;display:flex;align-items:center;justify-content:center;}
-  .sc-finish .sc-side-label,.sc-finish .sc-arrow,.sc-finish .fin-sub{display:none;}
-  .sc-finish .sc-head{justify-content:center;width:100%;}
-  .sc-finish .sc-title{display:flex;align-items:center;justify-content:center;gap:10px;font-size:19px;font-weight:800;color:#fff;letter-spacing:-.3px;}
-  .fin-badge{width:28px;height:28px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;flex:none;box-shadow:0 2px 8px rgba(0,0,0,.18);}
-  .fin-badge svg{width:16px;height:16px;color:var(--brand);stroke-width:3;}
+  /* 완료 카드 (캐러셀 마지막 단계) — 형태는 단계 박스와 동일, 좌측 체크 뱃지 + 테두리를 도는 브랜드 하이라이트로 구분 */
+  .sc-finish .sc-side-label{color:var(--brand);}
+  .sc-finish .sc-title{display:flex;align-items:center;gap:10px;}
+  .fin-badge{width:20px;height:20px;border-radius:50%;background:var(--brand);display:flex;align-items:center;justify-content:center;flex:none;box-shadow:0 2px 8px rgba(var(--brand-rgb),.4);}
+  .fin-badge svg{width:12px;height:12px;color:#fff;stroke-width:2.8;}
+  .scard.sc-finish.active .fin-badge{width:24px;height:24px;}
+  .scard.sc-finish.active .fin-badge svg{width:14px;height:14px;}
+  /* 현재 단계 테두리색이 테두리를 따라 계속 도는 하이라이트 */
+  @property --fin-angle{syntax:"<angle>";initial-value:0deg;inherits:false;}
+  .sc-finish::after{content:"";position:absolute;inset:0;border-radius:16px;padding:2px;pointer-events:none;z-index:3;
+    background:conic-gradient(from var(--fin-angle), transparent 0deg 250deg, var(--brand) 305deg, transparent 355deg);
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;
+    mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude;
+    animation:finSpin 3s linear infinite;}
+  @keyframes finSpin{to{--fin-angle:360deg;}}
   .cook-hint{
     position:absolute;inset:0;z-index:190;display:flex;flex-direction:column;align-items:center;justify-content:center;
     padding:32px 32px 100px;text-align:center;color:var(--text);background:rgba(226,228,233,.88);backdrop-filter:blur(3px);
@@ -511,16 +496,11 @@
   }
   @keyframes aiRing{0%{transform:scale(.9);opacity:.65;}80%,100%{transform:scale(1.24);opacity:0;}}
   /* 조리 모드(신) 실시간 음성 패널 */
-  /* 하단 컨트롤바: 짧은 뷰포트에서 축소(긴 화면 156px, 짧은 화면 128px) */
-  #cook3 .cook-ctrl{display:block;padding:0;height:clamp(128px, 18dvh, 156px);width:100%;min-width:0;margin:0;align-self:stretch;box-sizing:border-box;position:relative;overflow:hidden;}
-  .ctrl-buttons{display:flex;align-items:center;justify-content:space-around;height:100%;box-sizing:border-box;padding:14px 24px clamp(14px, 3dvh, 24px);}
-  /* 대화 패널 열림: 둥근 상단 모서리 뒤가 흰색(surface)으로 비쳐 위 틴트 배경과 틈이 생기던 문제 →
-     컨트롤바 배경을 카드영역과 같은 틴트(--dark)로 맞추고 상단 경계선도 감춰 이음새 제거 */
-  #cook3 .cook-ctrl:has(.vpanel.open){background:var(--dark);border-top-color:transparent;}
-  #cook3 .cook-ctrl:has(.vpanel.open) .ctrl-buttons{visibility:hidden;}
+  #cook3 .cook-ctrl{display:block;padding:0;height:156px;width:100%;min-width:0;margin:0;align-self:stretch;box-sizing:border-box;position:relative;overflow:hidden;}
+  .ctrl-buttons{display:flex;align-items:center;justify-content:space-around;height:100%;box-sizing:border-box;padding:16px 24px 24px;}
   .vpanel{position:absolute;top:0;bottom:0;left:-1px;right:-1px;z-index:3;box-sizing:border-box;padding:16px 19px 22px;
     display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;
-    width:auto;height:auto;min-width:0;max-width:none;margin:0;transform:none;border-radius:20px 20px 0 0;overflow:hidden;
+    width:auto;height:auto;min-width:0;max-width:none;margin:0;transform:none;border-radius:0;overflow:hidden;
     background:
       radial-gradient(65% 95% at 18% 30%, rgba(255,255,255,.22), rgba(255,255,255,0) 62%),
       radial-gradient(58% 90% at 86% 76%, rgba(255,255,255,.17), rgba(255,255,255,0) 64%),
@@ -557,16 +537,15 @@
   .youtube-sound-toggle:active{transform:scale(.96);}
   @keyframes aurora{0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}
   .vp-aurora{display:none;}
-  .vp-close{position:absolute;top:8px;right:12px;z-index:2;width:32px;height:32px;border:none;background:rgba(255,255,255,.14);border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;}
-  .vp-close svg{width:17px;height:17px;}
-  .vp-close:active{transform:translateY(1px);}
+  .vp-close{position:absolute;top:8px;right:12px;z-index:2;width:28px;height:28px;border:none;background:none;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .vp-close svg{width:16px;height:16px;}
   /* 마이크(음소거) 버튼 — X 왼쪽 */
-  .vp-mic{position:absolute;top:8px;right:52px;z-index:2;width:32px;height:32px;border:none;background:rgba(255,255,255,.14);border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .vp-mic{position:absolute;top:8px;right:48px;z-index:2;width:28px;height:28px;border:none;background:none;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;}
   .vp-mic svg{width:17px;height:17px;}
   .vpanel.mic-muted .vp-mic{color:#FF8A8A;} /* 음소거 시 붉은 톤 */
   .vpanel.mic-muted .vp-wave span{animation-play-state:paused;opacity:.45;}
   /* 아래로 내리기 버튼 — 패널 위쪽 가운데 */
-  .vp-collapse{position:absolute;top:0px;left:50%;transform:translateX(-50%);z-index:2;width:34px;height:24px;border:none;background:none;color:rgba(255,255,255,.82);display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .vp-collapse{position:absolute;top:5px;left:50%;transform:translateX(-50%);z-index:2;width:34px;height:24px;border:none;background:none;color:rgba(255,255,255,.82);display:flex;align-items:center;justify-content:center;cursor:pointer;}
   .vp-collapse svg{width:22px;height:22px;}
   .vp-collapse:active{transform:translateX(-50%) translateY(1px);}
   .vp-user{position:relative;z-index:1;flex:none;width:100%;font-size:16px;font-weight:800;color:#fff;margin-bottom:9px;min-height:21px;line-height:1.28;letter-spacing:0;text-shadow:0 1px 4px rgba(0,0,0,.3);}
@@ -592,7 +571,7 @@
   .cbtn .cic .wave span{width:3px;background:#fff;}
   .cbtn.hf-on small{color:var(--green);font-weight:800;}
   /* 재료 보기 바텀시트 */
-  .ing-sheet{position:absolute;inset:0;z-index:195;display:none;}
+  .ing-sheet{position:absolute;inset:0;z-index:150;display:none;}
   .ing-sheet.show{display:block;}
   .ing-scrim{position:absolute;inset:0;background:rgba(0,0,0,.5);}
   .ing-panel{position:absolute;left:0;right:0;bottom:0;z-index:1;background:var(--surface);border-radius:24px 24px 0 0;padding:12px 16px calc(24px + env(safe-area-inset-bottom));animation:sheetUp .34s cubic-bezier(.32,.72,0,1);}
@@ -618,9 +597,9 @@
   .cbtn .cic.o.running{box-shadow:0 0 0 2px var(--green),0 0 14px rgba(var(--brand-rgb),.6);}
 
   /* ===== 음성 가이드 모달 ===== */
-  .vmodal{position:absolute;inset:0;z-index:190;display:none;flex-direction:column;background:rgba(0,0,0,.78);backdrop-filter:blur(3px);}
+  .vmodal{position:absolute;inset:0;z-index:160;display:none;flex-direction:column;background:rgba(0,0,0,.78);backdrop-filter:blur(3px);}
   .vmodal.show{display:flex;}
-  #cook3.voice-open .cook-ctrl{opacity:0;pointer-events:none;}
+  #cook.voice-open .cook-ctrl{opacity:0;pointer-events:none;}
   .vmodal .vtop{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:16px;}
   .vmodal .vtop h2{color:#fff;font-size:24px;font-weight:800;text-align:center;line-height:1.4;}
   .vmodal .vclose{position:absolute;top:60px;right:24px;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.2);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;}
@@ -678,9 +657,6 @@
 
   /* ===== 완료 ===== */
   #complete{background:var(--bg);}
-  .done-back{position:absolute;top:44px;left:10px;z-index:5;width:40px;height:40px;display:flex;align-items:center;justify-content:center;background:none;border:none;color:var(--text);cursor:pointer;}
-  .done-back svg{width:26px;height:26px;}
-  .done-back:active{transform:scale(.92);}
   .done-view{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:13px;padding:24px 24px 28px;text-align:center;}
   .done-badge{width:76px;height:76px;border-radius:50%;background:var(--brand-soft);color:var(--brand);display:flex;align-items:center;justify-content:center;position:relative;flex:none;animation:pop .5s cubic-bezier(.18,.89,.32,1.28);}
   .done-badge::after{content:"";position:absolute;inset:-8px;border-radius:50%;border:2px solid var(--brand);opacity:.2;}
@@ -732,9 +708,6 @@
   /* 제목행 + 저장 아이콘 + 평점 */
   .dhead{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;}
   .dhead h2{flex:1;margin-bottom:0;}
-  /* 유튜브 스티커: 영상↔레시피 경계에 걸침(영상 우하단 = 레시피 우상단) */
-  .detail-body .yt-badge-title{position:absolute;top:-13px;right:16px;z-index:3;background:#FF0000;color:#fff;font-size:12px;font-weight:700;padding:5px 9px;border-radius:8px;display:flex;align-items:center;gap:4px;box-shadow:0 2px 8px rgba(0,0,0,.25);}
-  .detail-body .yt-badge-title svg{width:14px;height:14px;}
   .dsave{flex:none;display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;cursor:pointer;font-family:inherit;padding:2px;}
   .dsave svg{width:27px;height:27px;color:var(--text-sub);transition:transform .2s;}
   .dsave em{font-style:normal;font-size:12px;font-weight:700;color:var(--text-sub);}
@@ -793,147 +766,6 @@
   .rstep-subs li::before{content:"•";color:var(--green);font-weight:800;flex:none;}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
-  /* ===== 베타 랜딩 / 피드백 수집 ===== */
-  body.marketing-open{
-    height:auto;min-height:100vh;min-height:100dvh;overflow-y:auto;overflow-x:hidden;overscroll-behavior:auto;background:#F4F5F7;
-  }
-  body.marketing-open .stage{display:none;}
-  .landing{display:none;min-height:100vh;min-height:100dvh;background:#F4F5F7;color:#19191B;}
-  body.marketing-open .landing{display:block;}
-  .mobile-landing-hero{display:none;}
-  .landing-wrap{width:100%;max-width:1180px;margin:0 auto;padding:26px 24px 64px;overflow-x:hidden;}
-  .variant-switcher{display:none;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 18px;padding:10px 12px;border:1px solid #E4E6EA;border-radius:18px;background:#fff;box-shadow:0 10px 28px rgba(31,38,46,.06);}
-  body.variant-review .variant-switcher{display:flex;}
-  body.variant-review .variant-switcher{position:sticky;top:10px;z-index:1000;}
-  .variant-switcher b{font-size:13px;font-weight:950;color:#1E2024;margin-right:2px;}
-  .variant-switcher button{border:1px solid #E3E4E8;background:#F8F9FB;color:#3A3D42;border-radius:999px;padding:9px 12px;font:inherit;font-size:13px;font-weight:900;cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
-  .variant-switcher button.active{background:#1E2024;color:#fff;border-color:#1E2024;}
-  .landing-nav{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:30px;}
-  .landing-brand{display:flex;align-items:center;gap:10px;font-family:'Jua',sans-serif;font-size:30px;color:var(--brand);}
-  .landing-brand svg{width:28px;height:28px;}
-  .trust-stack{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
-  .trust-pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:7px 10px;font-size:12px;font-weight:950;line-height:1;border:1px solid #E6E0DA;background:#fff;color:#6A4638;}
-  .trust-pill.dark{background:#1E2024;color:#fff;border-color:#1E2024;}
-  .trust-pill.warm{background:#FFF7EF;color:#A8472D;border-color:#F4D8CB;}
-  .landing-actions{display:flex;align-items:center;gap:10px;}
-  .landing-link,.landing-btn{border:0;border-radius:999px;font:inherit;font-size:15px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;gap:7px;text-decoration:none;}
-  .landing-link{background:transparent;color:#494B50;padding:10px 12px;}
-  .landing-btn{background:var(--brand);color:#fff;padding:12px 18px;box-shadow:0 12px 28px rgba(var(--brand-rgb),.22);}
-  .landing-hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(350px,456px);gap:42px;align-items:center;min-width:0;}
-  .landing-copy,.landing-preview{min-width:0;}
-  .landing-kicker{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid #ECE3DD;color:#7A4331;border-radius:999px;padding:8px 12px;font-size:14px;font-weight:900;margin-bottom:18px;box-shadow:0 8px 24px rgba(31,38,46,.05);}
-  .landing-kicker svg{width:18px;height:18px;color:var(--brand);}
-  .landing-copy h1{font-size:clamp(42px,6vw,76px);line-height:1.02;letter-spacing:0;font-weight:950;margin-bottom:22px;}
-  .landing-copy h1 span{color:var(--brand);}
-  .landing-copy p{max-width:620px;font-size:20px;line-height:1.62;color:#555A60;margin-bottom:22px;font-weight:650;}
-  .hero-signup{display:flex;gap:10px;max-width:560px;margin-bottom:18px;flex-wrap:wrap;}
-  .hero-signup input[type=email]{min-width:260px;flex:1 1 260px;height:56px;border:1px solid #DFE2E7;background:#fff;border-radius:16px;padding:0 16px;font:inherit;font-size:16px;color:#1E2024;box-shadow:0 10px 26px rgba(31,38,46,.06);}
-  .hero-signup button{height:56px;border:0;border-radius:16px;background:#1E2024;color:#fff;font:inherit;font-size:16px;font-weight:950;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;padding:0 18px;white-space:nowrap;flex:0 0 auto;}
-  .hero-signup button[disabled]{opacity:.62;cursor:not-allowed;}
-  .hero-signup .form-status{flex:0 0 100%;margin-top:-4px;}
-  .landing-cta{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:30px;}
-  .landing-cta button{min-height:54px;border:0;border-radius:16px;font:inherit;font-size:17px;font-weight:900;cursor:pointer;display:flex;align-items:center;gap:8px;padding:0 20px;}
-  .landing-cta .primary{background:linear-gradient(135deg,var(--brand-l),var(--brand));color:#fff;box-shadow:0 18px 36px rgba(var(--brand-rgb),.24);}
-  .landing-cta .secondary{background:#fff;color:#1F2023;border:1px solid #E2E3E7;}
-  .landing-points{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;max-width:720px;}
-  .landing-point{background:#fff;border:1px solid #E5E6EA;border-radius:18px;padding:16px;min-height:118px;}
-  .landing-point i{width:34px;height:34px;border-radius:12px;background:var(--brand-soft);color:var(--brand);display:flex;align-items:center;justify-content:center;margin-bottom:12px;}
-  .landing-point i svg{width:19px;height:19px;}
-  .landing-point b{display:block;font-size:16px;margin-bottom:5px;}
-  .landing-point span{display:block;color:#666B72;font-size:14px;line-height:1.45;font-weight:650;}
-  .promise-card{max-width:720px;margin:0 0 14px;background:#fff;border:1px solid #EADBD3;border-radius:18px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start;box-shadow:0 12px 28px rgba(31,38,46,.05);}
-  .promise-card i{width:34px;height:34px;border-radius:12px;background:#FFF7EF;color:var(--brand);display:flex;align-items:center;justify-content:center;flex:none;}
-  .promise-card b{display:block;font-size:15px;margin-bottom:4px;}
-  .promise-card span{display:block;color:#666B72;font-size:13px;line-height:1.45;font-weight:700;}
-  .landing-preview{position:relative;}
-  .demo-frame-wrap{width:100%;max-width:430px;margin-left:auto;background:#19191B;border-radius:36px;padding:10px;box-shadow:0 28px 80px rgba(31,38,46,.2);}
-  .demo-app-frame{width:100%;height:min(72vh,760px);min-height:620px;border:0;border-radius:28px;background:#F5F5F7;display:block;overflow:hidden;}
-  .demo-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:430px;margin:12px 0 0 auto;}
-  .demo-tab{height:44px;border:1px solid #E5E6EA;background:#fff;color:#3A3D42;border-radius:14px;font:inherit;font-size:13px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;}
-  .demo-tab.active{background:#1E2024;color:#fff;border-color:#1E2024;}
-  .demo-tab svg{width:15px;height:15px;}
-  .pot-card{position:absolute;left:-18px;bottom:68px;width:172px;background:#fff;border:1px solid #EAE3DE;border-radius:24px;padding:18px 16px 16px;box-shadow:0 18px 44px rgba(31,38,46,.14);}
-  .pot-mascot{position:relative;width:82px;height:68px;margin:0 auto 12px;}
-  .pot-mascot::before{content:"";position:absolute;left:8px;right:8px;bottom:0;height:44px;background:linear-gradient(180deg,#FFFCF7,#F7D3C6);border:3px solid #33251F;border-radius:18px 18px 24px 24px;}
-  .pot-mascot::after{content:"";position:absolute;left:25px;right:25px;bottom:18px;height:8px;border-radius:999px;background:#33251F;box-shadow:-16px -1px 0 -2px #33251F,16px -1px 0 -2px #33251F;}
-  .pot-lid{position:absolute;left:16px;right:16px;top:12px;height:18px;background:var(--brand);border:3px solid #33251F;border-radius:18px 18px 10px 10px;}
-  .pot-lid::before{content:"";position:absolute;left:50%;top:-12px;width:18px;height:12px;transform:translateX(-50%);background:#FFE2A6;border:3px solid #33251F;border-bottom:0;border-radius:12px 12px 0 0;}
-  .pot-steam{position:absolute;top:0;width:8px;height:16px;border-radius:999px;border-left:3px solid #33251F;opacity:.34;}
-  .pot-steam.s1{left:18px;transform:rotate(12deg);}
-  .pot-steam.s2{left:38px;top:-4px;}
-  .pot-steam.s3{right:18px;transform:rotate(-12deg);}
-  .pot-card b{display:block;font-size:15px;line-height:1.35;text-align:center;}
-  .pot-card span{display:block;margin-top:6px;font-size:12px;line-height:1.45;color:#777070;font-weight:750;text-align:center;}
-  .landing-section{margin-top:56px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:start;}
-  .beta-panel,.feedback-panel,.ops-panel,.recipe-panel{background:#fff;border:1px solid #E4E6EA;border-radius:24px;padding:24px;box-shadow:0 14px 40px rgba(31,38,46,.06);}
-  .beta-panel h2,.feedback-panel h2,.ops-panel h2,.recipe-panel h2{font-size:26px;line-height:1.25;margin-bottom:10px;}
-  .beta-panel p,.feedback-panel p,.ops-panel p,.recipe-panel p{color:#60656C;line-height:1.55;font-weight:650;margin-bottom:18px;}
-  .beta-form{display:grid;gap:12px;}
-  .beta-form label{display:grid;gap:7px;font-size:13px;font-weight:850;color:#3A3D42;}
-  .beta-form input,.beta-form select,.beta-form textarea{
-    width:100%;border:1px solid #DFE2E7;background:#F8F9FB;border-radius:14px;padding:13px 14px;font:inherit;font-size:15px;color:#1E2024;
-  }
-  .beta-form textarea{min-height:104px;resize:vertical;line-height:1.55;}
-  .beta-form input:focus,.beta-form select:focus,.beta-form textarea:focus{outline:2px solid rgba(var(--brand-rgb),.22);border-color:var(--brand);}
-  .beta-form button{height:52px;border:0;border-radius:16px;background:var(--brand);color:#fff;font:inherit;font-size:16px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
-  .beta-form button[disabled]{opacity:.62;cursor:not-allowed;}
-  .form-status{min-height:20px;font-size:13px;font-weight:800;color:#596069;}
-  .form-status.ok{color:#1D8A57;}
-  .form-status.bad{color:#C8402A;}
-  .ops-list{display:grid;gap:12px;}
-  .ops-item{display:flex;gap:12px;align-items:flex-start;padding:14px;border-radius:16px;background:#F8F9FB;border:1px solid #ECEEF2;}
-  .ops-item i{width:34px;height:34px;border-radius:12px;background:var(--brand-soft);color:var(--brand);display:flex;align-items:center;justify-content:center;flex:none;}
-  .ops-item b{display:block;font-size:15px;margin-bottom:4px;}
-  .ops-item span{display:block;color:#686D74;font-size:13px;line-height:1.45;font-weight:650;}
-  .value-roadmap{display:grid;gap:12px;margin-top:18px;}
-  .value-row{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start;padding:14px;border-radius:16px;background:#F8F9FB;border:1px solid #ECEEF2;}
-  .value-row b{display:block;font-size:15px;margin-bottom:4px;}
-  .value-row span{display:block;color:#686D74;font-size:13px;line-height:1.45;font-weight:650;}
-  .value-badge{display:inline-flex;align-items:center;border-radius:999px;padding:6px 9px;font-size:12px;font-weight:950;line-height:1;background:#FFF7EF;color:#A8472D;border:1px solid #F4D8CB;}
-  .value-badge.dark{background:#1E2024;color:#fff;border-color:#1E2024;}
-  .landing[data-variant="beta"] .landing-btn,.landing[data-variant="beta"] .landing-cta .primary,.landing[data-variant="beta"] .beta-form button{background:#1E2024;box-shadow:0 18px 36px rgba(31,38,46,.2);}
-  .landing[data-variant="beta"] .promise-card{border-color:#C9CED6;}
-  .landing[data-variant="recipe"] .landing-kicker,.landing[data-variant="recipe"] .value-badge{background:#F2FBF7;color:#227551;border-color:#CDEDDC;}
-  .landing[data-variant="recipe"] .landing-cta .primary,.landing[data-variant="recipe"] .beta-form button{background:linear-gradient(135deg,#41B883,#1F8A5F);box-shadow:0 18px 36px rgba(31,134,92,.2);}
-  .landing[data-variant="recipe"] .recipe-panel{border-color:#BFE8D1;box-shadow:0 18px 44px rgba(31,134,92,.08);}
-  .app-feedback-btn{display:none;position:fixed;right:18px;bottom:18px;z-index:900;border:0;border-radius:999px;background:#1E2024;color:#fff;font:inherit;font-size:14px;font-weight:900;padding:13px 16px;box-shadow:0 14px 36px rgba(0,0,0,.28);cursor:pointer;align-items:center;gap:7px;}
-  body:not(.marketing-open) .app-feedback-btn{display:flex;}
-  .feedback-modal{position:fixed;inset:0;z-index:950;display:none;align-items:flex-end;justify-content:center;background:rgba(15,17,20,.48);padding:18px;}
-  .feedback-modal.show{display:flex;}
-  .feedback-card{width:min(100%,520px);background:#fff;border-radius:24px;padding:22px;box-shadow:0 24px 80px rgba(0,0,0,.26);}
-  .feedback-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:14px;}
-  .feedback-head h2{font-size:24px;line-height:1.25;}
-  .feedback-head p{font-size:14px;color:#666B72;font-weight:650;line-height:1.45;margin-top:6px;}
-  .feedback-close{width:38px;height:38px;border:0;border-radius:50%;background:#F1F2F4;color:#222;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;}
-  @media (max-width:900px){
-    .mobile-landing-hero{display:block;padding:20px 16px 16px;background:#F4F5F7;}
-    .mobile-landing-hero .landing-brand{font-size:29px;margin-bottom:12px;}
-    .mobile-landing-hero h1{font-size:38px;line-height:1.06;letter-spacing:0;font-weight:950;margin:12px 0 12px;}
-    .mobile-landing-hero h1 span{color:var(--brand);}
-    .mobile-landing-hero p{font-size:16px;line-height:1.55;color:#555A60;font-weight:700;margin-bottom:14px;}
-    .mobile-trust-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
-    .mobile-landing-hero .promise-card{margin:12px 0 14px;padding:12px;}
-    .landing-wrap{padding:20px 16px 48px;}
-    .landing-nav,.landing-copy{display:none;}
-    .landing-nav{margin-bottom:28px;align-items:flex-start;flex-direction:column;}
-    .trust-stack{order:3;}
-    .landing-actions .landing-link{display:none;}
-    .landing-hero{display:flex;flex-direction:column;gap:28px;align-items:stretch;}
-    .landing-copy{width:100%;max-width:100%;}
-    .landing-copy h1{font-size:38px;}
-    .landing-copy p{font-size:17px;}
-    .hero-signup{flex-direction:column;}
-    .hero-signup input[type=email]{width:100%;min-width:0;flex:0 0 56px;}
-    .hero-signup button{width:100%;}
-    .landing-points{grid-template-columns:1fr;}
-    .landing-preview{width:100%;margin-top:0;}
-    .demo-frame-wrap,.demo-tabs{width:min(100%,360px);margin-left:auto;margin-right:auto;}
-    .demo-app-frame{height:640px;min-height:560px;}
-    .demo-tabs{grid-template-columns:repeat(2,1fr);}
-    .pot-card{display:none;}
-    .landing-section{grid-template-columns:1fr;margin-top:36px;}
-  }
-
   /* ===== 우측 화면 네비게이터 ===== */
   .sidenav{display:flex;flex-direction:column;gap:8px;width:210px;flex:none;}
   .sidenav .sn-title{color:#fff;font-size:12px;font-weight:700;opacity:.55;letter-spacing:.5px;margin-bottom:6px;padding-left:4px;}
@@ -943,164 +775,23 @@
   .sn-num{width:23px;height:23px;border-radius:50%;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex:none;}
   .sn-item.active .sn-num{background:rgba(255,255,255,.32);}
   .sn-sub{font-size:11px;color:#fff;opacity:.45;padding:6px 4px 0;line-height:1.5;}
-  /* 모바일 배포 빌드: 개발용 사이드바·토글 완전 숨김 */
-  .youtube-sound-toggle,.dev-timer,.sidenav{display:none!important;}
-  /* 데스크톱·넓은 화면(>=500px): 100dvh로 세로로 길게 늘어나지 않게 높이만 캡하고 위아래 여백을 준다.
-     (폰 프레임 목업 없음 — 어두운 배경/둥근 모서리/그림자 X.) 쉘의 min-height:100dvh를 min-height:0로 풀어야 height 캡이 먹는다. */
-  @media (min-width:500px){
-    .stage{align-items:center;padding:40px 0;background:#EBEBEF;}
-    .device{height:min(100dvh - 80px, 880px);min-height:0;max-height:880px;}
-    .screen{height:100%;min-height:0;}
-  }
 </style>
+<style id="ref-clean">.theme-bar,.tint-toggle,.youtube-sound-toggle,.mode-toggle,.dev-timer,#themeBar,#tintToggle{display:none!important}</style>
 </head>
-<body class="marketing-open">
-<section class="landing" id="landingPage" data-variant="demo">
-  <div class="mobile-landing-hero">
-    <div class="landing-brand"><i data-lucide="cooking-pot"></i>냄비</div>
-    <div class="mobile-trust-row" aria-label="냄비 베타 안내">
-      <span class="trust-pill dark">출시 알림 모집 중</span>
-      <span class="trust-pill warm">앱 화면 바로보기</span>
-    </div>
-    <h1 data-variant-copy="headlineMobile">요리 영상 보면서<br><span>손 안 대고</span> 따라하기</h1>
-    <p data-variant-copy="leadMobile">앱 출시 알림을 받고, 냄비에 먼저 들어갔으면 하는 레시피를 남겨주세요.</p>
-    <div class="promise-card">
-      <i data-lucide="sparkles"></i>
-      <div><b data-variant-copy="promiseTitle">출시 전에 먼저 초대할게요</b><span data-variant-copy="promiseText">이메일을 남기면 베타 초대와 준비 중인 레시피 소식을 받을 수 있어요.</span></div>
-    </div>
-    <form class="hero-signup" id="mobileBetaForm" onsubmit="submitBeta(event)">
-      <input name="email" type="email" autocomplete="email" placeholder="출시 알림 받을 이메일" required>
-      <input name="name" type="hidden" value="">
-      <input name="profile" type="hidden" value="mobile-launch-notify">
-      <input name="note" type="hidden" value="모바일 상단 출시 알림 신청">
-      <button type="submit"><i data-lucide="bell-ring"></i>출시 알림 받기</button>
-      <p class="form-status" data-status></p>
-    </form>
-  </div>
-  <div class="landing-wrap">
-    <div class="variant-switcher" id="variantSwitcher" hidden aria-label="랜딩 후보 선택">
-      <b>랜딩 후보</b>
-      <button type="button" data-variant-option="demo">A 앱 미리보기형</button>
-      <button type="button" data-variant-option="beta">B 베타 모집형</button>
-      <button type="button" data-variant-option="recipe">C 레시피 모집형</button>
-    </div>
-    <nav class="landing-nav" aria-label="냄비 베타 안내">
-      <div class="landing-brand"><i data-lucide="cooking-pot"></i>냄비</div>
-      <div class="trust-stack" aria-label="냄비 서비스 안내">
-        <span class="trust-pill dark">출시 알림 모집 중</span>
-        <span class="trust-pill warm">앱 화면 바로보기</span>
-      </div>
-      <div class="landing-actions">
-        <button class="landing-link" type="button" onclick="openFeedback('landing-nav')"><i data-lucide="message-square"></i>피드백</button>
-        <button class="landing-btn" type="button" onclick="scrollToBeta()"><i data-lucide="mail-plus"></i>베타 신청</button>
-      </div>
-    </nav>
-
-    <div class="landing-hero">
-      <div class="landing-copy">
-        <div class="landing-kicker"><i data-lucide="sparkles"></i><span data-variant-copy="kicker">출시 전 베타 모집 중</span></div>
-        <h1 data-variant-copy="headline">요리 영상 보면서<br><span>손 안 대고</span> 따라하기</h1>
-        <p data-variant-copy="lead">냄비는 유튜브 요리 영상을 단계별 조리 모드로 바꿔주는 베타 앱입니다. 앱이 출시될 때 알림 받을 사람과, 추가되길 원하는 레시피를 먼저 모으는 중입니다.</p>
-        <div class="promise-card">
-          <i data-lucide="sparkles"></i>
-          <div><b data-variant-copy="promiseTitle">출시 전에 먼저 초대할게요</b><span data-variant-copy="promiseText">이메일을 남기면 베타 초대와 준비 중인 레시피 소식을 받을 수 있어요.</span></div>
-        </div>
-        <form class="hero-signup" id="betaQuickForm" onsubmit="submitBeta(event)">
-          <input name="email" type="email" autocomplete="email" placeholder="출시 알림 받을 이메일" required>
-          <input name="name" type="hidden" value="">
-          <input name="profile" type="hidden" value="launch-notify">
-          <input name="note" type="hidden" value="히어로 출시 알림 신청">
-          <button type="submit"><i data-lucide="bell-ring"></i>출시 알림 받기</button>
-          <p class="form-status" data-status></p>
-        </form>
-        <div class="landing-cta">
-          <button class="primary" type="button" onclick="scrollToBeta()"><i data-lucide="send"></i><span data-variant-copy="primaryCta">베타테스트 신청</span></button>
-          <button class="secondary" type="button" onclick="setDemoScreen('cook3')"><i data-lucide="play-circle"></i><span data-variant-copy="secondaryCta">조리 흐름 보기</span></button>
-        </div>
-        <div class="landing-points">
-          <div class="landing-point"><i data-lucide="video"></i><b data-variant-copy="point1Title">앱 화면 먼저보기</b><span data-variant-copy="point1Text">홈, 레시피 상세, 조리 모드를 이 페이지에서 바로 확인할 수 있습니다.</span></div>
-          <div class="landing-point"><i data-lucide="mail-plus"></i><b data-variant-copy="point2Title">출시 알림 받기</b><span data-variant-copy="point2Text">정식 오픈과 베타 초대 소식을 이메일로 안내합니다.</span></div>
-          <div class="landing-point"><i data-lucide="chef-hat"></i><b data-variant-copy="point3Title">원하는 레시피 남기기</b><span data-variant-copy="point3Text">따라하고 싶은 영상이나 요리를 보내주면 우선순위에 반영합니다.</span></div>
-        </div>
-      </div>
-
-      <div class="landing-preview">
-        <div class="demo-frame-wrap">
-          <iframe class="demo-app-frame" id="landingDemoFrame" title="냄비 앱 화면 미리보기" src="./app.html#home"></iframe>
-        </div>
-        <div class="demo-tabs" aria-label="앱 흐름 미리보기">
-          <button class="demo-tab active" type="button" data-demo="home" onclick="setDemoScreen('home')"><i data-lucide="home"></i>홈</button>
-          <button class="demo-tab" type="button" data-demo="detail" onclick="setDemoScreen('detail')"><i data-lucide="book-open"></i>상세</button>
-          <button class="demo-tab" type="button" data-demo="cook3" onclick="setDemoScreen('cook3')"><i data-lucide="chef-hat"></i>조리</button>
-          <button class="demo-tab" type="button" data-demo="complete" onclick="setDemoScreen('complete')"><i data-lucide="party-popper"></i>완료</button>
-        </div>
-        <div class="pot-card" aria-hidden="true">
-          <div class="pot-mascot">
-            <i class="pot-steam s1"></i><i class="pot-steam s2"></i><i class="pot-steam s3"></i><i class="pot-lid"></i>
-          </div>
-          <b data-variant-copy="potTitle">작은 냄비가<br>순서를 챙겨요</b>
-          <span data-variant-copy="potText">영상은 냄비가 넘기고, 당신은 손맛에 집중해요.</span>
-        </div>
-      </div>
-    </div>
-
-    <section class="landing-section" id="beta">
-      <div class="beta-panel">
-        <h2><span class="value-badge dark">베타</span> 출시 알림 · 베타테스트 신청</h2>
-        <p>초대 링크와 테스트 과제를 받을 이메일을 남겨주세요. 앱 출시 전까지 관심 사용자를 모으고, 실제 주방 테스트 그룹을 구성합니다.</p>
-        <form class="beta-form" id="betaForm" onsubmit="submitBeta(event)">
-          <label>이메일<input name="email" type="email" autocomplete="email" placeholder="you@example.com" required></label>
-          <label>이름 또는 닉네임<input name="name" type="text" autocomplete="name" placeholder="예: 민지"></label>
-          <label>요리 스타일
-            <select name="profile">
-              <option value="beginner">요리 초보</option>
-              <option value="busy">빠른 한 끼가 필요한 사람</option>
-              <option value="creator">요리 영상/레시피 크리에이터</option>
-              <option value="guardian">가족 식사를 챙기는 사람</option>
-            </select>
-          </label>
-          <label>테스트하고 싶은 상황<textarea name="note" placeholder="예: 퇴근 후 20분 안에 따라할 수 있는 레시피, 손에 물 묻은 상태에서 음성 조작 등"></textarea></label>
-          <button type="submit"><i data-lucide="mail-check"></i>베타 신청 보내기</button>
-          <p class="form-status" data-status></p>
-        </form>
-      </div>
-
-      <div class="recipe-panel">
-        <h2><span class="value-badge dark">요청</span> 원하는 레시피 요청</h2>
-        <p>냄비에 먼저 들어갔으면 하는 요리나 유튜브 링크를 남겨주세요. 베타 콘텐츠 우선순위를 정하는 데 사용합니다.</p>
-        <form class="beta-form" id="recipeRequestForm" onsubmit="submitRecipeRequest(event)">
-          <label>요리 이름<input name="recipeName" type="text" placeholder="예: 류수영 어남선생 제육볶음" required></label>
-          <label>유튜브 링크 (선택)<input name="recipeUrl" type="url" placeholder="https://youtube.com/watch?v=..."></label>
-          <label>이메일 (선택)<input name="email" type="email" autocomplete="email" placeholder="반영 소식을 받아도 되는 이메일"></label>
-          <label>요청 이유<textarea name="message" placeholder="왜 이 레시피가 필요하거나 따라 하기 어려운지 적어주세요."></textarea></label>
-          <button type="submit"><i data-lucide="send"></i>레시피 요청 보내기</button>
-          <p class="form-status" data-status></p>
-        </form>
-      </div>
-    </section>
-
-    <section class="landing-section" aria-label="냄비 사용 안내">
-      <div class="ops-panel">
-        <h2>냄비로 이렇게 요리해요</h2>
-        <p>영상을 보며 멈칫하는 순간을 줄이고, 조리 중 필요한 정보만 바로 꺼내볼 수 있게 준비하고 있습니다.</p>
-        <div class="value-roadmap">
-          <div class="value-row"><span class="value-badge">1</span><div><b>보고 싶은 레시피를 고릅니다</b><span>요리 영상과 재료, 조리 순서를 한 화면에서 확인합니다.</span></div></div>
-          <div class="value-row"><span class="value-badge dark">2</span><div><b>손대지 않고 다음 단계를 따라갑니다</b><span>영상 구간, 타이머, 재료 확인을 조리 흐름에 맞춰 볼 수 있습니다.</span></div></div>
-        </div>
-      </div>
-
-      <div class="ops-panel">
-        <h2>참여 방법</h2>
-        <p>출시 전까지 실제로 필요한 레시피와 사용 장면을 모아 먼저 반영하겠습니다.</p>
-        <div class="ops-list">
-          <div class="ops-item"><i data-lucide="user-plus"></i><div><b>1. 이메일을 남겨주세요</b><span>베타 초대와 출시 소식을 보내드립니다.</span></div></div>
-          <div class="ops-item"><i data-lucide="chef-hat"></i><div><b>2. 앱 화면을 먼저 둘러보세요</b><span>홈, 상세, 조리, 완료 흐름을 바로 확인할 수 있습니다.</span></div></div>
-          <div class="ops-item"><i data-lucide="messages-square"></i><div><b>3. 원하는 레시피를 알려주세요</b><span>먼저 들어갔으면 하는 요리와 영상 링크를 보내주세요.</span></div></div>
-        </div>
-      </div>
-    </section>
-  </div>
-</section>
+<body>
+<button class="youtube-sound-toggle" id="youtubeSoundToggle" onclick="toggleCookYoutubeSound()"><i data-lucide="volume-2"></i><span>5번 영상 소리: 켜짐</span></button>
+<button class="tint-toggle" id="tintToggle" onclick="toggleTint()">배경 틴트: 켜짐</button>
+<button class="dev-timer" onclick="startUnifiedTimer(5,true)"><i data-lucide="timer"></i>타이머 5초</button>
+<button class="mode-toggle" id="modeToggle" onclick="toggleMode()"><i data-lucide="sun"></i><span>모드: 라이트</span></button>
+<div class="theme-bar" id="themeBar">
+  <b>테마</b>
+  <button class="theme-swatch active" style="background:#46B581" onclick="setTheme('',this)" title="그린(기본)"></button>
+  <button class="theme-swatch" style="background:#EF5A3C" onclick="setTheme('tomato',this)" title="토마토"></button>
+  <button class="theme-swatch" style="background:#EA9A16" onclick="setTheme('amber',this)" title="허니"></button>
+  <button class="theme-swatch" style="background:#12A594" onclick="setTheme('teal',this)" title="틸"></button>
+  <button class="theme-swatch" style="background:#4C82F7" onclick="setTheme('blue',this)" title="블루"></button>
+  <button class="theme-swatch" style="background:#8B5CF6" onclick="setTheme('purple',this)" title="퍼플"></button>
+</div>
 <div class="stage">
 <div class="device">
   <div class="island"></div>
@@ -1109,10 +800,10 @@
     <!-- 1. 홈 -->
     <div class="view active" id="home">
       <div class="statusbar"><span>9:41</span><span class="icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
-      <div class="nav"><div class="logo"><i data-lucide="cooking-pot"></i>냄비</div><div class="hd-right"><div class="noti" onclick="toast('준비 중인 기능이에요','bell')"><i data-lucide="bell"></i>13</div><div class="ic-btn" onclick="toast('준비 중인 기능이에요','circle-user-round')"><i data-lucide="circle-user-round"></i></div></div></div>
+      <div class="nav"><div class="logo"><i data-lucide="chef-hat"></i>cook</div><div class="hd-right"><div class="noti"><i data-lucide="bell"></i>268</div><div class="ic-btn"><i data-lucide="circle-user-round"></i></div></div></div>
       <div class="body">
-        <div class="search" onclick="toast('준비 중인 기능이에요','search')"><i data-lucide="search"></i>먹고 싶은 요리를 검색해보세요</div>
-        <div class="cats" onclick="toast('준비 중인 기능이에요','utensils')">
+        <div class="search" onclick="toast('검색은 프로토타입에서 생략')"><i data-lucide="search"></i>먹고 싶은 요리를 검색해보세요</div>
+        <div class="cats">
           <div class="cat"><div class="ic"><i data-lucide="chef-hat"></i></div><span>쉐프</span></div>
           <div class="cat"><div class="ic"><i data-lucide="trending-up"></i></div><span>급상승</span></div>
           <div class="cat"><div class="ic"><i data-lucide="soup"></i></div><span>한식</span></div>
@@ -1121,49 +812,104 @@
           <div class="cat"><div class="ic"><i data-lucide="pizza"></i></div><span>양식</span></div>
           <div class="cat"><div class="ic"><i data-lucide="cake-slice"></i></div><span>디저트</span></div>
         </div>
+        <div class="section-t"><span class="st-l"><i data-lucide="bookmark"></i>나의 레시피</span><span class="more">전체 <i data-lucide="chevron-right"></i></span></div>
+        <div class="grid" id="gridMine"></div>
         <div class="section-t"><span class="st-l"><i data-lucide="flame"></i>인기 레시피</span><span class="more">전체 <i data-lucide="chevron-right"></i></span></div>
         <div class="hscroll" id="popScroll"></div>
         <div class="section-t"><span class="st-l"><i data-lucide="sparkles"></i>오늘의 추천</span><span class="more">전체 <i data-lucide="chevron-right"></i></span></div>
         <div class="hscroll" id="recScroll"></div>
+      </div>
+      <button class="fab" onclick="openSheet()"><i data-lucide="plus"></i></button>
+    </div>
+
+    <!-- 2. 분석 로딩 -->
+    <div class="view" id="loading">
+      <div class="statusbar"><span>9:41</span><span class="icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
+      <div class="loading">
+        <div class="spinner"></div>
+        <div><h2>레시피를 분석하고 있어요</h2><p>영상을 단계별로 쪼개는 중...</p></div>
+        <div class="steps-log">
+          <div class="log-item" id="lg1"><div class="chk"><i data-lucide="check"></i></div>영상 불러오기</div>
+          <div class="log-item" id="lg2"><div class="chk"><i data-lucide="check"></i></div>재료·분량 추출</div>
+          <div class="log-item" id="lg3"><div class="chk"><i data-lucide="check"></i></div>조리 단계 분해</div>
+          <div class="log-item" id="lg4"><div class="chk"><i data-lucide="check"></i></div>핸즈프리용 재구성</div>
+        </div>
       </div>
     </div>
 
     <!-- 3. 레시피 상세 -->
     <div class="view" id="detail">
       <div class="statusbar"><span>9:41</span><span class="icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
-      <div class="nav"><div class="ic-btn" onclick="show('home')"><i data-lucide="chevron-left"></i></div><div class="title">레시피</div><div class="ic-btn" onclick="shareRecipe()"><i data-lucide="share-2"></i></div></div>
+      <div class="nav"><div class="ic-btn" onclick="show('home')"><i data-lucide="chevron-left"></i></div><div class="title">레시피</div><div class="ic-btn" onclick="toast('공유 링크가 복사되었어요','share-2')"><i data-lucide="share-2"></i></div></div>
       <div class="body">
         <div class="hero">
-          <div class="youtube-mount" id="detailYoutube" data-video-id="CgapOjKdo9I" data-title="순두부찌개 조리 영상"></div>
+          <img src="https://i.ytimg.com/vi/21j8SASqLJU/mqdefault.jpg" onerror="this.style.display='none'">
+          <div class="play"><i data-lucide="play"></i></div>
+          <div class="yt-badge"><i data-lucide="youtube"></i>YouTube</div>
         </div>
         <div class="detail-body">
-          <span class="yt-badge-title"><i data-lucide="youtube"></i>YouTube</span>
           <div class="dhead">
-            <h2 id="detTitle"></h2>
+            <h2>백종원이 알려주는<br>칼칼한 순두부찌개</h2>
+            <button class="dsave like" id="detLike" onclick="toggleLike(event,'21j8SASqLJU')"><i data-lucide="bookmark"></i><em id="detLikeN">0</em></button>
           </div>
-          <p class="dsummary" id="detSummary"></p>
+          <div class="drating" id="detRating"></div>
+          <p class="dsummary">고추참치로 감칠맛을 빠르게 잡고, 순두부와 계란을 넣어 몽글몽글하게 끓이는 간단한 순두부찌개예요. 파기름을 먼저 내고 양파와 애호박을 더해 국물 맛을 자연스럽게 채웁니다.</p>
           <div class="meta">
-            <div class="chip"><i data-lucide="timer"></i><div class="v" id="detTime"></div><div class="k">조리시간</div></div>
-            <div class="chip"><i data-lucide="users"></i><div class="v" id="detServings"></div><div class="k">분량</div></div>
-            <div class="chip"><i data-lucide="gauge"></i><div class="v" id="detDiff"></div><div class="k">난이도</div></div>
+            <div class="chip"><i data-lucide="timer"></i><div class="v">30분</div><div class="k">조리시간</div></div>
+            <div class="chip"><i data-lucide="users"></i><div class="v">2인분</div><div class="k">분량</div></div>
+            <div class="chip"><i data-lucide="gauge"></i><div class="v">쉬움</div><div class="k">난이도</div></div>
           </div>
           <div class="dtabs">
             <button class="dtab active" data-sec="sec-ing" onclick="detailTab('sec-ing')">재료</button>
             <button class="dtab" data-sec="sec-steps" onclick="detailTab('sec-steps')">레시피</button>
+            <button class="dtab" data-sec="detRevTitle" onclick="detailTab('detRevTitle')">리뷰</button>
           </div>
-          <div class="ing-title" id="sec-ing">재료</div>
-          <div id="detIngs"></div>
+          <div class="ing-title" id="sec-ing">재료 11개</div>
+          <div class="ing-group-label">주재료</div>
+          <div class="ings">
+            <div class="ing"><div class="n">순두부</div><div class="q">1팩</div></div>
+            <div class="ing"><div class="n">고추참치</div><div class="q">1캔</div></div>
+            <div class="ing"><div class="n">양파</div><div class="q">1/2개</div></div>
+            <div class="ing"><div class="n">애호박</div><div class="q">조금</div></div>
+            <div class="ing"><div class="n">대파</div><div class="q">조금</div></div>
+            <div class="ing"><div class="n">계란</div><div class="q">1개</div></div>
+            <div class="ing"><div class="n">팽이버섯</div><div class="q">조금</div></div>
+          </div>
+          <div class="ing-group-label">양념</div>
+          <div class="ings">
+            <div class="ing"><div class="n">식용유</div><div class="q">2숟갈</div></div>
+            <div class="ing"><div class="n">고춧가루</div><div class="q">1숟갈</div></div>
+            <div class="ing"><div class="n">멸치액젓</div><div class="q">1숟갈</div></div>
+            <div class="ing"><div class="n">국간장</div><div class="q">1숟갈</div></div>
+            <div class="ing"><div class="n">후추</div><div class="q">조금</div></div>
+          </div>
           <div class="ing-title" id="sec-steps" style="margin-top:8px;">레시피</div>
           <div class="rsteps" id="detSteps"></div>
+          <div class="ing-title" id="detRevTitle" style="margin-top:8px;">후기</div>
+          <div id="detSummary"></div>
+          <div class="reviews" id="detReviews"></div>
+          <button class="rev-more" id="detMore" onclick="show('reviews')" style="display:none;"></button>
+          <button class="btn ghost" onclick="openReviewSheet()" style="margin-bottom:8px;"><i data-lucide="pencil"></i>후기 쓰기</button>
         </div>
       </div>
       <div class="cta-bar"><button class="btn" onclick="startCook()"><i data-lucide="chef-hat"></i>요리 시작하기</button></div>
     </div>
 
+    <!-- 후기 전체보기 -->
+    <div class="view" id="reviews">
+      <div class="statusbar"><span>9:41</span><span class="icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
+      <div class="nav"><div class="ic-btn" onclick="show('detail')"><i data-lucide="chevron-left"></i></div><div class="title">후기</div><div class="ic-btn"></div></div>
+      <div class="body" style="padding:0 16px;">
+        <div id="revSummary"></div>
+        <div class="reviews" id="revAll"></div>
+      </div>
+      <div class="cta-bar"><button class="btn" onclick="openReviewSheet()"><i data-lucide="pencil"></i>후기 쓰기</button></div>
+    </div>
+
     <!-- 4-A. 조리 모드 (기본 조리 모드 복제 스냅샷) -->
     <div class="view dark" id="cook3">
       <div class="statusbar dark"><span>9:41</span><span class="icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
-      <div class="nav dark"><div class="ic-btn" onclick="show('detail')"><i data-lucide="chevron-left"></i></div><div class="title" style="font-size:14px;">조리 모드</div><div class="nav-actions"><div class="ic-btn" onclick="openVoice()"><i data-lucide="help-circle"></i></div><div class="ic-btn" onclick="openVideoSettings()"><i data-lucide="settings"></i></div></div></div>
+      <div class="nav dark"><div class="ic-btn" onclick="show('detail')"><i data-lucide="chevron-left"></i></div><div class="title" style="font-size:14px;">조리 모드</div><div class="ic-btn" onclick="openVideoSettings()"><i data-lucide="settings"></i></div></div>
       <div class="cook-video">
         <div class="youtube-mount" id="cook3Youtube" data-video-id="CgapOjKdo9I" data-title="순두부찌개 조리 영상"></div>
         <div class="video-gesture" id="videoGesture" onclick="onVideoTap(event)">
@@ -1202,6 +948,7 @@
         </div>
         <div class="vpanel" id="vpanel">
           <div class="vp-aurora"></div>
+          <button class="vp-collapse" onclick="toggleHf3()"><i data-lucide="chevron-down"></i></button>
           <button class="vp-mic" onclick="toggleVpMic()"><i data-lucide="mic"></i></button>
           <button class="vp-close" onclick="toggleHf3()"><i data-lucide="x"></i></button>
           <div class="wave vp-wave"><span></span><span></span><span></span><span></span><span></span></div>
@@ -1211,19 +958,77 @@
       </div>
     </div>
 
+    <!-- 4. 조리 -->
+    <div class="view dark" id="cook">
+      <div class="statusbar dark"><span>9:41</span><span class="icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
+      <div class="nav dark"><div class="ic-btn" onclick="show('detail')"><i data-lucide="chevron-left"></i></div><div class="title" style="font-size:14px;">기본 조리 모드</div><div class="ic-btn" onclick="openVoice()"><i data-lucide="help-circle"></i></div></div>
+      <div class="cook-video"><img src="https://i.ytimg.com/vi/21j8SASqLJU/mqdefault.jpg" onerror="this.style.display='none'"></div>
+      <div class="cook-progress">
+        <div class="seg cur"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div>
+      </div>
+      <div class="cook-body">
+        <div class="cook-track" id="cookTrack"></div>
+      </div>
+      <div class="cook-ctrl">
+        <button class="cbtn" onclick="openTimer()"><div class="cic o js-timer-btn" id="timerBtn"><i data-lucide="timer"></i></div><small class="js-timer-label" id="timerLabel">타이머</small></button>
+        <button class="cbtn" onclick="toggleHandsfree()"><div class="cic o mic" id="hfBtn"><i data-lucide="mic"></i></div><small>핸즈프리 모드</small></button>
+        <button class="cbtn" onclick="openIngredients()"><div class="cic d"><i data-lucide="carrot"></i></div><small>재료 보기</small></button>
+      </div>
+    </div>
+
+    <!-- 4-B. 조리 (보관용 스냅샷) -->
+    <div class="view dark" id="cook2">
+      <div class="statusbar dark"><span>9:41</span><span class="icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
+      <div class="nav dark"><div class="ic-btn" onclick="show('detail')"><i data-lucide="chevron-left"></i></div><div class="title" style="font-size:14px;">핸즈프리 모드</div><div class="ic-btn" onclick="openVoice()"><i data-lucide="help-circle"></i></div></div>
+      <div class="cook-video"><img src="https://i.ytimg.com/vi/21j8SASqLJU/mqdefault.jpg" onerror="this.style.display='none'"></div>
+      <div class="cook-progress">
+        <div class="seg done"></div><div class="seg done"></div><div class="seg cur"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div>
+      </div>
+      <div class="cook-body">
+        <div class="scard active static">
+          <div class="sc-head">
+            <div class="sc-title"><span class="pl-letter">C.</span> 양파 볶기</div>
+            <div class="step-badge">3 / 7</div>
+          </div>
+          <ul class="sub-list">
+            <li>양파 반 개를 깍둑썰기해 넣는다</li>
+            <li>양파가 투명해질 때까지 충분히 볶는다</li>
+          </ul>
+        </div>
+      </div>
+      <div class="hf-listen">
+        <div class="wave"><span></span><span></span><span></span><span></span><span></span></div>
+        <span class="hf-listen-t">듣고 있어요…</span>
+        <span class="hf-timer"><i data-lucide="timer"></i>2:45</span>
+      </div>
+      <div class="hf-chat">
+        <div class="chat-row ai"><div class="chat-av"><i data-lucide="sparkles"></i></div><div class="bubble ai">핸즈프리 모드예요. 궁금한 건 편하게 말씀하세요.</div></div>
+        <div class="chat-row user"><div class="bubble user">다음 단계로 가줘</div></div>
+        <div class="chat-row ai"><div class="chat-av"><i data-lucide="sparkles"></i></div><div class="bubble ai">D단계, 순두부와 물 넣기로 넘어갈게요. 순두부를 넣고 참치캔 한 캔 분량의 물을 부어주세요.</div></div>
+        <div class="chat-row user"><div class="bubble user">간장 없는데 대체할 수 있는 거 있나?</div></div>
+        <div class="chat-row ai"><div class="chat-av"><i data-lucide="sparkles"></i></div><div class="bubble ai">국간장이 없으면 멸치액젓을 조금 더 넣거나 소금으로 간을 맞춰도 돼요. 한 번에 많이 넣지 말고 조금씩 맞춰보세요.</div></div>
+        <div class="chat-row user"><div class="bubble user">타이머 3분 맞춰줘</div></div>
+        <div class="chat-row ai"><div class="chat-av"><i data-lucide="sparkles"></i></div><div class="bubble ai">3분 타이머를 시작했어요. 그동안 대파를 썰어두면 좋아요. ⏱</div></div>
+      </div>
+    </div>
+
     <!-- 5. 완료 -->
     <div class="view" id="complete">
       <div class="statusbar"><span>9:41</span><span class="icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
-      <button class="done-back" onclick="show('detail')" aria-label="뒤로"><i data-lucide="chevron-left"></i></button>
       <div class="done-view">
         <div class="done-badge"><i data-lucide="party-popper"></i></div>
-        <h2 id="doneTitle">완성!</h2>
-        <p>레시피를 끝까지 따라 완성했어요.<br>따뜻할 때 맛있게 드세요 👏</p>
+        <h2>순두부찌개 완성!</h2>
+        <p>화면 한 번 안 만지고 끝까지 해냈어요.<br>맛있게 드세요 👏</p>
         <div class="done-stats">
-          <div class="ds-card"><span class="ds-ic"><i data-lucide="timer"></i></span><b id="doneTime">-</b><small>조리 시간</small></div>
-          <div class="ds-card"><span class="ds-ic"><i data-lucide="list-checks"></i></span><b id="doneSteps">-</b><small>완주한 과정</small></div>
-          <div class="ds-card"><span class="ds-ic"><i data-lucide="utensils"></i></span><b id="doneServings">-</b><small>완성 분량</small></div>
+          <div class="ds-card"><span class="ds-ic"><i data-lucide="timer"></i></span><b>30분</b><small>조리 시간</small></div>
+          <div class="ds-card"><span class="ds-ic"><i data-lucide="mic"></i></span><b>5단계</b><small>음성 진행</small></div>
+          <div class="ds-card"><span class="ds-ic"><i data-lucide="hand"></i></span><b>0회</b><small>화면 터치</small></div>
         </div>
+        <button class="done-review" onclick="openReviewSheet()">
+          <span class="dr-stars"><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i></span>
+          <span class="dr-txt">이 레시피, 후기를 남겨보세요</span>
+          <i data-lucide="chevron-right"></i>
+        </button>
         <div class="done-actions">
           <button class="btn" onclick="show('home')">홈으로</button>
           <button class="btn ghost" onclick="startCook()">다시 요리하기</button>
@@ -1231,14 +1036,37 @@
       </div>
     </div>
 
+    <!-- 바텀시트 -->
+    <div class="scrim" id="scrim" onclick="closeSheet()"></div>
+    <div class="sheet" id="sheet">
+      <div class="grabber"></div>
+      <h3>레시피 등록하기</h3>
+      <p class="sub">유튜브 링크만 붙여넣으면 단계별 레시피로 만들어드려요</p>
+      <div class="field"><i data-lucide="youtube"></i>https://youtube.com/watch?v=...</div>
+      <button class="btn" onclick="analyze()">입력 완료</button>
+      <button class="btn ghost" onclick="closeSheet()">취소</button>
+    </div>
 
     <!-- 전역 재료 시트 -->
     <div class="ing-sheet" id="ingSheet">
       <div class="ing-scrim" onclick="closeIngredients()"></div>
       <div class="ing-panel">
         <div class="ing-grab"></div>
-        <div class="ing-h"><b id="ingSheetCount">재료</b><span onclick="closeIngredients()"><i data-lucide="x"></i></span></div>
-        <div id="ingSheetBody"></div>
+        <div class="ing-h"><b>재료 11개</b><span onclick="closeIngredients()"><i data-lucide="x"></i></span></div>
+        <div class="ings">
+          <div class="ing"><div class="n">순두부</div><div class="q">1팩</div></div>
+          <div class="ing"><div class="n">고추참치</div><div class="q">1캔</div></div>
+          <div class="ing"><div class="n">양파</div><div class="q">1/2개</div></div>
+          <div class="ing"><div class="n">애호박</div><div class="q">조금</div></div>
+          <div class="ing"><div class="n">대파</div><div class="q">조금</div></div>
+          <div class="ing"><div class="n">계란</div><div class="q">1개</div></div>
+          <div class="ing"><div class="n">팽이버섯</div><div class="q">조금</div></div>
+          <div class="ing"><div class="n">식용유</div><div class="q">2숟갈</div></div>
+          <div class="ing"><div class="n">고춧가루</div><div class="q">1숟갈</div></div>
+          <div class="ing"><div class="n">멸치액젓</div><div class="q">1숟갈</div></div>
+          <div class="ing"><div class="n">국간장</div><div class="q">1숟갈</div></div>
+          <div class="ing"><div class="n">후추</div><div class="q">조금</div></div>
+        </div>
       </div>
     </div>
 
@@ -1277,10 +1105,10 @@
         </div>
         <div class="vset-sub collapsed" id="vsLoopCount">
           <span class="vset-mini">횟수</span>
-          <button class="vchip" onclick="setVsLoopCount(1,this)">1회</button>
+          <button class="vchip on" onclick="setVsLoopCount(1,this)">1회</button>
           <button class="vchip" onclick="setVsLoopCount(2,this)">2회</button>
           <button class="vchip" onclick="setVsLoopCount(3,this)">3회</button>
-          <button class="vchip on" onclick="setVsLoopCount(0,this)">무한</button>
+          <button class="vchip" onclick="setVsLoopCount(0,this)">무한</button>
         </div>
         <div class="vset-sub collapsed" id="vsLoopEnd">
           <span class="vset-mini">반복 후</span>
@@ -1311,65 +1139,61 @@
 
     <!-- 전역 핸즈프리 명령 가이드 모달 (어느 화면에서든 표시) -->
     <div class="vmodal" id="voiceModal">
-      <div class="vtop"><h2>AI 비서에게<br>편하게 요청해보세요</h2></div>
+      <div class="vclose" onclick="closeVoice()"><i data-lucide="x"></i></div>
+      <div class="vtop"><h2>핸즈프리로<br>편하게 말해보세요</h2></div>
       <div class="vcard">
-        <div class="vh"><b>AI 비서 명령 가이드</b><span class="x" onclick="closeVoice()"><i data-lucide="x"></i></span></div>
+        <div class="vh"><b>핸즈프리 모드 명령 가이드</b><span class="x" onclick="closeVoice()"><i data-lucide="x"></i></span></div>
         <div class="vcats">
           <div class="vcat">
-            <div class="vcat-h"><div class="vci"><i data-lucide="list-ordered"></i></div>단계 진행</div>
-            <div class="vchips"><span>"다음 단계"</span><span>"이전 단계로"</span><span>"3단계로 가줘"</span><span>"지금 몇 단계야?"</span></div>
+            <div class="vcat-h"><div class="vci"><i data-lucide="list-ordered"></i></div>단계 이동</div>
+            <div class="vchips"><span>"다음 단계"</span><span>"이전 단계"</span><span>"3단계로 가줘"</span><span>"처음부터 다시"</span></div>
           </div>
           <div class="vcat">
-            <div class="vcat-h"><div class="vci"><i data-lucide="video"></i></div>영상 조작</div>
-            <div class="vchips"><span>"잠깐 멈춰줘"</span><span>"10초 뒤로"</span><span>"이 부분 다시 보여줘"</span><span>"조금 천천히 보여줘"</span></div>
-          </div>
-          <div class="vcat">
-            <div class="vcat-h"><div class="vci"><i data-lucide="help-circle"></i></div>궁금할 땐 물어보기</div>
-            <div class="vchips"><span>"지금 뭐 하면 돼?"</span><span>"다 익은 거야?"</span><span>"왜 약불로 해?"</span><span>"방금 뭐랬어?"</span></div>
+            <div class="vcat-h"><div class="vci"><i data-lucide="help-circle"></i></div>궁금한 거 물어보기</div>
+            <div class="vchips"><span>"이거 얼마나 익혀?"</span><span>"지금 뭐 하면 돼?"</span><span>"왜 약불로 해?"</span></div>
           </div>
           <div class="vcat">
             <div class="vcat-h"><div class="vci"><i data-lucide="carrot"></i></div>재료 · 대체</div>
-            <div class="vchips"><span>"재료 다시 알려줘"</span><span>"간장 대신 뭐 써?"</span><span>"2인분으로 늘려줘"</span></div>
+            <div class="vchips"><span>"재료 알려줘"</span><span>"간장 대신 뭐 써?"</span><span>"1인분으로 줄이면?"</span></div>
           </div>
           <div class="vcat">
             <div class="vcat-h"><div class="vci"><i data-lucide="timer"></i></div>타이머</div>
-            <div class="vchips"><span>"3분 타이머 맞춰줘"</span><span>"얼마나 남았어?"</span><span>"1분 더 늘려줘"</span><span>"타이머 멈춰"</span></div>
+            <div class="vchips"><span>"타이머 3분"</span><span>"타이머 멈춰"</span><span>"몇 분 남았어?"</span></div>
+          </div>
+          <div class="vcat">
+            <div class="vcat-h"><div class="vci"><i data-lucide="video"></i></div>영상 · 기타</div>
+            <div class="vchips"><span>"방금 거 다시 말해줘"</span><span>"영상 보여줘"</span><span>"핸즈프리 종료"</span></div>
           </div>
         </div>
         <button class="btn" onclick="closeVoice()">알겠어요!</button>
       </div>
     </div>
 
-
-  </div>
-</div>
-
-<button class="app-feedback-btn" type="button" onclick="openFeedback('app-floating')"><i data-lucide="message-square-plus"></i>피드백</button>
-<div class="feedback-modal" id="feedbackModal" role="dialog" aria-modal="true" aria-labelledby="feedbackTitle">
-  <div class="feedback-card">
-    <div class="feedback-head">
-      <div>
-        <h2 id="feedbackTitle">베타 피드백</h2>
-        <p>좋았던 점보다 막힌 지점이 더 중요합니다. 화면, 레시피, 음성, 영상 문제를 그대로 적어주세요.</p>
+    <!-- 후기 작성 시트 -->
+    <div class="ing-sheet" id="reviewSheet">
+      <div class="ing-scrim" onclick="closeReviewSheet()"></div>
+      <div class="ing-panel">
+        <div class="ing-grab"></div>
+        <div class="ing-h"><b>후기 쓰기</b><span onclick="closeReviewSheet()"><i data-lucide="x"></i></span></div>
+        <div class="rv-label">맛은 어땠나요?</div>
+        <div class="star-input" id="starInput">
+          <span onclick="setStars(1)"><i data-lucide="star"></i></span>
+          <span onclick="setStars(2)"><i data-lucide="star"></i></span>
+          <span onclick="setStars(3)"><i data-lucide="star"></i></span>
+          <span onclick="setStars(4)"><i data-lucide="star"></i></span>
+          <span onclick="setStars(5)"><i data-lucide="star"></i></span>
+        </div>
+        <div class="rv-label">한 줄 후기</div>
+        <textarea class="rv-text" id="rvText" placeholder="레시피는 어땠나요? 팁이 있다면 남겨주세요"></textarea>
+        <div class="rv-photo">
+          <label for="rvPhotoInput"><i data-lucide="camera"></i></label>
+          <input type="file" id="rvPhotoInput" accept="image/*" onchange="onReviewPhoto(this)">
+          <img class="prev" id="rvPhotoPrev" style="display:none;">
+        </div>
+        <button class="btn" onclick="submitReview()">등록</button>
       </div>
-      <button class="feedback-close" type="button" onclick="closeFeedback()" aria-label="피드백 닫기"><i data-lucide="x"></i></button>
     </div>
-    <form class="beta-form" id="feedbackForm" onsubmit="submitFeedback(event)">
-      <input type="hidden" name="source" value="landing">
-      <label>종류
-        <select name="type">
-          <option value="bug">막힌 점 / 오류</option>
-          <option value="recipe">추가했으면 하는 레시피</option>
-          <option value="voice">음성 / 핸즈프리</option>
-          <option value="video">영상 구간 / 재생</option>
-          <option value="other">기타 의견</option>
-        </select>
-      </label>
-      <label>이메일 (선택)<input name="email" type="email" autocomplete="email" placeholder="답변을 받아도 되는 이메일"></label>
-      <label>내용<textarea name="message" required placeholder="어느 화면에서 무엇이 불편했는지 적어주세요. 유튜브 링크 제안도 여기에 남길 수 있어요."></textarea></label>
-      <button type="submit"><i data-lucide="send"></i>피드백 보내기</button>
-      <p class="form-status" data-status></p>
-    </form>
+
   </div>
 </div>
 
@@ -1377,250 +1201,36 @@
 <div class="sidenav">
   <div class="sn-title">화면 이동</div>
   <button class="sn-item" data-screen="home" onclick="nav('home')"><span class="sn-num">1</span>홈</button>
-  <button class="sn-item" data-screen="detail" onclick="nav('detail')"><span class="sn-num">2</span>레시피 상세</button>
-  <button class="sn-item" data-screen="cook3" onclick="nav('cook3')"><span class="sn-num">3</span>조리 모드</button>
-  <button class="sn-item" data-screen="voice" onclick="nav('voice')"><span class="sn-num">4</span>핸즈프리 명령 가이드</button>
-  <button class="sn-item" data-screen="complete" onclick="nav('complete')"><span class="sn-num">5</span>완료</button>
+  <button class="sn-item" data-screen="sheet" onclick="nav('sheet')"><span class="sn-num">2</span>레시피 등록</button>
+  <button class="sn-item" data-screen="loading" onclick="nav('loading')"><span class="sn-num">3</span>분석 로딩</button>
+  <button class="sn-item" data-screen="detail" onclick="nav('detail')"><span class="sn-num">4</span>레시피 상세</button>
+  <button class="sn-item" data-screen="cook3" onclick="nav('cook3')"><span class="sn-num">5</span>조리 모드(신)</button>
+  <button class="sn-item" data-screen="cook" onclick="nav('cook')"><span class="sn-num">6</span>기본 조리 모드(구)</button>
+  <button class="sn-item" data-screen="cook2" onclick="nav('cook2')"><span class="sn-num">7</span>핸즈프리 모드(구)</button>
+  <button class="sn-item" data-screen="voice" onclick="nav('voice')"><span class="sn-num">8</span>핸즈프리 명령 가이드</button>
+  <button class="sn-item" data-screen="complete" onclick="nav('complete')"><span class="sn-num">9</span>완료</button>
+  <button class="sn-item" data-screen="reviews" onclick="nav('reviews')"><span class="sn-num">10</span>후기 전체</button>
   <div class="sn-sub">번호를 눌러 화면을 바로 이동할 수 있어요. 폰 안에서 직접 조작해도 현재 화면이 표시됩니다.</div>
 </div>
 </div>
 
 <script>
-  if('scrollRestoration' in history)history.scrollRestoration='manual';
-  function setFormStatus(form,msg,type){
-    const node=form&&form.querySelector('[data-status]');
-    if(!node)return;
-    node.textContent=msg||'';
-    node.classList.remove('ok','bad');
-    if(type)node.classList.add(type);
-  }
-  function setFormBusy(form,busy){
-    if(!form)return;
-    form.querySelectorAll('button[type="submit"]').forEach(btn=>{btn.disabled=!!busy;});
-  }
-  async function postJson(url,payload){
-    const res=await fetch(url,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload)});
-    const data=await res.json().catch(()=>({}));
-    if(!res.ok)throw new Error(data.error||'전송 설정을 확인해야 합니다.');
-    return data;
-  }
-  const landingVariants={
-    demo:{
-      kicker:'출시 전 베타 모집 중',
-      headline:'요리 영상 보면서<br><span>손 안 대고</span> 따라하기',
-      headlineMobile:'요리 영상 보면서<br><span>손 안 대고</span> 따라하기',
-      lead:'냄비는 유튜브 요리 영상을 단계별 조리 모드로 바꿔주는 베타 앱입니다. 앱이 출시될 때 알림 받을 사람과, 추가되길 원하는 레시피를 먼저 모으는 중입니다.',
-      leadMobile:'앱 출시 알림을 받고, 냄비에 먼저 들어갔으면 하는 레시피를 남겨주세요.',
-      promiseTitle:'출시 전에 먼저 초대할게요',
-      promiseText:'이메일을 남기면 베타 초대와 준비 중인 레시피 소식을 받을 수 있어요.',
-      primaryCta:'베타테스트 신청',
-      secondaryCta:'조리 흐름 보기',
-      point1Title:'앱 화면 먼저보기',
-      point1Text:'홈, 레시피 상세, 조리 모드를 이 페이지에서 바로 확인할 수 있습니다.',
-      point2Title:'출시 알림 받기',
-      point2Text:'정식 오픈과 베타 초대 소식을 이메일로 안내합니다.',
-      point3Title:'원하는 레시피 남기기',
-      point3Text:'따라하고 싶은 영상이나 요리를 보내주면 우선순위에 반영합니다.',
-      potTitle:'작은 냄비가<br>순서를 챙겨요',
-      potText:'영상은 냄비가 넘기고, 당신은 손맛에 집중해요.'
-    },
-    beta:{
-      kicker:'주방에서 직접 써볼 베타테스터 모집',
-      headline:'요리 테스트를<br><span>함께 만들 사람</span>',
-      headlineMobile:'요리 테스트를<br><span>함께 만들 사람</span>',
-      lead:'냄비는 실제 주방에서 손이 바쁜 순간을 기준으로 다듬고 있습니다. 베타에 참여하면 테스트 과제와 초대 링크를 먼저 받을 수 있어요.',
-      leadMobile:'주방에서 직접 써보고 싶은 분을 먼저 초대합니다. 테스트할 상황을 남겨주세요.',
-      promiseTitle:'작은 테스트 그룹부터 시작합니다',
-      promiseText:'요리 스타일과 테스트 상황을 남기면 맞는 과제를 보내드릴게요.',
-      primaryCta:'베타 신청하기',
-      secondaryCta:'앱 흐름 먼저보기',
-      point1Title:'테스트 과제 받기',
-      point1Text:'퇴근 후 한 끼, 가족 식사, 초보 요리처럼 실제 상황별 과제를 보냅니다.',
-      point2Title:'초대 링크 안내',
-      point2Text:'준비가 되는 순서대로 이메일로 초대 링크와 안내를 드립니다.',
-      point3Title:'개선 피드백 반영',
-      point3Text:'조리 중 막힌 순간과 필요한 레시피를 다음 개선 목록에 반영합니다.',
-      potTitle:'작은 냄비가<br>옆에서 물어봐요',
-      potText:'어디서 막혔는지 알려주면 다음 버전에 먼저 반영해요.'
-    },
-    recipe:{
-      kicker:'넣고 싶은 레시피를 먼저 모집합니다',
-      headline:'첫 레시피를<br><span>골라주세요</span>',
-      headlineMobile:'첫 레시피를<br><span>골라주세요</span>',
-      lead:'자주 보는 유튜브 요리 영상이나 따라 하기 어려웠던 레시피를 남겨주세요. 베타 콘텐츠 우선순위를 실제 요청 기준으로 정합니다.',
-      leadMobile:'따라하고 싶은 요리나 유튜브 링크를 남겨주세요. 베타 레시피 후보로 모을게요.',
-      promiseTitle:'요청이 많은 레시피부터 준비합니다',
-      promiseText:'요리 이름이나 링크만 남겨도 좋아요. 반영 소식이 필요하면 이메일도 함께 남겨주세요.',
-      primaryCta:'레시피 요청하기',
-      secondaryCta:'조리 화면 보기',
-      point1Title:'요리 이름만 남겨도 됩니다',
-      point1Text:'제육볶음, 순두부찌개처럼 요리 이름만 있어도 후보에 넣습니다.',
-      point2Title:'유튜브 링크 우선 반영',
-      point2Text:'실제로 보던 영상 링크를 보내주면 구간과 단계 검토가 쉬워집니다.',
-      point3Title:'반영 소식 받기',
-      point3Text:'이메일을 남기면 후보 레시피가 준비될 때 안내할 수 있습니다.',
-      potTitle:'작은 냄비가<br>레시피를 기다려요',
-      potText:'보고 싶은 영상을 보내주면 조리 순서로 바꿔볼게요.'
-    }
-  };
-  function setLandingVariant(name){
-    const key=landingVariants[name]?name:'demo';
-    const copy=landingVariants[key];
-    const landing=document.getElementById('landingPage');
-    if(landing)landing.dataset.variant=key;
-    document.querySelectorAll('[data-variant-copy]').forEach(node=>{
-      const value=copy[node.dataset.variantCopy];
-      if(value!==undefined)node.innerHTML=value;
-    });
-    document.querySelectorAll('[data-variant-option]').forEach(btn=>btn.classList.toggle('active',btn.dataset.variantOption===key));
-    const quick=document.querySelector('#betaQuickForm input[name="note"]');
-    const mobile=document.querySelector('#mobileBetaForm input[name="note"]');
-    if(quick)quick.value='랜딩 후보 '+key+' 히어로 출시 알림 신청';
-    if(mobile)mobile.value='랜딩 후보 '+key+' 모바일 출시 알림 신청';
-    if(window.lucide)lucide.createIcons();
-  }
-  function initLandingVariants(){
-    const params=new URLSearchParams(location.search);
-    const review=params.has('variants')||params.get('review')==='variants';
-    const requested=params.get('variant')||'demo';
-    if(review){
-      document.body.classList.add('variant-review');
-      const switcher=document.getElementById('variantSwitcher');
-      if(switcher)switcher.hidden=false;
-    }
-    document.querySelectorAll('[data-variant-option]').forEach(btn=>{
-      btn.addEventListener('click',()=>setLandingVariant(btn.dataset.variantOption));
-    });
-    setLandingVariant(requested);
-  }
-  function scrollToBeta(){
-    document.body.classList.add('marketing-open');
-    document.getElementById('beta')?.scrollIntoView({behavior:'smooth',block:'start'});
-  }
-  function pinLandingTop(){
-    if(location.hash||!document.body.classList.contains('marketing-open'))return;
-    window.scrollTo(0,0);
-    document.documentElement.scrollTop=0;
-    document.body.scrollTop=0;
-  }
-  function pinLandingTopSoon(){
-    pinLandingTop();
-    [80,400,1200].forEach(ms=>setTimeout(pinLandingTop,ms));
-  }
-  function setDemoScreen(route){
-    const target=route||'home';
-    const frame=document.getElementById('landingDemoFrame');
-    if(frame)frame.src='./app.html#'+target;
-    document.querySelectorAll('.demo-tab').forEach(btn=>btn.classList.toggle('active',btn.dataset.demo===target));
-  }
-  function openApp(route){
-    document.body.classList.remove('marketing-open');
-    const target=route||'home';
-    if(target==='home')show('home');
-    else if(target==='cook3'){cook3Car.reset();show('cook3');}
-    else show(target);
-    if(location.hash!=='#'+target)history.replaceState(null,'','#'+target);
-  }
-  function showLanding(){
-    closeFeedback();
-    stopCook3Video();
-    stopDetailVideo();
-    document.body.classList.add('marketing-open');
-    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-    document.getElementById('home').classList.add('active');
-    if(location.hash)history.replaceState(null,'',location.pathname+location.search);
-    window.scrollTo({top:0,behavior:'smooth'});
-  }
-  function openFeedback(source){
-    const modal=document.getElementById('feedbackModal');
-    const form=document.getElementById('feedbackForm');
-    if(form){
-      form.elements.source.value=source||currentViewId();
-      setFormStatus(form,'','');
-    }
-    modal.classList.add('show');
-    lucide.createIcons();
-  }
-  function closeFeedback(){
-    document.getElementById('feedbackModal')?.classList.remove('show');
-  }
-  async function submitBeta(event){
-    event.preventDefault();
-    const form=event.currentTarget;
-    const data=Object.fromEntries(new FormData(form).entries());
-    const payload={...data,source:'landing',page:location.href,createdAt:new Date().toISOString()};
-    try{
-      setFormBusy(form,true);
-      setFormStatus(form,'전송 중입니다.','');
-      await postJson('/api/beta-signup',payload);
-      form.reset();
-      setFormStatus(form,'신청이 접수됐습니다. 초대 준비가 되면 이메일로 안내할게요.','ok');
-    }catch(error){
-      setFormStatus(form,error.message,'bad');
-    }finally{
-      setFormBusy(form,false);
-    }
-  }
-  async function submitRecipeRequest(event){
-    event.preventDefault();
-    const form=event.currentTarget;
-    const data=Object.fromEntries(new FormData(form).entries());
-    const message=[
-      data.recipeName&&`요리 이름: ${data.recipeName}`,
-      data.recipeUrl&&`유튜브 링크: ${data.recipeUrl}`,
-      data.message&&`요청 이유: ${data.message}`
-    ].filter(Boolean).join('\n');
-    const payload={
-      type:'recipe',
-      source:'landing-recipe-request',
-      email:data.email||'',
-      message,
-      screen:'landing',
-      recipe:data.recipeName||'',
-      page:location.href,
-      createdAt:new Date().toISOString()
-    };
-    try{
-      setFormBusy(form,true);
-      setFormStatus(form,'전송 중입니다.','');
-      await postJson('/api/feedback',payload);
-      form.reset();
-      setFormStatus(form,'요청이 접수됐습니다. 베타 레시피 후보에 반영할게요.','ok');
-    }catch(error){
-      setFormStatus(form,error.message,'bad');
-    }finally{
-      setFormBusy(form,false);
-    }
-  }
-  async function submitFeedback(event){
-    event.preventDefault();
-    const form=event.currentTarget;
-    const data=Object.fromEntries(new FormData(form).entries());
-    const payload={...data,screen:document.body.classList.contains('marketing-open')?'landing':currentViewId(),recipe:currentRecipe?.name||'',page:location.href,createdAt:new Date().toISOString()};
-    try{
-      setFormBusy(form,true);
-      setFormStatus(form,'전송 중입니다.','');
-      await postJson('/api/feedback',payload);
-      form.reset();
-      setFormStatus(form,'피드백이 접수됐습니다. 베타 개선 목록에 반영할게요.','ok');
-      setTimeout(closeFeedback,900);
-    }catch(error){
-      setFormStatus(form,error.message,'bad');
-    }finally{
-      setFormBusy(form,false);
-    }
-  }
   function setActiveNav(key){
     document.querySelectorAll('.sn-item').forEach(b=>b.classList.toggle('active',b.dataset.screen===key));
   }
   function nav(key){
     hf3Reset();
     switch(key){
-      case 'home': closeVoice();show('home');break;
-      case 'detail': closeVoice();show('detail');break;
-      case 'cook3': closeVoice();cook3Car.reset();show('cook3');break;
-      case 'voice': cook3Car.reset();show('cook3');openVoice();break;
-      case 'complete': closeVoice();show('complete');break;
+      case 'home': closeSheet();closeVoice();show('home');break;
+      case 'sheet': closeVoice();show('home');openSheet();break;
+      case 'loading': closeSheet();closeVoice();show('loading');break;
+      case 'detail': closeSheet();closeVoice();show('detail');break;
+      case 'cook': closeSheet();closeVoice();cookCar.reset();show('cook');break;
+      case 'cook3': closeSheet();closeVoice();cook3Car.reset();show('cook3');break;
+      case 'cook2': closeSheet();closeVoice();show('cook2');break;
+      case 'voice': closeSheet();show('cook');openVoice();break;
+      case 'complete': closeSheet();closeVoice();show('complete');break;
+      case 'reviews': closeSheet();closeVoice();show('reviews');break;
     }
   }
 
@@ -1645,22 +1255,7 @@
       }
     });
   }
-  // 조리 모드 이탈 시 영상 제거 → 소리 확실히 정지 (재진입 때 새로 임베드됨)
-  function stopCook3Video(){
-    cook3StopTimeTracking();
-    stopCookYoutubeLoop();
-    cook3Playing=false;
-    cookYoutubeAutoplayStarted=false;
-    if(cookYoutubePlayTimer){clearInterval(cookYoutubePlayTimer);cookYoutubePlayTimer=null;}
-    const fr=document.getElementById('cook3YoutubePlayer'); if(fr)fr.remove();
-  }
-  // 상세 이탈 시 영상 제거 → 소리 정지 (재진입 때 renderDetail이 새로 임베드)
-  function stopDetailVideo(){
-    const fr=document.getElementById('detailYoutubePlayer'); if(fr)fr.remove();
-  }
   function finishCook(){
-    stopCook3Video(); // 완료 진입 시 조리 영상·소리 정지
-    renderComplete(); // 현재 레시피 기준 완료 화면 렌더
     const cp=document.getElementById('complete');
     cp.style.animation=''; // 이전에 걸어둔 none 해제
     cp.classList.add('active','rise-in'); // cook3 위로 완료 화면을 아래→위 슬라이드업
@@ -1673,219 +1268,113 @@
     },540);
   }
   function show(id){
-    document.body.classList.remove('marketing-open');
-    const prevId=(document.querySelector('.view.active')||{}).id;
-    if(prevId==='cook3' && id!=='cook3')stopCook3Video(); // 조리 모드 이탈 시 영상·소리 정지
-    if(prevId==='detail' && id!=='detail')stopDetailVideo(); // 상세 이탈 시 영상·소리 정지
     document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
     const _v=document.getElementById(id); _v.style.animation=''; // finishCook가 고정한 animation:none 해제 → 정상 전환 애니 복구
     _v.classList.add('active');
     setActiveNav(id);
-    if(id==='detail')renderDetail();
-    else if(id==='cook3'){cook3Car.rebuild();initCookYoutube();showCookHint();} // 선택된 레시피로 단계·영상 재구성
-    else{ if(id==='complete')renderComplete(); hideCookHint(); }
-    // 화면 진입 시 항상 맨 위부터 보이도록 스크롤 위치 초기화 (홈↔상세 왕복 시 스크롤 유지 방지)
-    _v.querySelectorAll('.body,.cook-body,.hf-chat').forEach(el=>el.scrollTop=0);
+    if(id==='detail')renderDetailSocial();
+    else if(id==='reviews')renderReviewsScreen();
+    else if(id==='home')hydrateHome();
+    else if(id==='cook3')showCookHint();
+    else hideCookHint();
   }
+  function openSheet(){document.getElementById('scrim').classList.add('show');document.getElementById('sheet').classList.add('show');setActiveNav('sheet');}
+  function closeSheet(){document.getElementById('scrim').classList.remove('show');document.getElementById('sheet').classList.remove('show');}
+
+  function analyze(){
+    closeSheet();show('loading');
+    const logs=['lg1','lg2','lg3','lg4'];
+    logs.forEach(id=>document.getElementById(id).classList.remove('done'));
+    logs.forEach((id,i)=>setTimeout(()=>document.getElementById(id).classList.add('done'),500+i*550));
+    setTimeout(()=>show('detail'),500+logs.length*550+400);
+  }
+  function goDetail(){show('detail');}
+
+  /* ===== 소셜: 좋아요 · 후기 (localStorage) ===== */
+  const DVID='21j8SASqLJU';                 // 상세는 순두부에 바인딩
+  const SOCIAL_KEY='cook.social';
+  const SEED={
+    '21j8SASqLJU':{likes:342,liked:false,reviews:[
+      {user:'요리고수',rating:5,text:'과정 화면이 위로 올라가서 진짜 편했어요. 손 안 씻고 끝!',photo:null,ts:3},
+      {user:'자취왕',rating:4,text:'영상 세트로 보니 실패 안 하고 따라할 수 있었어요.',photo:null,ts:2},
+      {user:'맵찔이',rating:5,text:'고추참치로 하니까 간단한데 국물 맛이 잘 나네요. 또 해먹을 듯!',photo:null,ts:1},
+    ]},
+    'VvM59BXz6Bw':{likes:512,liked:false,reviews:[{user:'와인러버',rating:5,text:'마늘 향 미쳤어요. 바게트 필수!',photo:null,ts:1}]},
+    'eJekYxjFewM':{likes:128,liked:false,reviews:[{user:'다이어터',rating:4,text:'10분 컷 건강식. 굿',photo:null,ts:1}]},
+    'V9KP9Qvb3lI':{likes:276,liked:false,reviews:[{user:'면식수행',rating:5,text:'크림 없이도 진해요',photo:null,ts:2},{user:'주말셰프',rating:4,text:'관찰레 대신 베이컨으로도 충분',photo:null,ts:1}]},
+    'sIBG0KjOcBs':{likes:689,liked:false,reviews:[{user:'홈베이커',rating:5,text:'노오븐이라 너무 쉬워요',photo:null,ts:1}]},
+    'vHU4_QbslRA':{likes:94,liked:false,reviews:[{user:'혼밥러',rating:4,text:'명란만 있으면 끝. 간단!',photo:null,ts:1}]},
+  };
+  let social={};
+  function loadSocial(){try{social=JSON.parse(localStorage.getItem(SOCIAL_KEY))||{};}catch(e){social={};}}
+  function saveSocial(){try{localStorage.setItem(SOCIAL_KEY,JSON.stringify(social));return true;}catch(e){return false;}}
+  function seedSocial(){loadSocial();let ch=false;for(const k in SEED){if(!social[k]){social[k]=JSON.parse(JSON.stringify(SEED[k]));ch=true;}}if(ch)saveSocial();}
+  function getS(vid){return social[vid]||(social[vid]={likes:0,liked:false,reviews:[]});}
   function esc(s){return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+  function stars(n){let h='';for(let i=0;i<n;i++)h+='<i data-lucide="star"></i>';return h;}
 
-  // ===== 레시피 데이터 (단일 소스) — 홈·상세·조리·완료가 모두 이 배열을 바라봄 =====
-  // 필드: id(유튜브 영상 id) · name(짧은 이름) · title(카드/상세 제목) · channel · servings · time · difficulty
-  //       · food(썸네일 그라데이션 클래스) · summary · ingredients{main[],seasoning[]} · steps[{letter,title,time,start,end,subs[]}]
-  //       steps의 start/end(초)는 조리 모드 구간 반복 구간. 스텁 레시피는 아래 값을 채우면 상세·조리에 그대로 반영됨.
-  const RECIPES=[
-    {
-      id:'CgapOjKdo9I', name:'순두부찌개',
-      title:'순두부찌개 절대로 실패할 수 없는 1분 초간단 레시피',
-      channel:'1분요리 뚝딱이형', servings:'2인분', time:'15분', difficulty:'쉬움', food:'food1',
-      summary:'고추참치로 감칠맛을 빠르게 잡고, 순두부와 계란을 넣어 몽글몽글하게 끓이는 1분 초간단 순두부찌개예요. 파기름을 먼저 내 국물 맛을 자연스럽게 채웁니다.',
-      ingredients:{
-        main:[{n:'순두부',q:'1팩'},{n:'고추참치',q:'1캔'},{n:'양파',q:'1/2개'},{n:'애호박',q:'조금'},{n:'대파',q:'조금'},{n:'계란',q:'1개'},{n:'버섯',q:'조금'}],
-        seasoning:[{n:'식용유',q:'2숟갈'},{n:'고춧가루',q:'1숟갈'},{n:'멸치액젓',q:'1숟갈'},{n:'국간장',q:'1숟갈'},{n:'후추',q:'조금'}]
-      },
-      steps:[
-        {letter:'A',title:'파기름 내기',time:'0:05 ~ 0:14',start:5,end:14,subs:['대파를 송송 썬다','냄비에 식용유 2숟갈을 두른다','대파를 넣고 향이 올라올 때까지 볶는다']},
-        {letter:'B',title:'고추참치 볶기',time:'0:14 ~ 0:23',start:14,end:23,subs:['고추참치 한 캔을 넣는다','고춧가루 1숟갈을 더한다','참치와 양념이 섞이도록 볶는다']},
-        {letter:'C',title:'양파·순두부 넣기',time:'0:23 ~ 0:38',start:23,end:38,subs:['양파 반 개를 넣고 투명해질 때까지 볶는다','순두부를 큼직하게 넣는다','참치캔 한 캔 분량의 물을 붓는다']},
-        {letter:'D',title:'애호박·간 맞추기',time:'0:38 ~ 0:50',start:38,end:50,subs:['애호박을 조금 썰어 넣는다','멸치액젓·국간장을 1숟갈씩 넣는다','남는 버섯이 있으면 조금 올린다']},
-        {letter:'E',title:'계란·마무리',time:'0:50 ~ 0:59',start:50,end:59,subs:['계란 하나를 넣는다','후추를 톡톡 뿌린다','대파를 올려 마무리한다']}
-      ]
-    },
-    {
-      id:'VvM59BXz6Bw', name:'감바스 알 아히요',
-      title:'마늘 향 가득 스페인식 감바스 알 아히요',
-      channel:'성시경', servings:'2인분', time:'25분', difficulty:'쉬움', food:'food2',
-      summary:'새우와 마늘을 올리브유에 자글자글 끓여내는 스페인식 타파스예요. 표고버섯으로 감칠맛을 더하고, 남은 기름은 바게트에 찍어 먹으면 별미입니다.',
-      ingredients:{
-        main:[{n:'새우',q:'12마리'},{n:'마늘',q:'10쪽'},{n:'표고버섯',q:'2개'},{n:'파슬리',q:'조금'},{n:'바게트',q:'1/2개'}],
-        seasoning:[{n:'올리브유',q:'1컵'},{n:'페페론치노',q:'5개'},{n:'소금',q:'약간'},{n:'후추',q:'약간'},{n:'발사믹식초',q:'약간'}]
-      },
-      steps:[
-        {letter:'A',title:'새우 손질',time:'0:31 ~ 1:30',start:31,end:90,subs:['새우 껍질을 살짝 벌리고 꼬리를 뗀다','소주 조금과 소금으로 밑간한다','잠깐 재워 둔다']},
-        {letter:'B',title:'재료 준비',time:'1:30 ~ 2:15',start:90,end:135,subs:['표고버섯을 원하는 모양으로 썬다','마늘을 편으로 썬다','파슬리를 잘게 다진다']},
-        {letter:'C',title:'마늘 기름 내기',time:'2:15 ~ 2:55',start:135,end:175,subs:['팬에 올리브유를 넉넉히 붓는다','마늘을 넣고 약불에서 천천히 익힌다','밤색이 되기 전까지만 향을 낸다']},
-        {letter:'D',title:'새우·버섯 익히기',time:'2:55 ~ 4:10',start:175,end:250,subs:['소금·후추로 기름에 간을 한다','표고버섯과 새우를 넣는다','페페론치노를 넣어 매콤함을 더한다']},
-        {letter:'E',title:'간·마무리',time:'4:10 ~ 5:55',start:250,end:355,subs:['소금과 젓갈로 감칠맛을 맞춘다','발사믹식초를 살짝 넣어 산미를 더한다','파슬리를 올리고 새우가 덜 익었을 때 마무리한다']}
-      ]
-    },
-    {
-      id:'eJekYxjFewM', name:'아보카도 비빔밥',
-      title:'간단하고 쉬운 아보카도 계란 비빔밥',
-      channel:'요리시간 Cooking Time', servings:'1인분', time:'10분', difficulty:'쉬움', food:'food3',
-      summary:'크리미한 아보카도와 반숙 계란을 밥에 올려 와사비 간장에 쓱쓱 비벼 먹는 초간단 한 그릇이에요. 재료가 단순해 바쁜 날 한 끼로 제격입니다.',
-      ingredients:{
-        main:[{n:'아보카도',q:'1/2개'},{n:'밥',q:'1공기'},{n:'달걀',q:'1개'},{n:'양파',q:'1/2개'},{n:'어린잎 채소',q:'조금'},{n:'김',q:'1장'},{n:'통깨',q:'조금'}],
-        seasoning:[{n:'간장',q:'1숟갈'},{n:'와사비',q:'약간'},{n:'크러쉬드 레드페퍼',q:'약간'}]
-      },
-      steps:[
-        {letter:'A',title:'재료 손질',time:'0:04 ~ 0:20',start:4,end:20,subs:['아보카도를 반 갈라 슬라이스한다','양파를 얇게 채 썬다','어린잎 채소와 김을 준비한다']},
-        {letter:'B',title:'계란 익히기',time:'0:20 ~ 0:40',start:20,end:40,subs:['팬을 달궈 기름을 두른다','계란을 반숙으로 부친다']},
-        {letter:'C',title:'그릇에 담기',time:'0:40 ~ 0:58',start:40,end:58,subs:['밥 위에 아보카도를 올린다','어린잎 채소와 계란을 얹는다','김과 통깨를 뿌린다']},
-        {letter:'D',title:'양념·비비기',time:'0:58 ~ 1:25',start:58,end:85,subs:['간장에 와사비를 풀어 비빔장을 만든다','크러쉬드 레드페퍼를 더한다','비빔장을 뿌려 쓱쓱 비벼 완성한다']}
-      ]
-    },
-    {
-      id:'V9KP9Qvb3lI', name:'까르보나라',
-      title:'크림 없이 진한 정통 로마식 까르보나라',
-      channel:'Chef Sunny', servings:'2인분', time:'30분', difficulty:'보통', food:'food4',
-      summary:'크림 없이 계란 노른자와 페코리노·파르미지아노 치즈만으로 진하게 유화하는 정통 로마식 까르보나라예요. 관찰레의 지방을 천천히 녹여내는 것이 맛의 핵심입니다.',
-      ingredients:{
-        main:[{n:'스파게티면',q:'200g'},{n:'관찰레',q:'80g'},{n:'달걀',q:'1개'},{n:'계란 노른자',q:'1개'},{n:'통후추',q:'넉넉히'}],
-        seasoning:[{n:'페코리노',q:'40g'},{n:'파르미지아노',q:'20g'},{n:'소금',q:'약간'}]
-      },
-      steps:[
-        {letter:'A',title:'관찰레 손질',time:'0:30 ~ 0:55',start:30,end:55,subs:['관찰레를 엄지손톱 크기로 썬다']},
-        {letter:'B',title:'계란 소스 만들기',time:'0:55 ~ 2:00',start:55,end:120,subs:['달걀 1개와 노른자 1개를 푼다','페코리노와 파르미지아노를 2:1로 갈아 넣는다','후추를 넉넉히 갈아 섞어 둔다']},
-        {letter:'C',title:'관찰레 굽기',time:'2:05 ~ 3:00',start:125,end:180,subs:['센불에 노릇하게 굽는다','약불로 줄여 지방을 천천히 녹인다','나온 기름 2~3스푼을 소스에 섞어 유화한다']},
-        {letter:'D',title:'면 삶기',time:'3:00 ~ 4:05',start:180,end:245,subs:['소금 넣은 물에 스파게티를 삶는다','면수 2~3스푼을 소스에 섞는다','면은 완전히 익힌다']},
-        {letter:'E',title:'유화·마무리',time:'4:05 ~ 5:55',start:245,end:355,subs:['따뜻한 물(65도)에 중탕하며 소스와 섞는다','계속 저어 크림처럼 유화한다','관찰레를 섞고 접시에 담아 후추를 듬뿍 올린다']}
-      ]
-    },
-    {
-      id:'sIBG0KjOcBs', name:'딸기 티라미수',
-      title:'노오븐 딸기 티라미수 (정통 이탈리아 레시피)',
-      channel:'세토리 setory', servings:'4인분', time:'40분', difficulty:'보통', food:'food5',
-      summary:'오븐 없이 딸기와 마스카포네·머랭 크림을 층층이 쌓아 굳히는 이탈리아 정통 티라미수예요. 진한 커피향과 중간중간 씹히는 상큼한 딸기의 조화가 포인트입니다.',
-      ingredients:{
-        main:[{n:'딸기',q:'2컵'},{n:'달걀',q:'3개'},{n:'마스카포네',q:'250g'},{n:'생크림',q:'200ml'},{n:'핑거쿠키',q:'12개'}],
-        seasoning:[{n:'설탕',q:'70g'},{n:'바닐라익스트랙',q:'약간'},{n:'커피가루',q:'2숟갈'},{n:'코코아파우더',q:'약간'}]
-      },
-      steps:[
-        {letter:'A',title:'딸기 손질',time:'0:30 ~ 1:55',start:30,end:115,subs:['딸기를 씻어 물기를 제거한다','용기에 맞는 크기로 자른다','토핑용 딸기를 따로 남긴다']},
-        {letter:'B',title:'노른자 살균',time:'1:55 ~ 2:50',start:115,end:170,subs:['노른자에 설탕을 넣어 섞는다','중탕물에 올려 70도 이상으로 살균한다','연한 노란색이 될 때까지 젓는다']},
-        {letter:'C',title:'마스카포네 섞기',time:'2:50 ~ 3:15',start:170,end:195,subs:['바닐라익스트랙을 넣는다','마스카포네를 최소한으로 살살 섞는다']},
-        {letter:'D',title:'생크림 섞기',time:'3:15 ~ 3:40',start:195,end:220,subs:['생크림을 80%까지 휘핑한다','노른자 크림에 넣어 섞는다']},
-        {letter:'E',title:'머랭·크림 완성',time:'3:40 ~ 4:10',start:220,end:250,subs:['흰자에 설탕을 나눠 넣어 머랭을 올린다','머랭을 크림에 반씩 나눠 섞는다','부드러운 크림을 완성한다']},
-        {letter:'F',title:'핑거쿠키 깔기',time:'4:10 ~ 5:00',start:250,end:300,subs:['따뜻한 물에 커피가루·설탕을 풀어 커피액을 만든다','핑거쿠키를 커피액에 적신다','용기 바닥에 깐다']},
-        {letter:'G',title:'층 쌓기',time:'5:00 ~ 5:55',start:300,end:355,subs:['벽면에 반 자른 딸기를 세운다','크림을 채우고 중간에 딸기를 넣는다','다시 크림으로 덮는다']},
-        {letter:'H',title:'냉장·마무리',time:'5:55 ~ 6:45',start:355,end:405,subs:['코코아파우더를 뿌린다','냉장고에서 충분히 굳힌다','토핑 딸기를 올려 완성한다']}
-      ]
-    },
-    {
-      id:'vHU4_QbslRA', name:'명란 파스타',
-      title:'10분이면 완성되는 명란 버터 파스타',
-      channel:'맘스레시피', servings:'2인분', time:'15분', difficulty:'쉬움', food:'food6',
-      summary:'명란과 마늘, 올리브유만으로 감칠맛을 낸 초간단 오일 파스타예요. 튜브형 명란젓으로도 쉽게 만들 수 있어 혼밥이나 술안주로 제격입니다.',
-      ingredients:{
-        main:[{n:'스파게티면',q:'200g'},{n:'명란',q:'10cm 1개'},{n:'마늘',q:'10알'},{n:'마늘쫑',q:'약간'}],
-        seasoning:[{n:'올리브유',q:'약간'},{n:'소금',q:'약간'}]
-      },
-      steps:[
-        {letter:'A',title:'재료 손질',time:'0:06 ~ 0:35',start:6,end:35,subs:['마늘을 편으로 썬다','마늘쫑을 잘게 썬다','명란은 껍질을 벗겨 알만 발라낸다']},
-        {letter:'B',title:'마늘 기름 내기',time:'0:38 ~ 1:30',start:38,end:90,subs:['팬에 올리브유를 두른다','마늘과 마늘쫑을 넣는다','노릇해질 때까지 볶는다']},
-        {letter:'C',title:'명란·면 볶기',time:'1:30 ~ 2:30',start:90,end:150,subs:['삶아 둔 면을 넣는다','명란과 함께 가볍게 볶는다','면수를 조금 넣어 촉촉하게 만든다']},
-        {letter:'D',title:'간·마무리',time:'2:30 ~ 3:30',start:150,end:210,subs:['모자란 간은 소금으로 맞춘다','마늘쫑을 올려 마무리한다']}
-      ]
-    },
-    {
-      id:'l7nGCJeAqjw', name:'로제떡볶이',
-      title:'우유로 만드는 초간단 로제떡볶이',
-      channel:'뚜비두밥 맛있는밥', servings:'2인분', time:'10분', difficulty:'쉬움', food:'food7',
-      summary:'우유로 부드럽게, 고추장과 토마토소스로 매콤달콤하게 끓여내는 초간단 로제떡볶이예요. 떡·어묵·소세지·베이컨을 한 번에 넣고 끓이기만 하면 완성됩니다.',
-      ingredients:{
-        main:[{n:'떡',q:'두 주먹'},{n:'어묵',q:'약간'},{n:'소세지',q:'약간'},{n:'베이컨',q:'약간'}],
-        seasoning:[{n:'우유',q:'300mL'},{n:'고추장',q:'1숟갈'},{n:'고춧가루',q:'1숟갈'},{n:'토마토소스',q:'3숟갈'},{n:'설탕',q:'1숟갈'},{n:'다시다',q:'약간'}]
-      },
-      steps:[
-        {letter:'A',title:'소스 만들기',time:'0:02 ~ 0:09',start:2,end:9,subs:['프라이팬에 우유 300mL를 붓는다','고춧가루·고추장·토마토소스·설탕·다시다를 넣는다','고루 저어 로제 소스를 만든다']},
-        {letter:'B',title:'재료 넣기',time:'0:09 ~ 0:12',start:9,end:12,subs:['떡 두 주먹을 넣는다','어묵·소세지·베이컨을 넣는다']},
-        {letter:'C',title:'끓여 완성',time:'0:12 ~ 0:16',start:12,end:16,subs:['7분간 끓인다','국물이 자작하게 쫄아들면 완성한다']}
-      ]
-    },
-    {
-      id:'vlPqkuHIdCc', name:'콘치즈 불닭볶음면',
-      title:'달콤 고소한 콘치즈 불닭볶음면',
-      channel:'자취요리신 simple cooking', servings:'2인분', time:'10분', difficulty:'쉬움', food:'food8',
-      summary:'불닭볶음면에 옥수수·모짜렐라·마요네즈로 만든 콘치즈 소스를 더해 매운맛을 달콤하고 고소하게 잡은 유행 레시피예요.',
-      ingredients:{
-        main:[{n:'불닭볶음면',q:'2봉지'},{n:'옥수수콘',q:'4큰술'},{n:'모짜렐라 치즈',q:'4큰술'},{n:'메추리알',q:'적당량'}],
-        seasoning:[{n:'마요네즈',q:'4큰술'},{n:'설탕',q:'1큰술'},{n:'동봉 후레이크',q:'적당량'},{n:'물',q:'4컵'}]
-      },
-      steps:[
-        {letter:'A',title:'콘치즈 소스 만들기',time:'0:20 ~ 0:30',start:20,end:30,subs:['옥수수콘·모짜렐라 치즈를 4스푼씩 넣는다','마요네즈 4스푼·설탕 1스푼을 넣는다','메추리알을 넣고 골고루 섞는다']},
-        {letter:'B',title:'스프 끓이기',time:'0:30 ~ 0:37',start:30,end:37,subs:['후라이팬에 물 4컵을 붓는다','불닭 액상 스프 2개를 넣고 끓인다']},
-        {letter:'C',title:'면 삶기',time:'0:37 ~ 0:45',start:37,end:45,subs:['면 2개를 넣는다','정확히 5분간 끓인다']},
-        {letter:'D',title:'콘치즈 올려 마무리',time:'0:45 ~ 0:55',start:45,end:55,subs:['약불로 줄이고 콘치즈를 올린다','뚜껑을 덮고 1분간 치즈를 녹인다','불닭 후레이크를 뿌려 완성한다']}
-      ]
-    }
-  ];
-  let currentRecipe=RECIPES[0];
-  function recipeById(id){return RECIPES.find(r=>r.id===id)||RECIPES[0];}
-  function stageLoop(i){const s=currentRecipe.steps[i];return s?{start:s.start||0,end:s.end||0}:null;}
-  function ingCount(r){return r.ingredients.main.length+r.ingredients.seasoning.length;}
-  function ingGroupsHTML(r){
-    const grp=(label,arr)=>arr.length?'<div class="ing-group-label">'+label+'</div><div class="ings">'+arr.map(x=>'<div class="ing"><div class="n">'+esc(x.n)+'</div><div class="q">'+esc(x.q)+'</div></div>').join('')+'</div>':'';
-    return (grp('주재료',r.ingredients.main)+grp('양념',r.ingredients.seasoning))||'<div class="ing-empty">재료 정보 준비 중이에요</div>';
+  function reviewsHTML(arr){
+    if(!arr.length)return '<div class="rev-empty">아직 후기가 없어요. 첫 후기를 남겨보세요!</div>';
+    return arr.map(r=>'<div class="r"><div class="av"><i data-lucide="user"></i></div><div class="txt"><div class="rh"><b>'+esc(r.user)+'</b><span class="stars">'+stars(r.rating)+'</span></div>'+esc(r.text)+(r.photo?'<img class="rphoto" src="'+r.photo+'">':'')+'</div></div>').join('');
+  }
+  function summaryHTML(arr){
+    if(!arr.length)return '';
+    const n=arr.length,sum=arr.reduce((a,r)=>a+r.rating,0),avg=sum/n,dist=[0,0,0,0,0];
+    arr.forEach(r=>dist[r.rating-1]++);
+    let rows='';for(let s=5;s>=1;s--){const pct=Math.round(dist[s-1]/n*100);rows+='<div class="drow"><span class="lab">'+s+'★</span><span class="bar"><i style="width:'+pct+'%"></i></span><span class="num">'+dist[s-1]+'</span></div>';}
+    return '<div class="rsum"><div class="avg"><div class="n">'+avg.toFixed(1)+'</div><div class="st">'+stars(Math.round(avg))+'</div><div class="cnt">'+n+'개 후기</div></div><div class="dist">'+rows+'</div></div>';
   }
 
+  function hydrateHome(){
+    document.querySelectorAll('#home .rcard').forEach(card=>{
+      const s=getS(card.dataset.vid);
+      const like=card.querySelector('.like');
+      if(like)like.classList.toggle('liked',!!s.liked);
+    });
+  }
+  const RECIPES=[
+    {vid:'21j8SASqLJU',name:'순두부찌개',src:'백종원 · 2인분',time:'30분',food:'food1'},
+    {vid:'VvM59BXz6Bw',name:'감바스 알 아히요',src:'성시경 · 2인분',time:'25분',food:'food2'},
+    {vid:'eJekYxjFewM',name:'아보카도 비빔밥',src:'유튜브 쇼츠 · 1인분',time:'15분',food:'food3'},
+    {vid:'V9KP9Qvb3lI',name:'까르보나라',src:'유튜브 · 2인분',time:'40분',food:'food4'},
+    {vid:'sIBG0KjOcBs',name:'딸기 티라미수',src:'쿠킹트리 · 4인분',time:'20분',food:'food5'},
+    {vid:'vHU4_QbslRA',name:'명란 파스타',src:'유튜브 · 1인분',time:'10분',food:'food6'},
+  ];
   function cardHTML(r){
-    return '<div class="rcard" data-vid="'+r.id+'" onclick="goDetail(\''+r.id+'\')">'+
-      '<div class="thumb '+r.food+'"><img src="https://i.ytimg.com/vi/'+r.id+'/mqdefault.jpg" onerror="this.style.display=\'none\'">'+
-        '<span class="badge"><i data-lucide="clock"></i>'+r.time+'</span></div>'+
-      '<div class="cap"><b>'+esc(r.title)+'</b><small>'+esc(r.channel+' · '+r.servings)+'</small></div></div>';
+    return '<div class="rcard" data-vid="'+r.vid+'" onclick="goDetail()">'+
+      '<div class="thumb '+r.food+'"><img src="https://i.ytimg.com/vi/'+r.vid+'/mqdefault.jpg" onerror="this.style.display=\'none\'">'+
+        '<span class="badge"><i data-lucide="clock"></i>'+r.time+'</span>'+
+        '<button class="savebtn like" onclick="toggleLike(event,\''+r.vid+'\')"><i data-lucide="bookmark"></i></button>'+
+        '<span class="play"><i data-lucide="play"></i></span></div>'+
+      '<div class="cap"><b>'+r.name+'</b><small>'+r.src+'</small></div></div>';
   }
   function renderHomeSections(){
-    const popIds=['CgapOjKdo9I','vlPqkuHIdCc','l7nGCJeAqjw','sIBG0KjOcBs','VvM59BXz6Bw','V9KP9Qvb3lI','eJekYxjFewM','vHU4_QbslRA']; // 인기순(고정, 순두부 최상단)
-    document.getElementById('popScroll').innerHTML=popIds.map(id=>RECIPES.find(r=>r.id===id)).filter(Boolean).map(cardHTML).join('');
-    const recIds=['vlPqkuHIdCc','l7nGCJeAqjw','vHU4_QbslRA','eJekYxjFewM','sIBG0KjOcBs','VvM59BXz6Bw'];   // 빠르게 만드는 추천
-    document.getElementById('recScroll').innerHTML=RECIPES.filter(r=>recIds.includes(r.id)).map(cardHTML).join('');
+    document.getElementById('gridMine').innerHTML=RECIPES.map(cardHTML).join('');
+    const pop=[...RECIPES].sort((a,b)=>getS(b.vid).likes-getS(a.vid).likes);
+    document.getElementById('popScroll').innerHTML=pop.map(cardHTML).join('');
+    const recIds=['vHU4_QbslRA','eJekYxjFewM','sIBG0KjOcBs','VvM59BXz6Bw'];   // 빠르게 만드는 추천
+    document.getElementById('recScroll').innerHTML=RECIPES.filter(r=>recIds.includes(r.vid)).map(cardHTML).join('');
     lucide.createIcons();
   }
-  function goDetail(id){currentRecipe=recipeById(id);show('detail');}
-  // 상세 화면 렌더 (제목·요약·메타·재료·단계·영상) — 전부 currentRecipe 기준
-  function renderDetail(){
-    const r=currentRecipe;
-    document.getElementById('detTitle').innerHTML=esc(r.title);
-    document.getElementById('detSummary').textContent=r.summary||'';
-    document.getElementById('detTime').textContent=r.time||'-';
-    document.getElementById('detServings').textContent=r.servings||'-';
-    document.getElementById('detDiff').textContent=r.difficulty||'-';
-    document.getElementById('sec-ing').textContent='재료 '+ingCount(r)+'개';
-    document.getElementById('detIngs').innerHTML=ingGroupsHTML(r);
+  function renderDetailSocial(){
+    const s=getS(DVID);
+    document.getElementById('detLike').classList.toggle('liked',!!s.liked);
+    document.getElementById('detLikeN').textContent=s.likes;
+    const rn=s.reviews.length,ravg=rn?s.reviews.reduce((a,r)=>a+r.rating,0)/rn:0;
+    document.getElementById('detRating').innerHTML='<i data-lucide="star"></i><b>'+(rn?ravg.toFixed(1):'-')+'</b><span class="rc">'+(rn?'후기 '+rn+'개':'아직 후기 없음')+'</span>';
+    document.getElementById('detRevTitle').textContent='후기 '+s.reviews.length;
+    document.getElementById('detSummary').innerHTML=summaryHTML(s.reviews);
+    document.getElementById('detReviews').innerHTML=reviewsHTML(s.reviews.slice(0,2));
+    const more=document.getElementById('detMore');
+    if(s.reviews.length>2){more.style.display='';more.textContent='후기 전체보기 ('+s.reviews.length+')';}else more.style.display='none';
     renderSteps();
-    initDetailYoutube();
     lucide.createIcons();
   }
   function renderSteps(){
     const el=document.getElementById('detSteps');if(!el)return;
-    const arr=currentRecipe.steps;
-    if(!arr.length){el.innerHTML='<div class="ing-empty">레시피 단계 준비 중이에요</div>';return;}
-    el.innerHTML=arr.map(s=>'<div class="rstep"><div class="rstep-h"><span class="rstep-no">'+s.letter+'</span><b>'+esc(s.title)+'</b>'+(s.time?'<span class="rstep-time"><i data-lucide="play"></i>'+esc(s.time)+'</span>':'')+'</div><ul class="rstep-subs">'+s.subs.map(t=>'<li>'+esc(t)+'</li>').join('')+'</ul></div>').join('');
+    el.innerHTML=steps.map(s=>'<div class="rstep"><div class="rstep-h"><span class="rstep-no">'+s.letter+'</span><b>'+esc(s.title)+'</b>'+(s.time?'<span class="rstep-time"><i data-lucide="play"></i>'+esc(s.time)+'</span>':'')+'</div><ul class="rstep-subs">'+s.subs.map(t=>'<li>'+esc(t)+'</li>').join('')+'</ul></div>').join('');
   }
-  // 재료 시트 렌더 (currentRecipe 기준)
-  function renderIngSheet(){
-    document.getElementById('ingSheetCount').textContent='재료 '+ingCount(currentRecipe)+'개';
-    document.getElementById('ingSheetBody').innerHTML=ingGroupsHTML(currentRecipe);
-  }
-  // 완료 화면 렌더 (currentRecipe 기준)
-  function renderComplete(){
-    const r=currentRecipe;
-    document.getElementById('doneTitle').textContent=r.name+' 완성!';
-    document.getElementById('doneTime').textContent=r.time||'-';
-    document.getElementById('doneSteps').textContent=r.steps.length+'단계';
-    document.getElementById('doneServings').textContent=r.servings||'-';
-  }
-  const DET_SECS=['sec-ing','sec-steps'];
+  const DET_SECS=['sec-ing','sec-steps','detRevTitle'];
   let tabLock=0;
   function detailTab(id){
     const body=document.querySelector('#detail .body'),tabs=document.querySelector('#detail .dtabs'),el=document.getElementById(id);
@@ -1903,21 +1392,87 @@
     DET_SECS.forEach(id=>{const el=document.getElementById(id);if(el&&el.getBoundingClientRect().top<=line)cur=id;});
     setDetTab(cur);
   }
+  function renderReviewsScreen(){
+    const s=getS(DVID);
+    document.getElementById('revSummary').innerHTML=summaryHTML(s.reviews);
+    document.getElementById('revAll').innerHTML=reviewsHTML(s.reviews);
+    lucide.createIcons();
+  }
+  function toggleLike(e,vid){
+    if(e)e.stopPropagation();
+    const s=getS(vid);s.liked=!s.liked;s.likes+=s.liked?1:-1;saveSocial();
+    hydrateHome();
+    if(document.getElementById('detail').classList.contains('active'))renderDetailSocial();
+    const el=e&&e.currentTarget;if(el){el.classList.remove('pop');void el.offsetWidth;el.classList.add('pop');}
+  }
 
-  let cook3CurrentStep=0, cookYoutubeLoopTimer=null, cookHintTimer=null, cookYoutubeAutoplayStarted=false, cookYoutubePlayTimer=null, cookYoutubeMuted=false; // 기본: 조리 영상 소리 켜짐
+  /* 후기 작성 시트 */
+  let rvStars=0,rvPhoto=null;
+  function openReviewSheet(){
+    rvStars=0;rvPhoto=null;setStars(0);
+    document.getElementById('rvText').value='';
+    document.getElementById('rvPhotoInput').value='';
+    const p=document.getElementById('rvPhotoPrev');p.style.display='none';p.src='';
+    document.getElementById('reviewSheet').classList.add('show');
+  }
+  function closeReviewSheet(){document.getElementById('reviewSheet').classList.remove('show');}
+  function setStars(n){rvStars=n;document.querySelectorAll('#starInput span').forEach((sp,i)=>sp.classList.toggle('on',i<n));}
+  function onReviewPhoto(input){
+    const f=input.files&&input.files[0];if(!f)return;
+    const reader=new FileReader();
+    reader.onload=ev=>downscale(ev.target.result,480,d=>{rvPhoto=d;const p=document.getElementById('rvPhotoPrev');p.src=d;p.style.display='block';});
+    reader.readAsDataURL(f);
+  }
+  function downscale(dataURL,max,cb){
+    const img=new Image();
+    img.onload=()=>{let w=img.width,h=img.height;if(w>max||h>max){const r=Math.min(max/w,max/h);w=Math.round(w*r);h=Math.round(h*r);}
+      const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);cb(c.toDataURL('image/jpeg',0.7));};
+    img.src=dataURL;
+  }
+  function submitReview(){
+    if(!rvStars){toast('별점을 선택해주세요');return;}
+    const text=document.getElementById('rvText').value.trim();
+    if(!text){toast('후기를 입력해주세요');return;}
+    const s=getS(DVID);
+    s.reviews.unshift({user:'나',rating:rvStars,text:text,photo:rvPhoto,ts:Date.now()});
+    let ok=saveSocial();
+    if(!ok){s.reviews[0].photo=null;ok=saveSocial();}   // 용량 초과 시 사진 제외 후 재시도
+    closeReviewSheet();
+    renderDetailSocial();hydrateHome();
+    if(document.getElementById('reviews').classList.contains('active'))renderReviewsScreen();
+    toast(rvPhoto&&!s.reviews[0].photo?'후기 등록(사진은 용량 제외)':'후기가 등록되었어요','check');
+  }
+
+  const steps=[
+    {letter:'A',title:'파기름 내기',time:'0:08 ~ 0:16',subs:['대파를 송송 썰어 준비한다','냄비에 식용유 2숟갈을 두른다','대파를 넣고 향이 올라올 때까지 볶는다']},
+    {letter:'B',title:'고추참치 볶기',time:'0:16 ~ 0:22',subs:['고추참치 한 캔을 냄비에 넣는다','고춧가루 1숟갈을 더해 색을 낸다','참치와 양념이 고루 섞이도록 볶는다']},
+    {letter:'C',title:'양파 볶기',time:'0:22 ~ 0:29',subs:['양파 반 개를 깍둑썰기해 넣는다','양파가 투명해질 때까지 충분히 볶는다']},
+    {letter:'D',title:'순두부와 물 넣기',time:'0:29 ~ 0:37',subs:['순두부 한 봉을 큼직하게 넣는다','참치캔 한 캔 분량의 물을 부어 농도를 맞춘다']},
+    {letter:'E',title:'애호박 넣기',time:'0:38 ~ 0:43',subs:['애호박을 먹기 좋게 조금 썰어 넣는다','국물이 끓는 동안 살짝 익힌다']},
+    {letter:'F',title:'간 맞추고 버섯 넣기',time:'0:43 ~ 0:50',subs:['멸치액젓 1숟갈로 감칠맛을 더한다','국간장 1숟갈로 간을 맞춘다','팽이버섯을 조금 넣고 함께 끓인다']},
+    {letter:'G',title:'계란과 고명으로 마무리',time:'0:50 ~ 0:56',subs:['날계란 1개를 가운데 넣는다','후추를 가볍게 뿌린다','남겨둔 대파를 올리고 끓여 마무리한다']},
+  ];
+  const cookStageLoops={
+    0:{start:8,end:16},
+    1:{start:16,end:22},
+    2:{start:22,end:29},
+    3:{start:29,end:37},
+    4:{start:38,end:43},
+    5:{start:43,end:50},
+    6:{start:50,end:56}
+  };
+  let cook3CurrentStep=0, cookYoutubeLoopTimer=null, cookHintTimer=null, cookYoutubeAutoplayStarted=false, cookYoutubePlayTimer=null, cookYoutubeMuted=true; // 새로고침 시 소리 꺼짐 상태로 시작
   let cookHintDismissed=false; // "다시 보지 않기" (세션 한정, 저장 안 함)
   // 영상 조작 상태 (제스처 · 설정 모달)
   let cook3Playing=false, cook3Time=0, cook3TimeTimer=null, vgTapTimer=null;
-  let vsLoopOn=false, vsLoopCount=0, vsLoopEnd='stop', vsVol=100, vsSpeed=1; // 기본: 구간 반복 OFF (켜면 무한)
+  let vsLoopOn=false, vsLoopCount=1, vsLoopEnd='stop', vsVol=100, vsSpeed=1;
   let cook3LoopPlayed=0, cook3SuppressSeek=false; // 구간 반복 완료 횟수 · 단계 자동 전환 시 seek 억제(off=영상 이어짐)
   function makeCarousel(viewId,trackId){
     const viewEl=document.getElementById(viewId), trackEl=document.getElementById(trackId);
     const isCook3=viewId==='cook3';
-    const stepsArr=()=>currentRecipe.steps;                       // 현재 레시피의 단계(동적)
-    const maxIdx=()=>isCook3?stepsArr().length:stepsArr().length-1; // cook3은 완료 카드(index=steps.length)까지 포함
+    const maxIdx=isCook3?steps.length:steps.length-1; // cook3은 완료 카드(index=steps.length)까지 포함
     let cur=0, scrollLock=false, dragY=null, dragMoved=false;
     function build(){
-      const steps=stepsArr();
       let html=steps.map((s,i)=>
         '<div class="scard" data-i="'+i+'">'+
           '<div class="sc-side-label"></div>'+
@@ -1929,14 +1484,11 @@
       if(isCook3){ // 완료를 캐러셀 마지막 "단계 카드"로 편입 (다음 단계 박스와 동일한 형태·크기)
         html+='<div class="scard sc-finish" data-i="'+steps.length+'" data-finish="1">'+
           '<div class="sc-side-label"></div>'+
-          '<div class="sc-head"><div class="sc-title"><span class="fin-badge"><i data-lucide="check"></i></span> 요리 완료</div></div>'+
+          '<div class="sc-head"><div class="sc-title"><span class="fin-badge"><i data-lucide="check"></i></span> 요리 완성</div></div>'+
+          '<div class="sc-arrow"><span class="ar-up"><i data-lucide="chevron-up"></i></span><span class="ar-down"><i data-lucide="chevron-down"></i></span></div>'+
         '</div>';
       }
       trackEl.innerHTML=html;
-      if(isCook3){ // 진행 바 세그먼트를 단계 수에 맞게 생성
-        const prog=viewEl.querySelector('.cook-progress');
-        if(prog)prog.innerHTML=steps.map(()=>'<div class="seg"></div>').join('');
-      }
     }
     function layout(){
       trackEl.querySelectorAll('.scard').forEach(card=>{
@@ -1944,8 +1496,6 @@
         let y,sc,op;
         if(o===0){y=0;sc=1;op=1;}
         else{const dir=o<0?-1:1;const dist=ao===1?128:128+(ao-1)*52;y=dir*dist;sc=ao===1?0.9:0.82;op=ao===1?0.62:(ao===2?0.16:0);}
-        // 완료 버튼: 바로 다음 카드일 때만 흐림 없이 온전한 버튼으로 노출(가리는 느낌 제거). 완료 카드는 항상 현재 단계 아래(양수 y).
-        if(card.dataset.finish && ao===1){op=1;sc=1;y=138;}
         card.style.transform='translateY(calc(-50% + '+y+'px)) scale('+sc+')';
         card.style.opacity=op;card.style.zIndex=100-ao;card.style.pointerEvents=op>0?'auto':'none';
         card.classList.toggle('active',o===0);card.classList.toggle('above',o<0);card.classList.toggle('below',o>0);
@@ -1956,9 +1506,9 @@
       viewEl.querySelectorAll('.cook-progress .seg').forEach((seg,i)=>{seg.className='seg'+(i<cur?' done':i===cur?' cur':'');});
       if(viewId==='cook3')syncCookYoutubeStage(cur);
     }
-    function next(){ hideCookHint(); if(cur<maxIdx()){cur++;layout(); if(isCook3&&cur===maxIdx())finishCook(); else toast('"다음 단계" 인식됨','check'); } else { if(isCook3)finishCook(); else show('complete'); } }
+    function next(){ hideCookHint(); if(cur<maxIdx){cur++;layout(); if(isCook3&&cur===maxIdx)finishCook(); else toast('"다음 단계" 인식됨','check'); } else { if(isCook3)finishCook(); else show('complete'); } }
     function prev(){ hideCookHint(); if(cur>0){cur--;layout();toast('이전 단계','arrow-left');} }
-    trackEl.addEventListener('click',e=>{ if(dragMoved)return; const c=e.target.closest('.scard'); if(!c)return; hideCookHint(); if(c.dataset.finish){ if(cur!==maxIdx()){cur=maxIdx();layout();} finishCook(); return; } const i=+c.dataset.i; if(i!==cur){cur=i;layout();} });
+    trackEl.addEventListener('click',e=>{ if(dragMoved)return; const c=e.target.closest('.scard'); if(!c)return; hideCookHint(); if(c.dataset.finish){ if(cur!==maxIdx){cur=maxIdx;layout();} finishCook(); return; } const i=+c.dataset.i; if(i!==cur){cur=i;layout();} });
     viewEl.addEventListener('wheel',e=>{ if(!viewEl.classList.contains('active')||scrollLock)return; if(e.deltaY>12){scrollLock=true;next();setTimeout(()=>scrollLock=false,650);} else if(e.deltaY<-12){scrollLock=true;prev();setTimeout(()=>scrollLock=false,650);} },{passive:true});
     viewEl.addEventListener('pointerdown',e=>{dragY=e.clientY;dragMoved=false;});
     viewEl.addEventListener('pointermove',e=>{if(dragY!==null&&Math.abs(e.clientY-dragY)>8)dragMoved=true;});
@@ -1966,10 +1516,11 @@
     viewEl.addEventListener('pointercancel',()=>{dragY=null;});
     document.addEventListener('keydown',e=>{ if(!viewEl.classList.contains('active'))return; if(e.code==='Space'||e.code==='ArrowRight'||e.code==='ArrowDown'){e.preventDefault();next();} else if(e.code==='ArrowUp'||e.code==='ArrowLeft'){e.preventDefault();prev();} });
     build();layout();
-    return {reset(){cur=0;layout();}, rebuild(){build();cur=0;layout();lucide.createIcons();}, layout, next, prev, advance(){cur=(cur+1)%stepsArr().length;layout();}, goTo(i){cur=Math.max(0,Math.min(maxIdx(),i));layout();}};
+    return {reset(){cur=0;layout();}, layout, next, prev, advance(){cur=(cur+1)%steps.length;layout();}, goTo(i){cur=Math.max(0,Math.min(maxIdx,i));layout();}};
   }
+  const cookCar=makeCarousel('cook','cookTrack');
   const cook3Car=makeCarousel('cook3','cookTrack3');
-  function startCook(){show('cook3');} // show('cook3')에서 현재 레시피로 캐러셀·영상 재구성
+  function startCook(){cookCar.reset();show('cook');setTimeout(openVoice,600);}
   function postCookYoutube(func,args){
     const frame=document.getElementById('cook3YoutubePlayer');
     if(!frame||!frame.contentWindow)return false;
@@ -2003,7 +1554,7 @@
     if(cook3TimeTimer)return;
     cook3TimeTimer=setInterval(()=>{
       cook3Time+=1; // 재생 시간 자체 추적(로컬 폴백 대비)
-      const loop=stageLoop(cook3CurrentStep);
+      const loop=cookStageLoops[cook3CurrentStep];
       if(!loop)return;
       if(cook3Time>=loop.end){ // 현재 단계 구간 끝 도달
         if(vsLoopOn){
@@ -2051,7 +1602,15 @@
     toast((delta<0?'뒤로':'앞으로')+' 10초','rotate-'+(delta<0?'ccw':'cw'));
   }
   function onVideoTap(e){
-    videoTogglePlay(); // 화면 한 번 탭 → 재생/일시정지
+    const layer=e.currentTarget;
+    const rect=layer.getBoundingClientRect();
+    const side=(e.clientX-rect.left)<rect.width/2?'left':'right';
+    if(vgTapTimer){ // 260ms 안에 두 번째 탭 → 더블탭(구간 이동)
+      clearTimeout(vgTapTimer);vgTapTimer=null;
+      videoSeek(side==='left'?-10:10);
+    }else{
+      vgTapTimer=setTimeout(()=>{vgTapTimer=null;videoTogglePlay();},260);
+    }
   }
 
   /* ===== 영상 설정 모달 ===== */
@@ -2117,7 +1676,7 @@
   }
   // 해당 단계 구간 시작으로 이동 + 반복 카운트 리셋 (실제 반복/진행은 cook3StartTimeTracking tick이 담당)
   function startCookYoutubeLoop(stepIndex){
-    const loop=stageLoop(stepIndex);
+    const loop=cookStageLoops[stepIndex];
     if(!loop)return false;
     cook3LoopPlayed=0;
     cook3Time=loop.start;
@@ -2133,7 +1692,7 @@
   // 다음 단계로 자동 전환 (반복 off=영상 자연 연속 / on 완료=다음 구간 시작부터)
   function cook3AdvanceStage(){
     const nx=cook3CurrentStep+1;
-    if(nx>=currentRecipe.steps.length){ cook3StopTimeTracking(); cook3Playing=false; return; } // 마지막 단계 끝 → 정지
+    if(nx>=steps.length){ cook3StopTimeTracking(); cook3Playing=false; return; } // 마지막 단계 끝 → 정지
     if(!vsLoopOn)cook3SuppressSeek=true; // 반복 off: 영상 자연 연속(다음 구간으로 점프 안 함)
     cook3Car.goTo(nx);
     cook3SuppressSeek=false;
@@ -2284,10 +1843,8 @@
     const btn=panel.querySelector('.vp-mic');
     if(btn){btn.innerHTML='<i data-lucide="'+(vpMicMuted?'mic-off':'mic')+'"></i>';lucide.createIcons();}
     if(vpMicMuted){
-      // 즉시 멈추지 않고, 진행 중이던 답변은 끝까지 출력한 뒤 "다음 발화"부터 멈춘다.
-      // (runVp의 다음-발화 예약이 vpMicMuted를 확인하므로 현재 응답만 마저 나오고 정지)
+      vpClear(); // 진행만 멈춤 — 마지막 대화 내역을 그대로 유지(별도 안내 문구 없음)
     }else if(hf3On){
-      vpClear(); // 재개 전 잔여 타이머 정리(중복 실행 방지)
       vpTimers.push(setTimeout(runVp,800)); // 음소거 해제 시 데모 재개
     }
     toast(vpMicMuted?'마이크 음소거':'마이크 켜짐',vpMicMuted?'mic-off':'mic');
@@ -2329,8 +1886,8 @@
           panel.classList.remove('answering');panel.classList.add('listening');
           if(ex.timer)startVpTimer(ex.timer);        // 타이머 설정 발화면 타이머 패널 시작
           if(ex.next)cook3Car.advance();             // "다음 단계" 발화면 실제 카드 전진
-          vpi++;                                    // ④ 답변 유지 후 다음 발화로 (음소거면 이 응답까지만 출력하고 멈춤)
-          vpTimers.push(setTimeout(()=>{ if(hf3On&&!vpMicMuted){u.textContent='듣고 있어요…';runVp();} },1000)); // 발화 사이 텀 ~1초
+          vpi++;                                    // ④ 답변 유지 후 다음 발화로
+          vpTimers.push(setTimeout(()=>{ if(hf3On){u.textContent='듣고 있어요…';runVp();} },5000));
         });
       },900));
     });
@@ -2363,13 +1920,15 @@
     closeVideoSettings(); // 화면 이탈 시 영상 설정 모달 닫기
     cook3StopTimeTracking();cook3Playing=false; // 재생 시간 추적 정리
   }
-  function openIngredients(){renderIngSheet();lucide.createIcons();document.getElementById('ingSheet').classList.add('show');}
+  function openIngredients(){document.getElementById('ingSheet').classList.add('show');}
   function closeIngredients(){document.getElementById('ingSheet').classList.remove('show');}
-  function openVoice(){hideCookHint();document.getElementById('voiceModal').classList.add('show');document.getElementById('cook3').classList.add('voice-open');setActiveNav('voice');}
+  function openVoice(){document.getElementById('voiceModal').classList.add('show');document.getElementById('cook').classList.add('voice-open');setActiveNav('voice');}
   function closeVoice(){
     document.getElementById('voiceModal').classList.remove('show');
-    document.getElementById('cook3').classList.remove('voice-open');
-    if(document.getElementById('cook3').classList.contains('active'))setActiveNav('cook3');
+    document.getElementById('cook').classList.remove('voice-open');
+    if(document.getElementById('cook2').classList.contains('active'))setActiveNav('cook2');
+    else if(document.getElementById('cook3').classList.contains('active'))setActiveNav('cook3');
+    else if(document.getElementById('cook').classList.contains('active'))setActiveNav('cook');
   }
 
   let tt;
@@ -2381,76 +1940,46 @@
     clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1800);
   }
 
-  // 레시피 상세 공유: 배포 링크(+현재 레시피 딥링크)를 클립보드에 복사
-  const SHARE_BASE='https://naembi.vercel.app';
-  function copyText(text){
-    // 최신 브라우저 클립보드 기능 실패 시 임시 textarea 폴백
-    if(navigator.clipboard && window.isSecureContext){
-      return navigator.clipboard.writeText(text).then(()=>true).catch(()=>fallbackCopy(text));
-    }
-    return Promise.resolve(fallbackCopy(text));
-  }
-  function fallbackCopy(text){
-    try{
-      const ta=document.createElement('textarea');
-      ta.value=text;ta.setAttribute('readonly','');
-      ta.style.position='fixed';ta.style.top='-1000px';ta.style.opacity='0';
-      document.body.appendChild(ta);ta.focus();ta.select();
-      const ok=document.execCommand('copy');
-      document.body.removeChild(ta);
-      return ok;
-    }catch(e){return false;}
-  }
-  function shareRecipe(){
-    // 배포 도메인에서 보면 그 origin을, 로컬/파일에서 보면 배포 URL을 사용
-    const base=(location.protocol==='https:')?location.origin:SHARE_BASE;
-    const url=base+'/#detail='+encodeURIComponent(currentRecipe.id);
-    copyText(url).then(ok=>{
-      toast(ok?'공유 링크가 복사되었어요':'복사 실패 — '+url,'share-2');
-    });
-  }
-
-  // 공통 유튜브 임베드 (재호출 가능 — 레시피 바뀔 때마다 컨테이너에 새 iframe 심음)
-  function embedYoutube(container,mountId,playerId,videoId,title,params,insertFirst){
-    if(!container)return;
-    const oldP=document.getElementById(playerId); if(oldP)oldP.remove();
-    let mount=document.getElementById(mountId);
-    if(!mount){mount=document.createElement('div');mount.className='youtube-mount';mount.id=mountId;
-      if(insertFirst)container.insertBefore(mount,container.firstChild); else container.appendChild(mount);}
+  function initCookYoutube(){
+    const mount=document.getElementById('cook3Youtube');
+    if(!mount)return;
+    const videoId=mount.dataset.videoId;
     if(!/^https?:$/.test(location.protocol)){
       mount.innerHTML='<div class="video-fallback"><i data-lucide="play-circle"></i><b>로컬 서버로 열면 영상이 재생돼요</b><span>YouTube 임베드는 파일 직접 열기에서 오류 153이 날 수 있어요.</span><a href="https://youtu.be/'+videoId+'" target="_blank" rel="noopener">YouTube에서 보기</a></div>';
       lucide.createIcons();
       return;
     }
+    const params=new URLSearchParams({
+      rel:'0',
+      modestbranding:'1',
+      controls:'0',
+      disablekb:'1',
+      fs:'0',
+      iv_load_policy:'3',
+      playsinline:'1',
+      enablejsapi:'1',
+      origin:location.origin
+    });
     const iframe=document.createElement('iframe');
-    iframe.id=playerId;
+    iframe.id='cook3YoutubePlayer';
     iframe.src='https://www.youtube.com/embed/'+videoId+'?'+params.toString();
-    iframe.title=title||'YouTube video player';
+    iframe.title=mount.dataset.title||'YouTube video player';
     iframe.allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
     iframe.referrerPolicy='origin';
     iframe.allowFullscreen=true;
     mount.replaceWith(iframe);
-  }
-  // 조리 모드 영상: 컨트롤 바 완전 제거(음성·단계로 제어)
-  function initCookYoutube(){
-    const params=new URLSearchParams({rel:'0',modestbranding:'1',controls:'0',disablekb:'1',fs:'0',iv_load_policy:'3',playsinline:'1',enablejsapi:'1',origin:location.origin});
-    embedYoutube(document.querySelector('#cook3 .cook-video'),'cook3Youtube','cook3YoutubePlayer',currentRecipe.id,currentRecipe.title,params,true);
     applyCookYoutubeSound();
-  }
-  // 레시피 상세 hero 영상: 기본 컨트롤 노출·직접 재생
-  function initDetailYoutube(){
-    const params=new URLSearchParams({rel:'0',modestbranding:'1',controls:'1',iv_load_policy:'3',playsinline:'1'});
-    embedYoutube(document.querySelector('#detail .hero'),'detailYoutube','detailYoutubePlayer',currentRecipe.id,currentRecipe.title,params,false);
   }
 
   lucide.createIcons();
-  initLandingVariants();
   renderCookYoutubeSoundButton();
   syncVsVolUI(); // 초기 음소거 상태를 설정 모달 볼륨 UI에도 반영
   setActiveNav('home');
+  seedSocial();
   renderHomeSections();
-  renderDetail();     // 기본 레시피(순두부)로 상세 렌더 + 상세 영상 임베드
-  initCookYoutube();  // 조리 영상 임베드(기본 레시피)
+  hydrateHome();
+  renderDetailSocial();
+  initCookYoutube();
   {const db=document.querySelector('#detail .body');if(db)db.addEventListener('scroll',updateDetailTab);}
 
   // 플로우 보드(iframe)에서 특정 화면을 바로 표시하기 위한 해시 처리
@@ -2479,25 +2008,32 @@
   }
   function applyHash(){
     const h=location.hash.replace('#','');
-    if(!h){document.body.classList.add('marketing-open');pinLandingTopSoon();return;}
-    if(h==='landing'){showLanding();return;}
-    document.body.classList.remove('marketing-open');
-    closeVoice();closeIngredients();closeTimer();hf3Reset();
-    const [route,param]=h.split('=');           // '#detail=<레시피id>' 딥링크 지원
-    switch(route){
+    if(!h)return;
+    closeSheet();closeVoice();closeIngredients();closeTimer();hf3Reset();
+    switch(h){
       case 'home': show('home');break;
-      case 'detail': if(param)currentRecipe=recipeById(decodeURIComponent(param)); show('detail');break;
-      case 'ingredients': cook3Car.reset();show('cook3');openIngredients();break;
-      case 'timer': cook3Car.reset();show('cook3');openTimer();break;
-      case 'voice': cook3Car.reset();show('cook3');openVoice();break;
+      case 'sheet': show('home');openSheet();break;
+      case 'loading': show('loading');break;
+      case 'detail': show('detail');break;
+      case 'cook': cookCar.reset();show('cook');break;
+      case 'ingredients': cookCar.reset();show('cook');openIngredients();break;
+      case 'timer': cookCar.reset();show('cook');openTimer();break;
+      case 'voice': cookCar.reset();show('cook');openVoice();break;
       case 'cook3': cook3Car.reset();show('cook3');break;
+      case 'cook2': show('cook2');break;
       case 'complete': show('complete');break;
+      case 'reviews': show('reviews');break;
     }
   }
   window.addEventListener('hashchange',applyHash);
-  window.addEventListener('load',pinLandingTopSoon);
   applyHash();
 
 </script>
+<script>(function(){function apply(){var r=document.documentElement;
+ r.setAttribute('data-theme','tomato');   // 레드
+ r.setAttribute('data-tint','on');         // 틴트 ON(브랜드 틴트 배경)
+ ['themeBar','tintToggle','soundToggle','modeToggle','devTimer'].forEach(function(id){var e=document.getElementById(id);if(e)e.remove();});
+ document.querySelectorAll('.theme-bar,.tint-toggle,.youtube-sound-toggle,.mode-toggle,.dev-timer').forEach(function(e){e.remove();});}
+window.addEventListener('load',function(){apply();setTimeout(apply,300);});document.addEventListener('DOMContentLoaded',apply);})();</script>
 </body>
 </html>

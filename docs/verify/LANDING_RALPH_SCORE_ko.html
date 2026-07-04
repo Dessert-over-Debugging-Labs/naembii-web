@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>냄비 사용자 전달형 랜딩 Ralph 검증 리포트</title>
+  <style>
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;margin:0;background:#f5f5f7;color:#1d1d1f;line-height:1.65}
+    main{max-width:960px;margin:0 auto;padding:40px 20px 80px}
+    h1{font-size:34px;line-height:1.2;margin:0 0 10px}
+    h2{margin-top:34px;font-size:22px}
+    .pass{display:inline-flex;border-radius:999px;background:#1d1d1f;color:#fff;padding:7px 12px;font-weight:800}
+    .meta,.note{background:#fff;border:1px solid #e5e5ea;border-radius:16px;padding:18px;margin:18px 0}
+    table{width:100%;border-collapse:collapse;background:#fff;border-radius:16px;overflow:hidden;border:1px solid #e5e5ea}
+    th,td{padding:12px;border-bottom:1px solid #ececf0;text-align:left;vertical-align:top}
+    th{background:#fafafa;font-size:13px}
+    tr:last-child td{border-bottom:0}
+    code{background:#fff;border:1px solid #e5e5ea;border-radius:8px;padding:2px 6px}
+  </style>
+</head>
+<body>
+<main>
+  <h1>냄비 사용자 전달형 랜딩 Ralph 검증 리포트</h1>
+  <p><span class="pass">PASS 98 / 100</span></p>
+  <section class="meta">
+    <p><b>대상</b>: <code>app.html</code> 공개 랜딩 화면</p>
+    <p><b>로컬 확인 URL</b>: <code>http://127.0.0.1:4190/</code></p>
+    <p><b>검증 관점</b>: 내부 작업 정보가 아니라 실제 사용자에게 전달되는 화면인가.</p>
+  </section>
+
+  <h2>Ralph 루프</h2>
+  <table>
+    <thead><tr><th>라운드</th><th>판정</th><th>점수</th><th>보정</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>실패</td><td>88</td><td>작업 버전, 기준 문서, 기술 저장 방식 등 사용자가 몰라도 되는 정보가 공개 화면에 노출됨.</td></tr>
+      <tr><td>2</td><td>통과</td><td>98</td><td>공개 화면 카피를 사용자 가치 중심으로 정리하고 내부 용어 노출 0개 확인.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>점수표</h2>
+  <table>
+    <thead><tr><th>항목</th><th>배점</th><th>점수</th><th>근거</th></tr></thead>
+    <tbody>
+      <tr><td>사용자 가치 전달</td><td>20</td><td>20</td><td>출시 알림, 앱 체험, 레시피 요청으로 수렴.</td></tr>
+      <tr><td>앱 흐름 외부 노출</td><td>20</td><td>20</td><td>실제 앱 iframe과 홈/상세/조리/완료 탭 제공.</td></tr>
+      <tr><td>출시 알림 입력</td><td>15</td><td>15</td><td>히어로와 신청 섹션에 이메일 입력 제공.</td></tr>
+      <tr><td>레시피 요청 창구</td><td>15</td><td>15</td><td>요리 이름, 유튜브 링크, 이메일, 요청 이유 폼 제공.</td></tr>
+      <tr><td>냄비 아이덴티티</td><td>10</td><td>9</td><td>브랜드 로고, 냄비 카드, 따뜻한 카피 유지.</td></tr>
+      <tr><td>내부 정보 비노출</td><td>15</td><td>15</td><td>공개 <code>innerText</code> 기준 내부 용어 노출 0개.</td></tr>
+      <tr><td>반응형 안정성</td><td>5</td><td>4</td><td>모바일/데스크톱 CDP 캡처 통과.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>검증 증거</h2>
+  <div class="note">
+    <p><code>npm run check</code> 통과, <code>node --check scripts/capture-landing.mjs</code> 통과.</p>
+    <p>모바일 캡처: <code>/tmp/cook-wireframe-v3/user-facing-mobile-r2.png</code></p>
+    <p>데스크톱 캡처: <code>/tmp/cook-wireframe-v3/user-facing-desktop-r2.png</code></p>
+    <p>내부 용어 노출: <code>forbiddenVisibleTerms=[]</code></p>
+  </div>
+</main>
+</body>
+</html>
