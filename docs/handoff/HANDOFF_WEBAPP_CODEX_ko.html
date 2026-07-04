@@ -1,0 +1,79 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>웹앱 트랙 인수인계</title><style>body{font:15px/1.6 -apple-system,system-ui,sans-serif;max-width:860px;margin:0 auto;padding:32px 20px;color:#1a1a1a;background:#fff}h1{font-size:26px;border-bottom:2px solid #eee;padding-bottom:8px}h2{font-size:20px;margin-top:28px}h3{font-size:16px;color:#333}code{background:#f2f2f2;padding:1px 5px;border-radius:4px;font-size:13px}pre{background:#1e1e1e;color:#e6e6e6;padding:14px 16px;border-radius:8px;overflow:auto}pre code{background:none;color:inherit;padding:0}table{border-collapse:collapse;width:100%;margin:12px 0;font-size:14px}th,td{border:1px solid #e2e2e2;padding:7px 10px;text-align:left;vertical-align:top}th{background:#f7f7f7}blockquote{border-left:4px solid #e0a030;margin:10px 0;padding:8px 14px;color:#7a5b12;background:#fff8e6}a{color:#2563eb}li{margin:3px 0}@media(prefers-color-scheme:dark){body{background:#0f0f0f;color:#e6e6e6}th{background:#1a1a1a}code{background:#222}td,th{border-color:#333}blockquote{background:#2a2410;color:#e6c98a}}</style></head><body>
+<h1>인수인계 — cook 웹앱(app.html) 베타 트랙을 Codex로 이어가기</h1>
+<blockquote><strong>목표</strong>: 이 repo의 <code>app.html</code>(핸즈프리 요리 웹앱)을 <strong>베타 출시급</strong>으로 이어서 고도화한다.</blockquote>
+<blockquote>이 문서는 <strong>웹앱 트랙</strong> 전용이다. <strong>Figma 이식 트랙은 별개</strong> → <a href="./HANDOFF_CODEX_ko.md"><code>HANDOFF_CODEX_ko.md</code></a>(FLOW-01 블록).</blockquote>
+<blockquote>세션 트래킹: <a href="./SESSIONS.md"><code>SESSIONS.md</code></a> — 새 세션은 시작 시 자기 도구·세션ID를 그 표에 append.</blockquote>
+<h2>0. 세션 트래킹 (반드시)</h2>
+<ul>
+<li>시작하면 <code>SESSIONS.md</code> 표에 <strong>자기 줄 추가</strong>: 도구(Codex), 세션ID, 날짜, "웹앱 트랙", 한 일.</li>
+<li>Codex 세션ID = <code>codex exec</code> 롤아웃 파일명(<code>~/.codex/sessions/</code> 아래). 그 식별자를 기록.</li>
+<li>직전 인계 세션: <strong>#4 Claude Code <code>323929bf-d21d-4ad5-82f1-bf9aed546036</code> (2026-07-04)</strong> — 베타 방향 확정 + 레시피 후보 준비.</li>
+</ul>
+<h2>1. 현재 상태 (2026-07-04 실측)</h2>
+<ul>
+<li>repo: 로컬 <code>~/cook-assistance-wireframe</code> (origin/main보다 <strong>129커밋 앞선</strong> 활성 라인). 라이브 <strong>naembi.vercel.app</strong>.</li>
+<li><strong>주력 파일 <code>app.html</code></strong>(단일 HTML, 빌드툴 없음). 데이터=파일 내 <strong><code>RECIPES</code> 배열</strong>(line ~1590). 이미 다건 큐레이션됨:</li>
+</ul>
+<p>  순두부찌개(<code>CgapOjKdo9I</code>)·감바스(<code>VvM59BXz6Bw</code>)·아보카도 비빔밥(<code>eJekYxjFewM</code>) 등, <strong>실제 videoId·구간 타임코드</strong> 보유.</p>
+<p>  형식: <code>{id, name, title, channel, servings, time, difficulty, food, summary, ingredients:{main,seasoning:[{n,q}]}, steps:[{letter,title,time,start,end,subs:[]}]}</code>.</p>
+<ul>
+<li>백엔드 = <strong>Vercel 서버리스 <code>api/</code></strong>(<code>beta-signup.js</code>·<code>feedback.js</code>·<code>_lib/collect.js</code>) → 이메일/피드백을 <strong>GitHub Issue 또는 웹훅</strong>으로 수집(<code>.env</code>). <strong>AWS 아님.</strong></li>
+<li>배포 = <strong>Vercel</strong>(<code>vercel.json</code>: <code>/</code>→<code>/app.html</code>, <code>.vercelignore</code>로 app.html+api만). GitHub↔Vercel 미연동일 수 있음(수동 배포).</li>
+<li>자율 루프: 루트 <a href="../../HANDOFF_ko.md"><code>HANDOFF_ko.md</code></a> + <code>scripts/ralph/</code>(prd.json·supervise.sh·green-gate) + <code>docs/_inherited/</code>(cookflow 학습 상속).</li>
+<li>⚠️ <strong>주의 — CLAUDE.md 일부 stale</strong>: "모듈 스코프 steps 배열/상세는 순두부 고정" 서술은 옛 버전 기준. <strong>현재 코드는 <code>RECIPES</code> 배열 다건 + <code>currentRecipe</code>/<code>recipeById</code>/<code>goDetail</code></strong> 로 리팩토링됨. <strong>코드가 정답</strong>(CLAUDE.md 원칙).</li>
+<li>⚠️ <strong>미커밋 WIP 가능성</strong>: 2026-07-04 기준 <code>app.html</code>에 대규모(±1700줄) 미커밋 변경이 있었다. <strong>시작 시 <code>git status</code>/<code>git diff --stat</code>로 확인</strong>하고, 진행 중 작업이 있으면 <strong>덮지 말고 사용자와 조율</strong>한 뒤 이어가라.</li>
+</ul>
+<h2>2. 이 세션(#4)이 확정/준비한 것</h2>
+<ul>
+<li><strong>베타 방향 확정</strong>: 베타 = <strong>프론트 더미 레시피(<code>RECIPES</code>) + 기존 Vercel <code>api/</code> 수집기</strong>. <strong>AWS·DB 보류.</strong></li>
+</ul>
+<p>  AWS 트리거(하나라도 실제로 필요할 때만): 로그인/개인화 저장 · 레시피 수백 개 · 조리세션/음성로그 분석.</p>
+<ul>
+<li><strong>추가 레시피 후보 준비</strong>: <a href="../RECIPES_CANDIDATES.js"><code>docs/RECIPES_CANDIDATES.js</code></a> + <a href="../RECIPES_CANDIDATES_ko.md"><code>docs/RECIPES_CANDIDATES_ko.md</code></a>.</li>
+</ul>
+<p>  김치볶음밥·계란말이·된장찌개·제육볶음 4종. <strong>요리 내용(재료/단계/subs)은 채웠고, 영상 바인딩(id·channel·start/end)은 <code>TODO(영상)</code></strong> — 정직성 원칙상 지어내지 않음. RECIPES 형식과 일치 확인됨.</p>
+<h2>3. Codex가 이어서 할 일 (우선순위)</h2>
+<ul>
+<li><strong>A. app.html WIP 상태 파악·정리</strong> — <code>git status</code>/<code>diff</code> 확인. 진행 중 대작업이 있으면 사용자와 커밋/정리 방침 합의 후 진행(가로채지 말 것).</li>
+<li><strong>B. 추가 레시피 완성</strong> — 각 후보 요리의 <strong>임베드 가능</strong> 유튜브 영상 1개 선정 → <code>.claude/skills/recipe-from-youtube</code> 스킬로 단계 구간(start/end 초)·재료 추출 → <code>RECIPES_CANDIDATES.js</code>의 TODO 채움 → <code>app.html</code>의 <code>RECIPES</code>에 통합 → <code>renderHomeSections()</code>의 <code>popIds</code>/<code>recIds</code>에 id 등록 → 조리모드 seek 확인.</li>
+<li><strong>C. ralph-loop 다음 스토리</strong> — <code>scripts/ralph/prd.json</code>의 <code>passes:false</code> 최저 priority 1개를 green-gate 통과시켜 구현→검증→한글 커밋(HANDOFF_ko.md 방식).</li>
+<li><strong>D. 배포 준비</strong> — <code>api/</code> 수집처를 <strong>사용자 본인 것으로 전환</strong>(<code>.env</code>의 <code>COOK_BETA_GITHUB_REPO</code>/<code>COOK_BETA_GITHUB_TOKEN</code> 또는 <code>COOK_BETA_WEBHOOK_URL</code>), beta-signup·feedback 폼 e2e 확인.</li>
+</ul>
+<h2>4. 가드레일 (CLAUDE.md·HANDOFF_ko.md 준수)</h2>
+<ul>
+<li><strong>라우팅 3중 동기</strong>: 화면 추가/변경 시 <code>nav</code>·<code>show</code>·<code>applyHash</code>·사이드바 마크업 모두 갱신.</li>
+<li><strong>합성-클립 함정</strong>: <code>.screen</code>/<code>.vpanel</code>에 transform/opacity/will-change 추가 금지(44px 모서리 깨짐). 패널 등장은 visibility 토글.</li>
+<li><strong>영상 정직성</strong>: 재생 못 하는 환경에서 <strong>거짓 "재생 중" 금지</strong> — 정적 썸네일+정직 폴백. 타임코드 틀리면 seek 깨짐 → 실제 값만.</li>
+<li><strong>UI</strong>: 한국어 카피, <strong>모든 버튼 동작(dead UI 0)</strong>, 동적 주입 후 <code>lucide.createIcons()</code> 재호출, z-index 스택 준수, 본문 ≥16px·8px 그리드·48px 터치.</li>
+<li><strong>green-gate</strong>: <code>&lt;script&gt;</code> 추출 <code>node --check</code> + 헤드리스 Chrome 스크린샷 + <strong>콘솔 에러 0</strong> 통과해야 커밋. <strong>한글 Conventional Commit.</strong></li>
+<li><strong>배포 워크플로우</strong>: 수정 → <strong>사용자가 본인 GitHub에 push → Vercel 배포</strong>. <strong>Codex는 커밋까지만</strong>(푸시·배포·시크릿 설정은 사용자).</li>
+</ul>
+<h2>5. 붙여넣기용 Codex 프롬프트</h2>
+<pre><code>너는 cook 핸즈프리 요리 웹앱을 이어서 고도화한다. 작업 repo는 ~/cook-assistance-wireframe 이다.
+
+■ 시작 전 이 순서로 읽어라(이 repo의 진짜 지침, 코드가 정답):
+  1) HANDOFF_ko.md (루트) — 마스터 지침·ralph-loop 방식·가드레일·상속 자료.
+  2) docs/handoff/HANDOFF_WEBAPP_CODEX_ko.md — 이 웹앱 트랙 인수인계(현재 상태·할 일·가드레일).
+  3) CLAUDE.md — app.html 구조·라우팅(nav/show/applyHash 3중 동기)·cook3 영상·합성클립 함정.
+     단 CLAUDE.md의 "steps 배열/순두부 고정" 서술은 stale — 현재는 RECIPES 배열 다건이다(코드 확인).
+  4) docs/handoff/SESSIONS.md — 시작 시 여기 표에 네 세션(Codex, 세션ID, 날짜, 웹앱 트랙, 할 일) 한 줄 append.
+
+■ 사실
+- 주력 파일 app.html(단일 HTML). 데이터=파일 내 RECIPES 배열(순두부·감바스·아보카도 등 실제 videoId·타임코드).
+- 백엔드는 이미 Vercel 서버리스 api/(beta-signup·feedback → GitHub Issue/웹훅). AWS로 다시 만들지 마라.
+- 배포는 Vercel. 확정 방향: 베타=프론트 더미 레시피+api 수집기, AWS 보류. React/Next로 옮기거나 다른 repo에 새로 만들지 마라.
+- app.html에 미커밋 대작업이 있을 수 있으니 시작 시 git status/diff 확인, 진행 중 작업은 덮지 말고 사용자와 조율.
+
+■ 이번에 할 일: &lt;구체 요청을 적는다. 미지정 시 우선순위:
+  (A) app.html WIP 상태 파악·정리(사용자 조율) →
+  (B) docs/RECIPES_CANDIDATES.js의 후보(김치볶음밥·계란말이·된장찌개·제육볶음)를 recipe-from-youtube 스킬로
+      영상 바인딩(id·channel·start/end) 채워 RECIPES에 통합 + popIds/recIds 등록 →
+  (C) scripts/ralph/prd.json의 다음 passes:false 스토리를 green-gate 통과시켜 구현 →
+  (D) api/ 수집처를 사용자 본인 것으로 전환 안내 + beta-signup/feedback e2e 확인.&gt;
+
+■ 가드레일: 라우팅 3중 동기, 합성클립 함정(.screen/.vpanel transform 금지), 영상 정직성(거짓 재생 금지·타임코드 실제값),
+  한국어 카피·모든 버튼 동작·lucide.createIcons() 재호출. green-gate(node --check + 헤드리스 스크린샷 + 콘솔에러0) 통과 시
+  한글 Conventional Commit. 푸시·배포·시크릿 설정은 사용자가 한다(너는 커밋까지). 자율 진행.
+
+작업 후 로컬로 확인(스크린샷/URL)하고 한글로 보고. SESSIONS.md에 세션 기록을 남겨라.</code></pre>
+</body></html>
