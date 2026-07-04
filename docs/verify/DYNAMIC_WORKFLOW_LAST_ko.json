@@ -1,18 +1,18 @@
 {
-  "startedAt": "2026-07-04T15:46:31.047Z",
+  "startedAt": "2026-07-04T15:59:31.612Z",
   "summary": "PASS",
-  "visual": false,
-  "baseURL": "http://127.0.0.1:4190/",
+  "visual": true,
+  "baseURL": "http://127.0.0.1:4191/",
   "files": [
-    "docs/verify/DYNAMIC_WORKFLOW_LAST_ko.html",
-    "docs/verify/DYNAMIC_WORKFLOW_LAST_ko.json",
-    "docs/verify/DYNAMIC_WORKFLOW_LAST_ko.md"
+    "README.md",
+    "app.html"
   ],
   "workflows": [
     "core",
     "api",
     "deploy",
-    "docs"
+    "docs",
+    "visual"
   ],
   "gates": [
     {
@@ -104,6 +104,18 @@
       "status": "PASS",
       "detail": "동적 워크플로우/랜딩 검증 문서 확인",
       "fix": ""
+    },
+    {
+      "name": "visual capture: mobile",
+      "status": "PASS",
+      "detail": "/tmp/cook-wireframe-v3/dynamic-mobile.png, forbiddenVisibleTerms=[]",
+      "fix": ""
+    },
+    {
+      "name": "visual capture: desktop",
+      "status": "PASS",
+      "detail": "/tmp/cook-wireframe-v3/dynamic-desktop.png, forbiddenVisibleTerms=[]",
+      "fix": ""
     }
   ],
   "scorecard": {
@@ -145,8 +157,16 @@
         "weight": 15,
         "points": 15,
         "percent": 100,
-        "evidence": "정적 0건, 시각 검증 미실행",
+        "evidence": "정적 0건, 시각 0건",
         "fix": "사용자 화면에서 내부 문서명, 버전 태그, 저장소/배포 구현명을 제거한다."
+      },
+      {
+        "name": "반응형·시각 증거",
+        "weight": 10,
+        "points": 10,
+        "percent": 100,
+        "evidence": "5/5 신호 충족",
+        "fix": "모바일/데스크톱 캡처에서 CTA, 앱 미리보기, 카피 신호가 모두 보여야 한다."
       },
       {
         "name": "배포 준비도",
@@ -165,12 +185,61 @@
         "fix": "다음 세션에서도 같은 검증자 역할, 점수표, 마지막 리포트를 재사용할 수 있어야 한다."
       }
     ],
-    "total": 90,
-    "max": 90,
+    "total": 100,
+    "max": 100,
     "percent": 100,
-    "threshold": 90,
+    "threshold": 95,
     "status": "PASS",
-    "visualIncluded": false
+    "visualIncluded": true
   },
-  "visualArtifacts": []
+  "visualArtifacts": [
+    {
+      "mode": "mobile",
+      "out": "/tmp/cook-wireframe-v3/dynamic-mobile.png",
+      "status": "PASS",
+      "payload": {
+        "out": "/tmp/cook-wireframe-v3/dynamic-mobile.png",
+        "mode": "mobile",
+        "width": 390,
+        "scrollY": 0,
+        "mobileMedia": true,
+        "marketing": true,
+        "mobileHero": "block",
+        "mobileHeroTop": 0,
+        "demoTop": 582,
+        "headline": "요리 영상 보면서\n손 안 대고 따라하기",
+        "hasCookingPromise": true,
+        "hasBetaCTA": true,
+        "hasMascotCopy": false,
+        "hasRecipeRequest": true,
+        "hasLaunchInput": true,
+        "hasAppPreview": true,
+        "forbiddenVisibleTerms": []
+      }
+    },
+    {
+      "mode": "desktop",
+      "out": "/tmp/cook-wireframe-v3/dynamic-desktop.png",
+      "status": "PASS",
+      "payload": {
+        "out": "/tmp/cook-wireframe-v3/dynamic-desktop.png",
+        "mode": "desktop",
+        "width": 1440,
+        "scrollY": 0,
+        "mobileMedia": false,
+        "marketing": true,
+        "mobileHero": "none",
+        "mobileHeroTop": 0,
+        "demoTop": 102,
+        "headline": "요리 영상 보면서손 안 대고 따라하기",
+        "hasCookingPromise": true,
+        "hasBetaCTA": true,
+        "hasMascotCopy": true,
+        "hasRecipeRequest": true,
+        "hasLaunchInput": true,
+        "hasAppPreview": true,
+        "forbiddenVisibleTerms": []
+      }
+    }
+  ]
 }

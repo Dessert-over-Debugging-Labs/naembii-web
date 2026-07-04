@@ -33,16 +33,23 @@ npm run verify:dynamic
 npm run verify:visual
 ```
 
-## Vercel 배포
+## Vercel 앱 등록 방법
 
-Vercel에서 이 GitHub repo를 새 프로젝트로 연결합니다.
+1. Vercel 대시보드에서 `Add New...` → `Project`를 선택합니다.
+2. GitHub import 목록에서 `Dessert-over-Debugging-Labs/naembi-web`을 선택합니다.
+3. 프로젝트 이름은 `naembi` 또는 `naembi-web`으로 둡니다.
+4. 아래 설정을 확인합니다.
 
 - Framework Preset: Other 또는 자동 감지
 - Root Directory: repo root
 - Build Command: 비워둠
 - Output Directory: 비워둠
 
-`vercel.json`에서 `/` 요청은 `/app.html`로 rewrite됩니다.
+5. `Environment Variables`에 베타 신청/피드백 저장용 값을 추가합니다.
+6. `Deploy`를 누릅니다.
+7. 배포 후 `/`가 랜딩으로 열리고, `/api/beta-signup`, `/api/feedback`이 동작하는지 확인합니다.
+
+`vercel.json`에서 `/` 요청은 `/app.html`로 rewrite됩니다. 이 repo는 정적 HTML + Vercel 서버리스 API 구성이므로 별도 빌드 명령이 필요 없습니다.
 
 ## 환경변수
 

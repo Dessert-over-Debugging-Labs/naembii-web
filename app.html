@@ -517,6 +517,7 @@
   /* 대화 패널 열림: 둥근 상단 모서리 뒤가 흰색(surface)으로 비쳐 위 틴트 배경과 틈이 생기던 문제 →
      컨트롤바 배경을 카드영역과 같은 틴트(--dark)로 맞추고 상단 경계선도 감춰 이음새 제거 */
   #cook3 .cook-ctrl:has(.vpanel.open){background:var(--dark);border-top-color:transparent;}
+  #cook3 .cook-ctrl:has(.vpanel.open){height:clamp(176px,24dvh,204px);}
   #cook3 .cook-ctrl:has(.vpanel.open) .ctrl-buttons{visibility:hidden;}
   .vpanel{position:absolute;top:0;bottom:0;left:-1px;right:-1px;z-index:3;box-sizing:border-box;padding:16px 19px 22px;
     display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;
@@ -569,6 +570,7 @@
   .vp-collapse{position:absolute;top:0px;left:50%;transform:translateX(-50%);z-index:2;width:34px;height:24px;border:none;background:none;color:rgba(255,255,255,.82);display:flex;align-items:center;justify-content:center;cursor:pointer;}
   .vp-collapse svg{width:22px;height:22px;}
   .vp-collapse:active{transform:translateX(-50%) translateY(1px);}
+  .vp-beta-note{position:relative;z-index:1;align-self:flex-start;display:inline-flex;align-items:center;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.13);color:#fff;border-radius:999px;padding:5px 9px;margin-bottom:10px;font-size:12px;font-weight:900;letter-spacing:0;backdrop-filter:blur(8px);}
   .vp-user{position:relative;z-index:1;flex:none;width:100%;font-size:16px;font-weight:800;color:#fff;margin-bottom:9px;min-height:21px;line-height:1.28;letter-spacing:0;text-shadow:0 1px 4px rgba(0,0,0,.3);}
   .vp-ai{position:relative;z-index:1;flex:none;width:100%;font-size:19px;font-weight:700;color:#fff;line-height:1.42;min-height:54px;letter-spacing:0;text-shadow:0 1px 6px rgba(0,0,0,.4);}
   .vp-thinking-wave{display:inline-flex;align-items:center;gap:5px;height:24px;padding-top:8px;}
@@ -852,8 +854,8 @@
   .demo-tab{height:44px;border:1px solid #E5E6EA;background:#fff;color:#3A3D42;border-radius:14px;font:inherit;font-size:13px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;}
   .demo-tab.active{background:#1E2024;color:#fff;border-color:#1E2024;}
   .demo-tab svg{width:15px;height:15px;}
-  .pot-card{position:absolute;left:-18px;bottom:68px;width:172px;background:#fff;border:1px solid #EAE3DE;border-radius:24px;padding:18px 16px 16px;box-shadow:0 18px 44px rgba(31,38,46,.14);}
-  .pot-mascot{position:relative;width:82px;height:68px;margin:0 auto 12px;}
+  .pot-card{width:min(100%,360px);margin:16px auto 0;background:#fff;border:1px solid #EAE3DE;border-radius:20px;padding:14px 16px;box-shadow:0 12px 30px rgba(31,38,46,.1);display:grid;grid-template-columns:70px minmax(0,1fr);gap:12px;align-items:center;}
+  .pot-mascot{position:relative;width:70px;height:58px;margin:0;}
   .pot-mascot::before{content:"";position:absolute;left:8px;right:8px;bottom:0;height:44px;background:linear-gradient(180deg,#FFFCF7,#F7D3C6);border:3px solid #33251F;border-radius:18px 18px 24px 24px;}
   .pot-mascot::after{content:"";position:absolute;left:25px;right:25px;bottom:18px;height:8px;border-radius:999px;background:#33251F;box-shadow:-16px -1px 0 -2px #33251F,16px -1px 0 -2px #33251F;}
   .pot-lid{position:absolute;left:16px;right:16px;top:12px;height:18px;background:var(--brand);border:3px solid #33251F;border-radius:18px 18px 10px 10px;}
@@ -862,8 +864,8 @@
   .pot-steam.s1{left:18px;transform:rotate(12deg);}
   .pot-steam.s2{left:38px;top:-4px;}
   .pot-steam.s3{right:18px;transform:rotate(-12deg);}
-  .pot-card b{display:block;font-size:15px;line-height:1.35;text-align:center;}
-  .pot-card span{display:block;margin-top:6px;font-size:12px;line-height:1.45;color:#777070;font-weight:750;text-align:center;}
+  .pot-card b{display:block;font-size:15px;line-height:1.35;text-align:left;}
+  .pot-card span{display:block;margin-top:4px;font-size:12px;line-height:1.45;color:#777070;font-weight:750;text-align:left;}
   .landing-section{margin-top:56px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:start;}
   .beta-panel,.feedback-panel,.ops-panel,.recipe-panel{background:#fff;border:1px solid #E4E6EA;border-radius:24px;padding:24px;box-shadow:0 14px 40px rgba(31,38,46,.06);}
   .beta-panel h2,.feedback-panel h2,.ops-panel h2,.recipe-panel h2{font-size:26px;line-height:1.25;margin-bottom:10px;}
@@ -898,6 +900,7 @@
   .landing[data-variant="recipe"] .recipe-panel{border-color:#BFE8D1;box-shadow:0 18px 44px rgba(31,134,92,.08);}
   .app-feedback-btn{display:none;position:fixed;right:18px;bottom:18px;z-index:900;border:0;border-radius:999px;background:#1E2024;color:#fff;font:inherit;font-size:14px;font-weight:900;padding:13px 16px;box-shadow:0 14px 36px rgba(0,0,0,.28);cursor:pointer;align-items:center;gap:7px;}
   body:not(.marketing-open) .app-feedback-btn{display:flex;}
+  body:has(#cook3.active) .app-feedback-btn{display:none;}
   .feedback-modal{position:fixed;inset:0;z-index:950;display:none;align-items:flex-end;justify-content:center;background:rgba(15,17,20,.48);padding:18px;}
   .feedback-modal.show{display:flex;}
   .feedback-card{width:min(100%,520px);background:#fff;border-radius:24px;padding:22px;box-shadow:0 24px 80px rgba(0,0,0,.26);}
@@ -959,21 +962,21 @@
   <div class="mobile-landing-hero">
     <div class="landing-brand"><i data-lucide="cooking-pot"></i>냄비</div>
     <div class="mobile-trust-row" aria-label="냄비 베타 안내">
-      <span class="trust-pill dark">출시 알림 모집 중</span>
+      <span class="trust-pill dark">베타테스트 모집 중</span>
       <span class="trust-pill warm">앱 화면 바로보기</span>
     </div>
     <h1 data-variant-copy="headlineMobile">요리 영상 보면서<br><span>손 안 대고</span> 따라하기</h1>
-    <p data-variant-copy="leadMobile">앱 출시 알림을 받고, 냄비에 먼저 들어갔으면 하는 레시피를 남겨주세요.</p>
+    <p data-variant-copy="leadMobile">베타테스트 참여 알림을 받고, 냄비에 먼저 들어갔으면 하는 레시피를 남겨주세요.</p>
     <div class="promise-card">
       <i data-lucide="sparkles"></i>
       <div><b data-variant-copy="promiseTitle">출시 전에 먼저 초대할게요</b><span data-variant-copy="promiseText">이메일을 남기면 베타 초대와 준비 중인 레시피 소식을 받을 수 있어요.</span></div>
     </div>
     <form class="hero-signup" id="mobileBetaForm" onsubmit="submitBeta(event)">
-      <input name="email" type="email" autocomplete="email" placeholder="출시 알림 받을 이메일" required>
+      <input name="email" type="email" autocomplete="email" placeholder="베타 초대 받을 이메일" required>
       <input name="name" type="hidden" value="">
       <input name="profile" type="hidden" value="mobile-launch-notify">
-      <input name="note" type="hidden" value="모바일 상단 출시 알림 신청">
-      <button type="submit"><i data-lucide="bell-ring"></i>출시 알림 받기</button>
+      <input name="note" type="hidden" value="모바일 상단 베타 알림 신청">
+      <button type="submit"><i data-lucide="bell-ring"></i>베타 알림 받기</button>
       <p class="form-status" data-status></p>
     </form>
   </div>
@@ -987,7 +990,7 @@
     <nav class="landing-nav" aria-label="냄비 베타 안내">
       <div class="landing-brand"><i data-lucide="cooking-pot"></i>냄비</div>
       <div class="trust-stack" aria-label="냄비 서비스 안내">
-        <span class="trust-pill dark">출시 알림 모집 중</span>
+        <span class="trust-pill dark">베타테스트 모집 중</span>
         <span class="trust-pill warm">앱 화면 바로보기</span>
       </div>
       <div class="landing-actions">
@@ -1006,11 +1009,11 @@
           <div><b data-variant-copy="promiseTitle">출시 전에 먼저 초대할게요</b><span data-variant-copy="promiseText">이메일을 남기면 베타 초대와 준비 중인 레시피 소식을 받을 수 있어요.</span></div>
         </div>
         <form class="hero-signup" id="betaQuickForm" onsubmit="submitBeta(event)">
-          <input name="email" type="email" autocomplete="email" placeholder="출시 알림 받을 이메일" required>
+          <input name="email" type="email" autocomplete="email" placeholder="베타 초대 받을 이메일" required>
           <input name="name" type="hidden" value="">
           <input name="profile" type="hidden" value="launch-notify">
-          <input name="note" type="hidden" value="히어로 출시 알림 신청">
-          <button type="submit"><i data-lucide="bell-ring"></i>출시 알림 받기</button>
+          <input name="note" type="hidden" value="히어로 베타 알림 신청">
+          <button type="submit"><i data-lucide="bell-ring"></i>베타 알림 받기</button>
           <p class="form-status" data-status></p>
         </form>
         <div class="landing-cta">
@@ -1197,15 +1200,16 @@
       <div class="cook-ctrl" id="cook3Ctrl">
         <div class="ctrl-buttons">
           <button class="cbtn" onclick="openTimer()"><div class="cic o js-timer-btn"><i data-lucide="timer"></i></div><small class="js-timer-label">타이머</small></button>
-          <button class="cbtn ai-assistant-btn" id="hf3" onclick="toggleHf3()"><div class="cic ai-assistant"><i data-lucide="bot"></i></div><small>AI 비서</small></button>
+          <button class="cbtn ai-assistant-btn" id="hf3" onclick="toggleHf3()"><div class="cic ai-assistant"><i data-lucide="bot"></i></div><small>음성 예시</small></button>
           <button class="cbtn" onclick="openIngredients()"><div class="cic d"><i data-lucide="carrot"></i></div><small>재료 보기</small></button>
         </div>
         <div class="vpanel" id="vpanel">
           <div class="vp-aurora"></div>
           <button class="vp-mic" onclick="toggleVpMic()"><i data-lucide="mic"></i></button>
           <button class="vp-close" onclick="toggleHf3()"><i data-lucide="x"></i></button>
+          <div class="vp-beta-note">베타테스트용 음성 예시</div>
           <div class="wave vp-wave"><span></span><span></span><span></span><span></span><span></span></div>
-          <div class="vp-user" id="vpUser">듣고 있어요</div>
+          <div class="vp-user" id="vpUser">베타 음성 예시</div>
           <div class="vp-ai" id="vpAi"></div>
         </div>
       </div>
@@ -1311,9 +1315,9 @@
 
     <!-- 전역 핸즈프리 명령 가이드 모달 (어느 화면에서든 표시) -->
     <div class="vmodal" id="voiceModal">
-      <div class="vtop"><h2>AI 비서에게<br>편하게 요청해보세요</h2></div>
+      <div class="vtop"><h2>베타 음성 비서<br>예시를 확인해보세요</h2></div>
       <div class="vcard">
-        <div class="vh"><b>AI 비서 명령 가이드</b><span class="x" onclick="closeVoice()"><i data-lucide="x"></i></span></div>
+        <div class="vh"><b>음성 예시 가이드</b><span class="x" onclick="closeVoice()"><i data-lucide="x"></i></span></div>
         <div class="vcats">
           <div class="vcat">
             <div class="vcat-h"><div class="vci"><i data-lucide="list-ordered"></i></div>단계 진행</div>
@@ -1410,7 +1414,7 @@
       headline:'요리 영상 보면서<br><span>손 안 대고</span> 따라하기',
       headlineMobile:'요리 영상 보면서<br><span>손 안 대고</span> 따라하기',
       lead:'냄비는 유튜브 요리 영상을 단계별 조리 모드로 바꿔주는 베타 앱입니다. 앱이 출시될 때 알림 받을 사람과, 추가되길 원하는 레시피를 먼저 모으는 중입니다.',
-      leadMobile:'앱 출시 알림을 받고, 냄비에 먼저 들어갔으면 하는 레시피를 남겨주세요.',
+      leadMobile:'베타테스트 참여 알림을 받고, 냄비에 먼저 들어갔으면 하는 레시피를 남겨주세요.',
       promiseTitle:'출시 전에 먼저 초대할게요',
       promiseText:'이메일을 남기면 베타 초대와 준비 중인 레시피 소식을 받을 수 있어요.',
       primaryCta:'베타테스트 신청',
@@ -1829,6 +1833,64 @@
       ]
     }
   ];
+  const VOICE_EXAMPLES={
+    CgapOjKdo9I:[
+      {u:'고추참치 없으면 어떻게 해?',a:'일반 참치에 고춧가루 반 숟갈과 간장 조금을 더하면 비슷하게 갈 수 있어요. 기름은 버리지 말고 같이 볶아주세요.'},
+      {u:'파기름은 어느 정도 내야 해?',a:'대파 가장자리가 살짝 노릇해지고 향이 올라오면 충분해요. 타기 시작하면 국물이 씁쓸해질 수 있어요.'},
+      {u:'다음 단계로 넘어가줘',a:'네, 고추참치를 볶는 단계로 넘어갈게요.',next:true},
+      {u:'타이머 2분 맞춰줘',a:'2분 타이머를 시작했어요. 이 사이에 양파와 애호박을 바로 넣을 준비를 해두면 좋아요.',timer:120}
+    ],
+    VvM59BXz6Bw:[
+      {u:'페페론치노 없으면 뭐 넣어?',a:'크러쉬드 레드페퍼나 청양고추를 아주 조금 넣어도 돼요. 매운맛이 강하니 처음엔 적게 넣어주세요.'},
+      {u:'마늘이 타는 것 같아',a:'불을 바로 약하게 낮추고 팬을 살짝 들어 열을 빼주세요. 감바스는 마늘을 밤색 전까지만 익히는 게 좋아요.'},
+      {u:'다음 단계로 넘어가줘',a:'네, 새우와 버섯을 넣는 단계로 넘어갈게요.',next:true},
+      {u:'타이머 2분 맞춰줘',a:'2분 타이머를 시작했어요. 새우가 완전히 오그라들기 전, 살짝 덜 익었을 때 마무리하면 촉촉해요.',timer:120}
+    ],
+    eJekYxjFewM:[
+      {u:'어린잎 채소가 없으면?',a:'상추, 양상추, 깻잎처럼 생으로 먹는 채소면 괜찮아요. 없으면 김과 계란만으로도 충분해요.'},
+      {u:'양파 매운맛 줄이는 법 알려줘',a:'얇게 썬 양파를 찬물에 5분 담갔다가 물기를 빼면 매운맛이 줄어요. 너무 오래 담그면 향이 약해져요.'},
+      {u:'다음 단계로 넘어가줘',a:'네, 계란을 반숙으로 익히는 단계로 넘어갈게요.',next:true},
+      {u:'타이머 2분 맞춰줘',a:'2분 타이머를 시작했어요. 노른자를 비벼 먹을 거라면 완숙 전에 꺼내는 게 좋아요.',timer:120}
+    ],
+    V9KP9Qvb3lI:[
+      {u:'관찰레 없으면 베이컨 써도 돼?',a:'가능해요. 베이컨이나 판체타를 쓰면 짠맛이 다르니 면수와 치즈 양을 조금 줄여서 맞춰주세요.'},
+      {u:'계란이 익을까 봐 걱정돼',a:'팬 불을 끄고 한 김 식힌 뒤 소스를 섞어주세요. 너무 뜨거우면 스크램블처럼 굳을 수 있어요.'},
+      {u:'다음 단계로 넘어가줘',a:'네, 관찰레 기름을 소스에 섞는 단계로 넘어갈게요.',next:true},
+      {u:'타이머 8분 맞춰줘',a:'8분 타이머를 시작했어요. 면은 제품 표기보다 1분 덜 삶고 면수는 꼭 남겨두세요.',timer:480}
+    ],
+    sIBG0KjOcBs:[
+      {u:'마스카포네 없으면 대체 가능해?',a:'완전히 같진 않지만 크림치즈에 생크림을 조금 섞으면 비슷한 질감으로 갈 수 있어요. 단맛은 조금 줄여주세요.'},
+      {u:'크림이 묽어졌어',a:'너무 세게 섞었을 수 있어요. 남은 생크림이나 머랭은 두 번에 나눠 살살 접듯이 섞어주세요.'},
+      {u:'다음 단계로 넘어가줘',a:'네, 핑거쿠키를 커피액에 적시는 단계로 넘어갈게요.',next:true},
+      {u:'냉장 타이머 30분 맞춰줘',a:'30분 타이머를 시작했어요. 더 단단하게 먹고 싶으면 2시간 이상 차갑게 두면 좋아요.',timer:1800}
+    ],
+    vHU4_QbslRA:[
+      {u:'마늘쫑 없으면 뭘 넣어?',a:'쪽파나 대파의 초록 부분을 잘게 써도 돼요. 없으면 생략하고 마늘 향을 조금 더 살려도 괜찮아요.'},
+      {u:'명란이 너무 짤까 봐 걱정돼',a:'명란은 먼저 조금만 넣고 맛을 본 뒤 추가하세요. 면수도 짠 편이면 소금 간은 생략하는 게 좋아요.'},
+      {u:'다음 단계로 넘어가줘',a:'네, 명란과 삶은 면을 가볍게 볶는 단계로 넘어갈게요.',next:true},
+      {u:'타이머 8분 맞춰줘',a:'8분 타이머를 시작했어요. 면수 한 컵은 버리지 말고 남겨두세요.',timer:480}
+    ],
+    l7nGCJeAqjw:[
+      {u:'우유 대신 뭘 써도 돼?',a:'무가당 두유나 생크림을 조금 섞어도 돼요. 생크림을 쓰면 더 진해지니 물을 조금 보태주세요.'},
+      {u:'소스가 바닥에 눌러붙어',a:'중약불로 낮추고 바닥을 긁듯이 자주 저어주세요. 떡이 말랑해지기 전까지는 특히 잘 눌어붙어요.'},
+      {u:'다음 단계로 넘어가줘',a:'네, 떡과 어묵을 넣고 끓이는 단계로 넘어갈게요.',next:true},
+      {u:'타이머 7분 맞춰줘',a:'7분 타이머를 시작했어요. 중간에 한두 번 저어주면 소스가 고르게 배어요.',timer:420}
+    ],
+    vlPqkuHIdCc:[
+      {u:'모짜렐라 없으면 어떻게 해?',a:'체다치즈나 슬라이스 치즈도 가능해요. 대신 짠맛이 강하니 설탕이나 마요네즈는 조금 줄여도 좋아요.'},
+      {u:'콘치즈가 너무 되직해',a:'면수나 뜨거운 물을 한 숟갈씩 넣어 풀어주세요. 한 번에 많이 넣으면 고소한 맛이 옅어져요.'},
+      {u:'다음 단계로 넘어가줘',a:'네, 면을 삶고 콘치즈를 올리는 단계로 넘어갈게요.',next:true},
+      {u:'타이머 1분 맞춰줘',a:'1분 타이머를 시작했어요. 약불에서 뚜껑을 덮고 치즈만 녹이면 돼요.',timer:60}
+    ]
+  };
+  function voiceScriptFor(recipe){
+    return VOICE_EXAMPLES[recipe.id]||[
+      {u:'이 재료 대체할 수 있어?',a:recipe.name+'은 핵심 재료만 유지하면 일부 재료는 비슷한 식감이나 간의 재료로 바꿀 수 있어요. 먼저 적은 양으로 맛을 보며 조절해보세요.'},
+      {u:'조리 팁 알려줘',a:'불 조절과 간 확인을 단계마다 나눠서 하면 실패가 줄어요. 지금 단계 설명을 보면서 한 번에 많이 넣지 않는 게 좋아요.'},
+      {u:'다음 단계로 넘어가줘',a:'네, 다음 단계로 넘어갈게요.',next:true},
+      {u:'타이머 2분 맞춰줘',a:'2분 타이머를 시작했어요. 다음 재료를 미리 꺼내두면 흐름이 끊기지 않아요.',timer:120}
+    ];
+  }
   let currentRecipe=RECIPES[0];
   function recipeById(id){return RECIPES.find(r=>r.id===id)||RECIPES[0];}
   function stageLoop(i){const s=currentRecipe.steps[i];return s?{start:s.start||0,end:s.end||0}:null;}
@@ -2292,12 +2354,6 @@
     }
     toast(vpMicMuted?'마이크 음소거':'마이크 켜짐',vpMicMuted?'mic-off':'mic');
   }
-  const vpScript=[
-    {u:'양파 얼마나 익혀야 해?', a:'투명해질 때까지 중불에서 2분 정도면 충분해요.'},
-    {u:'다음 단계로 넘어가줘', a:'네, 다음 단계로 넘어갈게요. 이어서 진행해주세요.', next:true},
-    {u:'간장 없는데 대체할 거 있어?', a:'멸치액젓이나 소금으로 대신해도 돼요. 액젓은 비슷한 양, 소금은 조금씩 넣어보세요.'},
-    {u:'타이머 3분 맞춰줘', a:'3분 타이머를 시작했어요. 그동안 대파를 썰어두면 좋아요.', timer:180},
-  ];
   function vpClear(){vpTimers.forEach(t=>clearTimeout(t));vpTimers=[];}
   function vpType(el,text,speed,done){
     el.textContent='';let i=0;
@@ -2313,7 +2369,8 @@
   }
   function runVp(){
     if(!hf3On)return;
-    const ex=vpScript[vpi%vpScript.length];
+    const script=voiceScriptFor(currentRecipe);
+    const ex=script[vpi%script.length];
     const panel=document.getElementById('vpanel'), u=document.getElementById('vpUser'), a=document.getElementById('vpAi');
     panel.classList.remove('idle','thinking','answering');panel.classList.add('listening');
     a.textContent='';
@@ -2330,7 +2387,7 @@
           if(ex.timer)startVpTimer(ex.timer);        // 타이머 설정 발화면 타이머 패널 시작
           if(ex.next)cook3Car.advance();             // "다음 단계" 발화면 실제 카드 전진
           vpi++;                                    // ④ 답변 유지 후 다음 발화로 (음소거면 이 응답까지만 출력하고 멈춤)
-          vpTimers.push(setTimeout(()=>{ if(hf3On&&!vpMicMuted){u.textContent='듣고 있어요…';runVp();} },1000)); // 발화 사이 텀 ~1초
+          vpTimers.push(setTimeout(()=>{ if(hf3On&&!vpMicMuted){u.textContent='다음 예시를 보여줄게요…';runVp();} },1000)); // 발화 사이 텀 ~1초
         });
       },900));
     });
@@ -2344,10 +2401,10 @@
     vpClear();
     hideCookHint();
     if(hf3On){
-      // 버튼 누르면 즉시 대화 패널 표시 (대기=듣고있어요 가운데 크게)
+      // 버튼 누르면 즉시 베타 음성 예시 패널 표시
       vpMicMuted=false;panel.classList.remove('mic-muted');
       {const mb=panel.querySelector('.vp-mic');if(mb){mb.innerHTML='<i data-lucide="mic"></i>';lucide.createIcons();}}
-      document.getElementById('vpUser').textContent='듣고 있어요';
+      document.getElementById('vpUser').textContent='베타 음성 예시';
       document.getElementById('vpAi').textContent='';
       panel.classList.remove('thinking','answering','listening');panel.classList.add('open','idle');
       vpi=0;
