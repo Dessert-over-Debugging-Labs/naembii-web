@@ -1,6 +1,6 @@
 # 동적 검증 워크플로우 실행 리포트
 
-- 일시: 2026-07-05T17:00:48.940Z
+- 일시: 2026-07-05T23:07:06.004Z
 - 판정: **PASS**
 - 점수: **130 / 130 (100%)**
 - 통과 기준: **96% 초과**
@@ -14,35 +14,33 @@
 ## 변경 파일
 
 - `.DS_Store`
+- `app.html`
+- `assets/screens/app-cook.png`
+- `assets/screens/app-detail.png`
+- `assets/screens/naembi-core-flow.gif`
+- `design.html`
 - `docs/verify/DYNAMIC_WORKFLOW_LAST_ko.html`
 - `docs/verify/DYNAMIC_WORKFLOW_LAST_ko.json`
 - `docs/verify/DYNAMIC_WORKFLOW_LAST_ko.md`
-- `docs/verify/DYNAMIC_WORKFLOW_ko.md`
-- `docs/verify/LANDING_RALPH_SCORE_ko.html`
-- `docs/verify/LANDING_RALPH_SCORE_ko.md`
-- `package.json`
-- `scripts/.DS_Store`
-- `scripts/verify-dynamic.mjs`
-- `android-wrapper/.DS_Store`
-- `docs/.DS_Store`
-- `docs/verify/NAEMBI_BETA_SCORECARD_ko.md`
 - `docs/verify/NAEMBI_RALPH_LOOP_LAST_ko.json`
 - `docs/verify/NAEMBI_RALPH_LOOP_LAST_ko.md`
 - `docs/verify/NAEMBI_RALPH_LOOP_ROUND_LAST_ko.html`
 - `docs/verify/NAEMBI_RALPH_LOOP_ROUND_LAST_ko.json`
 - `docs/verify/NAEMBI_RALPH_LOOP_ROUND_LAST_ko.md`
-- `docs/verify/NAEMBI_RALPH_LOOP_ko.md`
-- `docs/verify/NAEMBI_VALIDATION_POINTS_ko.md`
 - `docs/verify/VALIDATION_AGENT_PACKET_ko.md`
-- `scripts/run-naembi-ralph-loop.mjs`
+- `index.html`
+- `scripts/.DS_Store`
+- `scripts/verify-dynamic.mjs`
+- `android-wrapper/.DS_Store`
+- `docs/.DS_Store`
 
 ## 선택된 워크플로우
 
 | workflow | 선택 이유 |
 | --- | --- |
 | core | 항상 실행 |
-| api | full 실행 |
-| deploy | 배포 설정 변경 감지 |
+| api | api/app/landing 변경 감지 |
+| deploy | full 실행 |
 | docs | 검증 문서 변경 감지 |
 | visual | --visual 요청 |
 

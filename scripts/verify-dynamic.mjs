@@ -517,7 +517,7 @@ function buildScorecard(gates, workflows) {
     !appHtml.includes('<span>영상 보내기</span>') && appHtml.includes('app-feedback-btn'),
     appHtml.includes('id="communityStrip"') && appHtml.includes('RECIPE_REACTIONS'),
     appHtml.includes('shareCompletedRecipe') && appHtml.includes('from=completed-share'),
-    existsSync(resolve(root, 'assets/screens/naembi-core-flow.gif')) && appHtml.includes('음성 예시')
+    existsSync(resolve(root, 'assets/screens/naembi-core-flow.gif')) && appHtml.includes('물어보기') && appHtml.includes('요리비서')
   ];
   items.push(scoreItem(
     '후킹·상호작용 루프',

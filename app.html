@@ -1060,7 +1060,7 @@
   <div class="mobile-landing-hero">
     <div class="landing-brand"><i data-lucide="cooking-pot"></i>냄비</div>
     <div class="mobile-trust-row" aria-label="냄비 베타 안내">
-      <span class="trust-pill dark">베타테스트 모집 중</span>
+      <span class="trust-pill dark">먼저 써볼 분 모집 중</span>
       <button class="trust-pill warm" type="button" onclick="openApp('home')">지금 써보기</button>
     </div>
     <h1 data-variant-copy="headlineMobile">SNS 요리 영상,<br><span>따라 하다 막혔죠?</span></h1>
@@ -1089,16 +1089,16 @@
     </div>
   </div>
   <div class="landing-wrap">
-    <div class="variant-switcher" id="variantSwitcher" hidden aria-label="랜딩 후보 선택">
-      <b>랜딩 후보</b>
-      <button type="button" data-variant-option="demo">A 앱 미리보기형</button>
-      <button type="button" data-variant-option="beta">B 베타 모집형</button>
-      <button type="button" data-variant-option="recipe">C 레시피 모집형</button>
+    <div class="variant-switcher" id="variantSwitcher" hidden aria-label="화면 방향 선택">
+      <b>화면 방향</b>
+      <button type="button" data-variant-option="demo">A 앱 미리보기</button>
+      <button type="button" data-variant-option="beta">B 먼저 써보기</button>
+      <button type="button" data-variant-option="recipe">C 레시피 요청</button>
     </div>
     <nav class="landing-nav" aria-label="냄비 베타 안내">
       <div class="landing-brand"><i data-lucide="cooking-pot"></i>냄비</div>
       <div class="trust-stack" aria-label="냄비 서비스 안내">
-        <span class="trust-pill dark">베타테스트 모집 중</span>
+        <span class="trust-pill dark">먼저 써볼 분 모집 중</span>
         <button class="trust-pill warm" type="button" onclick="openApp('home')">지금 써보기</button>
       </div>
       <div class="landing-actions">
@@ -1125,7 +1125,7 @@
           <p class="form-status" data-status></p>
         </form>
         <div class="landing-cta">
-          <button class="primary" type="button" onclick="scrollToBeta()"><i data-lucide="send"></i><span data-variant-copy="primaryCta">베타테스트 신청</span></button>
+          <button class="primary" type="button" onclick="scrollToBeta()"><i data-lucide="send"></i><span data-variant-copy="primaryCta">먼저 써보기 신청</span></button>
           <button class="secondary" type="button" onclick="openApp('home')"><i data-lucide="smartphone"></i><span data-variant-copy="secondaryCta">지금 써보기</span></button>
         </div>
         <div class="landing-points">
@@ -1173,7 +1173,7 @@
       <div class="assistant-demo" aria-label="요리비서 답변 예시">
         <div class="assistant-head">
           <i data-lucide="bot"></i>
-          <div><b>요리비서는 이렇게 답하게 만들 거예요</b><span>레시피와 현재 단계에 맞춘 짧은 조리 답변</span></div>
+          <div><b>요리비서는 이렇게 도와줘요</b><span>레시피와 현재 단계에 맞춘 짧은 조리 답변</span></div>
         </div>
         <div class="assistant-thread">
           <div class="assistant-bubble user">양념이 타는 것 같아</div>
@@ -1190,15 +1190,15 @@
       <div class="launch-roadmap">
         <div class="launch-item"><i data-lucide="carrot"></i><b>냉장고 재료 대체</b><span>집에 있는 재료로 바꿔도 되는지, 맛이 어떻게 달라지는지 알려주는 방향입니다.</span></div>
         <div class="launch-item"><i data-lucide="shopping-basket"></i><b>장보기 목록</b><span>보고 싶은 레시피를 고르면 부족한 재료만 모아 장보기 목록으로 정리합니다.</span></div>
-        <div class="launch-item"><i data-lucide="sparkles"></i><b>취향 맞춤 추천</b><span>맵기, 조리 시간, 난이도, 자주 쓰는 재료를 기준으로 한 끼 후보를 제안합니다.</span></div>
+        <div class="launch-item"><i data-lucide="sparkles"></i><b>취향 맞춤 추천</b><span>맵기, 조리 시간, 난이도, 자주 쓰는 재료를 기준으로 한 끼 메뉴를 제안합니다.</span></div>
         <div class="launch-item"><i data-lucide="notebook-tabs"></i><b>나만의 조리 기록</b><span>다음에 다시 만들 때 참고할 간 조절, 대체 재료, 성공한 팁을 남깁니다.</span></div>
       </div>
     </section>
 
     <section class="landing-section" id="beta">
       <div class="beta-panel">
-        <h2><span class="value-badge dark">베타</span> 출시 알림 · 베타테스트 신청</h2>
-        <p>초대 링크와 테스트 과제를 받을 이메일을 남겨주세요. 앱 출시 전까지 관심 사용자를 모으고, 실제 주방 테스트 그룹을 구성합니다.</p>
+        <h2><span class="value-badge dark">베타</span> 출시 알림 · 먼저 써보기 신청</h2>
+        <p>초대 링크와 준비 중인 레시피 소식을 받을 이메일을 남겨주세요. 먼저 써볼 수 있는 순서가 오면 안내드릴게요.</p>
         <form class="beta-form" id="betaForm" onsubmit="submitBeta(event)">
           <label>이메일<input name="email" type="email" autocomplete="email" placeholder="you@example.com" required></label>
           <label>이름 또는 닉네임<input name="name" type="text" autocomplete="name" placeholder="예: 민지"></label>
@@ -1385,16 +1385,16 @@
       <div class="cook-ctrl" id="cook3Ctrl">
         <div class="ctrl-buttons">
           <button class="cbtn" onclick="openTimer()"><div class="cic o js-timer-btn"><i data-lucide="timer"></i></div><small class="js-timer-label">타이머</small></button>
-          <button class="cbtn ai-assistant-btn" id="hf3" onclick="toggleHf3()"><div class="cic ai-assistant"><i data-lucide="bot"></i></div><small>음성 예시</small></button>
+          <button class="cbtn ai-assistant-btn" id="hf3" onclick="toggleHf3()"><div class="cic ai-assistant"><i data-lucide="bot"></i></div><small>물어보기</small></button>
           <button class="cbtn" onclick="openIngredients()"><div class="cic d"><i data-lucide="carrot"></i></div><small>재료 보기</small></button>
         </div>
         <div class="vpanel" id="vpanel">
           <div class="vp-aurora"></div>
           <button class="vp-mic" onclick="toggleVpMic()"><i data-lucide="mic"></i></button>
           <button class="vp-close" onclick="toggleHf3()"><i data-lucide="x"></i></button>
-          <div class="vp-beta-note">베타테스트용 음성 예시</div>
+          <div class="vp-beta-note">지금 물어볼 수 있는 말</div>
           <div class="wave vp-wave"><span></span><span></span><span></span><span></span><span></span></div>
-          <div class="vp-user" id="vpUser">베타 음성 예시</div>
+          <div class="vp-user" id="vpUser">불 조절이 애매해</div>
           <div class="vp-ai" id="vpAi"></div>
         </div>
       </div>
@@ -1505,9 +1505,9 @@
 
     <!-- 전역 핸즈프리 명령 가이드 모달 (어느 화면에서든 표시) -->
     <div class="vmodal" id="voiceModal">
-      <div class="vtop"><h2>베타 음성 비서<br>예시를 확인해보세요</h2></div>
+      <div class="vtop"><h2>요리비서에게<br>이렇게 말해보세요</h2></div>
       <div class="vcard">
-        <div class="vh"><b>음성 예시 가이드</b><span class="x" onclick="closeVoice()"><i data-lucide="x"></i></span></div>
+        <div class="vh"><b>말해볼 수 있는 질문</b><span class="x" onclick="closeVoice()"><i data-lucide="x"></i></span></div>
         <div class="vcats">
           <div class="vcat">
             <div class="vcat-h"><div class="vci"><i data-lucide="list-ordered"></i></div>단계 진행</div>
@@ -1614,22 +1614,22 @@
       point2Title:'준비 소식 받기',
       point2Text:'정식 오픈과 베타 초대 소식을 이메일로 안내합니다.',
       point3Title:'보고 싶은 요리 보내기',
-      point3Text:'따라 해보고 싶은 영상이나 요리를 보내주면 다음 후보에 넣습니다.',
+      point3Text:'따라 해보고 싶은 영상이나 요리를 보내주면 다음 메뉴를 고를 때 참고합니다.',
       potTitle:'작은 냄비가<br>옆에서 챙겨요',
       potText:'영상 찾고 되감는 시간은 줄이고, 지금 해야 할 요리에 집중하게 도와줘요.'
     },
     beta:{
-      kicker:'주방에서 직접 써볼 베타테스터 모집',
-      headline:'요리 테스트를<br><span>함께 만들 사람</span>',
-      headlineMobile:'요리 테스트를<br><span>함께 만들 사람</span>',
-      lead:'냄비는 실제 주방에서 손이 바쁜 순간을 기준으로 다듬고 있습니다. 베타에 참여하면 테스트 과제와 초대 링크를 먼저 받을 수 있어요.',
-      leadMobile:'주방에서 직접 써보고 싶은 분을 먼저 초대합니다. 테스트할 상황을 남겨주세요.',
-      promiseTitle:'작은 테스트 그룹부터 시작합니다',
-      promiseText:'요리 스타일과 테스트 상황을 남기면 맞는 과제를 보내드릴게요.',
+      kicker:'주방에서 먼저 써볼 분 모집',
+      headline:'요리하다 막히는 순간을<br><span>같이 줄여볼 사람</span>',
+      headlineMobile:'요리하다 막히는 순간을<br><span>같이 줄여볼 사람</span>',
+      lead:'냄비는 실제 주방에서 손이 바쁜 순간을 기준으로 다듬고 있습니다. 먼저 써보기 신청을 하면 초대 링크와 준비 중인 레시피 소식을 받을 수 있어요.',
+      leadMobile:'주방에서 직접 써보고 싶은 분을 먼저 초대합니다. 자주 막히는 상황을 남겨주세요.',
+      promiseTitle:'작은 초대 그룹부터 시작합니다',
+      promiseText:'요리 스타일과 막히는 상황을 남기면 맞는 안내를 보내드릴게요.',
       primaryCta:'베타 신청하기',
       secondaryCta:'지금 써보기',
-      point1Title:'테스트 과제 받기',
-      point1Text:'퇴근 후 한 끼, 가족 식사, 초보 요리처럼 실제 상황별 과제를 보냅니다.',
+      point1Title:'먼저 써보기',
+      point1Text:'퇴근 후 한 끼, 가족 식사, 초보 요리처럼 실제 상황별로 먼저 안내합니다.',
       point2Title:'초대 링크 안내',
       point2Text:'준비가 되는 순서대로 이메일로 초대 링크와 안내를 드립니다.',
       point3Title:'개선 피드백 반영',
@@ -1642,17 +1642,17 @@
       headline:'첫 레시피를<br><span>골라주세요</span>',
       headlineMobile:'첫 레시피를<br><span>골라주세요</span>',
       lead:'자주 보는 유튜브 요리 영상이나 따라 하기 어려웠던 레시피를 남겨주세요. 베타 콘텐츠 우선순위를 실제 요청 기준으로 정합니다.',
-      leadMobile:'따라하고 싶은 요리나 유튜브 링크를 남겨주세요. 베타 레시피 후보로 모을게요.',
+      leadMobile:'따라하고 싶은 요리나 유튜브 링크를 남겨주세요. 준비할 레시피로 모을게요.',
       promiseTitle:'요청이 많은 레시피부터 준비합니다',
       promiseText:'요리 이름이나 링크만 남겨도 좋아요. 반영 소식이 필요하면 이메일도 함께 남겨주세요.',
       primaryCta:'레시피 요청하기',
       secondaryCta:'지금 써보기',
       point1Title:'요리 이름만 남겨도 됩니다',
-      point1Text:'제육볶음, 순두부찌개처럼 요리 이름만 있어도 후보에 넣습니다.',
+      point1Text:'제육볶음, 순두부찌개처럼 요리 이름만 있어도 요청 목록에 넣습니다.',
       point2Title:'유튜브 링크 우선 반영',
       point2Text:'실제로 보던 영상 링크를 보내주면 구간과 단계 검토가 쉬워집니다.',
       point3Title:'반영 소식 받기',
-      point3Text:'이메일을 남기면 후보 레시피가 준비될 때 안내할 수 있습니다.',
+      point3Text:'이메일을 남기면 요청한 레시피가 준비될 때 안내할 수 있습니다.',
       potTitle:'작은 냄비가<br>레시피를 기다려요',
       potText:'보고 싶은 영상을 보내주면 조리 순서로 바꿔볼게요.'
     }
@@ -1669,8 +1669,8 @@
     document.querySelectorAll('[data-variant-option]').forEach(btn=>btn.classList.toggle('active',btn.dataset.variantOption===key));
     const quick=document.querySelector('#betaQuickForm input[name="note"]');
     const mobile=document.querySelector('#mobileBetaForm input[name="note"]');
-    if(quick)quick.value='랜딩 후보 '+key+' 히어로 출시 알림 신청';
-    if(mobile)mobile.value='랜딩 후보 '+key+' 모바일 출시 알림 신청';
+    if(quick)quick.value='화면 방향 '+key+' 히어로 출시 알림 신청';
+    if(mobile)mobile.value='화면 방향 '+key+' 모바일 출시 알림 신청';
     if(window.lucide)lucide.createIcons();
   }
   function initLandingVariants(){
@@ -1742,7 +1742,7 @@
     }
     if(title)title.textContent=String(source||'').includes('recipe')?'보고 싶은 요리 보내기':'의견 남기기';
     if(desc)desc.textContent=String(source||'').includes('recipe')
-      ? '따라 해보고 싶은 요리나 영상 링크를 남겨주세요. 다음 레시피 후보를 고를 때 참고합니다.'
+      ? '따라 해보고 싶은 요리나 영상 링크를 남겨주세요. 다음 레시피를 고를 때 참고합니다.'
       : '막힌 지점, 좋았던 흐름, 다른 사람에게 남기고 싶은 팁을 그대로 적어주세요.';
     modal.classList.add('show');
     lucide.createIcons();
@@ -1791,7 +1791,7 @@
       setFormStatus(form,'전송 중입니다.','');
       await postJson('/api/feedback',payload);
       form.reset();
-      setFormStatus(form,'요청이 접수됐습니다. 베타 레시피 후보에 반영할게요.','ok');
+      setFormStatus(form,'요청이 접수됐습니다. 준비할 레시피 목록에 반영할게요.','ok');
     }catch(error){
       setFormStatus(form,error.message,'bad');
     }finally{
@@ -2300,7 +2300,7 @@
     if(meta)meta.textContent=q?list.length+'개 찾았어요':'요즘 많이 찾는 메뉴';
     results.innerHTML=list.length
       ? list.map(cardHTML).join('')
-      : '<div class="search-empty"><b>아직 찾는 요리가 없어요</b>요리 이름이나 유튜브 링크를 보내주면 다음 후보에 넣어볼게요.</div>';
+      : '<div class="search-empty"><b>아직 찾는 요리가 없어요</b>요리 이름이나 유튜브 링크를 보내주면 다음 메뉴를 고를 때 참고할게요.</div>';
     lucide.createIcons();
   }
   function openSearch(query=''){
@@ -2823,10 +2823,10 @@
     vpClear();
     hideCookHint();
     if(hf3On){
-      // 버튼 누르면 즉시 베타 음성 예시 패널 표시
+      // 버튼을 누르면 바로 물어보기 패널을 표시한다.
       vpMicMuted=false;panel.classList.remove('mic-muted');
       {const mb=panel.querySelector('.vp-mic');if(mb){mb.innerHTML='<i data-lucide="mic"></i>';lucide.createIcons();}}
-      document.getElementById('vpUser').textContent='베타 음성 예시';
+      document.getElementById('vpUser').textContent='불 조절이 애매해';
       document.getElementById('vpAi').textContent='';
       panel.classList.remove('thinking','answering','listening');panel.classList.add('open','idle');
       vpi=0;
@@ -2860,8 +2860,8 @@
     clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1800);
   }
 
-  // 레시피 상세 공유: 배포 링크(+현재 레시피 딥링크)를 클립보드에 복사
-  const SHARE_BASE='https://naembi.vercel.app';
+  // 레시피 상세 공유: 공개 링크와 현재 레시피 딥링크를 클립보드에 복사한다.
+  const SHARE_BASE='https://naembii-web.vercel.app';
   function copyText(text){
     // 최신 브라우저 클립보드 기능 실패 시 임시 textarea 폴백
     if(navigator.clipboard && window.isSecureContext){

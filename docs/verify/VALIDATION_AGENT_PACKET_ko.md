@@ -30,12 +30,14 @@
 필수 명령:
 1. git status --short --branch
 2. npm run check
-3. npm run verify:dynamic -- --full --min-score=96
-4. 가능하면 npm run verify:visual -- --full --min-score=96
+3. npm run verify:dynamic -- --full --min-score=96 --report=/tmp/naembi-dynamic-readonly.md
+4. 가능하면 npm run verify:visual -- --full --min-score=96 --base-url=http://127.0.0.1:4191/ --report=/tmp/naembi-visual-readonly.md
+5. 가능하면 npm run verify:ralph-loop -- --rounds=1 --max-minutes=5 --interval-seconds=1 --loop-report=/tmp/naembi-ralph-loop-readonly.md --round-report=/tmp/naembi-ralph-loop-round-readonly.md
 
 시각 검증 주의:
 - Chrome/CDP 권한 문제는 제품 실패가 아니라 INCONCLUSIVE로 기록한다.
 - 시각 검증이 가능하면 /tmp/cook-wireframe-v3/dynamic-mobile.png, dynamic-tablet.png, dynamic-desktop.png를 증거로 본다.
+- 읽기 전용 검증에서는 `--report`, `--loop-report`, `--round-report`를 `/tmp`로 지정한다. 기본 경로를 쓰면 `docs/verify` 리포트 파일이 갱신된다.
 
 판정 기준:
 - 점수는 96% 초과여야 한다.
