@@ -126,10 +126,13 @@ function coreChecks() {
     const vercel = parseJsonFile('vercel.json');
     const rewrites = Array.isArray(vercel.rewrites) ? vercel.rewrites : [];
     const hasAppRewrite = rewrites.some((item) => item.source === '/app' && item.destination === '/app.html');
+    const hasAppDeepRewrite = rewrites.some((item) => item.source === '/app/:path*' && item.destination === '/app.html');
+    const hasDesignRewrite = rewrites.some((item) => item.source === '/design' && item.destination === '/design.html');
+    const hasDesignDeepRewrite = rewrites.some((item) => item.source === '/design/:path*' && item.destination === '/design.html');
     const rootNotApp = !rewrites.some((item) => item.source === '/' && item.destination === '/app.html');
-    gates.push(hasAppRewrite && rootNotApp
-      ? pass('vercel app route', '/app -> /app.html, 루트는 index.html 진입')
-      : fail('vercel app route', '루트/앱 라우팅이 랜딩+웹앱 분리 구조가 아님', 'vercel.json은 /app -> /app.html만 rewrite하고 루트는 index.html로 둔다.'));
+    gates.push(hasAppRewrite && hasAppDeepRewrite && hasDesignRewrite && hasDesignDeepRewrite && rootNotApp
+      ? pass('vercel app route', '/app -> /app.html, /design -> /design.html, 루트는 index.html 진입')
+      : fail('vercel app route', '루트/앱/디자인 라우팅이 랜딩+웹앱+시안 분리 구조가 아님', 'vercel.json은 /app -> /app.html, /design -> /design.html을 rewrite하고 루트는 index.html로 둔다.'));
   } catch (error) {
     gates.push(fail('vercel app route', error.message, 'vercel.json JSON 형식을 복구한다.'));
   }

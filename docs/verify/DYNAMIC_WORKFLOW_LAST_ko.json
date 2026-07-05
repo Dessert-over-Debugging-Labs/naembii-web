@@ -1,36 +1,18 @@
 {
-  "startedAt": "2026-07-05T16:40:39.932Z",
+  "startedAt": "2026-07-05T16:49:10.683Z",
   "summary": "PASS",
   "visual": true,
   "baseURL": "http://127.0.0.1:4191/",
   "files": [
     ".DS_Store",
-    "README.md",
-    "app.html",
-    "assets/screens/app-complete.png",
-    "assets/screens/app-cook.png",
-    "assets/screens/app-detail.png",
-    "assets/screens/app-home.png",
-    "assets/screens/app-search.png",
-    "assets/screens/naembi-core-flow.gif",
     "docs/verify/DYNAMIC_WORKFLOW_LAST_ko.html",
     "docs/verify/DYNAMIC_WORKFLOW_LAST_ko.json",
     "docs/verify/DYNAMIC_WORKFLOW_LAST_ko.md",
-    "index.html",
-    "package.json",
     "scripts/.DS_Store",
-    "scripts/capture-app-screens.mjs",
-    "scripts/capture-landing.mjs",
-    "scripts/serve-static.mjs",
     "scripts/verify-dynamic.mjs",
     "vercel.json",
     "android-wrapper/.DS_Store",
-    "design.html",
-    "docs/.DS_Store",
-    "docs/handoff/GOOGLE_FORM_VERCEL_SETUP_GUIDE_ko.md",
-    "scripts/capture-core-flow-gif.mjs",
-    "scripts/google-apps-script/",
-    "scripts/notion/"
+    "docs/.DS_Store"
   ],
   "workflows": [
     "core",
@@ -49,7 +31,7 @@
     {
       "name": "vercel app route",
       "status": "PASS",
-      "detail": "/app -> /app.html, 루트는 index.html 진입",
+      "detail": "/app -> /app.html, /design -> /design.html, 루트는 index.html 진입",
       "fix": ""
     },
     {

@@ -1,6 +1,6 @@
 # 동적 검증 워크플로우 실행 리포트
 
-- 일시: 2026-07-05T16:40:39.932Z
+- 일시: 2026-07-05T16:49:10.683Z
 - 판정: **PASS**
 - 점수: **130 / 130 (100%)**
 - 통과 기준: **95% 이상**
@@ -14,39 +14,21 @@
 ## 변경 파일
 
 - `.DS_Store`
-- `README.md`
-- `app.html`
-- `assets/screens/app-complete.png`
-- `assets/screens/app-cook.png`
-- `assets/screens/app-detail.png`
-- `assets/screens/app-home.png`
-- `assets/screens/app-search.png`
-- `assets/screens/naembi-core-flow.gif`
 - `docs/verify/DYNAMIC_WORKFLOW_LAST_ko.html`
 - `docs/verify/DYNAMIC_WORKFLOW_LAST_ko.json`
 - `docs/verify/DYNAMIC_WORKFLOW_LAST_ko.md`
-- `index.html`
-- `package.json`
 - `scripts/.DS_Store`
-- `scripts/capture-app-screens.mjs`
-- `scripts/capture-landing.mjs`
-- `scripts/serve-static.mjs`
 - `scripts/verify-dynamic.mjs`
 - `vercel.json`
 - `android-wrapper/.DS_Store`
-- `design.html`
 - `docs/.DS_Store`
-- `docs/handoff/GOOGLE_FORM_VERCEL_SETUP_GUIDE_ko.md`
-- `scripts/capture-core-flow-gif.mjs`
-- `scripts/google-apps-script/`
-- `scripts/notion/`
 
 ## 선택된 워크플로우
 
 | workflow | 선택 이유 |
 | --- | --- |
 | core | 항상 실행 |
-| api | api/app/landing 변경 감지 |
+| api | full 실행 |
 | deploy | 배포 설정 변경 감지 |
 | docs | 검증 문서 변경 감지 |
 | visual | --visual 요청 |
@@ -72,7 +54,7 @@
 | 게이트 | 판정 | 근거 | 보정 후보 |
 | --- | --- | --- | --- |
 | package scripts | PASS | dev/check/verify:dynamic 스크립트 확인 | - |
-| vercel app route | PASS | /app -> /app.html, 루트는 index.html 진입 | - |
+| vercel app route | PASS | /app -> /app.html, /design -> /design.html, 루트는 index.html 진입 | - |
 | landing structure | PASS | 사용자 후킹 카피, 정적 앱 캡쳐, 미리 써보기/요리 보내기 폼 확인 | - |
 | app structure | PASS | /app 기본 앱 홈, 조리 모드, 피드백 폼 확인 | - |
 | design review page | PASS | 브랜드 캐릭터, 점수표, 서비스 배치, 현실성 검토 확인 | - |

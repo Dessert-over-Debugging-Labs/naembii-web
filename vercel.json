@@ -6,6 +6,18 @@
     {
       "source": "/app",
       "destination": "/app.html"
+    },
+    {
+      "source": "/app/:path*",
+      "destination": "/app.html"
+    },
+    {
+      "source": "/design",
+      "destination": "/design.html"
+    },
+    {
+      "source": "/design/:path*",
+      "destination": "/design.html"
     }
   ],
   "headers": [
