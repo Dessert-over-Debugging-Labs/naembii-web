@@ -4,7 +4,8 @@
 
 - 서비스명: 냄비 / Naembi
 - 배포 대상: Vercel
-- 메인 엔트리: `app.html`
+- 랜딩 엔트리: `index.html`
+- 웹앱 엔트리: `app.html` (`/app`)
 - 수집 API: `api/beta-signup.js`, `api/feedback.js`
 - 현재 목적: 앱 출시 전 베타 테스터 모집, 레시피 요청, 피드백 수집
 
@@ -47,13 +48,26 @@ npm run verify:visual
 
 5. `Environment Variables`에 베타 신청/피드백 저장용 값을 추가합니다.
 6. `Deploy`를 누릅니다.
-7. 배포 후 `/`가 랜딩으로 열리고, `/api/beta-signup`, `/api/feedback`이 동작하는지 확인합니다.
+7. 배포 후 `/`가 제품 소개 랜딩으로 열리고, `/app`이 웹앱으로 열리는지 확인합니다.
+8. `/api/beta-signup`, `/api/feedback`이 동작하는지 확인합니다.
 
-`vercel.json`에서 `/` 요청은 `/app.html`로 rewrite됩니다. 이 repo는 정적 HTML + Vercel 서버리스 API 구성이므로 별도 빌드 명령이 필요 없습니다.
+`vercel.json`에서 `/app` 요청은 `/app.html`로 rewrite됩니다. 루트 `/`는 `index.html` 랜딩을 그대로 사용합니다. 이 repo는 정적 HTML + Vercel 서버리스 API 구성이므로 별도 빌드 명령이 필요 없습니다.
 
 ## 환경변수
 
 베타 신청과 피드백 저장은 아래 중 하나를 설정합니다. 베타 기간에는 Google Form + Google Sheets를 1순위로 권장합니다.
+
+Google Form과 Sheet는 아래 Apps Script로 자동 생성할 수 있습니다.
+
+```text
+scripts/google-apps-script/create-naembi-beta-collection.js
+```
+
+`setupNaembiBetaCollection`을 실행하면 Google Form, 응답 Sheet, `Vercel env` 탭, `운영뷰` 탭이 같이 만들어집니다.
+이미 이전 스크립트로 Form과 Sheet를 만들었다면 최신 코드로 교체한 뒤 `createNaembiOperatingView`만 실행하면 `운영뷰` 탭을 추가할 수 있습니다.
+
+스크립트 실행 후 생성된 Sheet의 `Vercel env` 탭에서 아래 두 값을 복사합니다.
+실행 중 `Google에서 확인하지 않은 앱` 경고가 뜨면, 개발자 이메일이 본인/팀 계정인지 확인한 뒤 `고급` → `프로젝트로 이동` → `허용` 순서로 승인합니다. 자세한 내용은 `docs/handoff/GOOGLE_FORM_VERCEL_SETUP_GUIDE_ko.md`를 확인합니다.
 
 ```bash
 NAEMBI_BETA_GOOGLE_FORM_URL=https://docs.google.com/forms/d/e/FORM_ID/formResponse
