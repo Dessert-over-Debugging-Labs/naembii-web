@@ -20,7 +20,10 @@ const mime = {
 
 function fileFor(url = '/') {
   const parsed = new URL(url, `http://${host}:${port}`);
-  const pathname = parsed.pathname === '/' ? '/app.html' : parsed.pathname;
+  let pathname = parsed.pathname === '/' ? '/index.html' : parsed.pathname;
+  if (pathname === '/app') {
+    pathname = '/app.html';
+  }
   const safePath = normalize(decodeURIComponent(pathname)).replace(/^(\.\.[/\\])+/, '');
   const candidate = resolve(join(root, safePath));
 
@@ -30,6 +33,13 @@ function fileFor(url = '/') {
 
   if (existsSync(candidate) && statSync(candidate).isFile()) {
     return candidate;
+  }
+
+  if (!extname(candidate)) {
+    const htmlCandidate = `${candidate}.html`;
+    if (htmlCandidate.startsWith(root) && existsSync(htmlCandidate) && statSync(htmlCandidate).isFile()) {
+      return htmlCandidate;
+    }
   }
 
   return null;

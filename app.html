@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#F5F5F7">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>냄비 - 요리 영상 보면서 손 안 대고 따라하기</title>
+<title>냄비 - SNS 요리 영상 따라하기 쉽게</title>
 <link rel="icon" href="data:,">
 <script src="https://unpkg.com/lucide@latest"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -146,6 +146,23 @@
     font-size:15px;box-shadow:0 1px 3px rgba(0,0,0,.04);cursor:pointer;
   }
   .search svg{width:19px;height:19px;color:var(--gray);}
+  .search-live{margin:4px 16px 14px;height:52px;background:var(--surface);border-radius:14px;border:1px solid var(--border);display:flex;align-items:center;gap:9px;padding:0 14px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+  .search-live svg{width:20px;height:20px;color:var(--text-sub);}
+  .search-live input{flex:1;min-width:0;border:0;background:transparent;color:var(--text);font:inherit;font-size:16px;font-weight:650;outline:none;}
+  .search-live button{width:30px;height:30px;border:0;border-radius:50%;background:var(--surface-2);color:var(--text-sub);display:none;align-items:center;justify-content:center;cursor:pointer;}
+  .search-live button.show{display:flex;}
+  .search-live button svg{width:16px;height:16px;}
+  .search-helper{padding:0 16px 14px;color:var(--text-sub);font-size:13px;font-weight:700;line-height:1.45;}
+  .search-helper b{color:var(--brand);}
+  .search-chips{display:flex;gap:8px;overflow-x:auto;padding:0 16px 18px;}
+  .search-chips::-webkit-scrollbar{display:none;}
+  .search-chips button{height:36px;border:1px solid var(--border);border-radius:999px;background:var(--surface);color:var(--text);padding:0 13px;font:inherit;font-size:13px;font-weight:850;white-space:nowrap;cursor:pointer;}
+  .search-results-head{display:flex;align-items:center;justify-content:space-between;padding:0 16px 12px;color:var(--text);}
+  .search-results-head b{font-size:17px;}
+  .search-results-head span{font-size:13px;color:var(--text-sub);font-weight:700;}
+  .search-results{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 16px 30px;}
+  .search-empty{grid-column:1/-1;margin:0 0 24px;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px;text-align:center;color:var(--text-sub);font-size:14px;font-weight:700;line-height:1.55;}
+  .search-empty b{display:block;color:var(--text);font-size:16px;margin-bottom:5px;}
 
   /* 카테고리 */
   .cats{display:flex;gap:16px;overflow-x:auto;padding:0 16px 24px;}
@@ -166,6 +183,24 @@
   .hscroll{display:flex;gap:12px;overflow-x:auto;padding:0 16px 24px;}
   .hscroll::-webkit-scrollbar{display:none;}
   .hscroll .rcard{width:152px;flex:none;}
+  .assistant-start{margin:0 16px 18px;background:linear-gradient(135deg,#1E2024,#343A42);color:#fff;border-radius:18px;padding:16px;box-shadow:0 10px 26px rgba(31,38,46,.18);}
+  .assistant-start .as-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;}
+  .assistant-start .as-ic{width:36px;height:36px;border-radius:12px;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;color:#FF7A5F;flex:none;}
+  .assistant-start .as-ic svg{width:20px;height:20px;}
+  .assistant-start b{display:block;font-size:16px;line-height:1.32;margin-bottom:4px;}
+  .assistant-start span{display:block;color:#D8DCE2;font-size:12px;line-height:1.45;font-weight:650;}
+  .as-actions{display:flex;gap:8px;overflow-x:auto;}
+  .as-actions::-webkit-scrollbar{display:none;}
+  .as-actions button{height:34px;border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(255,255,255,.1);color:#fff;font:inherit;font-size:12px;font-weight:800;padding:0 11px;white-space:nowrap;cursor:pointer;}
+  .community-strip{display:flex;gap:10px;overflow-x:auto;padding:0 16px 24px;}
+  .community-strip::-webkit-scrollbar{display:none;}
+  .community-card{width:230px;flex:none;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:14px;cursor:pointer;}
+  .community-card .cc-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;}
+  .community-card .cc-head b{font-size:14px;line-height:1.3;}
+  .community-card .cc-pill{font-size:11px;font-weight:800;color:var(--brand-deep);background:var(--brand-soft);border-radius:999px;padding:4px 7px;white-space:nowrap;}
+  .community-card p{font-size:13px;line-height:1.48;color:var(--text);font-weight:650;margin-bottom:10px;}
+  .community-card small{display:flex;align-items:center;gap:5px;color:var(--text-sub);font-size:12px;font-weight:700;}
+  .community-card small svg{width:13px;height:13px;color:#FFB400;fill:#FFB400;}
 
   /* 레시피 그리드 */
   .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 16px 24px;}
@@ -301,6 +336,11 @@
   .reviews .r .txt .rh b{font-size:13px;color:var(--ink);}
   .reviews .stars{display:flex;gap:1px;color:#FFB400;}
   .reviews .stars svg{width:13px;height:13px;fill:#FFB400;}
+  .tip-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:14px 16px;margin-bottom:16px;}
+  .tip-card .tip-h{display:flex;align-items:center;gap:8px;margin-bottom:8px;color:var(--brand-deep);font-size:13px;font-weight:800;}
+  .tip-card .tip-h svg{width:16px;height:16px;}
+  .tip-card p{font-size:14px;line-height:1.55;color:var(--text);font-weight:650;}
+  .tip-card button{margin-top:12px;width:100%;height:42px;border:1px solid var(--border);border-radius:12px;background:#fff;color:var(--text);font:inherit;font-size:14px;font-weight:800;cursor:pointer;}
   /* 하단 바 없이 버튼만 콘텐츠 위에 둥둥 띄움 */
   .cta-bar{position:absolute;left:0;right:0;bottom:0;padding:14px 16px;background:none;pointer-events:none;z-index:6;}
   .cta-bar .btn{pointer-events:auto;box-shadow:0 10px 28px rgba(0,0,0,.24);}
@@ -708,6 +748,10 @@
   /* 액션 버튼 */
   .done-actions{width:100%;max-width:320px;display:flex;flex-direction:column;gap:10px;margin-top:8px;}
   .done-actions .btn{margin-top:0;}
+  .done-actions .btn.share{background:#1E2024;color:#fff;}
+  .done-actions .btn.light{background:var(--surface);color:var(--text);border:1px solid var(--border);box-shadow:none;}
+  .done-next{width:100%;max-width:320px;display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:2px;}
+  .done-next button{min-height:42px;border:1px solid var(--border);border-radius:12px;background:var(--surface);color:var(--text);font:inherit;font-size:13px;font-weight:800;cursor:pointer;padding:0 8px;}
 
   .toast{
     position:absolute;left:50%;bottom:120px;transform:translateX(-50%) translateY(20px);
@@ -816,6 +860,7 @@
   .landing-brand svg{width:28px;height:28px;}
   .trust-stack{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
   .trust-pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:7px 10px;font-size:12px;font-weight:950;line-height:1;border:1px solid #E6E0DA;background:#fff;color:#6A4638;}
+  button.trust-pill{font:inherit;font-size:12px;font-weight:950;cursor:pointer;}
   .trust-pill.dark{background:#1E2024;color:#fff;border-color:#1E2024;}
   .trust-pill.warm{background:#FFF7EF;color:#A8472D;border-color:#F4D8CB;}
   .landing-actions{display:flex;align-items:center;gap:10px;}
@@ -834,6 +879,8 @@
   .hero-signup button{height:56px;border:0;border-radius:16px;background:#1E2024;color:#fff;font:inherit;font-size:16px;font-weight:950;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;padding:0 18px;white-space:nowrap;flex:0 0 auto;}
   .hero-signup button[disabled]{opacity:.62;cursor:not-allowed;}
   .hero-signup .form-status{flex:0 0 100%;margin-top:-4px;}
+  .mobile-app-cta{width:100%;height:56px;border:1px solid #E2E3E7;border-radius:16px;background:#fff;color:#1E2024;font:inherit;font-size:16px;font-weight:950;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 10px 26px rgba(31,38,46,.06);cursor:pointer;margin-top:10px;}
+  .mobile-app-cta svg{width:19px;height:19px;}
   .landing-cta{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:30px;}
   .landing-cta button{min-height:54px;border:0;border-radius:16px;font:inherit;font-size:17px;font-weight:900;cursor:pointer;display:flex;align-items:center;gap:8px;padding:0 20px;}
   .landing-cta .primary{background:linear-gradient(135deg,var(--brand-l),var(--brand));color:#fff;box-shadow:0 18px 36px rgba(var(--brand-rgb),.24);}
@@ -855,7 +902,8 @@
   .demo-tab{height:44px;border:1px solid #E5E6EA;background:#fff;color:#3A3D42;border-radius:14px;font:inherit;font-size:13px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;}
   .demo-tab.active{background:#1E2024;color:#fff;border-color:#1E2024;}
   .demo-tab svg{width:15px;height:15px;}
-  .pot-card{width:min(100%,360px);margin:16px auto 0;background:#fff;border:1px solid #EAE3DE;border-radius:20px;padding:14px 16px;box-shadow:0 12px 30px rgba(31,38,46,.1);display:grid;grid-template-columns:70px minmax(0,1fr);gap:12px;align-items:center;}
+  .pot-feature{margin:30px 0 0;padding:18px 6px;border-top:1px solid #E1E3E7;border-bottom:1px solid #E1E3E7;display:grid;grid-template-columns:70px minmax(0,1fr);gap:16px;align-items:center;}
+  .pot-feature-mobile{display:none;}
   .pot-mascot{position:relative;width:70px;height:58px;margin:0;}
   .pot-mascot::before{content:"";position:absolute;left:8px;right:8px;bottom:0;height:44px;background:linear-gradient(180deg,#FFFCF7,#F7D3C6);border:3px solid #33251F;border-radius:18px 18px 24px 24px;}
   .pot-mascot::after{content:"";position:absolute;left:25px;right:25px;bottom:18px;height:8px;border-radius:999px;background:#33251F;box-shadow:-16px -1px 0 -2px #33251F,16px -1px 0 -2px #33251F;}
@@ -865,8 +913,37 @@
   .pot-steam.s1{left:18px;transform:rotate(12deg);}
   .pot-steam.s2{left:38px;top:-4px;}
   .pot-steam.s3{right:18px;transform:rotate(-12deg);}
-  .pot-card b{display:block;font-size:15px;line-height:1.35;text-align:left;}
-  .pot-card span{display:block;margin-top:4px;font-size:12px;line-height:1.45;color:#777070;font-weight:750;text-align:left;}
+  .pot-feature-copy b{display:block;font-size:19px;line-height:1.28;text-align:left;}
+  .pot-feature-copy span{display:block;max-width:520px;margin-top:6px;font-size:14px;line-height:1.5;color:#686D74;font-weight:750;text-align:left;}
+  .product-intro{margin-top:56px;padding:38px 0 40px;border-top:1px solid #E1E3E7;border-bottom:1px solid #E1E3E7;display:grid;grid-template-columns:minmax(0,.94fr) minmax(0,1.06fr);gap:32px;align-items:start;}
+  .product-copy h2{font-size:clamp(30px,4vw,48px);line-height:1.1;letter-spacing:0;margin:14px 0 14px;font-weight:950;}
+  .product-copy p{max-width:620px;color:#565B62;font-size:18px;line-height:1.65;font-weight:700;}
+  .product-proof{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:22px;}
+  .proof-item{min-height:122px;background:#fff;border:1px solid #E4E6EA;border-radius:8px;padding:14px;}
+  .proof-item i{width:32px;height:32px;border-radius:8px;background:#FFF2EB;color:var(--brand);display:flex;align-items:center;justify-content:center;margin-bottom:11px;}
+  .proof-item i svg{width:18px;height:18px;}
+  .proof-item b{display:block;font-size:14px;margin-bottom:5px;}
+  .proof-item span{display:block;color:#686D74;font-size:13px;line-height:1.45;font-weight:650;}
+  .assistant-demo{background:#1E2024;color:#fff;border-radius:8px;padding:22px;border:1px solid rgba(255,255,255,.08);}
+  .assistant-head{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+  .assistant-head i{width:38px;height:38px;border-radius:8px;background:rgba(255,255,255,.1);color:#FF7258;display:flex;align-items:center;justify-content:center;flex:none;}
+  .assistant-head i svg{width:20px;height:20px;}
+  .assistant-head b{display:block;font-size:20px;line-height:1.25;}
+  .assistant-head span{display:block;margin-top:3px;color:#BFC4CA;font-size:13px;font-weight:750;}
+  .assistant-thread{display:grid;gap:11px;}
+  .assistant-bubble{border-radius:8px;padding:12px 13px;font-size:14px;line-height:1.5;font-weight:750;}
+  .assistant-bubble.user{margin-left:38px;background:#fff;color:#1E2024;}
+  .assistant-bubble.answer{margin-right:38px;background:#2D323A;color:#F6F7F8;border:1px solid rgba(255,255,255,.08);}
+  .assistant-bubble em{display:block;margin-bottom:4px;color:#FFB39D;font-style:normal;font-size:12px;font-weight:950;}
+  .roadmap-head{grid-column:1/-1;display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-top:2px;}
+  .roadmap-head h3{font-size:28px;line-height:1.22;font-weight:950;}
+  .roadmap-head p{max-width:560px;color:#63686F;font-size:15px;line-height:1.55;font-weight:700;}
+  .launch-roadmap{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;}
+  .launch-item{background:#fff;border:1px solid #E4E6EA;border-radius:8px;padding:15px;min-height:138px;}
+  .launch-item i{width:34px;height:34px;border-radius:8px;background:#F2FBF7;color:#227551;display:flex;align-items:center;justify-content:center;margin-bottom:12px;}
+  .launch-item i svg{width:19px;height:19px;}
+  .launch-item b{display:block;font-size:15px;margin-bottom:6px;}
+  .launch-item span{display:block;color:#686D74;font-size:13px;line-height:1.45;font-weight:650;}
   .landing-section{margin-top:56px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:start;}
   .beta-panel,.feedback-panel,.ops-panel,.recipe-panel{background:#fff;border:1px solid #E4E6EA;border-radius:24px;padding:24px;box-shadow:0 14px 40px rgba(31,38,46,.06);}
   .beta-panel h2,.feedback-panel h2,.ops-panel h2,.recipe-panel h2{font-size:26px;line-height:1.25;margin-bottom:10px;}
@@ -899,9 +976,10 @@
   .landing[data-variant="recipe"] .landing-kicker,.landing[data-variant="recipe"] .value-badge{background:#F2FBF7;color:#227551;border-color:#CDEDDC;}
   .landing[data-variant="recipe"] .landing-cta .primary,.landing[data-variant="recipe"] .beta-form button{background:linear-gradient(135deg,#41B883,#1F8A5F);box-shadow:0 18px 36px rgba(31,134,92,.2);}
   .landing[data-variant="recipe"] .recipe-panel{border-color:#BFE8D1;box-shadow:0 18px 44px rgba(31,134,92,.08);}
-  .app-feedback-btn{display:none;position:fixed;right:18px;bottom:18px;z-index:900;border:0;border-radius:999px;background:#1E2024;color:#fff;font:inherit;font-size:14px;font-weight:900;padding:13px 16px;box-shadow:0 14px 36px rgba(0,0,0,.28);cursor:pointer;align-items:center;gap:7px;}
+  .app-feedback-btn{display:none;position:absolute;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0));z-index:230;border:0;border-radius:999px;background:#1E2024;color:#fff;font:inherit;font-size:13px;font-weight:900;padding:12px 14px;box-shadow:0 14px 36px rgba(0,0,0,.28);cursor:pointer;align-items:center;gap:7px;}
   body:not(.marketing-open) .app-feedback-btn{display:flex;}
-  body:has(#detail.active) .app-feedback-btn{bottom:92px;}
+  body:has(#detail.active) .app-feedback-btn,
+  body:has(#complete.active) .app-feedback-btn,
   body:has(#cook3.active) .app-feedback-btn{display:none;}
   .feedback-modal{position:fixed;inset:0;z-index:950;display:none;align-items:flex-end;justify-content:center;background:rgba(15,17,20,.48);padding:18px;}
   .feedback-modal.show{display:flex;}
@@ -932,10 +1010,28 @@
     .hero-signup button{width:100%;}
     .landing-points{grid-template-columns:1fr;}
     .landing-preview{width:100%;margin-top:0;}
+    .landing-preview{display:none;}
     .demo-frame-wrap,.demo-tabs{width:min(100%,360px);margin-left:auto;margin-right:auto;}
     .demo-app-frame{height:640px;min-height:560px;}
     .demo-tabs{grid-template-columns:repeat(2,1fr);}
-    .pot-card{display:none;}
+    .pot-feature{margin-top:24px;padding:16px 0;grid-template-columns:64px minmax(0,1fr);gap:13px;}
+    .pot-feature-mobile{display:grid;margin-top:18px;}
+    .pot-feature-desktop{display:none;}
+    .pot-feature .pot-mascot{width:64px;height:54px;}
+    .pot-feature-copy b{font-size:17px;}
+    .pot-feature-copy span{font-size:13px;}
+    .product-intro{margin-top:34px;padding:28px 0 30px;grid-template-columns:1fr;gap:24px;}
+    .product-copy h2{font-size:31px;}
+    .product-copy p{font-size:16px;}
+    .product-proof{grid-template-columns:1fr;}
+    .assistant-demo{padding:18px;}
+    .assistant-head b{font-size:18px;}
+    .assistant-bubble.user{margin-left:20px;}
+    .assistant-bubble.answer{margin-right:20px;}
+    .roadmap-head{display:grid;gap:8px;}
+    .roadmap-head h3{font-size:24px;}
+    .launch-roadmap{grid-template-columns:1fr;}
+    .launch-item{min-height:auto;}
     .landing-section{grid-template-columns:1fr;margin-top:36px;}
   }
 
@@ -965,10 +1061,10 @@
     <div class="landing-brand"><i data-lucide="cooking-pot"></i>냄비</div>
     <div class="mobile-trust-row" aria-label="냄비 베타 안내">
       <span class="trust-pill dark">베타테스트 모집 중</span>
-      <span class="trust-pill warm">앱 화면 바로보기</span>
+      <button class="trust-pill warm" type="button" onclick="openApp('home')">지금 써보기</button>
     </div>
-    <h1 data-variant-copy="headlineMobile">요리 영상 보면서<br><span>손 안 대고</span> 따라하기</h1>
-    <p data-variant-copy="leadMobile">베타테스트 참여 알림을 받고, 냄비에 먼저 들어갔으면 하는 레시피를 남겨주세요.</p>
+    <h1 data-variant-copy="headlineMobile">SNS 요리 영상,<br><span>따라 하다 막혔죠?</span></h1>
+    <p data-variant-copy="leadMobile">먼저 써볼 소식을 받고, 따라 해보고 싶은 요리를 남겨주세요.</p>
     <div class="promise-card">
       <i data-lucide="sparkles"></i>
       <div><b data-variant-copy="promiseTitle">출시 전에 먼저 초대할게요</b><span data-variant-copy="promiseText">이메일을 남기면 베타 초대와 준비 중인 레시피 소식을 받을 수 있어요.</span></div>
@@ -981,6 +1077,16 @@
       <button type="submit"><i data-lucide="bell-ring"></i>베타 알림 받기</button>
       <p class="form-status" data-status></p>
     </form>
+    <button class="mobile-app-cta" type="button" onclick="openApp('home')"><i data-lucide="smartphone"></i>지금 써보기</button>
+    <div class="pot-feature pot-feature-mobile" aria-label="냄비 도우미 안내">
+      <div class="pot-mascot" aria-hidden="true">
+        <i class="pot-steam s1"></i><i class="pot-steam s2"></i><i class="pot-steam s3"></i><i class="pot-lid"></i>
+      </div>
+      <div class="pot-feature-copy">
+        <b data-variant-copy="potTitle">작은 냄비가<br>순서를 챙겨요</b>
+        <span data-variant-copy="potText">영상은 냄비가 넘기고, 당신은 손맛에 집중해요.</span>
+      </div>
+    </div>
   </div>
   <div class="landing-wrap">
     <div class="variant-switcher" id="variantSwitcher" hidden aria-label="랜딩 후보 선택">
@@ -993,7 +1099,7 @@
       <div class="landing-brand"><i data-lucide="cooking-pot"></i>냄비</div>
       <div class="trust-stack" aria-label="냄비 서비스 안내">
         <span class="trust-pill dark">베타테스트 모집 중</span>
-        <span class="trust-pill warm">앱 화면 바로보기</span>
+        <button class="trust-pill warm" type="button" onclick="openApp('home')">지금 써보기</button>
       </div>
       <div class="landing-actions">
         <button class="landing-link" type="button" onclick="openFeedback('landing-nav')"><i data-lucide="message-square"></i>피드백</button>
@@ -1004,8 +1110,8 @@
     <div class="landing-hero">
       <div class="landing-copy">
         <div class="landing-kicker"><i data-lucide="sparkles"></i><span data-variant-copy="kicker">출시 전 베타 모집 중</span></div>
-        <h1 data-variant-copy="headline">요리 영상 보면서<br><span>손 안 대고</span> 따라하기</h1>
-        <p data-variant-copy="lead">냄비는 유튜브 요리 영상을 단계별 조리 모드로 바꿔주는 베타 앱입니다. 앱이 출시될 때 알림 받을 사람과, 추가되길 원하는 레시피를 먼저 모으는 중입니다.</p>
+        <h1 data-variant-copy="headline">SNS 요리 영상,<br><span>따라 하다 막혔죠?</span></h1>
+        <p data-variant-copy="lead">냄비는 유튜브와 SNS에서 본 요리를 주방에서 따라 하기 쉽게 정리해줍니다. 재료는 한눈에 보고, 조리 중에는 지금 할 일과 타이밍을 놓치지 않게 챙겨요.</p>
         <div class="promise-card">
           <i data-lucide="sparkles"></i>
           <div><b data-variant-copy="promiseTitle">출시 전에 먼저 초대할게요</b><span data-variant-copy="promiseText">이메일을 남기면 베타 초대와 준비 중인 레시피 소식을 받을 수 있어요.</span></div>
@@ -1020,7 +1126,7 @@
         </form>
         <div class="landing-cta">
           <button class="primary" type="button" onclick="scrollToBeta()"><i data-lucide="send"></i><span data-variant-copy="primaryCta">베타테스트 신청</span></button>
-          <button class="secondary" type="button" onclick="setDemoScreen('cook3')"><i data-lucide="play-circle"></i><span data-variant-copy="secondaryCta">조리 흐름 보기</span></button>
+          <button class="secondary" type="button" onclick="openApp('home')"><i data-lucide="smartphone"></i><span data-variant-copy="secondaryCta">지금 써보기</span></button>
         </div>
         <div class="landing-points">
           <div class="landing-point"><i data-lucide="video"></i><b data-variant-copy="point1Title">앱 화면 먼저보기</b><span data-variant-copy="point1Text">홈, 레시피 상세, 조리 모드를 이 페이지에서 바로 확인할 수 있습니다.</span></div>
@@ -1039,15 +1145,55 @@
           <button class="demo-tab" type="button" data-demo="cook3" onclick="setDemoScreen('cook3')"><i data-lucide="chef-hat"></i>조리</button>
           <button class="demo-tab" type="button" data-demo="complete" onclick="setDemoScreen('complete')"><i data-lucide="party-popper"></i>완료</button>
         </div>
-        <div class="pot-card" aria-hidden="true">
-          <div class="pot-mascot">
-            <i class="pot-steam s1"></i><i class="pot-steam s2"></i><i class="pot-steam s3"></i><i class="pot-lid"></i>
-          </div>
-          <b data-variant-copy="potTitle">작은 냄비가<br>순서를 챙겨요</b>
-          <span data-variant-copy="potText">영상은 냄비가 넘기고, 당신은 손맛에 집중해요.</span>
-        </div>
       </div>
     </div>
+
+    <div class="pot-feature pot-feature-desktop" aria-label="냄비 도우미 안내">
+      <div class="pot-mascot" aria-hidden="true">
+        <i class="pot-steam s1"></i><i class="pot-steam s2"></i><i class="pot-steam s3"></i><i class="pot-lid"></i>
+      </div>
+      <div class="pot-feature-copy">
+        <b data-variant-copy="potTitle">작은 냄비가<br>순서를 챙겨요</b>
+        <span data-variant-copy="potText">영상은 냄비가 넘기고, 당신은 손맛에 집중해요.</span>
+      </div>
+    </div>
+
+    <section class="product-intro" aria-label="냄비 소개">
+      <div class="product-copy">
+        <span class="value-badge dark">이럴 때 필요해요</span>
+        <h2>영상은 쉬워 보이는데<br>막상 하면 바쁘니까</h2>
+        <p>냄비는 영상을 그냥 틀어두는 앱이 아니라, 재료 확인부터 다음 단계, 타이머, 대체 재료 질문까지 조리 중 필요한 순간을 옆에서 챙기는 요리비서로 준비하고 있습니다.</p>
+        <div class="product-proof">
+          <div class="proof-item"><i data-lucide="list-checks"></i><b>중간에 덜 헤매게</b><span>긴 영상 속 재료와 순서를 주방에서 보기 쉽게 정리합니다.</span></div>
+          <div class="proof-item"><i data-lucide="message-circle-question"></i><b>상황별 짧은 답변</b><span>재료가 없거나 불 조절이 애매할 때 바로 물어볼 수 있게 만듭니다.</span></div>
+          <div class="proof-item"><i data-lucide="timer-reset"></i><b>손이 바쁜 순간</b><span>다음 단계 이동, 반복 재생, 타이머를 조리 흐름 안에서 처리합니다.</span></div>
+        </div>
+      </div>
+
+      <div class="assistant-demo" aria-label="요리비서 답변 예시">
+        <div class="assistant-head">
+          <i data-lucide="bot"></i>
+          <div><b>요리비서는 이렇게 답하게 만들 거예요</b><span>레시피와 현재 단계에 맞춘 짧은 조리 답변</span></div>
+        </div>
+        <div class="assistant-thread">
+          <div class="assistant-bubble user">양념이 타는 것 같아</div>
+          <div class="assistant-bubble answer"><em>냄비</em>불을 중불로 낮추고 양파를 먼저 넣어 수분을 내주세요. 그래도 뻑뻑하면 물을 한두 숟갈만 넣어 양념을 풀면 돼요.</div>
+          <div class="assistant-bubble user">명란이 너무 짤까 봐 걱정돼</div>
+          <div class="assistant-bubble answer"><em>냄비</em>명란은 먼저 조금만 넣고 맛을 본 뒤 추가하세요. 면수도 짠 편이면 소금 간은 생략하는 게 좋아요.</div>
+        </div>
+      </div>
+
+      <div class="roadmap-head">
+        <h3>출시 후에는 더 개인적인 요리 도구로</h3>
+        <p>베타에서 받은 레시피 요청과 막힌 지점을 바탕으로, 정식 출시 후 붙일 기능의 우선순위를 정하려고 합니다.</p>
+      </div>
+      <div class="launch-roadmap">
+        <div class="launch-item"><i data-lucide="carrot"></i><b>냉장고 재료 대체</b><span>집에 있는 재료로 바꿔도 되는지, 맛이 어떻게 달라지는지 알려주는 방향입니다.</span></div>
+        <div class="launch-item"><i data-lucide="shopping-basket"></i><b>장보기 목록</b><span>보고 싶은 레시피를 고르면 부족한 재료만 모아 장보기 목록으로 정리합니다.</span></div>
+        <div class="launch-item"><i data-lucide="sparkles"></i><b>취향 맞춤 추천</b><span>맵기, 조리 시간, 난이도, 자주 쓰는 재료를 기준으로 한 끼 후보를 제안합니다.</span></div>
+        <div class="launch-item"><i data-lucide="notebook-tabs"></i><b>나만의 조리 기록</b><span>다음에 다시 만들 때 참고할 간 조절, 대체 재료, 성공한 팁을 남깁니다.</span></div>
+      </div>
+    </section>
 
     <section class="landing-section" id="beta">
       <div class="beta-panel">
@@ -1090,7 +1236,7 @@
         <p>영상을 보며 멈칫하는 순간을 줄이고, 조리 중 필요한 정보만 바로 꺼내볼 수 있게 준비하고 있습니다.</p>
         <div class="value-roadmap">
           <div class="value-row"><span class="value-badge">1</span><div><b>보고 싶은 레시피를 고릅니다</b><span>요리 영상과 재료, 조리 순서를 한 화면에서 확인합니다.</span></div></div>
-          <div class="value-row"><span class="value-badge dark">2</span><div><b>손대지 않고 다음 단계를 따라갑니다</b><span>영상 구간, 타이머, 재료 확인을 조리 흐름에 맞춰 볼 수 있습니다.</span></div></div>
+          <div class="value-row"><span class="value-badge dark">2</span><div><b>화면을 덜 만지며 다음 단계를 따라갑니다</b><span>영상 구간, 타이머, 재료 확인을 조리 흐름에 맞춰 볼 수 있습니다.</span></div></div>
         </div>
       </div>
 
@@ -1116,20 +1262,56 @@
       <div class="statusbar"><span>9:41</span><span class="icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
       <div class="nav"><div class="logo"><i data-lucide="cooking-pot"></i>냄비</div><div class="hd-right"><div class="noti" onclick="toast('준비 중인 기능이에요','bell')"><i data-lucide="bell"></i>13</div><div class="ic-btn" onclick="toast('준비 중인 기능이에요','circle-user-round')"><i data-lucide="circle-user-round"></i></div></div></div>
       <div class="body">
-        <div class="search" onclick="toast('준비 중인 기능이에요','search')"><i data-lucide="search"></i>먹고 싶은 요리를 검색해보세요</div>
-        <div class="cats" onclick="toast('준비 중인 기능이에요','utensils')">
-          <div class="cat"><div class="ic"><i data-lucide="chef-hat"></i></div><span>쉐프</span></div>
-          <div class="cat"><div class="ic"><i data-lucide="trending-up"></i></div><span>급상승</span></div>
-          <div class="cat"><div class="ic"><i data-lucide="soup"></i></div><span>한식</span></div>
-          <div class="cat"><div class="ic"><i data-lucide="utensils-crossed"></i></div><span>분식</span></div>
-          <div class="cat"><div class="ic"><i data-lucide="fish"></i></div><span>일식</span></div>
-          <div class="cat"><div class="ic"><i data-lucide="pizza"></i></div><span>양식</span></div>
-          <div class="cat"><div class="ic"><i data-lucide="cake-slice"></i></div><span>디저트</span></div>
+        <div class="search" onclick="openSearch()"><i data-lucide="search"></i>요리, 재료, 창작자 이름으로 찾아보세요</div>
+        <div class="assistant-start">
+          <div class="as-top">
+            <div class="as-ic"><i data-lucide="bot"></i></div>
+            <div><b>냄비에게 물어보고 시작하기</b><span>지금 상황을 고르면 바로 만들 만한 SNS 요리를 추천해요.</span></div>
+          </div>
+          <div class="as-actions">
+            <button type="button" onclick="openSearch('SNS 트렌드')">SNS에서 본 메뉴</button>
+            <button type="button" onclick="openSearch('10분')">10분 안에</button>
+            <button type="button" onclick="openSearch('재료 적게')">재료 적게</button>
+            <button type="button" onclick="goDetail('vlPqkuHIdCc')">오늘 추천 보기</button>
+          </div>
         </div>
-        <div class="section-t"><span class="st-l"><i data-lucide="flame"></i>인기 레시피</span><span class="more">전체 <i data-lucide="chevron-right"></i></span></div>
+        <div class="cats">
+          <div class="cat" onclick="openSearch('SNS 트렌드')"><div class="ic"><i data-lucide="sparkles"></i></div><span>요즘 뜨는</span></div>
+          <div class="cat" onclick="openSearch('많이 만드는')"><div class="ic"><i data-lucide="flame"></i></div><span>많이 만드는</span></div>
+          <div class="cat" onclick="openSearch('재료 적게')"><div class="ic"><i data-lucide="package-check"></i></div><span>재료 적게</span></div>
+          <div class="cat" onclick="openSearch('10분')"><div class="ic"><i data-lucide="timer"></i></div><span>10분 컷</span></div>
+        </div>
+        <div class="section-t"><span class="st-l"><i data-lucide="flame"></i>지금 많이 만드는 요리</span><span class="more">완주 많은 순 <i data-lucide="chevron-right"></i></span></div>
         <div class="hscroll" id="popScroll"></div>
-        <div class="section-t"><span class="st-l"><i data-lucide="sparkles"></i>오늘의 추천</span><span class="more">전체 <i data-lucide="chevron-right"></i></span></div>
+        <div class="section-t"><span class="st-l"><i data-lucide="package-check"></i>재료 8개 이하로 시작</span><span class="more">가볍게 만들기 <i data-lucide="chevron-right"></i></span></div>
         <div class="hscroll" id="recScroll"></div>
+        <div class="section-t"><span class="st-l"><i data-lucide="sparkles"></i>SNS에서 자주 보이는 메뉴</span><span class="more">요청 우선 <i data-lucide="chevron-right"></i></span></div>
+        <div class="hscroll" id="trendScroll"></div>
+        <div class="section-t"><span class="st-l"><i data-lucide="messages-square"></i>먼저 만든 사람들의 팁</span><span class="more" onclick="openFeedback('home-review')">후기 남기기 <i data-lucide="chevron-right"></i></span></div>
+        <div class="community-strip" id="communityStrip"></div>
+      </div>
+    </div>
+
+    <!-- 2. 검색 -->
+    <div class="view" id="searchPage">
+      <div class="statusbar"><span>9:41</span><span class="icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
+      <div class="nav"><div class="ic-btn" onclick="show('home')"><i data-lucide="chevron-left"></i></div><div class="title">요리 찾기</div><div class="ic-btn" onclick="openFeedback('search-recipe-suggest')"><i data-lucide="send"></i></div></div>
+      <div class="body">
+        <div class="search-live">
+          <i data-lucide="search"></i>
+          <input id="recipeSearchInput" type="search" autocomplete="off" placeholder="콘치즈, 명란, Maangchi처럼 검색" oninput="runRecipeSearch(this.value)">
+          <button id="searchClearBtn" type="button" onclick="clearRecipeSearch()" aria-label="검색어 지우기"><i data-lucide="x"></i></button>
+        </div>
+        <p class="search-helper"><b>요리 제목, 재료, 창작자 이름</b>을 함께 보고 가장 가까운 레시피를 먼저 보여줘요.</p>
+        <div class="search-chips" aria-label="빠른 검색어">
+          <button type="button" onclick="openSearch('콘치즈 불닭')">콘치즈 불닭</button>
+          <button type="button" onclick="openSearch('명란 파스타')">명란 파스타</button>
+          <button type="button" onclick="openSearch('Maangchi')">Maangchi</button>
+          <button type="button" onclick="openSearch('재료 적게')">재료 적게</button>
+          <button type="button" onclick="openSearch('야식')">야식</button>
+        </div>
+        <div class="search-results-head"><b id="searchResultTitle">추천 레시피</b><span id="searchResultMeta">요즘 많이 찾는 메뉴</span></div>
+        <div class="search-results" id="searchResults"></div>
       </div>
     </div>
 
@@ -1147,6 +1329,7 @@
             <h2 id="detTitle"></h2>
           </div>
           <p class="dsummary" id="detSummary"></p>
+          <div id="detTipCard"></div>
           <div class="meta">
             <div class="chip"><i data-lucide="timer"></i><div class="v" id="detTime"></div><div class="k">조리시간</div></div>
             <div class="chip"><i data-lucide="users"></i><div class="v" id="detServings"></div><div class="k">분량</div></div>
@@ -1231,8 +1414,13 @@
           <div class="ds-card"><span class="ds-ic"><i data-lucide="utensils"></i></span><b id="doneServings">-</b><small>완성 분량</small></div>
         </div>
         <div class="done-actions">
-          <button class="btn" onclick="show('home')">홈으로</button>
+          <button class="btn share" onclick="shareCompletedRecipe()"><i data-lucide="share-2"></i>친구에게 공유하기</button>
+          <button class="btn light" onclick="openFeedback('complete-review')"><i data-lucide="message-square-plus"></i>후기 남기기</button>
           <button class="btn ghost" onclick="startCook()">다시 요리하기</button>
+        </div>
+        <div class="done-next">
+          <button type="button" onclick="showLanding();setTimeout(scrollToBeta,120)">출시 알림 신청</button>
+          <button type="button" onclick="openFeedback('complete-recipe-request')">요리 요청하기</button>
         </div>
       </div>
     </div>
@@ -1347,10 +1535,10 @@
     </div>
 
 
+    <button class="app-feedback-btn" type="button" onclick="openFeedback('app-floating')"><i data-lucide="message-square-plus"></i>의견 남기기</button>
   </div>
 </div>
 
-<button class="app-feedback-btn" type="button" onclick="openFeedback('app-floating')"><i data-lucide="message-square-plus"></i>피드백</button>
 <div class="feedback-modal" id="feedbackModal" role="dialog" aria-modal="true" aria-labelledby="feedbackTitle">
   <div class="feedback-card">
     <div class="feedback-head">
@@ -1412,23 +1600,23 @@
   }
   const landingVariants={
     demo:{
-      kicker:'출시 전 베타 모집 중',
-      headline:'요리 영상 보면서<br><span>손 안 대고</span> 따라하기',
-      headlineMobile:'요리 영상 보면서<br><span>손 안 대고</span> 따라하기',
-      lead:'냄비는 유튜브 요리 영상을 단계별 조리 모드로 바꿔주는 베타 앱입니다. 앱이 출시될 때 알림 받을 사람과, 추가되길 원하는 레시피를 먼저 모으는 중입니다.',
-      leadMobile:'베타테스트 참여 알림을 받고, 냄비에 먼저 들어갔으면 하는 레시피를 남겨주세요.',
+      kicker:'요즘 뜨는 요리, 직접 해보고 싶다면',
+      headline:'SNS 요리 영상,<br><span>따라 하다 막혔죠?</span>',
+      headlineMobile:'SNS 요리 영상,<br><span>따라 하다 막혔죠?</span>',
+      lead:'냄비는 유튜브와 SNS에서 본 요리를 주방에서 따라 하기 쉽게 정리해줍니다. 재료는 한눈에 보고, 조리 중에는 지금 할 일과 타이밍을 놓치지 않게 챙겨요.',
+      leadMobile:'먼저 써볼 소식을 받고, 따라 해보고 싶은 요리를 남겨주세요.',
       promiseTitle:'출시 전에 먼저 초대할게요',
       promiseText:'이메일을 남기면 베타 초대와 준비 중인 레시피 소식을 받을 수 있어요.',
-      primaryCta:'베타테스트 신청',
-      secondaryCta:'조리 흐름 보기',
-      point1Title:'앱 화면 먼저보기',
-      point1Text:'홈, 레시피 상세, 조리 모드를 이 페이지에서 바로 확인할 수 있습니다.',
-      point2Title:'출시 알림 받기',
+      primaryCta:'미리 써보기 신청',
+      secondaryCta:'지금 써보기',
+      point1Title:'요즘 메뉴를 더 쉽게',
+      point1Text:'릴스, 쇼츠, 유튜브에서 본 요리를 주방용 순서로 정리합니다.',
+      point2Title:'준비 소식 받기',
       point2Text:'정식 오픈과 베타 초대 소식을 이메일로 안내합니다.',
-      point3Title:'원하는 레시피 남기기',
-      point3Text:'따라하고 싶은 영상이나 요리를 보내주면 우선순위에 반영합니다.',
-      potTitle:'작은 냄비가<br>순서를 챙겨요',
-      potText:'영상은 냄비가 넘기고, 당신은 손맛에 집중해요.'
+      point3Title:'보고 싶은 요리 보내기',
+      point3Text:'따라 해보고 싶은 영상이나 요리를 보내주면 다음 후보에 넣습니다.',
+      potTitle:'작은 냄비가<br>옆에서 챙겨요',
+      potText:'영상 찾고 되감는 시간은 줄이고, 지금 해야 할 요리에 집중하게 도와줘요.'
     },
     beta:{
       kicker:'주방에서 직접 써볼 베타테스터 모집',
@@ -1439,7 +1627,7 @@
       promiseTitle:'작은 테스트 그룹부터 시작합니다',
       promiseText:'요리 스타일과 테스트 상황을 남기면 맞는 과제를 보내드릴게요.',
       primaryCta:'베타 신청하기',
-      secondaryCta:'앱 흐름 먼저보기',
+      secondaryCta:'지금 써보기',
       point1Title:'테스트 과제 받기',
       point1Text:'퇴근 후 한 끼, 가족 식사, 초보 요리처럼 실제 상황별 과제를 보냅니다.',
       point2Title:'초대 링크 안내',
@@ -1458,7 +1646,7 @@
       promiseTitle:'요청이 많은 레시피부터 준비합니다',
       promiseText:'요리 이름이나 링크만 남겨도 좋아요. 반영 소식이 필요하면 이메일도 함께 남겨주세요.',
       primaryCta:'레시피 요청하기',
-      secondaryCta:'조리 화면 보기',
+      secondaryCta:'지금 써보기',
       point1Title:'요리 이름만 남겨도 됩니다',
       point1Text:'제육볶음, 순두부찌개처럼 요리 이름만 있어도 후보에 넣습니다.',
       point2Title:'유튜브 링크 우선 반영',
@@ -1540,10 +1728,22 @@
   function openFeedback(source){
     const modal=document.getElementById('feedbackModal');
     const form=document.getElementById('feedbackForm');
+    const title=document.getElementById('feedbackTitle');
+    const desc=document.querySelector('.feedback-head p');
     if(form){
       form.elements.source.value=source||currentViewId();
+      const type=form.elements.type;
+      if(type){
+        if(String(source||'').includes('recipe'))type.value='recipe';
+        else if(String(source||'').includes('review')||String(source||'').includes('tip'))type.value='other';
+        else type.value='bug';
+      }
       setFormStatus(form,'','');
     }
+    if(title)title.textContent=String(source||'').includes('recipe')?'보고 싶은 요리 보내기':'의견 남기기';
+    if(desc)desc.textContent=String(source||'').includes('recipe')
+      ? '따라 해보고 싶은 요리나 영상 링크를 남겨주세요. 다음 레시피 후보를 고를 때 참고합니다.'
+      : '막힌 지점, 좋았던 흐름, 다른 사람에게 남기고 싶은 팁을 그대로 적어주세요.';
     modal.classList.add('show');
     lucide.createIcons();
   }
@@ -1689,6 +1889,7 @@
     setActiveNav(id);
     if(id==='detail')renderDetail();
     else if(id==='cook3'){cook3Car.rebuild();initCookYoutube();showCookHint();} // 선택된 레시피로 단계·영상 재구성
+    else if(id==='searchPage')runRecipeSearch(document.getElementById('recipeSearchInput')?.value||'');
     else{ if(id==='complete')renderComplete(); hideCookHint(); }
     // 화면 진입 시 항상 맨 위부터 보이도록 스크롤 위치 초기화 (홈↔상세 왕복 시 스크롤 유지 방지)
     _v.querySelectorAll('.body,.cook-body,.hf-chat').forEach(el=>el.scrollTop=0);
@@ -1951,6 +2152,30 @@
       {u:'콘치즈가 너무 되직해',a:'면수나 뜨거운 물을 한 숟갈씩 넣어 풀어주세요. 한 번에 많이 넣으면 고소한 맛이 옅어져요.'},
       {u:'다음 단계로 넘어가줘',a:'네, 면을 삶고 콘치즈를 올리는 단계로 넘어갈게요.',next:true},
       {u:'타이머 1분 맞춰줘',a:'1분 타이머를 시작했어요. 약불에서 뚜껑을 덮고 치즈만 녹이면 돼요.',timer:60}
+    ],
+    Lf44Fk7H24s:[
+      {u:'김치가 덜 익었으면 어떻게 해?',a:'신맛이 부족하면 식초를 아주 조금만 더하고, 단맛이 필요하면 설탕을 한 꼬집 넣어 맞춰보세요. 김칫국물이 있으면 같이 쓰는 게 좋아요.'},
+      {u:'밥이 팬에 눌어붙어',a:'김칫국물이나 물을 한두 숟갈 넣고 바닥을 긁듯이 섞어주세요. 불은 중불로 낮추고 밥알을 풀어가며 볶으면 덜 붙어요.'},
+      {u:'다음 단계로 넘어가줘',a:'네, 밥과 김칫국물, 고추장을 넣어 볶는 단계로 넘어갈게요.',next:true},
+      {u:'타이머 1분 맞춰줘',a:'1분 타이머를 시작했어요. 김치를 먼저 볶아 향을 올린 뒤 밥을 넣으면 맛이 더 잘 배어요.',timer:60}
+    ],
+    kN89ewZjOR8:[
+      {u:'파프리카 없으면 뭘 넣어?',a:'당근, 쪽파, 부추처럼 잘게 다져 빨리 익는 채소면 좋아요. 물기가 많은 채소는 달걀말이가 찢어질 수 있으니 조금만 넣어주세요.'},
+      {u:'계란말이가 찢어질 것 같아',a:'불을 약하게 낮추고 윗면이 살짝 촉촉할 때 말아주세요. 너무 익은 뒤 말면 갈라지고, 너무 덜 익으면 흐를 수 있어요.'},
+      {u:'다음 단계로 넘어가줘',a:'네, 남은 달걀물을 이어 붓고 기존 말이와 붙이는 단계로 넘어갈게요.',next:true},
+      {u:'타이머 5분 맞춰줘',a:'5분 타이머를 시작했어요. 완성한 뒤 잠깐 식히면 모양이 잡혀서 더 깔끔하게 썰려요.',timer:300}
+    ],
+    Slj_fM1jQVo:[
+      {u:'새우 없으면 빼도 돼?',a:'빼도 괜찮아요. 감칠맛이 아쉬우면 멸치 육수를 조금 더 진하게 내거나 된장을 아주 조금만 추가해보세요.'},
+      {u:'된장이 너무 짜게 들어갔어',a:'물이나 애호박, 두부를 조금 더 넣어 희석해 주세요. 간을 바로 맞추기보다 2~3분 끓인 뒤 다시 맛보는 게 좋아요.'},
+      {u:'다음 단계로 넘어가줘',a:'네, 두부를 작은 큐브로 썰어 찌개에 넣는 단계로 넘어갈게요.',next:true},
+      {u:'타이머 3분 맞춰줘',a:'3분 타이머를 시작했어요. 두부를 넣은 뒤에는 세게 젓지 말고 가장자리만 살짝 정리하면 모양이 덜 깨져요.',timer:180}
+    ],
+    '3oFCGKmzQX8':[
+      {u:'앞다리살 대신 삼겹살 써도 돼?',a:'가능해요. 삼겹살은 기름이 더 많이 나오니 식용유를 줄이고, 볶는 중간에 기름이 너무 많으면 조금 덜어내세요.'},
+      {u:'양념이 타는 것 같아',a:'불을 중불로 낮추고 양파를 먼저 넣어 수분을 내주세요. 그래도 뻑뻑하면 물을 한두 숟갈만 넣어 양념을 풀면 돼요.'},
+      {u:'다음 단계로 넘어가줘',a:'네, 양파와 대파를 넣고 채소 숨을 죽이는 단계로 넘어갈게요.',next:true},
+      {u:'타이머 15분 맞춰줘',a:'15분 타이머를 시작했어요. 고기가 완전히 익고 가장자리가 살짝 바삭해질 때까지 볶아주세요.',timer:900}
     ]
   };
   function voiceScriptFor(recipe){
@@ -1969,18 +2194,139 @@
     const grp=(label,arr)=>arr.length?'<div class="ing-group-label">'+label+'</div><div class="ings">'+arr.map(x=>'<div class="ing"><div class="n">'+esc(x.n)+'</div><div class="q">'+esc(x.q)+'</div></div>').join('')+'</div>':'';
     return (grp('주재료',r.ingredients.main)+grp('양념',r.ingredients.seasoning))||'<div class="ing-empty">재료 정보 준비 중이에요</div>';
   }
+  const RECIPE_REACTIONS={
+    vlPqkuHIdCc:{made:128,likes:342,stars:4.8,tips:['치즈는 약불에서 뚜껑 덮고 1분만 녹이면 딱 좋아요.','맵찔이는 액상스프를 반 숟갈 남기면 먹기 편했어요.']},
+    vHU4_QbslRA:{made:96,likes:188,stars:4.7,tips:['명란은 처음부터 다 넣지 말고 반만 넣고 간을 봐야 덜 짜요.','면수는 꼭 한 컵 남겨두면 소스가 잘 붙어요.']},
+    l7nGCJeAqjw:{made:84,likes:176,stars:4.6,tips:['떡이 말랑해지기 전까지 바닥을 자주 저어야 덜 눌어붙어요.','우유 대신 생크림을 쓰면 물을 조금 보태야 덜 느끼해요.']},
+    eJekYxjFewM:{made:71,likes:132,stars:4.6,tips:['양파는 찬물에 5분 담그면 매운맛이 줄어요.','김가루를 넉넉히 넣으면 간장이 적어도 맛이 살아나요.']},
+    Lf44Fk7H24s:{made:118,likes:205,stars:4.7,tips:['김칫국물을 조금 넣으니 밥알에 양념이 더 잘 배었어요.','팬에 붙으면 물 한 숟갈 넣고 긁듯이 볶으면 살아나요.']},
+    kN89ewZjOR8:{made:64,likes:97,stars:4.5,tips:['윗면이 살짝 촉촉할 때 말아야 찢어지지 않아요.','다 말고 5분 식힌 뒤 썰면 모양이 훨씬 깔끔해요.']},
+    '3oFCGKmzQX8':{made:102,likes:224,stars:4.8,tips:['양념이 타려 하면 양파를 먼저 넣어 수분을 내면 좋아요.','삼겹살로 하면 기름을 중간에 조금 덜어내는 게 깔끔해요.']},
+    default:{made:52,likes:88,stars:4.6,tips:['영상보다 재료를 먼저 꺼내두면 중간에 덜 헤매요.','헷갈린 구간은 조리 모드에서 한 번 더 보고 넘어가면 좋아요.']}
+  };
+  function reactionFor(r){return RECIPE_REACTIONS[r.id]||RECIPE_REACTIONS.default;}
+  function starsHTML(score){
+    const count=Math.round(score||4.6);
+    return Array.from({length:5},(_,i)=>'<i data-lucide="star"'+(i<count?' class="on"':'')+'></i>').join('');
+  }
+  function renderCommunityStrip(){
+    const el=document.getElementById('communityStrip');
+    if(!el)return;
+    const ids=['vlPqkuHIdCc','vHU4_QbslRA','Lf44Fk7H24s','3oFCGKmzQX8'];
+    el.innerHTML=ids.map(id=>{
+      const r=recipeById(id), data=reactionFor(r), tip=data.tips[0];
+      return '<div class="community-card" onclick="goDetail(\''+r.id+'\')">'+
+        '<div class="cc-head"><b>'+esc(r.name)+'</b><span class="cc-pill">'+data.made+'명 완주</span></div>'+
+        '<p>'+esc(tip)+'</p>'+
+        '<small><i data-lucide="star"></i>'+data.stars+' · 도움이 됐어요 '+data.likes+'</small>'+
+      '</div>';
+    }).join('');
+  }
 
   function cardHTML(r){
+    const reaction=reactionFor(r);
     return '<div class="rcard" data-vid="'+r.id+'" onclick="goDetail(\''+r.id+'\')">'+
       '<div class="thumb '+r.food+'"><img src="https://i.ytimg.com/vi/'+r.id+'/mqdefault.jpg" onerror="this.style.display=\'none\'">'+
         '<span class="badge"><i data-lucide="clock"></i>'+r.time+'</span></div>'+
-      '<div class="cap"><b>'+esc(r.title)+'</b><small>'+esc(r.channel+' · '+r.servings)+'</small></div></div>';
+      '<div class="cap"><b>'+esc(r.title)+'</b><small>'+esc(r.channel+' · '+r.servings)+'</small><div class="social"><span><i data-lucide="utensils"></i><em>'+reaction.made+'</em></span><span><i data-lucide="star"></i><em>'+reaction.stars+'</em></span></div></div></div>';
+  }
+  const SEARCH_BOOSTS={
+    'sns 트렌드':['불닭','로제','티라미수','아보카도','콘치즈','명란'],
+    '요즘 뜨는':['불닭','로제','티라미수','아보카도','콘치즈','명란'],
+    '많이 만드는':['김치볶음밥','제육볶음','불닭','명란','로제'],
+    '재료 적게':['10분','간단','계란','명란','김치볶음밥'],
+    '야식':['불닭','떡볶이','콘치즈','김치볶음밥'],
+    '간단':['10분','15분','쉬움','계란','김치볶음밥']
+  };
+  function recipeIngredientsText(r){
+    return Object.values(r.ingredients||{}).flat().map(item=>item.n+' '+item.q).join(' ');
+  }
+  function searchTerms(query){
+    const raw=(query||'').trim();
+    const base=raw.split(/\s+/).filter(Boolean);
+    const expanded=[...base];
+    const lowered=raw.toLowerCase();
+    Object.entries(SEARCH_BOOSTS).forEach(([key,values])=>{
+      if(lowered.includes(key.toLowerCase()))expanded.push(...values);
+    });
+    return [...new Set(expanded.map(v=>v.trim()).filter(Boolean))];
+  }
+  function recipeSearchScore(r,query){
+    const terms=searchTerms(query);
+    if(!terms.length)return 0;
+    const title=(r.title+' '+r.name).toLowerCase();
+    const channel=(r.channel||'').toLowerCase();
+    const summary=(r.summary||'').toLowerCase();
+    const ingredients=recipeIngredientsText(r).toLowerCase();
+    const meta=(r.time+' '+r.difficulty+' '+r.servings).toLowerCase();
+    let score=0;
+    terms.forEach(term=>{
+      const t=term.toLowerCase();
+      if(title.includes(t))score+=10;
+      if(ingredients.includes(t))score+=8;
+      if(channel.includes(t))score+=7;
+      if(summary.includes(t))score+=4;
+      if(meta.includes(t))score+=3;
+    });
+    if(/재료|적게|간단/.test(query))score+=Math.max(0,14-ingCount(r));
+    if(/sns|요즘|트렌드|유행/.test(query)&&/(불닭|로제|티라미수|아보카도|명란|콘치즈)/.test(title+' '+summary))score+=7;
+    if(/많이|만드는|완주/.test(query))score+=Math.min(10,Math.floor(reactionFor(r).made/18));
+    return score;
+  }
+  function searchRecipes(query){
+    const q=(query||'').trim();
+    if(!q){
+      const ids=['vlPqkuHIdCc','l7nGCJeAqjw','vHU4_QbslRA','kN89ewZjOR8','sIBG0KjOcBs','Lf44Fk7H24s'];
+      return ids.map(id=>recipeById(id)).filter(Boolean);
+    }
+    return RECIPES
+      .map(r=>({r,score:recipeSearchScore(r,q)}))
+      .filter(item=>item.score>0)
+      .sort((a,b)=>b.score-a.score||a.r.time.localeCompare(b.r.time))
+      .map(item=>item.r);
+  }
+  function runRecipeSearch(query){
+    const input=document.getElementById('recipeSearchInput');
+    const clear=document.getElementById('searchClearBtn');
+    const title=document.getElementById('searchResultTitle');
+    const meta=document.getElementById('searchResultMeta');
+    const results=document.getElementById('searchResults');
+    if(!results)return;
+    const q=(query||'').trim();
+    if(input&&input.value!==query)input.value=query||'';
+    if(clear)clear.classList.toggle('show',!!q);
+    const list=searchRecipes(q);
+    if(title)title.textContent=q?'검색 결과':'추천 레시피';
+    if(meta)meta.textContent=q?list.length+'개 찾았어요':'요즘 많이 찾는 메뉴';
+    results.innerHTML=list.length
+      ? list.map(cardHTML).join('')
+      : '<div class="search-empty"><b>아직 찾는 요리가 없어요</b>요리 이름이나 유튜브 링크를 보내주면 다음 후보에 넣어볼게요.</div>';
+    lucide.createIcons();
+  }
+  function openSearch(query=''){
+    show('searchPage');
+    const input=document.getElementById('recipeSearchInput');
+    if(input)input.value=query||'';
+    runRecipeSearch(query||'');
+    const hash=query?'#search='+encodeURIComponent(query):'#search';
+    if(location.hash!==hash)history.replaceState(null,'',hash);
+    setTimeout(()=>input&&input.focus(),80);
+  }
+  function clearRecipeSearch(){
+    const input=document.getElementById('recipeSearchInput');
+    if(input)input.value='';
+    runRecipeSearch('');
+    if(location.hash.startsWith('#search'))history.replaceState(null,'','#search');
   }
   function renderHomeSections(){
-    const popIds=['CgapOjKdo9I','Lf44Fk7H24s','3oFCGKmzQX8','Slj_fM1jQVo','kN89ewZjOR8','vlPqkuHIdCc','l7nGCJeAqjw','sIBG0KjOcBs','VvM59BXz6Bw','V9KP9Qvb3lI','eJekYxjFewM','vHU4_QbslRA']; // 인기순(고정, 순두부 최상단)
+    const popIds=['vlPqkuHIdCc','Lf44Fk7H24s','3oFCGKmzQX8','vHU4_QbslRA','l7nGCJeAqjw','kN89ewZjOR8'];
     document.getElementById('popScroll').innerHTML=popIds.map(id=>RECIPES.find(r=>r.id===id)).filter(Boolean).map(cardHTML).join('');
-    const recIds=['Lf44Fk7H24s','kN89ewZjOR8','vlPqkuHIdCc','l7nGCJeAqjw','vHU4_QbslRA','eJekYxjFewM','sIBG0KjOcBs','VvM59BXz6Bw'];   // 빠르게 만드는 추천
-    document.getElementById('recScroll').innerHTML=RECIPES.filter(r=>recIds.includes(r.id)).map(cardHTML).join('');
+    const recIds=['vHU4_QbslRA','kN89ewZjOR8','vlPqkuHIdCc','V9KP9Qvb3lI'];
+    document.getElementById('recScroll').innerHTML=recIds.map(id=>RECIPES.find(r=>r.id===id)).filter(Boolean).map(cardHTML).join('');
+    const trendIds=['l7nGCJeAqjw','vlPqkuHIdCc','eJekYxjFewM','sIBG0KjOcBs','vHU4_QbslRA','VvM59BXz6Bw'];
+    const trendEl=document.getElementById('trendScroll');
+    if(trendEl)trendEl.innerHTML=trendIds.map(id=>RECIPES.find(r=>r.id===id)).filter(Boolean).map(cardHTML).join('');
+    renderCommunityStrip();
     lucide.createIcons();
   }
   function goDetail(id){currentRecipe=recipeById(id);show('detail');}
@@ -1989,6 +2335,7 @@
     const r=currentRecipe;
     document.getElementById('detTitle').innerHTML=esc(r.title);
     document.getElementById('detSummary').textContent=r.summary||'';
+    document.getElementById('detTipCard').innerHTML=detailTipHTML(r);
     document.getElementById('detTime').textContent=r.time||'-';
     document.getElementById('detServings').textContent=r.servings||'-';
     document.getElementById('detDiff').textContent=r.difficulty||'-';
@@ -2016,6 +2363,11 @@
     document.getElementById('doneTime').textContent=r.time||'-';
     document.getElementById('doneSteps').textContent=r.steps.length+'단계';
     document.getElementById('doneServings').textContent=r.servings||'-';
+  }
+  function detailTipHTML(r){
+    const data=reactionFor(r);
+    const tip=data.tips[0]||'먼저 만든 사람이 남긴 팁을 모으고 있어요.';
+    return '<div class="tip-card"><div class="tip-h"><i data-lucide="message-square-heart"></i>먼저 만든 사람의 팁 · '+data.made+'명 완주</div><p>'+esc(tip)+'</p><button type="button" onclick="openFeedback(\'detail-tip\')">내 팁 남기기</button></div>';
   }
   const DET_SECS=['sec-ing','sec-steps'];
   let tabLock=0;
@@ -2531,9 +2883,16 @@
   function shareRecipe(){
     // 배포 도메인에서 보면 그 origin을, 로컬/파일에서 보면 배포 URL을 사용
     const base=(location.protocol==='https:')?location.origin:SHARE_BASE;
-    const url=base+'/#detail='+encodeURIComponent(currentRecipe.id);
+    const url=base+'/app#detail='+encodeURIComponent(currentRecipe.id);
     copyText(url).then(ok=>{
       toast(ok?'공유 링크가 복사되었어요':'복사 실패 — '+url,'share-2');
+    });
+  }
+  function shareCompletedRecipe(){
+    const base=(location.protocol==='https:')?location.origin:SHARE_BASE;
+    const url=base+'/?from=completed-share&recipe='+encodeURIComponent(currentRecipe.id)+'#assistant';
+    copyText(url).then(ok=>{
+      toast(ok?'친구에게 보낼 랜딩 링크가 복사됐어요':'복사 실패 — '+url,'share-2');
     });
   }
 
@@ -2604,15 +2963,28 @@
     btn.innerHTML=(willDark?'<i data-lucide="moon"></i><span>모드: 다크</span>':'<i data-lucide="sun"></i><span>모드: 라이트</span>');
     if(window.lucide)lucide.createIcons();
   }
+  function isStandaloneAppPath(){
+    const path=(location.pathname||'/').replace(/\/+$/,'')||'/';
+    return path==='/app'||path.endsWith('/app.html');
+  }
   function applyHash(){
     const h=location.hash.replace('#','');
-    if(!h){document.body.classList.add('marketing-open');pinLandingTopSoon();return;}
+    if(!h){
+      if(isStandaloneAppPath()){
+        document.body.classList.remove('marketing-open');
+        closeVoice();closeIngredients();closeTimer();hf3Reset();
+        show('home');
+        return;
+      }
+      document.body.classList.add('marketing-open');pinLandingTopSoon();return;
+    }
     if(h==='landing'){showLanding();return;}
     document.body.classList.remove('marketing-open');
     closeVoice();closeIngredients();closeTimer();hf3Reset();
     const [route,param]=h.split('=');           // '#detail=<레시피id>' 딥링크 지원
     switch(route){
       case 'home': show('home');break;
+      case 'search': show('searchPage'); setTimeout(()=>{const q=param?decodeURIComponent(param):'';const input=document.getElementById('recipeSearchInput');if(input)input.value=q;runRecipeSearch(q);},0); break;
       case 'detail': if(param)currentRecipe=recipeById(decodeURIComponent(param)); show('detail');break;
       case 'ingredients': cook3Car.reset();show('cook3');openIngredients();break;
       case 'timer': cook3Car.reset();show('cook3');openTimer();break;
