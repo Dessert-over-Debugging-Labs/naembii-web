@@ -7,9 +7,12 @@ const baseURL = process.argv[2] || 'http://127.0.0.1:4190/';
 const out = process.argv[3] || '/tmp/cook-wireframe-v3/cdp-mobile.png';
 const mode = process.argv[4] || 'mobile';
 const port = Number(process.argv[5] || 9237);
-const metrics = mode === 'desktop'
-  ? { width: 1440, height: 1100, deviceScaleFactor: 1, mobile: false }
-  : { width: 390, height: 1200, deviceScaleFactor: 2, mobile: true };
+const metricsByMode = {
+  mobile: { width: 390, height: 844, deviceScaleFactor: 2, mobile: true },
+  tablet: { width: 768, height: 1100, deviceScaleFactor: 1, mobile: true },
+  desktop: { width: 1440, height: 1100, deviceScaleFactor: 1, mobile: false }
+};
+const metrics = metricsByMode[mode] || metricsByMode.mobile;
 
 await mkdir(dirname(out), { recursive: true });
 
@@ -18,6 +21,7 @@ const child = spawn(chrome, [
   '--disable-gpu',
   '--no-first-run',
   '--no-default-browser-check',
+  '--remote-debugging-address=127.0.0.1',
   `--remote-debugging-port=${port}`,
   `--user-data-dir=/tmp/cook-wireframe-cdp-${mode}-${Date.now()}`,
   'about:blank'
@@ -46,7 +50,13 @@ async function waitForPage() {
   throw new Error('Chrome CDP page target not found');
 }
 
-const wsURL = await waitForPage();
+let wsURL = '';
+try {
+  wsURL = await waitForPage();
+} catch (error) {
+  child.kill('SIGTERM');
+  throw error;
+}
 const ws = new WebSocket(wsURL);
 const pending = new Map();
 let id = 0;
@@ -77,7 +87,7 @@ try {
   await send('Page.enable');
   await send('Runtime.enable');
   await send('Emulation.setDeviceMetricsOverride', metrics);
-  if (mode === 'mobile') {
+  if (mode === 'mobile' || mode === 'tablet') {
     await send('Emulation.setUserAgentOverride', {
       userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1'
     });
@@ -85,10 +95,26 @@ try {
   await send('Page.navigate', { url: baseURL });
   await delay(2600);
   await send('Runtime.evaluate', {
+    awaitPromise: true,
     expression: `
-      window.scrollTo(0,0);
-      document.documentElement.scrollTop = 0;
-      document.body.scrollTop = 0;
+      new Promise(resolve => {
+        history.scrollRestoration = 'manual';
+        let count = 0;
+        const pin = () => {
+          window.scrollTo(0,0);
+          document.documentElement.scrollTop = 0;
+          document.body.scrollTop = 0;
+          count += 1;
+          if (count < 18) requestAnimationFrame(pin);
+          else setTimeout(() => {
+            window.scrollTo(0,0);
+            document.documentElement.scrollTop = 0;
+            document.body.scrollTop = 0;
+            resolve(true);
+          }, 120);
+        };
+        pin();
+      });
     `
   });
   await delay(300);
@@ -98,17 +124,77 @@ try {
       width: window.innerWidth,
       scrollY: window.scrollY,
       mobileMedia: matchMedia('(max-width:900px)').matches,
-      marketing: document.body.classList.contains('marketing-open'),
-      mobileHero: getComputedStyle(document.querySelector('.mobile-landing-hero')).display,
-      mobileHeroTop: Math.round(document.querySelector('.mobile-landing-hero').getBoundingClientRect().top),
-      demoTop: Math.round(document.querySelector('.landing-preview').getBoundingClientRect().top),
-      headline: document.querySelector('.mobile-landing-hero h1, .landing-copy h1')?.innerText || '',
-      hasCookingPromise: document.body.innerText.includes('요리 영상') && document.body.innerText.includes('손 안 대고'),
-      hasBetaCTA: document.body.innerText.includes('출시 알림 받기') || document.body.innerText.includes('베타테스트 신청'),
-      hasMascotCopy: document.body.innerText.includes('작은 냄비가') || document.body.innerText.includes('손맛에 집중'),
-      hasRecipeRequest: document.body.innerText.includes('원하는 레시피 요청'),
-      hasLaunchInput: document.body.innerText.includes('출시 알림'),
-      hasAppPreview: !!document.getElementById('landingDemoFrame'),
+      path: location.pathname,
+      headline: document.querySelector('h1')?.innerText || '',
+      heroTop: Math.round(document.querySelector('.hero')?.getBoundingClientRect().top || 0),
+      heroHeight: Math.round(document.querySelector('.hero')?.getBoundingClientRect().height || 0),
+      hasCookingPromise: document.body.innerText.includes('SNS 요리 영상') && document.body.innerText.includes('따라 하다 막혔죠'),
+      hasBetaCTA: document.body.innerText.includes('미리 써보기 신청') || document.body.innerText.includes('먼저 써보기 신청'),
+      hasMascotCopy: document.body.innerText.includes('작은 냄비가') || document.body.innerText.includes('옆에서 챙겨요'),
+      hasRecipeRequest: document.body.innerText.includes('보고 싶은 요리 보내기') || document.body.innerText.includes('요리 보내기'),
+      hasLaunchInput: document.body.innerText.includes('미리 써보기 신청') || document.body.innerText.includes('먼저 써보기 신청'),
+      hasMobileAppCTA: document.body.innerText.includes('지금 써보기'),
+      hasAppPreview: document.querySelectorAll('img[src^="/assets/screens/"]').length >= 5,
+      hasAssistantSurvey: !!document.querySelector('[data-assistant-survey="true"]') && document.body.innerText.includes('오늘 어떤 요리를 따라 해볼까요?') && document.body.innerText.includes('바로 만들어보기'),
+      hasInteractiveGif: !!document.querySelector('img[src="/assets/screens/naembi-core-flow.gif"]'),
+      heroPrimaryCtaVisible: (() => {
+        const cta = document.querySelector('.hero-actions .primary');
+        const rect = cta?.getBoundingClientRect();
+        return !!rect && rect.top >= 0 && rect.bottom <= window.innerHeight;
+      })(),
+      heroPhoneStartsInFirstViewport: (() => {
+        const phone = document.querySelector('.phone-showcase');
+        const rect = phone?.getBoundingClientRect();
+        return !!rect && rect.top > 0 && rect.top < window.innerHeight;
+      })(),
+      heroPhoneFullyVisibleInFirstViewport: (() => {
+        const phone = document.querySelector('.phone-showcase');
+        const rect = phone?.getBoundingClientRect();
+        return !!rect && rect.top > 0 && rect.bottom <= window.innerHeight;
+      })(),
+      heroScrollPressureLow: (() => {
+        const hero = document.querySelector('.hero');
+        const rect = hero?.getBoundingClientRect();
+        return !!rect && rect.height <= window.innerHeight * 1.28;
+      })(),
+      mobileScreensUseHorizontalScroll: (() => {
+        const screens = document.querySelector('.screens');
+        const style = screens ? getComputedStyle(screens) : null;
+        return !matchMedia('(max-width:620px)').matches || !!style && style.display === 'flex' && /(auto|scroll)/.test(style.overflowX);
+      })(),
+      heroProofHiddenOnMobile: (() => {
+        const proof = document.querySelector('.hero-proof');
+        return !matchMedia('(max-width:620px)').matches || !proof || getComputedStyle(proof).display === 'none';
+      })(),
+      hasVisibleAppPreview: (() => {
+        const shots = [...document.querySelectorAll('img[src^="/assets/screens/"]')];
+        return shots.some(img => {
+          const rect = img.getBoundingClientRect();
+          return rect.width > 0 && rect.height > 0 && rect.bottom > 0;
+        });
+      })(),
+      screenImages: [...document.querySelectorAll('img[src^="/assets/screens/"]')].map(img => {
+        const rect = img.getBoundingClientRect();
+        const naturalRatio = img.naturalWidth && img.naturalHeight ? img.naturalWidth / img.naturalHeight : 0;
+        const renderedRatio = rect.width && rect.height ? rect.width / rect.height : 0;
+        const ratioDelta = naturalRatio && renderedRatio ? Math.abs(naturalRatio - renderedRatio) : 0;
+        return {
+          src: img.getAttribute('src'),
+          objectFit: getComputedStyle(img).objectFit,
+          width: Math.round(rect.width),
+          height: Math.round(rect.height),
+          naturalRatio: Math.round(naturalRatio * 1000) / 1000,
+          renderedRatio: Math.round(renderedRatio * 1000) / 1000,
+          ratioDelta: Math.round(ratioDelta * 1000) / 1000,
+          visible: rect.width > 0 && rect.height > 0
+        };
+      }),
+      croppedScreenImages: [...document.querySelectorAll('img[src^="/assets/screens/"]')].filter(img => {
+        const rect = img.getBoundingClientRect();
+        const naturalRatio = img.naturalWidth && img.naturalHeight ? img.naturalWidth / img.naturalHeight : 0;
+        const renderedRatio = rect.width && rect.height ? rect.width / rect.height : 0;
+        return getComputedStyle(img).objectFit === 'cover' || (naturalRatio && renderedRatio && Math.abs(naturalRatio - renderedRatio) > 0.03);
+      }).map(img => img.getAttribute('src')),
       forbiddenVisibleTerms: ['Notion','notion','v2','v3','Ralph','랄프','API','Vercel','GitHub','webhook','환경변수','프로토타입','AWS','페이지 안에']
         .filter(term => document.body.innerText.includes(term))
     })`

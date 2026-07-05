@@ -124,36 +124,83 @@ function coreChecks() {
 
   try {
     const vercel = parseJsonFile('vercel.json');
-    const hasRootRewrite = Array.isArray(vercel.rewrites)
-      && vercel.rewrites.some((item) => item.source === '/' && item.destination === '/app.html');
-    gates.push(hasRootRewrite
-      ? pass('vercel root rewrite', '/ -> /app.html 확인')
-      : fail('vercel root rewrite', '루트 rewrite가 app.html을 가리키지 않음', 'vercel.json rewrites에 / -> /app.html을 둔다.'));
+    const rewrites = Array.isArray(vercel.rewrites) ? vercel.rewrites : [];
+    const hasAppRewrite = rewrites.some((item) => item.source === '/app' && item.destination === '/app.html');
+    const rootNotApp = !rewrites.some((item) => item.source === '/' && item.destination === '/app.html');
+    gates.push(hasAppRewrite && rootNotApp
+      ? pass('vercel app route', '/app -> /app.html, 루트는 index.html 진입')
+      : fail('vercel app route', '루트/앱 라우팅이 랜딩+웹앱 분리 구조가 아님', 'vercel.json은 /app -> /app.html만 rewrite하고 루트는 index.html로 둔다.'));
   } catch (error) {
-    gates.push(fail('vercel root rewrite', error.message, 'vercel.json JSON 형식을 복구한다.'));
+    gates.push(fail('vercel app route', error.message, 'vercel.json JSON 형식을 복구한다.'));
   }
 
-  if (!existsSync(resolve(root, 'app.html'))) {
-    gates.push(fail('app entry', 'app.html 없음', '단일 HTML 엔트리를 복구한다.'));
+  if (!existsSync(resolve(root, 'index.html'))) {
+    gates.push(fail('landing entry', 'index.html 없음', '루트 랜딩 엔트리를 복구한다.'));
   } else {
-    const html = read('app.html');
+    const html = read('index.html');
     const required = [
-      ['marketing-open', '랜딩 기본 진입'],
-      ['landingDemoFrame', '앱 미리보기 iframe'],
-      ['betaQuickForm', '히어로 출시 알림 폼'],
+      ['href="/app"', '지금 써보기 CTA'],
+      ['data-assistant-survey="true"', '요리비서 대화형 추천'],
+      ['/assets/screens/app-home.png', '홈 정적 캡쳐'],
+      ['/assets/screens/app-search.png', '검색 정적 캡쳐'],
+      ['/assets/screens/app-detail.png', '상세 정적 캡쳐'],
+      ['/assets/screens/app-cook.png', '조리 정적 캡쳐'],
+      ['/assets/screens/app-complete.png', '완료 정적 캡쳐'],
       ['recipeRequestForm', '레시피 요청 폼'],
-      ['feedbackForm', '피드백 폼']
+      ['betaForm', '베타 신청 폼']
     ];
     const missing = required.filter(([needle]) => !html.includes(needle)).map(([, label]) => label);
     gates.push(missing.length
-      ? fail('landing structure', `누락: ${missing.join(', ')}`, '랜딩/베타/피드백 핵심 DOM id를 복구한다.')
-      : pass('landing structure', '랜딩, 앱 미리보기, 베타/피드백/레시피 요청 폼 확인'));
+      ? fail('landing structure', `누락: ${missing.join(', ')}`, 'index.html의 사용자 후킹 카피/정적 캡쳐/미리 써보기/요리 보내기 구조를 복구한다.')
+      : pass('landing structure', '사용자 후킹 카피, 정적 앱 캡쳐, 미리 써보기/요리 보내기 폼 확인'));
+  }
 
+  if (!existsSync(resolve(root, 'app.html'))) {
+    gates.push(fail('app entry', 'app.html 없음', '/app 웹앱 엔트리를 복구한다.'));
+  } else {
+    const html = read('app.html');
+    const required = [
+      ['isStandaloneAppPath', '/app 기본 앱 홈 진입'],
+      ['id="home"', '앱 홈 화면'],
+      ['id="cook3"', '조리 모드'],
+      ['feedbackForm', '앱 피드백 폼'],
+      ['id="communityStrip"', '후기/팁 스트립'],
+      ['shareCompletedRecipe', '완료 후 공유 루프'],
+      ['app-feedback-btn', '폰 화면 내부 플로팅 피드백']
+    ];
+    const missing = required.filter(([needle]) => !html.includes(needle)).map(([, label]) => label);
+    gates.push(missing.length
+      ? fail('app structure', `누락: ${missing.join(', ')}`, '/app 웹앱 진입과 핵심 화면 구조를 복구한다.')
+      : pass('app structure', '/app 기본 앱 홈, 조리 모드, 피드백 폼 확인'));
+  }
+
+  if (!existsSync(resolve(root, 'design.html'))) {
+    gates.push(fail('design review page', 'design.html 없음', '/design 브랜드·서비스 시안 페이지를 복구한다.'));
+  } else {
+    const html = read('design.html');
+    const required = [
+      ['data-mark="hero-character"', '대표 캐릭터 시안'],
+      ['data-steam-count="3"', '김 물결 3개 규칙'],
+      ['data-play-nose="true"', '재생 버튼 코 규칙'],
+      ['data-smile-mouth="true"', '웃는 입 규칙'],
+      ['data-handle-ear="true"', '손잡이 귀 규칙'],
+      ['data-identity-scorecard="100"', '아이덴티티 점수표'],
+      ['data-layout-candidates="assistant-first"', '음성비서 중심 배치 시안'],
+      ['data-community-feasibility="true"', '후기/상호작용 현실성 검토']
+    ];
+    const missing = required.filter(([needle]) => !html.includes(needle)).map(([, label]) => label);
+    gates.push(missing.length
+      ? fail('design review page', `누락: ${missing.join(', ')}`, '/design 페이지에 브랜드 후보, 캐릭터 규칙, 서비스 배치, 현실성 검토를 유지한다.')
+      : pass('design review page', '브랜드 캐릭터, 점수표, 서비스 배치, 현실성 검토 확인'));
+  }
+
+  {
+    const publicHtml = `${existsSync(resolve(root, 'index.html')) ? read('index.html') : ''}\n${existsSync(resolve(root, 'app.html')) ? read('app.html') : ''}`;
     const forbidden = ['Notion', 'notion', 'v2', 'v3', 'Ralph', '랄프', 'API', 'Vercel', 'GitHub', 'webhook', '환경변수', '프로토타입', 'AWS', '페이지 안에'];
-    const found = forbidden.filter((term) => html.includes(term));
+    const found = forbidden.filter((term) => publicHtml.includes(term));
     gates.push(found.length
-      ? fail('public copy static guard', `app.html 원문 금지어: ${found.join(', ')}`, '사용자 공개 화면/HTML에서 내부 작업 용어를 제거한다.')
-      : pass('public copy static guard', 'app.html 내부 작업 용어 0건'));
+      ? fail('public copy static guard', `공개 HTML 원문 금지어: ${found.join(', ')}`, '사용자 공개 화면/HTML에서 내부 작업 용어를 제거한다.')
+      : pass('public copy static guard', '공개 HTML 내부 작업 용어 0건'));
   }
 
   const syntax = run(process.execPath, ['scripts/check-app-script.mjs']);
@@ -300,7 +347,8 @@ function visualChecks() {
   const outDir = '/tmp/cook-wireframe-v3';
   const runs = [
     ['mobile', `${outDir}/dynamic-mobile.png`, '9341'],
-    ['desktop', `${outDir}/dynamic-desktop.png`, '9342']
+    ['tablet', `${outDir}/dynamic-tablet.png`, '9342'],
+    ['desktop', `${outDir}/dynamic-desktop.png`, '9343']
   ];
 
   for (const [mode, out, port] of runs) {
@@ -325,12 +373,25 @@ function visualChecks() {
     visualArtifacts.push({ mode, out, status: 'PASS', payload });
 
     const terms = payload.forbiddenVisibleTerms || [];
+    const cropped = payload.croppedScreenImages || [];
+    const mobileLayoutBroken = mode === 'mobile' && [
+      ['heroPrimaryCtaVisible', '첫 화면 CTA가 접힘'],
+      ['heroPhoneStartsInFirstViewport', '핵심 기능 GIF가 첫 화면에 진입하지 못함'],
+      ['heroPhoneFullyVisibleInFirstViewport', '핵심 기능 GIF가 첫 화면에서 잘림'],
+      ['heroScrollPressureLow', `히어로 높이가 과도함(${payload.heroHeight || 0}px)`],
+      ['mobileScreensUseHorizontalScroll', '모바일 화면 캡쳐가 세로로 누적됨'],
+      ['heroProofHiddenOnMobile', '모바일 히어로 증거 카드가 첫 화면을 밀어냄']
+    ].filter(([key]) => !payload[key]).map(([, label]) => label);
     if (terms.length) {
       gates.push(fail(`visual capture: ${mode}`, `노출 금지어: ${terms.join(', ')}`, '공개 화면에서 내부 작업 용어를 제거한다.'));
-    } else if (!payload.hasRecipeRequest || !payload.hasLaunchInput || !payload.hasAppPreview) {
-      gates.push(fail(`visual capture: ${mode}`, `필수 섹션 상태: ${JSON.stringify(payload)}`, '레시피 요청/출시 알림/앱 미리보기를 복구한다.'));
+    } else if (cropped.length) {
+      gates.push(fail(`visual capture: ${mode}`, `잘린 앱 캡쳐 이미지: ${cropped.join(', ')}`, '앱 캡쳐 이미지는 object-fit: contain/height:auto로 전체 화면이 보여야 한다.'));
+    } else if (mobileLayoutBroken.length) {
+      gates.push(fail(`visual capture: ${mode}`, `모바일 반응형 압박: ${mobileLayoutBroken.join(', ')}`, '모바일 첫 화면에서 CTA와 핵심 GIF가 보이고, 앱 캡쳐는 가로 스와이프로 제공되어야 한다.'));
+    } else if (!payload.hasRecipeRequest || !payload.hasLaunchInput || !payload.hasAssistantSurvey || !payload.hasInteractiveGif || !(payload.hasVisibleAppPreview || payload.hasMobileAppCTA)) {
+      gates.push(fail(`visual capture: ${mode}`, `필수 섹션 상태: ${JSON.stringify(payload)}`, '보고 싶은 요리 보내기/미리 써보기/요리비서 추천/인터랙션 GIF/앱 진입 CTA 또는 화면 미리보기를 복구한다.'));
     } else {
-      gates.push(pass(`visual capture: ${mode}`, `${out}, forbiddenVisibleTerms=[]`));
+      gates.push(pass(`visual capture: ${mode}`, `${out}, forbiddenVisibleTerms=[], croppedScreenImages=[]`));
     }
   }
 
@@ -339,10 +400,10 @@ function visualChecks() {
 
 function selectedWorkflows(files) {
   const selected = ['core'];
-  const apiTouched = full || touches(files, ['api', 'app.html']);
+  const apiTouched = full || touches(files, ['api', 'app.html', 'index.html']);
   const deployTouched = full || touches(files, ['vercel.json', 'package.json', '.env.example', '.vercelignore', 'api']);
   const docsTouched = full || touches(files, ['docs/verify', 'docs/handoff', /^docs\/progress\//]);
-  const landingTouched = full || touches(files, ['app.html', 'scripts/capture-landing.mjs']);
+  const landingTouched = full || touches(files, ['index.html', 'app.html', 'assets/screens', 'scripts/capture-landing.mjs', 'scripts/capture-app-screens.mjs']);
 
   if (apiTouched) selected.push('api');
   if (deployTouched) selected.push('deploy');
@@ -355,7 +416,7 @@ function selectedWorkflows(files) {
 
 function workflowReason(files, workflow) {
   if (workflow === 'core') return '항상 실행';
-  if (workflow === 'api') return touches(files, ['api', 'app.html']) ? 'api/app 변경 감지' : 'full 실행';
+  if (workflow === 'api') return touches(files, ['api', 'app.html', 'index.html']) ? 'api/app/landing 변경 감지' : 'full 실행';
   if (workflow === 'deploy') return touches(files, ['vercel.json', 'package.json', '.env.example', '.vercelignore', 'api']) ? '배포 설정 변경 감지' : 'full 실행';
   if (workflow === 'docs') return touches(files, ['docs/verify', 'docs/handoff', /^docs\/progress\//]) ? '검증 문서 변경 감지' : 'full 실행';
   if (workflow === 'visual') return visual ? '--visual 요청' : '비활성';
@@ -377,15 +438,19 @@ function gatePassed(gates, name) {
 }
 
 function buildScorecard(gates, workflows) {
-  const html = existsSync(resolve(root, 'app.html')) ? read('app.html') : '';
+  const landingHtml = existsSync(resolve(root, 'index.html')) ? read('index.html') : '';
+  const appHtml = existsSync(resolve(root, 'app.html')) ? read('app.html') : '';
+  const designHtml = existsSync(resolve(root, 'design.html')) ? read('design.html') : '';
+  const html = `${landingHtml}\n${appHtml}`;
   const env = existsSync(resolve(root, '.env.example')) ? read('.env.example') : '';
   const ignored = existsSync(resolve(root, '.vercelignore')) ? read('.vercelignore') : '';
   const docs = existsSync(resolve(root, 'docs/verify/DYNAMIC_WORKFLOW_ko.md')) ? read('docs/verify/DYNAMIC_WORKFLOW_ko.md') : '';
   const visualModes = new Set(visualArtifacts.filter((item) => item.status === 'PASS').map((item) => item.mode));
   const visualPayloads = visualArtifacts.filter((item) => item.status === 'PASS').map((item) => item.payload || {});
   const visualForbiddenTerms = visualPayloads.flatMap((payload) => payload.forbiddenVisibleTerms || []);
+  const visualCroppedImages = visualPayloads.flatMap((payload) => payload.croppedScreenImages || []);
   const visualCopySignals = visualPayloads.map((payload) => (
-    payload.hasCookingPromise && payload.hasBetaCTA && payload.hasAppPreview
+    payload.hasCookingPromise && payload.hasBetaCTA && (payload.hasVisibleAppPreview || payload.hasMobileAppCTA)
   ));
   const visualMascotSignal = visualPayloads.some((payload) => payload.hasMascotCopy);
   const forbidden = ['Notion', 'notion', 'v2', 'v3', 'Ralph', '랄프', 'API', 'Vercel', 'GitHub', 'webhook', '환경변수', '프로토타입', 'AWS', '페이지 안에'];
@@ -395,10 +460,10 @@ function buildScorecard(gates, workflows) {
   const items = [];
 
   const copySignals = [
-    includesAll(html, ['요리 영상 보면서', '손 안 대고']),
-    includesAll(html, ['출시 알림', '베타테스트 신청']),
-    includesAll(html, ['원하는 레시피', '레시피 요청']),
-    includesAll(html, ['작은 냄비가', '순서를 챙겨요', '손맛에 집중'])
+    includesAll(landingHtml, ['SNS 요리 영상', '따라 하다 막혔죠']),
+    includesAll(landingHtml, ['미리 써보기 신청', '지금 써보기']),
+    includesAll(landingHtml, ['보고 싶은 요리', '요리 보내기']),
+    includesAll(landingHtml, ['작은 냄비가', '옆에서 챙겨요'])
   ];
   items.push(scoreItem(
     '사용자 가치·카피 명확성',
@@ -409,11 +474,11 @@ function buildScorecard(gates, workflows) {
   ));
 
   const betaSignals = [
-    html.includes('id="mobileBetaForm"'),
-    html.includes('id="betaQuickForm"'),
-    html.includes('id="betaForm"'),
-    html.includes("postJson('/api/beta-signup'"),
-    html.includes('출시 알림 받기') && html.includes('베타 신청 보내기')
+    landingHtml.includes('id="betaForm"'),
+    landingHtml.includes('href="/app"'),
+    landingHtml.includes("postJson('/api/beta-signup'"),
+    landingHtml.includes('미리 써보기 신청') || landingHtml.includes('먼저 써보기 신청'),
+    landingHtml.includes('신청이 접수됐습니다')
   ];
   items.push(scoreItem(
     '베타 전환 흐름',
@@ -424,11 +489,11 @@ function buildScorecard(gates, workflows) {
   ));
 
   const feedbackSignals = [
-    html.includes('id="recipeRequestForm"'),
-    html.includes('id="feedbackForm"'),
-    html.includes('openFeedback('),
-    html.includes("postJson('/api/feedback'"),
-    html.includes('피드백이 접수됐습니다') && html.includes('요청이 접수됐습니다')
+    landingHtml.includes('id="recipeRequestForm"'),
+    appHtml.includes('id="feedbackForm"'),
+    appHtml.includes('openFeedback('),
+    landingHtml.includes("postJson('/api/feedback'") || appHtml.includes("postJson('/api/feedback'"),
+    appHtml.includes('피드백이 접수됐습니다') && landingHtml.includes('레시피 요청이 접수됐습니다')
   ];
   items.push(scoreItem(
     '피드백·레시피 수집',
@@ -438,19 +503,56 @@ function buildScorecard(gates, workflows) {
     '베타 피드백과 레시피 요청이 같은 저장 흐름으로 수집되어야 한다.'
   ));
 
-  const previewSignals = [
-    html.includes('id="landingDemoFrame"'),
-    html.includes("setDemoScreen('home')"),
-    html.includes("setDemoScreen('detail')"),
-    html.includes("setDemoScreen('cook3')"),
-    html.includes("setDemoScreen('complete')")
+  const interactionSignals = [
+    landingHtml.includes('data-assistant-survey="true"') && landingHtml.includes('assistantSurveyRecipes'),
+    appHtml.includes('지금 많이 만드는 요리') && appHtml.includes('SNS에서 자주 보이는 메뉴'),
+    !appHtml.includes('<span>영상 보내기</span>') && appHtml.includes('app-feedback-btn'),
+    appHtml.includes('id="communityStrip"') && appHtml.includes('RECIPE_REACTIONS'),
+    appHtml.includes('shareCompletedRecipe') && appHtml.includes('from=completed-share'),
+    existsSync(resolve(root, 'assets/screens/naembi-core-flow.gif')) && appHtml.includes('음성 예시')
   ];
   items.push(scoreItem(
-    '앱 미리보기 깊이',
+    '후킹·상호작용 루프',
+    10,
+    scoreBySignals(interactionSignals, 10),
+    `${interactionSignals.filter(Boolean).length}/6 신호 충족`,
+    '랜딩 이탈 방지용 요리비서 추천, 앱 후기/팁, 완료 후 공유, 폰 내부 플로팅 피드백을 유지한다.'
+  ));
+
+  const previewSignals = [
+    landingHtml.includes('/assets/screens/app-home.png'),
+    landingHtml.includes('/assets/screens/app-search.png'),
+    landingHtml.includes('/assets/screens/app-detail.png'),
+    landingHtml.includes('/assets/screens/app-cook.png'),
+    landingHtml.includes('/assets/screens/app-complete.png'),
+    existsSync(resolve(root, 'assets/screens/app-home.png'))
+      && existsSync(resolve(root, 'assets/screens/app-search.png'))
+      && existsSync(resolve(root, 'assets/screens/app-detail.png'))
+      && existsSync(resolve(root, 'assets/screens/app-cook.png'))
+      && existsSync(resolve(root, 'assets/screens/app-complete.png'))
+  ];
+  items.push(scoreItem(
+    '정적 앱 화면 소개',
     15,
     scoreBySignals(previewSignals, 15),
-    `${previewSignals.filter(Boolean).length}/5 신호 충족`,
-    '홈/상세/조리/완료 탭이 랜딩 안에서 바로 전환되어야 한다.'
+    `${previewSignals.filter(Boolean).length}/6 신호 충족`,
+    '홈/검색/상세/조리/완료 화면 캡쳐가 랜딩에서 정적으로 제공되어야 한다.'
+  ));
+
+  const designSignals = [
+    designHtml.includes('data-mark="hero-character"'),
+    designHtml.includes('data-steam-count="3"') && designHtml.includes('data-play-nose="true"') && designHtml.includes('data-smile-mouth="true"'),
+    designHtml.includes('data-identity-scorecard="100"'),
+    designHtml.includes('data-layout-candidates="assistant-first"'),
+    designHtml.includes('data-community-feasibility="true"'),
+    existsSync(resolve(root, 'scripts/capture-core-flow-gif.mjs')) && existsSync(resolve(root, 'assets/screens/naembi-core-flow.gif'))
+  ];
+  items.push(scoreItem(
+    '브랜드·디자인 검증',
+    10,
+    scoreBySignals(designSignals, 10),
+    `${designSignals.filter(Boolean).length}/6 신호 충족`,
+    '/design에서 캐릭터/로고 후보, 아이덴티티 점수표, 음성비서 중심 배치, 커뮤니티 현실성을 검토할 수 있어야 한다.'
   ));
 
   const privacySignals = scoreVisual
@@ -467,24 +569,48 @@ function buildScorecard(gates, workflows) {
   ));
 
   if (scoreVisual) {
+    items.push(scoreItem(
+      '앱 캡쳐 전체 노출',
+      10,
+      visualCroppedImages.length === 0 && visualPayloads.every((payload) => (payload.screenImages || []).length >= 5) ? 10 : 0,
+      `잘림 ${visualCroppedImages.length}건, 캡쳐 세트 ${visualPayloads.filter((payload) => (payload.screenImages || []).length >= 5).length}/${visualPayloads.length}`,
+      '정적 앱 화면 이미지는 원본 비율 그대로 전체가 보여야 하며 object-fit: cover를 쓰지 않는다.'
+    ));
+  }
+
+  if (scoreVisual) {
+    const mobilePayloads = visualPayloads.filter((payload) => payload.mobileMedia === true && payload.width <= 430);
+    const mobilePressureSignals = mobilePayloads.map((payload) => (
+      payload.heroPrimaryCtaVisible
+        && payload.heroPhoneStartsInFirstViewport
+        && payload.heroPhoneFullyVisibleInFirstViewport
+        && payload.heroScrollPressureLow
+        && payload.mobileScreensUseHorizontalScroll
+        && payload.heroProofHiddenOnMobile
+    ));
     const responsiveSignals = [
       visualModes.has('mobile'),
+      visualModes.has('tablet'),
       visualModes.has('desktop'),
-      visualPayloads.some((payload) => payload.mobileMedia === true && payload.mobileHero === 'block'),
-      visualPayloads.some((payload) => payload.mobileMedia === false && payload.mobileHero === 'none'),
-      visualCopySignals.every(Boolean) && visualMascotSignal
+      visualPayloads.some((payload) => payload.mobileMedia === true && payload.hasMobileAppCTA),
+      visualPayloads.some((payload) => payload.mobileMedia === false && payload.hasVisibleAppPreview),
+      mobilePressureSignals.length > 0 && mobilePressureSignals.every(Boolean),
+      visualPayloads.some((payload) => payload.mobileMedia === true && payload.hasMobileAppCTA)
+        && visualPayloads.some((payload) => payload.mobileMedia === false && payload.hasVisibleAppPreview)
+        && visualCopySignals.every(Boolean)
+        && visualMascotSignal
     ];
     items.push(scoreItem(
       '반응형·시각 증거',
       10,
       scoreBySignals(responsiveSignals, 10),
-      `${responsiveSignals.filter(Boolean).length}/5 신호 충족`,
-      '모바일/데스크톱 캡처에서 CTA, 앱 미리보기, 카피 신호가 모두 보여야 한다.'
+      `${responsiveSignals.filter(Boolean).length}/7 신호 충족`,
+      '모바일/태블릿/데스크톱 캡처에서 CTA, 핵심 GIF, 앱 미리보기, 카피 신호가 모두 보여야 한다.'
     ));
   }
 
   const deploySignals = [
-    gatePassed(gates, 'vercel root rewrite'),
+    gatePassed(gates, 'vercel app route'),
     includesAll(env, ['NAEMBI_BETA_GOOGLE_FORM_URL', 'NAEMBI_BETA_GOOGLE_FORM_FIELDS'])
       || includesAll(env, ['NAEMBI_BETA_WEBHOOK_URL'])
       || includesAll(env, ['NAEMBI_BETA_GITHUB_REPO', 'NAEMBI_BETA_GITHUB_TOKEN']),
@@ -496,7 +622,7 @@ function buildScorecard(gates, workflows) {
     10,
     scoreBySignals(deploySignals, 10),
     `${deploySignals.filter(Boolean).length}/4 신호 충족`,
-    'Vercel 루트, 수집 환경변수, 배포 제외, 검증 스크립트를 유지한다.'
+    '루트 랜딩과 /app 웹앱 라우팅, 수집 환경변수, 배포 제외, 검증 스크립트를 유지한다.'
   ));
 
   const loopSignals = [
