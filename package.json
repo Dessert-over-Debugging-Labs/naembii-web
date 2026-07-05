@@ -9,6 +9,7 @@
     "capture:screens": "node scripts/capture-app-screens.mjs",
     "capture:flow-gif": "node scripts/capture-core-flow-gif.mjs",
     "verify:dynamic": "node scripts/verify-dynamic.mjs",
-    "verify:visual": "node scripts/verify-dynamic.mjs --visual"
+    "verify:visual": "node scripts/verify-dynamic.mjs --visual",
+    "verify:ralph-loop": "node scripts/run-naembi-ralph-loop.mjs --visual --full --min-score=96"
   }
 }

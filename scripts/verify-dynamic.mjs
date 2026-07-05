@@ -13,6 +13,7 @@ const visual = args.has('--visual');
 const full = args.has('--full') || args.has('--all');
 const allowInconclusive = args.has('--allow-inconclusive');
 const baseURL = valueAfter('--base-url') || 'http://127.0.0.1:4190/';
+const minScore = Number(valueAfter('--min-score') || 96);
 const reportMd = valueAfter('--report') || 'docs/verify/DYNAMIC_WORKFLOW_LAST_ko.md';
 const reportHtml = reportMd.replace(/\.md$/i, '.html');
 const reportJson = reportMd.replace(/\.md$/i, '.json');
@@ -336,7 +337,11 @@ function docsChecks() {
   const gates = [];
   const required = [
     'docs/verify/DYNAMIC_WORKFLOW_ko.md',
-    'docs/verify/LANDING_RALPH_SCORE_ko.md'
+    'docs/verify/LANDING_RALPH_SCORE_ko.md',
+    'docs/verify/NAEMBI_VALIDATION_POINTS_ko.md',
+    'docs/verify/NAEMBI_BETA_SCORECARD_ko.md',
+    'docs/verify/VALIDATION_AGENT_PACKET_ko.md',
+    'docs/verify/NAEMBI_RALPH_LOOP_ko.md'
   ];
   const missing = required.filter((file) => !existsSync(resolve(root, file)));
   gates.push(missing.length
@@ -630,6 +635,10 @@ function buildScorecard(gates, workflows) {
 
   const loopSignals = [
     docs.includes('점수') || docs.includes('검증자 역할 분리'),
+    existsSync(resolve(root, 'docs/verify/NAEMBI_VALIDATION_POINTS_ko.md')),
+    existsSync(resolve(root, 'docs/verify/NAEMBI_BETA_SCORECARD_ko.md')),
+    existsSync(resolve(root, 'docs/verify/VALIDATION_AGENT_PACKET_ko.md')),
+    existsSync(resolve(root, 'scripts/run-naembi-ralph-loop.mjs')),
     docs.includes('PASS/FAIL/INCONCLUSIVE'),
     existsSync(resolve(root, 'docs/verify/DYNAMIC_WORKFLOW_LAST_ko.md')),
     existsSync(resolve(root, 'docs/verify/DYNAMIC_WORKFLOW_LAST_ko.json'))
@@ -638,14 +647,15 @@ function buildScorecard(gates, workflows) {
     '검증 루프 재현성',
     5,
     scoreBySignals(loopSignals, 5),
-    `${loopSignals.filter(Boolean).length}/4 신호 충족`,
+    `${loopSignals.filter(Boolean).length}/${loopSignals.length} 신호 충족`,
     '다음 세션에서도 같은 검증자 역할, 점수표, 마지막 리포트를 재사용할 수 있어야 한다.'
   ));
 
   const total = items.reduce((sum, item) => sum + item.points, 0);
   const max = items.reduce((sum, item) => sum + item.weight, 0);
   const percent = max ? Math.round((total / max) * 100) : 0;
-  const threshold = scoreVisual ? 95 : 90;
+  const threshold = Number.isFinite(minScore) ? minScore : 96;
+  const passesScore = percent > threshold;
 
   return {
     items,
@@ -653,7 +663,8 @@ function buildScorecard(gates, workflows) {
     max,
     percent,
     threshold,
-    status: percent >= threshold ? 'PASS' : 'FAIL',
+    thresholdOperator: '>',
+    status: passesScore ? 'PASS' : 'FAIL',
     visualIncluded: scoreVisual
   };
 }
@@ -684,7 +695,7 @@ function markdownReport({ files, workflows, gates, scorecard, summary }) {
     `- 일시: ${startedAt.toISOString()}`,
     `- 판정: **${summary}**`,
     `- 점수: **${scorecard.total} / ${scorecard.max} (${scorecard.percent}%)**`,
-    `- 통과 기준: **${scorecard.threshold}% 이상**${scorecard.visualIncluded ? '' : ' (시각 검증 미포함 빠른 기준)'}`,
+    `- 통과 기준: **${scorecard.threshold}% 초과**${scorecard.visualIncluded ? '' : ' (시각 검증 미포함 빠른 기준)'}`,
     `- 모드: ${visual ? 'visual 포함' : 'static/API/deploy 중심'}`,
     `- 기준 URL: \`${baseURL}\``,
     '',
