@@ -1,4 +1,4 @@
-const { allowCors, clean, isEmail, json, persist, readBody } = require('./_lib/collect');
+const { allowCors, clean, createRequestId, isEmail, json, notify, persist, readBody } = require('./_lib/collect');
 
 module.exports = async function handler(req, res) {
   if (allowCors(req, res)) return;
@@ -10,6 +10,7 @@ module.exports = async function handler(req, res) {
   try {
     const body = await readBody(req);
     const payload = {
+      requestId: clean(body.requestId, 80) || createRequestId('beta-signup'),
       email: clean(body.email, 320),
       name: clean(body.name, 120),
       profile: clean(body.profile, 80),
@@ -25,7 +26,8 @@ module.exports = async function handler(req, res) {
     }
 
     const storedBy = await persist('beta-signup', payload);
-    json(res, 200, { ok: true, storedBy });
+    const notifications = await notify('beta-signup', payload, storedBy);
+    json(res, 200, { ok: true, storedBy, requestId: payload.requestId, notifications });
   } catch (error) {
     json(res, 500, { error: error.message || '신청 저장에 실패했습니다.' });
   }

@@ -63,16 +63,30 @@ Google Form과 Sheet는 아래 Apps Script로 자동 생성할 수 있습니다.
 scripts/google-apps-script/create-naembi-beta-collection.js
 ```
 
-`setupNaembiBetaCollection`을 실행하면 Google Form, 응답 Sheet, `Vercel env` 탭, `운영뷰` 탭이 같이 만들어집니다.
-이미 이전 스크립트로 Form과 Sheet를 만들었다면 최신 코드로 교체한 뒤 `createNaembiOperatingView`만 실행하면 `운영뷰` 탭을 추가할 수 있습니다.
+`setupNaembiBetaCollection`을 실행하면 Google Form, 응답 Sheet, `Vercel env` 탭, `운영뷰` 탭, 운영뷰 자동 갱신 트리거가 같이 만들어집니다.
+이미 이전 스크립트로 Form과 Sheet를 만들었다면 최신 코드로 교체한 뒤 `installNaembiOperatingViewAutomation`을 실행하면 `운영뷰` 탭을 만들고 Form 제출 시 자동 갱신되도록 트리거를 설치합니다.
 
 스크립트 실행 후 생성된 Sheet의 `Vercel env` 탭에서 아래 두 값을 복사합니다.
 실행 중 `Google에서 확인하지 않은 앱` 경고가 뜨면, 개발자 이메일이 본인/팀 계정인지 확인한 뒤 `고급` → `프로젝트로 이동` → `허용` 순서로 승인합니다. 자세한 내용은 `docs/handoff/GOOGLE_FORM_VERCEL_SETUP_GUIDE_ko.md`를 확인합니다.
 
 ```bash
 NAEMBI_BETA_GOOGLE_FORM_URL=https://docs.google.com/forms/d/e/FORM_ID/formResponse
-NAEMBI_BETA_GOOGLE_FORM_FIELDS={"kind":"entry.111111","email":"entry.222222","name":"entry.333333","profile":"entry.444444","note":"entry.555555","type":"entry.666666","message":"entry.777777","recipe":"entry.888888","source":"entry.999999","screen":"entry.131313","page":"entry.101010","createdAt":"entry.121212"}
+NAEMBI_BETA_GOOGLE_FORM_FIELDS={"kind":"entry.111111","requestId":"entry.141414","email":"entry.222222","name":"entry.333333","profile":"entry.444444","note":"entry.555555","type":"entry.666666","message":"entry.777777","recipe":"entry.888888","source":"entry.999999","screen":"entry.131313","page":"entry.101010","createdAt":"entry.121212"}
 ```
+
+### Slack 알림 + Google Sheet 반영완료 체크
+
+최신 Apps Script는 요청마다 `requestId`를 저장하고, Slack 알림에 `반영완료 체크` 버튼을 붙일 수 있습니다. 버튼을 누르면 Apps Script가 같은 `requestId` 행을 찾아 `운영뷰`의 `반영완료` 체크박스를 TRUE로 바꿉니다. 운영뷰 자체는 Form 제출 트리거와 webhook 저장 경로에서 자동 갱신됩니다.
+
+추가 환경변수:
+
+```bash
+NAEMBI_SLACK_WEBHOOK_URL=https://hooks.slack.com/services/...
+NAEMBI_BETA_COMPLETION_URL=https://script.google.com/macros/s/DEPLOYMENT_ID/exec
+NAEMBI_BETA_COMPLETION_TOKEN=GENERATED_OPERATION_TOKEN
+```
+
+기존 Form을 쓰고 있다면 최신 Apps Script로 `requestId` 질문과 운영뷰 완료 컬럼을 추가한 뒤, `Vercel env` 탭의 값을 다시 Vercel에 반영해야 합니다. 자세한 절차는 `docs/handoff/SLACK_SHEET_COMPLETION_AUTOMATION_ko.md`를 확인합니다.
 
 대안:
 

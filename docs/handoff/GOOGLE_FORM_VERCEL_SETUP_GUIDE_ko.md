@@ -18,7 +18,7 @@ Vercel에 넣을 환경변수는 기본적으로 2개다.
 
 ```bash
 NAEMBI_BETA_GOOGLE_FORM_URL=https://docs.google.com/forms/d/e/FORM_ID/formResponse
-NAEMBI_BETA_GOOGLE_FORM_FIELDS={"kind":"entry.111111","email":"entry.222222","name":"entry.333333","profile":"entry.444444","note":"entry.555555","type":"entry.666666","message":"entry.777777","recipe":"entry.888888","source":"entry.999999","screen":"entry.131313","page":"entry.101010","createdAt":"entry.121212"}
+NAEMBI_BETA_GOOGLE_FORM_FIELDS={"kind":"entry.111111","requestId":"entry.141414","email":"entry.222222","name":"entry.333333","profile":"entry.444444","note":"entry.555555","type":"entry.666666","message":"entry.777777","recipe":"entry.888888","source":"entry.999999","screen":"entry.131313","page":"entry.101010","createdAt":"entry.121212"}
 ```
 
 `entry.111111` 같은 값은 예시다. 실제 Google Form에서 직접 확인해서 바꿔야 한다.
@@ -51,22 +51,33 @@ NAEMBI_BETA_GOOGLE_FORM_FIELDS=...
 | --- | --- |
 | Google Form | `냄비 베타 신청·레시피 요청·피드백` |
 | Google Sheet | `냄비 베타 응답` |
-| 질문 | `kind`, `email`, `name`, `profile`, `note`, `type`, `message`, `recipe`, `source`, `screen`, `page`, `createdAt` |
+| 질문 | `kind`, `requestId`, `email`, `name`, `profile`, `note`, `type`, `message`, `recipe`, `source`, `screen`, `page`, `createdAt` |
 | Vercel env 탭 | Vercel에 넣을 `NAEMBI_BETA_GOOGLE_FORM_URL`, `NAEMBI_BETA_GOOGLE_FORM_FIELDS` |
-| 운영뷰 탭 | 한글 컬럼, 접수구분 자동 변환, 필터, 상태/우선순위 드롭다운 |
+| 운영뷰 탭 | 한글 컬럼, 접수구분 자동 변환, 필터, 상태/우선순위 드롭다운, 반영완료 체크박스 |
+| 운영뷰 자동화 | Form 제출 트리거와 webhook 저장 경로에서 운영뷰 자동 갱신 |
 
 이미 예전 버전의 스크립트로 Form과 Sheet를 만들었다면:
 
 1. Apps Script의 `Code.gs`를 최신 `scripts/google-apps-script/create-naembi-beta-collection.js` 내용으로 교체한다.
-2. 함수 선택 드롭다운에서 `createNaembiOperatingView`를 선택한다.
-3. 실행하면 기존 Google Sheet에 `운영뷰` 탭이 자동 생성/갱신된다.
+2. 함수 선택 드롭다운에서 `installNaembiOperatingViewAutomation`을 선택한다.
+3. 실행하면 기존 Google Sheet에 `운영뷰` 탭이 생성/갱신되고, 이후 Form 제출 때 자동 갱신되는 트리거가 설치된다.
 
-`createNaembiOperatingView`를 다시 실행해도 원본 응답 탭은 건드리지 않는다. 기존 `운영뷰`의 `상태`, `우선순위`, `담당자`, `운영메모` 값도 보존하고, 자동으로 계산되는 왼쪽 컬럼만 갱신한다.
+`installNaembiOperatingViewAutomation`은 내부적으로 `createNaembiOperatingView`와 같은 운영뷰 갱신을 먼저 수행한다. 원본 응답 탭은 건드리지 않고, 기존 `운영뷰`의 `상태`, `우선순위`, `담당자`, `운영메모` 값도 보존하며, 자동으로 계산되는 왼쪽 컬럼만 갱신한다.
+
+운영뷰가 갱신되는 경로:
+
+- `setupNaembiBetaCollection` 실행 시 자동 생성 및 트리거 설치
+- `installNaembiOperatingViewAutomation` 실행 시 기존 Sheet에 트리거 설치
+- Google Form 응답 제출 시 `syncNaembiOperatingView` 자동 실행
+- Apps Script Web App/webhook으로 저장 시 즉시 운영뷰 갱신
+- Slack `반영완료 체크` 처리 시 운영뷰 체크박스 갱신
 
 선택 테스트:
 
 - `submitNaembiSmokeTest` 함수를 실행하면 테스트 행 1개가 Google Sheet에 들어간다.
 - 이 테스트 행은 운영 데이터가 아니므로 확인 후 지워도 된다.
+- Slack 알림과 반영완료 체크 자동화까지 쓰려면 `docs/handoff/SLACK_SHEET_COMPLETION_AUTOMATION_ko.md`를 이어서 설정한다.
+- 기존 Sheet에서 운영뷰를 수동으로 계속 갱신하고 있었다면 최신 스크립트 적용 후 `installNaembiOperatingViewAutomation`을 한 번 실행한다.
 
 주의:
 
@@ -136,6 +147,7 @@ Google Forms에서 새 양식을 만든다.
 | 질문 제목 | 질문 유형 | 필수 여부 | 앱에서 들어오는 값 |
 | --- | --- | --- | --- |
 | `kind` | 단답형 | 선택 | `beta-signup` 또는 `feedback` |
+| `requestId` | 단답형 | 선택 | Slack 알림과 완료 체크를 연결하는 자동 추적 ID |
 | `email` | 단답형 | 선택 | 베타 초대/답변 받을 이메일 |
 | `name` | 단답형 | 선택 | 이름 또는 닉네임 |
 | `profile` | 단답형 또는 드롭다운 | 선택 | 요리 스타일, 사용자 유형 |
@@ -226,6 +238,7 @@ entry.1234567890
 ```json
 {
   "kind": "entry.111111",
+  "requestId": "entry.141414",
   "email": "entry.222222",
   "name": "entry.333333",
   "profile": "entry.444444",
@@ -243,7 +256,7 @@ entry.1234567890
 Vercel 환경변수에는 한 줄 JSON으로 넣는다.
 
 ```json
-{"kind":"entry.111111","email":"entry.222222","name":"entry.333333","profile":"entry.444444","note":"entry.555555","type":"entry.666666","message":"entry.777777","recipe":"entry.888888","source":"entry.999999","screen":"entry.131313","page":"entry.101010","createdAt":"entry.121212"}
+{"kind":"entry.111111","requestId":"entry.141414","email":"entry.222222","name":"entry.333333","profile":"entry.444444","note":"entry.555555","type":"entry.666666","message":"entry.777777","recipe":"entry.888888","source":"entry.999999","screen":"entry.131313","page":"entry.101010","createdAt":"entry.121212"}
 ```
 
 JSON 규칙:
@@ -267,6 +280,9 @@ Project -> Settings -> Environment Variables
 | --- | --- |
 | `NAEMBI_BETA_GOOGLE_FORM_URL` | `https://docs.google.com/forms/d/e/FORM_ID/formResponse` |
 | `NAEMBI_BETA_GOOGLE_FORM_FIELDS` | 한 줄 JSON 매핑 |
+| `NAEMBI_SLACK_WEBHOOK_URL` | 선택. Slack 제출 알림용 Incoming Webhook URL |
+| `NAEMBI_BETA_COMPLETION_URL` | 선택. Apps Script Web App URL |
+| `NAEMBI_BETA_COMPLETION_TOKEN` | 선택. 반영완료 체크 링크 보호용 토큰 |
 
 환경 선택:
 
@@ -280,6 +296,7 @@ Project -> Settings -> Environment Variables
 2. 배포 URL에 접속한다.
 3. 베타 신청, 레시피 요청, 피드백을 각각 한 번씩 제출한다.
 4. Google Sheet에 행이 생기는지 확인한다.
+5. Slack 알림을 켰다면 `반영완료 체크` 버튼을 눌러 운영뷰 체크박스가 TRUE로 바뀌는지 확인한다.
 
 ## 8. 테스트 시나리오
 

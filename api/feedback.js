@@ -1,4 +1,4 @@
-const { allowCors, clean, isEmail, json, persist, readBody } = require('./_lib/collect');
+const { allowCors, clean, createRequestId, isEmail, json, notify, persist, readBody } = require('./_lib/collect');
 
 module.exports = async function handler(req, res) {
   if (allowCors(req, res)) return;
@@ -10,6 +10,7 @@ module.exports = async function handler(req, res) {
   try {
     const body = await readBody(req);
     const payload = {
+      requestId: clean(body.requestId, 80) || createRequestId('feedback'),
       type: clean(body.type, 80) || 'other',
       email: clean(body.email, 320),
       message: clean(body.message, 5000),
@@ -31,7 +32,8 @@ module.exports = async function handler(req, res) {
     }
 
     const storedBy = await persist('feedback', payload);
-    json(res, 200, { ok: true, storedBy });
+    const notifications = await notify('feedback', payload, storedBy);
+    json(res, 200, { ok: true, storedBy, requestId: payload.requestId, notifications });
   } catch (error) {
     json(res, 500, { error: error.message || '피드백 저장에 실패했습니다.' });
   }

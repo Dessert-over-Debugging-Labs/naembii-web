@@ -33,6 +33,13 @@ function clean(value, max = 2000) {
   return String(value || '').trim().slice(0, max);
 }
 
+function createRequestId(kind) {
+  const prefix = kind === 'beta-signup' ? 'nbb' : 'nbf';
+  const time = Date.now().toString(36);
+  const random = Math.random().toString(36).slice(2, 8);
+  return `${prefix}_${time}_${random}`;
+}
+
 function issueBody(kind, payload) {
   const entries = Object.entries(payload)
     .filter(([, value]) => value !== undefined && value !== null && String(value).trim() !== '')
@@ -50,6 +57,134 @@ function issueBody(kind, payload) {
 
 function envValue(primary, legacy) {
   return process.env[primary] || (legacy ? process.env[legacy] : '');
+}
+
+function trimForSlack(value, max = 900) {
+  const text = String(value || '').replace(/\s+/g, ' ').trim();
+  return text.length > max ? `${text.slice(0, max - 1)}…` : text;
+}
+
+function buildCompletionUrl(payload) {
+  const base = envValue('NAEMBI_BETA_COMPLETION_URL', 'COOK_BETA_COMPLETION_URL');
+  if (!base || !payload.requestId) return '';
+
+  try {
+    const url = new URL(base);
+    const token = envValue('NAEMBI_BETA_COMPLETION_TOKEN', 'COOK_BETA_COMPLETION_TOKEN');
+    url.searchParams.set('action', 'complete');
+    url.searchParams.set('requestId', payload.requestId);
+    url.searchParams.set('by', 'slack');
+    if (token) url.searchParams.set('token', token);
+    return url.toString();
+  } catch {
+    return '';
+  }
+}
+
+function slackFields(kind, payload, storedBy) {
+  const label = kind === 'beta-signup'
+    ? '먼저 써보기 신청'
+    : payload.type === 'recipe'
+      ? '레시피 요청'
+      : '피드백';
+
+  const fields = [
+    { type: 'mrkdwn', text: `*구분*\n${label}` },
+    { type: 'mrkdwn', text: `*요청ID*\n${payload.requestId || '-'}` },
+    { type: 'mrkdwn', text: `*저장*\n${storedBy || '-'}` },
+    { type: 'mrkdwn', text: `*이메일*\n${payload.email || '-'}` }
+  ];
+
+  if (payload.recipe) fields.push({ type: 'mrkdwn', text: `*요리*\n${payload.recipe}` });
+  if (payload.screen || payload.source) fields.push({ type: 'mrkdwn', text: `*화면/위치*\n${payload.screen || payload.source}` });
+
+  return fields;
+}
+
+async function sendSlackNotification(kind, payload, storedBy) {
+  const url = envValue('NAEMBI_SLACK_WEBHOOK_URL', 'COOK_BETA_SLACK_WEBHOOK_URL');
+  if (!url) return false;
+
+  const label = kind === 'beta-signup'
+    ? '먼저 써보기 신청'
+    : payload.type === 'recipe'
+      ? '레시피 요청'
+      : '피드백';
+  const completionUrl = buildCompletionUrl(payload);
+  const message = payload.message || payload.note || '';
+  const blocks = [
+    {
+      type: 'header',
+      text: {
+        type: 'plain_text',
+        text: `냄비 ${label} 도착`,
+        emoji: true
+      }
+    },
+    {
+      type: 'section',
+      fields: slackFields(kind, payload, storedBy)
+    }
+  ];
+
+  if (message) {
+    blocks.push({
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: `*내용*\n${trimForSlack(message)}`
+      }
+    });
+  }
+
+  if (payload.page) {
+    blocks.push({
+      type: 'context',
+      elements: [
+        { type: 'mrkdwn', text: `제출 페이지: ${payload.page}` }
+      ]
+    });
+  }
+
+  if (completionUrl) {
+    blocks.push({
+      type: 'actions',
+      elements: [
+        {
+          type: 'button',
+          text: { type: 'plain_text', text: '반영완료 체크', emoji: true },
+          url: completionUrl,
+          style: 'primary'
+        }
+      ]
+    });
+  }
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({
+      text: `[냄비] ${label} 도착 · ${payload.requestId || ''}`,
+      blocks
+    })
+  });
+
+  if (!response.ok) {
+    throw new Error(`Slack 알림 실패: ${response.status}`);
+  }
+
+  return true;
+}
+
+async function notify(kind, payload, storedBy) {
+  const sent = [];
+  try {
+    if (await sendSlackNotification(kind, payload, storedBy)) sent.push('slack');
+  } catch (error) {
+    console.error(error.message || error);
+    sent.push('slack-failed');
+  }
+  return sent;
 }
 
 async function sendWebhook(kind, payload) {
@@ -173,8 +308,10 @@ function allowCors(req, res) {
 module.exports = {
   allowCors,
   clean,
+  createRequestId,
   isEmail,
   json,
+  notify,
   persist,
   readBody
 };
