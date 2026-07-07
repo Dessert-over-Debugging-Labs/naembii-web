@@ -192,6 +192,11 @@
   .as-actions{display:flex;gap:8px;overflow-x:auto;}
   .as-actions::-webkit-scrollbar{display:none;}
   .as-actions button{height:34px;border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(255,255,255,.1);color:#fff;font:inherit;font-size:12px;font-weight:800;padding:0 11px;white-space:nowrap;cursor:pointer;}
+  .as-pantry{display:flex;align-items:center;gap:8px;margin-top:10px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);border-radius:13px;padding:8px;}
+  .as-pantry input{flex:1;min-width:0;border:0;background:transparent;color:#fff;font:inherit;font-size:13px;font-weight:750;outline:none;}
+  .as-pantry input::placeholder{color:rgba(255,255,255,.62);}
+  .as-pantry button{width:34px;height:34px;border:0;border-radius:11px;background:#fff;color:#1E2024;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;}
+  .as-pantry button svg{width:17px;height:17px;}
   .community-strip{display:flex;gap:10px;overflow-x:auto;padding:0 16px 24px;}
   .community-strip::-webkit-scrollbar{display:none;}
   .community-card{width:230px;flex:none;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:14px;cursor:pointer;}
@@ -558,7 +563,7 @@
   /* 대화 패널 열림: 둥근 상단 모서리 뒤가 흰색(surface)으로 비쳐 위 틴트 배경과 틈이 생기던 문제 →
      컨트롤바 배경을 카드영역과 같은 틴트(--dark)로 맞추고 상단 경계선도 감춰 이음새 제거 */
   #cook3 .cook-ctrl:has(.vpanel.open){background:var(--dark);border-top-color:transparent;}
-  #cook3 .cook-ctrl:has(.vpanel.open){height:clamp(176px,24dvh,204px);}
+  #cook3 .cook-ctrl:has(.vpanel.open){height:clamp(236px,32dvh,280px);}
   #cook3 .cook-ctrl:has(.vpanel.open) .ctrl-buttons{visibility:hidden;}
   .vpanel{position:absolute;top:0;bottom:0;left:-1px;right:-1px;z-index:3;box-sizing:border-box;padding:16px 19px 22px;
     display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;
@@ -613,7 +618,15 @@
   .vp-collapse:active{transform:translateX(-50%) translateY(1px);}
   .vp-beta-note{position:relative;z-index:1;align-self:flex-start;display:inline-flex;align-items:center;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.13);color:#fff;border-radius:999px;padding:5px 9px;margin-bottom:10px;font-size:12px;font-weight:900;letter-spacing:0;backdrop-filter:blur(8px);}
   .vp-user{position:relative;z-index:1;flex:none;width:100%;font-size:16px;font-weight:800;color:#fff;margin-bottom:9px;min-height:21px;line-height:1.28;letter-spacing:0;text-shadow:0 1px 4px rgba(0,0,0,.3);}
-  .vp-ai{position:relative;z-index:1;flex:none;width:100%;font-size:19px;font-weight:700;color:#fff;line-height:1.42;min-height:54px;letter-spacing:0;text-shadow:0 1px 6px rgba(0,0,0,.4);}
+  .vp-ai{position:relative;z-index:1;flex:none;width:100%;font-size:16px;font-weight:750;color:#fff;line-height:1.42;min-height:44px;letter-spacing:0;text-shadow:0 1px 6px rgba(0,0,0,.4);}
+  .vp-quick{position:relative;z-index:1;display:flex;gap:7px;overflow-x:auto;margin:6px 0 9px;padding-bottom:2px;}
+  .vp-quick::-webkit-scrollbar{display:none;}
+  .vp-quick button{height:32px;border:1px solid rgba(255,255,255,.28);border-radius:999px;background:rgba(255,255,255,.16);color:#fff;font:inherit;font-size:12px;font-weight:900;white-space:nowrap;padding:0 10px;cursor:pointer;}
+  .vp-chat-form{position:relative;z-index:1;display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.24);border-radius:14px;padding:7px;}
+  .vp-chat-form input{flex:1;min-width:0;border:0;background:transparent;color:#fff;font:inherit;font-size:13px;font-weight:800;outline:none;}
+  .vp-chat-form input::placeholder{color:rgba(255,255,255,.64);}
+  .vp-chat-form button{width:32px;height:32px;border:0;border-radius:10px;background:#fff;color:var(--brand);display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;}
+  .vp-chat-form button svg{width:16px;height:16px;}
   .vp-thinking-wave{display:inline-flex;align-items:center;gap:5px;height:24px;padding-top:8px;}
   .vp-thinking-wave span{width:4px;height:4px;border-radius:50%;background:#fff;animation:vpDotWave 1.05s ease-in-out infinite;}
   .vp-thinking-wave span:nth-child(2){animation-delay:.1s;}
@@ -646,6 +659,12 @@
   .ing-h span{cursor:pointer;color:var(--gray);display:flex;}
   .ing-h span svg{width:20px;height:20px;}
   .ing-sheet .ings{margin-bottom:0;}
+  .ing-check-list{display:grid;gap:8px;max-height:48vh;overflow-y:auto;padding-bottom:6px;}
+  .ing-check-list::-webkit-scrollbar{display:none;}
+  .ing-check-title{font-size:13px;font-weight:900;color:var(--brand);margin:6px 0 2px;}
+  .ing-check{display:flex;align-items:center;gap:10px;min-height:44px;background:var(--bg);border:1px solid var(--border);border-radius:13px;padding:9px 11px;color:var(--text);font-size:14px;font-weight:800;}
+  .ing-check input{width:19px;height:19px;accent-color:var(--brand);flex:none;}
+  .ing-check span{margin-left:auto;color:var(--text-sub);font-size:13px;font-weight:750;}
   /* 타이머 시트 */
   .ts-row{display:flex;align-items:center;justify-content:center;gap:24px;margin:8px 0 16px;}
   .ts-pm{width:48px;height:48px;border-radius:50%;border:none;background:var(--bg);color:var(--ink);display:flex;align-items:center;justify-content:center;cursor:pointer;}
@@ -653,6 +672,8 @@
   .ts-pm svg{width:22px;height:22px;}
   .ts-num{display:flex;align-items:baseline;gap:6px;min-width:96px;justify-content:center;}
   .ts-num b{font-size:48px;font-weight:800;color:var(--ink);line-height:1;}
+  .ts-num input{width:86px;border:0;background:transparent;color:var(--ink);font:inherit;font-size:48px;font-weight:850;line-height:1;text-align:center;outline:none;font-variant-numeric:tabular-nums;}
+  .ts-num input::-webkit-outer-spin-button,.ts-num input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
   .ts-num span{font-size:16px;color:var(--gray);font-weight:700;}
   .ts-presets{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:4px;}
   .ts-presets button{height:40px;border:none;border-radius:12px;background:var(--green-soft);color:var(--green);font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;}
@@ -779,6 +800,9 @@
   /* 제목행 + 저장 아이콘 + 평점 */
   .dhead{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;}
   .dhead h2{flex:1;margin-bottom:0;}
+  .detail-proof{display:flex;gap:8px;flex-wrap:wrap;margin:-2px 0 14px;}
+  .detail-proof span{display:inline-flex;align-items:center;gap:5px;min-height:28px;border:1px solid var(--border);border-radius:999px;background:var(--surface);color:var(--text);font-size:12px;font-weight:850;padding:0 9px;}
+  .detail-proof svg{width:14px;height:14px;color:#FFB400;fill:#FFB400;}
   /* 유튜브 스티커: 영상↔레시피 경계에 걸침(영상 우하단 = 레시피 우상단) */
   .detail-body .yt-badge-title{position:absolute;top:-13px;right:16px;z-index:3;background:#FF0000;color:#fff;font-size:12px;font-weight:700;padding:5px 9px;border-radius:8px;display:flex;align-items:center;gap:4px;box-shadow:0 2px 8px rgba(0,0,0,.25);}
   .detail-body .yt-badge-title svg{width:14px;height:14px;}
@@ -1158,22 +1182,11 @@
       </div>
     </div>
 
-    <section class="product-intro" aria-label="냄비 소개">
-      <div class="product-copy">
-        <span class="value-badge dark">이럴 때 필요해요</span>
-        <h2>영상은 쉬워 보이는데<br>막상 하면 바쁘니까</h2>
-        <p>냄비는 영상을 그냥 틀어두는 앱이 아니라, 재료 확인부터 다음 단계, 타이머, 대체 재료 질문까지 조리 중 필요한 순간을 옆에서 챙기는 요리비서로 준비하고 있습니다.</p>
-        <div class="product-proof">
-          <div class="proof-item"><i data-lucide="list-checks"></i><b>중간에 덜 헤매게</b><span>긴 영상 속 재료와 순서를 주방에서 보기 쉽게 정리합니다.</span></div>
-          <div class="proof-item"><i data-lucide="message-circle-question"></i><b>상황별 짧은 답변</b><span>재료가 없거나 불 조절이 애매할 때 바로 물어볼 수 있게 만듭니다.</span></div>
-          <div class="proof-item"><i data-lucide="timer-reset"></i><b>손이 바쁜 순간</b><span>다음 단계 이동, 반복 재생, 타이머를 조리 흐름 안에서 처리합니다.</span></div>
-        </div>
-      </div>
-
+    <section class="product-intro" aria-label="요리비서 미리보기">
       <div class="assistant-demo" aria-label="요리비서 답변 예시">
         <div class="assistant-head">
           <i data-lucide="bot"></i>
-          <div><b>요리비서는 이렇게 도와줘요</b><span>레시피와 현재 단계에 맞춘 짧은 조리 답변</span></div>
+          <div><b>막히는 순간, 짧게 물어봐요</b><span>레시피와 현재 단계에 맞춘 조리 답변 예시</span></div>
         </div>
         <div class="assistant-thread">
           <div class="assistant-bubble user">양념이 타는 것 같아</div>
@@ -1183,15 +1196,13 @@
         </div>
       </div>
 
-      <div class="roadmap-head">
-        <h3>출시 후에는 더 개인적인 요리 도구로</h3>
-        <p>베타에서 받은 레시피 요청과 막힌 지점을 바탕으로, 정식 출시 후 붙일 기능의 우선순위를 정하려고 합니다.</p>
-      </div>
-      <div class="launch-roadmap">
-        <div class="launch-item"><i data-lucide="carrot"></i><b>냉장고 재료 대체</b><span>집에 있는 재료로 바꿔도 되는지, 맛이 어떻게 달라지는지 알려주는 방향입니다.</span></div>
-        <div class="launch-item"><i data-lucide="shopping-basket"></i><b>장보기 목록</b><span>보고 싶은 레시피를 고르면 부족한 재료만 모아 장보기 목록으로 정리합니다.</span></div>
-        <div class="launch-item"><i data-lucide="sparkles"></i><b>취향 맞춤 추천</b><span>맵기, 조리 시간, 난이도, 자주 쓰는 재료를 기준으로 한 끼 메뉴를 제안합니다.</span></div>
-        <div class="launch-item"><i data-lucide="notebook-tabs"></i><b>나만의 조리 기록</b><span>다음에 다시 만들 때 참고할 간 조절, 대체 재료, 성공한 팁을 남깁니다.</span></div>
+      <div class="ops-panel">
+        <h2>직접 써보고 알려주세요</h2>
+        <p>앱 화면을 먼저 둘러보고, 따라 해보고 싶은 요리나 막히는 지점을 남겨주세요. 그 반응으로 다음 레시피와 기능 우선순위를 정하겠습니다.</p>
+        <div class="ops-list">
+          <div class="ops-item"><i data-lucide="smartphone"></i><div><b>앱 화면 체험</b><span>홈, 상세, 조리, 완료 흐름을 바로 확인합니다.</span></div></div>
+          <div class="ops-item"><i data-lucide="messages-square"></i><div><b>요리 요청</b><span>보고 있던 영상이나 만들고 싶은 메뉴를 남깁니다.</span></div></div>
+        </div>
       </div>
     </section>
 
@@ -1230,26 +1241,6 @@
       </div>
     </section>
 
-    <section class="landing-section" aria-label="냄비 사용 안내">
-      <div class="ops-panel">
-        <h2>냄비로 이렇게 요리해요</h2>
-        <p>영상을 보며 멈칫하는 순간을 줄이고, 조리 중 필요한 정보만 바로 꺼내볼 수 있게 준비하고 있습니다.</p>
-        <div class="value-roadmap">
-          <div class="value-row"><span class="value-badge">1</span><div><b>보고 싶은 레시피를 고릅니다</b><span>요리 영상과 재료, 조리 순서를 한 화면에서 확인합니다.</span></div></div>
-          <div class="value-row"><span class="value-badge dark">2</span><div><b>화면을 덜 만지며 다음 단계를 따라갑니다</b><span>영상 구간, 타이머, 재료 확인을 조리 흐름에 맞춰 볼 수 있습니다.</span></div></div>
-        </div>
-      </div>
-
-      <div class="ops-panel">
-        <h2>참여 방법</h2>
-        <p>출시 전까지 실제로 필요한 레시피와 사용 장면을 모아 먼저 반영하겠습니다.</p>
-        <div class="ops-list">
-          <div class="ops-item"><i data-lucide="user-plus"></i><div><b>1. 이메일을 남겨주세요</b><span>베타 초대와 출시 소식을 보내드립니다.</span></div></div>
-          <div class="ops-item"><i data-lucide="chef-hat"></i><div><b>2. 앱 화면을 먼저 둘러보세요</b><span>홈, 상세, 조리, 완료 흐름을 바로 확인할 수 있습니다.</span></div></div>
-          <div class="ops-item"><i data-lucide="messages-square"></i><div><b>3. 원하는 레시피를 알려주세요</b><span>먼저 들어갔으면 하는 요리와 영상 링크를 보내주세요.</span></div></div>
-        </div>
-      </div>
-    </section>
   </div>
 </section>
 <div class="stage">
@@ -1274,6 +1265,10 @@
             <button type="button" onclick="openSearch('재료 적게')">재료 적게</button>
             <button type="button" onclick="goDetail('vlPqkuHIdCc')">오늘 추천 보기</button>
           </div>
+          <form class="as-pantry" onsubmit="searchFromPantry(event)">
+            <input id="pantryInput" type="search" autocomplete="off" placeholder="있는 재료 여러 개 입력 · 김치, 달걀, 두부">
+            <button type="submit" aria-label="재료로 찾기"><i data-lucide="arrow-right"></i></button>
+          </form>
         </div>
         <div class="cats">
           <div class="cat" onclick="openSearch('SNS 트렌드')"><div class="ic"><i data-lucide="sparkles"></i></div><span>요즘 뜨는</span></div>
@@ -1328,6 +1323,7 @@
           <div class="dhead">
             <h2 id="detTitle"></h2>
           </div>
+          <div class="detail-proof" id="detProof"></div>
           <p class="dsummary" id="detSummary"></p>
           <div id="detTipCard"></div>
           <div class="meta">
@@ -1396,6 +1392,11 @@
           <div class="wave vp-wave"><span></span><span></span><span></span><span></span><span></span></div>
           <div class="vp-user" id="vpUser">불 조절이 애매해</div>
           <div class="vp-ai" id="vpAi"></div>
+          <div class="vp-quick" id="vpQuick"></div>
+          <form class="vp-chat-form" onsubmit="submitVpPrompt(event)">
+            <input id="vpPromptInput" type="search" autocomplete="off" placeholder="질문을 고르거나 입력해보세요">
+            <button type="submit" aria-label="질문 보내기"><i data-lucide="send"></i></button>
+          </form>
         </div>
       </div>
     </div>
@@ -1444,7 +1445,7 @@
         <div class="ing-h"><b>타이머 설정</b><span onclick="closeTimer()"><i data-lucide="x"></i></span></div>
         <div class="ts-row">
           <button class="ts-pm" onclick="tsAdjust(-1)"><i data-lucide="minus"></i></button>
-          <div class="ts-num"><b id="tsMin">3</b><span>분</span></div>
+          <div class="ts-num"><input id="tsMin" type="number" min="1" max="99" inputmode="numeric" value="3" aria-label="타이머 분" oninput="tsInputChanged(this.value)" onblur="syncTimerInput()"><span>분</span></div>
           <button class="ts-pm" onclick="tsAdjust(1)"><i data-lucide="plus"></i></button>
         </div>
         <div class="ts-presets">
@@ -1750,6 +1751,10 @@
   function closeFeedback(){
     document.getElementById('feedbackModal')?.classList.remove('show');
   }
+  function currentViewId(){
+    if(document.body.classList.contains('marketing-open'))return 'landing';
+    return document.querySelector('.view.active')?.id||'home';
+  }
   async function submitBeta(event){
     event.preventDefault();
     const form=event.currentTarget;
@@ -1802,18 +1807,31 @@
     event.preventDefault();
     const form=event.currentTarget;
     const data=Object.fromEntries(new FormData(form).entries());
-    const payload={...data,screen:document.body.classList.contains('marketing-open')?'landing':currentViewId(),recipe:currentRecipe?.name||'',page:location.href,createdAt:new Date().toISOString()};
+    const message=(data.message||'').trim();
+    if(!message){
+      setFormStatus(form,'내용을 입력하면 보낼 수 있어요.','bad');
+      form.elements.message?.focus();
+      return;
+    }
+    const submitButton=form.querySelector('button[type="submit"]');
+    const originalLabel=submitButton?submitButton.innerHTML:'';
+    const payload={...data,message,screen:document.body.classList.contains('marketing-open')?'landing':currentViewId(),recipe:currentRecipe?.name||'',page:location.href,createdAt:new Date().toISOString()};
     try{
       setFormBusy(form,true);
+      if(submitButton)submitButton.innerHTML='<i data-lucide="loader-circle"></i>보내는 중';
+      if(window.lucide)lucide.createIcons();
       setFormStatus(form,'전송 중입니다.','');
       await postJson('/api/feedback',payload);
       form.reset();
       setFormStatus(form,'피드백이 접수됐습니다. 베타 개선 목록에 반영할게요.','ok');
-      setTimeout(closeFeedback,900);
+      toast('피드백이 접수됐어요','send');
+      setTimeout(closeFeedback,1200);
     }catch(error){
-      setFormStatus(form,error.message,'bad');
+      setFormStatus(form,error.message||'피드백 저장에 실패했습니다. 잠시 뒤 다시 시도해주세요.','bad');
     }finally{
       setFormBusy(form,false);
+      if(submitButton)submitButton.innerHTML=originalLabel;
+      if(window.lucide)lucide.createIcons();
     }
   }
   function setActiveNav(key){
@@ -2312,6 +2330,16 @@
     if(location.hash!==hash)history.replaceState(null,'',hash);
     setTimeout(()=>input&&input.focus(),80);
   }
+  function searchFromPantry(event){
+    event.preventDefault();
+    const input=document.getElementById('pantryInput');
+    const value=(input?.value||'').replace(/[,/]+/g,' ').replace(/\s+/g,' ').trim();
+    if(!value){
+      openSearch('재료 적게');
+      return;
+    }
+    openSearch(value);
+  }
   function clearRecipeSearch(){
     const input=document.getElementById('recipeSearchInput');
     if(input)input.value='';
@@ -2334,6 +2362,7 @@
   function renderDetail(){
     const r=currentRecipe;
     document.getElementById('detTitle').innerHTML=esc(r.title);
+    document.getElementById('detProof').innerHTML=detailProofHTML(r);
     document.getElementById('detSummary').textContent=r.summary||'';
     document.getElementById('detTipCard').innerHTML=detailTipHTML(r);
     document.getElementById('detTime').textContent=r.time||'-';
@@ -2354,7 +2383,12 @@
   // 재료 시트 렌더 (currentRecipe 기준)
   function renderIngSheet(){
     document.getElementById('ingSheetCount').textContent='재료 '+ingCount(currentRecipe)+'개';
-    document.getElementById('ingSheetBody').innerHTML=ingGroupsHTML(currentRecipe);
+    const group=(label,arr)=>arr.length?'<div class="ing-check-title">'+label+'</div>'+arr.map((x,i)=>
+      '<label class="ing-check"><input type="checkbox" aria-label="'+esc(x.n)+' 준비 완료"><b>'+esc(x.n)+'</b><span>'+esc(x.q)+'</span></label>'
+    ).join(''):'';
+    document.getElementById('ingSheetBody').innerHTML='<div class="ing-check-list">'+
+      group('주재료',currentRecipe.ingredients.main)+group('양념',currentRecipe.ingredients.seasoning)+
+      '</div>';
   }
   // 완료 화면 렌더 (currentRecipe 기준)
   function renderComplete(){
@@ -2368,6 +2402,12 @@
     const data=reactionFor(r);
     const tip=data.tips[0]||'먼저 만든 사람이 남긴 팁을 모으고 있어요.';
     return '<div class="tip-card"><div class="tip-h"><i data-lucide="message-square-heart"></i>먼저 만든 사람의 팁 · '+data.made+'명 완주</div><p>'+esc(tip)+'</p><button type="button" onclick="openFeedback(\'detail-tip\')">내 팁 남기기</button></div>';
+  }
+  function detailProofHTML(r){
+    const data=reactionFor(r);
+    return '<span><i data-lucide="star"></i>'+data.stars+' 평점</span>'+
+      '<span><i data-lucide="utensils"></i>'+data.made+'명 완주</span>'+
+      '<span><i data-lucide="message-square-heart"></i>팁 '+data.tips.length+'개</span>';
   }
   const DET_SECS=['sec-ing','sec-steps'];
   let tabLock=0;
@@ -2669,10 +2709,16 @@
     hideCookHint();
   }
   let tsVal=3, timerId=null, timerLeft=0, timerTotal=0, timerPaused=false, stageTimerHideId=null;
-  function openTimer(){document.getElementById('tsMin').textContent=tsVal;document.getElementById('timerSheet').classList.add('show');}
+  function timerInput(){return document.getElementById('tsMin');}
+  function syncTimerInput(){const input=timerInput();if(input)input.value=tsVal;}
+  function tsInputChanged(value){
+    const n=parseInt(value,10);
+    if(Number.isFinite(n))tsVal=Math.max(1,Math.min(99,n));
+  }
+  function openTimer(){syncTimerInput();document.getElementById('timerSheet').classList.add('show');}
   function closeTimer(){document.getElementById('timerSheet').classList.remove('show');}
-  function tsAdjust(d){tsVal=Math.max(1,Math.min(99,tsVal+d));document.getElementById('tsMin').textContent=tsVal;}
-  function tsSet(v){tsVal=v;document.getElementById('tsMin').textContent=tsVal;}
+  function tsAdjust(d){tsVal=Math.max(1,Math.min(99,tsVal+d));syncTimerInput();}
+  function tsSet(v){tsVal=Math.max(1,Math.min(99,v));syncTimerInput();}
   function fmtTime(s){return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');}
   function setTimerButtons(on){
     document.querySelectorAll('.js-timer-label').forEach(l=>{l.textContent='타이머';});
@@ -2746,6 +2792,7 @@
     toast('타이머 취소','x');
   }
   function startCountdown(){
+    syncTimerInput();
     closeTimer();
     startUnifiedTimer(tsVal*60,true);
   }
@@ -2814,6 +2861,56 @@
       },900));
     });
   }
+  function renderVpQuickPrompts(){
+    const wrap=document.getElementById('vpQuick');
+    if(!wrap)return;
+    const script=voiceScriptFor(currentRecipe).slice(0,4);
+    wrap.innerHTML=script.map((ex,i)=>'<button type="button" onclick="useVpPrompt('+i+')">'+esc(ex.u)+'</button>').join('');
+    lucide.createIcons();
+  }
+  function answerForPrompt(prompt){
+    const q=(prompt||'').trim();
+    const script=voiceScriptFor(currentRecipe);
+    const direct=script.find(ex=>ex.u===q)||script.find(ex=>q.includes(ex.u)||ex.u.includes(q));
+    if(direct)return direct;
+    const minute=q.match(/(\d+)\s*분/);
+    if(minute){
+      const minutes=Math.max(1,Math.min(99,parseInt(minute[1],10)));
+      return {u:q,a:minutes+'분 타이머를 시작했어요. 다음 재료를 미리 꺼내두면 조리 흐름이 덜 끊겨요.',timer:minutes*60};
+    }
+    if(/다음|넘어/.test(q))return {u:q,a:'네, 다음 단계로 넘어갈게요.',next:true};
+    if(/재료|대체|없/.test(q))return {u:q,a:currentRecipe.name+'은 핵심 재료를 유지하고 비슷한 식감이나 간의 재료로 바꾸면 돼요. 양념은 한 번에 많이 넣지 말고 조금씩 맞춰보세요.'};
+    if(/불|타|익|간/.test(q))return {u:q,a:'불을 한 단계 낮추고 현재 단계 설명을 보며 천천히 맞춰보세요. 간은 마지막에 한 번 더 보는 편이 실패가 적어요.'};
+    return {u:q,a:'지금은 정해진 예시 질문으로 답변을 보여드려요. 재료 대체, 불 조절, 타이머, 다음 단계 질문을 해볼 수 있어요.'};
+  }
+  function showVpAnswer(ex){
+    if(!hf3On)return;
+    const panel=document.getElementById('vpanel'), u=document.getElementById('vpUser'), a=document.getElementById('vpAi');
+    vpClear();
+    panel.classList.remove('idle','listening','answering');panel.classList.add('thinking');
+    u.textContent=ex.u;
+    vpThinking(a);
+    vpTimers.push(setTimeout(()=>{
+      if(!hf3On)return;
+      panel.classList.remove('thinking');panel.classList.add('answering');
+      vpType(a,ex.a,24,()=>{
+        if(ex.timer)startVpTimer(ex.timer);
+        if(ex.next)cook3Car.advance();
+      });
+    },420));
+  }
+  function useVpPrompt(index){
+    const ex=voiceScriptFor(currentRecipe)[index]||voiceScriptFor(currentRecipe)[0];
+    showVpAnswer(ex);
+  }
+  function submitVpPrompt(event){
+    event.preventDefault();
+    const input=document.getElementById('vpPromptInput');
+    const prompt=(input?.value||'').trim();
+    if(!prompt)return;
+    if(input)input.value='';
+    showVpAnswer(answerForPrompt(prompt));
+  }
   function startVpTimer(sec){
     startUnifiedTimer(sec,false);
   }
@@ -2828,6 +2925,7 @@
       {const mb=panel.querySelector('.vp-mic');if(mb){mb.innerHTML='<i data-lucide="mic"></i>';lucide.createIcons();}}
       document.getElementById('vpUser').textContent='불 조절이 애매해';
       document.getElementById('vpAi').textContent='';
+      renderVpQuickPrompts();
       panel.classList.remove('thinking','answering','listening');panel.classList.add('open','idle');
       vpi=0;
       vpTimers.push(setTimeout(runVp,1500));      // 잠시 뒤 대화 데모 시작

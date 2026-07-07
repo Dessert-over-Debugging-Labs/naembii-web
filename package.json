@@ -10,6 +10,7 @@
     "capture:flow-gif": "node scripts/capture-core-flow-gif.mjs",
     "verify:dynamic": "node scripts/verify-dynamic.mjs",
     "verify:visual": "node scripts/verify-dynamic.mjs --visual",
+    "verify:mobile-flow": "node scripts/validate-mobile-flow.mjs",
     "verify:ralph-loop": "node scripts/run-naembi-ralph-loop.mjs --visual --full --min-score=96"
   }
 }

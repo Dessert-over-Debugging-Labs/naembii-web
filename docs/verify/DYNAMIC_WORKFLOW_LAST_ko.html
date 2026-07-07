@@ -16,12 +16,12 @@
 </head>
 <body><main><p class="status">PASS</p><h1>동적 검증 워크플로우 실행 리포트</h1>
 
-<p>- 일시: 2026-07-05T23:06:39.008Z</p>
+<p>- 일시: 2026-07-07T17:43:06.942Z</p>
 <p>- 판정: **PASS**</p>
 <p>- 점수: **130 / 130 (100%)**</p>
 <p>- 통과 기준: **96% 초과**</p>
 <p>- 모드: visual 포함</p>
-<p>- 기준 URL: `http://127.0.0.1:4191/`</p>
+<p>- 기준 URL: `http://127.0.0.1:4873/`</p>
 
 <h2>왜 빠르게 끝났나</h2>
 
@@ -30,25 +30,26 @@
 <h2>변경 파일</h2>
 
 <p>- `.DS_Store`</p>
+<p>- `.env.example`</p>
+<p>- `README.md`</p>
+<p>- `api/_lib/collect.js`</p>
+<p>- `api/beta-signup.js`</p>
+<p>- `api/feedback.js`</p>
 <p>- `app.html`</p>
-<p>- `assets/screens/app-cook.png`</p>
-<p>- `assets/screens/app-detail.png`</p>
-<p>- `assets/screens/naembi-core-flow.gif`</p>
-<p>- `design.html`</p>
+<p>- `docs/handoff/BETA_COLLECTION_OPTIONS_ko.md`</p>
+<p>- `docs/handoff/GOOGLE_FORM_VERCEL_SETUP_GUIDE_ko.md`</p>
 <p>- `docs/verify/DYNAMIC_WORKFLOW_LAST_ko.html`</p>
 <p>- `docs/verify/DYNAMIC_WORKFLOW_LAST_ko.json`</p>
 <p>- `docs/verify/DYNAMIC_WORKFLOW_LAST_ko.md`</p>
-<p>- `docs/verify/NAEMBI_RALPH_LOOP_LAST_ko.json`</p>
-<p>- `docs/verify/NAEMBI_RALPH_LOOP_LAST_ko.md`</p>
-<p>- `docs/verify/NAEMBI_RALPH_LOOP_ROUND_LAST_ko.html`</p>
-<p>- `docs/verify/NAEMBI_RALPH_LOOP_ROUND_LAST_ko.json`</p>
-<p>- `docs/verify/NAEMBI_RALPH_LOOP_ROUND_LAST_ko.md`</p>
-<p>- `docs/verify/VALIDATION_AGENT_PACKET_ko.md`</p>
-<p>- `index.html`</p>
 <p>- `scripts/.DS_Store`</p>
-<p>- `scripts/verify-dynamic.mjs`</p>
+<p>- `scripts/google-apps-script/create-naembi-beta-collection.js`</p>
 <p>- `android-wrapper/.DS_Store`</p>
 <p>- `docs/.DS_Store`</p>
+<p>- `docs/handoff/NOTION_OPS_AUTOMATION_SETUP_ko.md`</p>
+<p>- `docs/handoff/SLACK_SHEET_COMPLETION_AUTOMATION_ko.md`</p>
+<p>- `scripts/notion/upload-feedback-action-plan.mjs`</p>
+<p>- `scripts/notion/upload-naembi-ops-automation-setup.mjs`</p>
+<p>- `scripts/validate-mobile-flow.mjs`</p>
 
 <h2>선택된 워크플로우</h2>
 
@@ -56,7 +57,7 @@
 <pre>| --- | --- |</pre>
 <pre>| core | 항상 실행 |</pre>
 <pre>| api | api/app/landing 변경 감지 |</pre>
-<pre>| deploy | full 실행 |</pre>
+<pre>| deploy | 배포 설정 변경 감지 |</pre>
 <pre>| docs | 검증 문서 변경 감지 |</pre>
 <pre>| visual | --visual 요청 |</pre>
 
