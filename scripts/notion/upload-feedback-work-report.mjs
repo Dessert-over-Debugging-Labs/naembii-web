@@ -3,8 +3,8 @@ import { execFileSync } from 'node:child_process';
 const NOTION_VERSION = '2022-06-28';
 const actionPageId = process.env.NOTION_ACTION_PAGE_ID || '396b1da1d9f981c0b960c20c6cf6b7ec';
 const token = process.env.NOTION_TOKEN;
-const today = '2026-07-08';
-const title = `냄비 웹앱 피드백 반영 리포트 · ${today}`;
+const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul' }).format(new Date());
+const title = `냄비 웹앱 피드백·검증 반영 리포트 · ${today}`;
 
 const stagePages = [
   {
@@ -15,7 +15,7 @@ const stagePages = [
   {
     id: '396b1da1d9f98121ad70e7b4e5f965bc',
     title: '2단계 P1 앱 체험 기능 보강',
-    note: '완료: 앱 내부 피드백 제출 버그, 타이머 직접 입력, 재료 체크리스트, 요리비서 질문 입력/추천 질문을 반영했다.'
+    note: '완료: 앱 내부 피드백 제출 버그, 타이머 직접 입력, 기존 재료 보기+체크리스트 추가 보기, 요리비서 질문 입력/추천 질문을 반영했다.'
   },
   {
     id: '396b1da1d9f981b09bf5f39714849acb',
@@ -107,11 +107,13 @@ const commits = latestCommits();
 
 const children = [
   paragraph(`작성일: ${today}`),
-  paragraph('목적: Notion 체크리스트 기반 웹앱 피드백 반영 결과와 검증 상태를 한 곳에 남긴다.'),
+  paragraph('목적: Notion 체크리스트 기반 웹앱 피드백 반영 결과, 모바일 화면 잘림 검증, Ralph 루프 결과를 한 곳에 남긴다.'),
   heading(2, '반영 요약'),
   bullet('랜딩 하단 중복 설명을 줄이고 요리비서 예시와 앱 체험/신청/요청 흐름을 더 앞쪽에 배치했다.'),
   bullet('웹앱 내부 의견 남기기 제출이 멈추던 원인을 수정했다. 원인은 `currentViewId()` 누락으로 submit 중 JS 에러가 난 점이었다.'),
-  bullet('타이머 숫자 직접 입력, 재료 체크리스트, 요리비서 질문 선택/입력, 여러 재료 검색 진입을 추가했다.'),
+  bullet('타이머 숫자 직접 입력, 기존 재료 보기와 체크리스트 추가 보기 전환, 요리비서 질문 선택/입력, 여러 재료 검색 진입을 추가했다.'),
+  bullet('웹앱 내부 화면 잘림 검증을 추가했다. 홈/검색/상세/조리/타이머/재료/음성비서/완료를 390x844, 375x667, 데스크톱 앱 쉘에서 검사한다.'),
+  bullet('`verify:visual`에 `app screen clipping` 하드 게이트를 통합해, 랜딩 캡처뿐 아니라 `/app` 내부 30개 상태 overflow를 함께 검증한다.'),
   bullet('Apps Script 운영뷰를 매번 수동 실행하지 않도록 Form submit 트리거와 webhook 저장 직후 갱신 경로를 추가했다.'),
   bullet('카테고리 후보는 바로 개발 반영하지 않고 별도 논의 페이지로 분리했다.'),
   heading(2, '검증 결과'),
@@ -119,7 +121,11 @@ const children = [
   todo('node --check scripts/google-apps-script/create-naembi-beta-collection.js PASS', true),
   todo('npm run verify:dynamic -- --full --min-score=96 PASS, 110/110', true),
   todo('npm run verify:visual -- --full --min-score=96 PASS, 130/130', true),
+  todo('npm run verify:app-screens PASS: /app 내부 30개 상태 잘림/overflow 0건', true),
+  todo('Ralph 루프 1라운드 PASS: 130/130, app screen clipping PASS', true),
   todo('node scripts/validate-mobile-flow.mjs PASS: /app 홈, 피드백 제출, 타이머 7분, 요리비서 입력 확인', true),
+  todo('별도 검증 에이전트 PASS: 재료 보기 추가 방식과 앱 내부 잘림 검증 통합 확인', true),
+  todo('Vercel /app HTTP 200 확인, 최신 배포 반영', true),
   heading(2, '생성/갱신한 Notion 문서'),
   linkParagraph('실행 투두 페이지', actionPageUrl),
   linkParagraph('카테고리 논의 기록', categoryPageUrl),
