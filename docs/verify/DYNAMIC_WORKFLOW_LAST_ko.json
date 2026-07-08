@@ -1,30 +1,26 @@
 {
-  "startedAt": "2026-07-07T17:43:06.942Z",
+  "startedAt": "2026-07-08T16:37:44.420Z",
   "summary": "PASS",
   "visual": true,
-  "baseURL": "http://127.0.0.1:4873/",
+  "baseURL": "http://127.0.0.1:4874/",
   "files": [
-    ".DS_Store",
-    ".env.example",
-    "README.md",
-    "api/_lib/collect.js",
-    "api/beta-signup.js",
-    "api/feedback.js",
     "app.html",
-    "docs/handoff/BETA_COLLECTION_OPTIONS_ko.md",
-    "docs/handoff/GOOGLE_FORM_VERCEL_SETUP_GUIDE_ko.md",
     "docs/verify/DYNAMIC_WORKFLOW_LAST_ko.html",
     "docs/verify/DYNAMIC_WORKFLOW_LAST_ko.json",
     "docs/verify/DYNAMIC_WORKFLOW_LAST_ko.md",
-    "scripts/.DS_Store",
-    "scripts/google-apps-script/create-naembi-beta-collection.js",
-    "android-wrapper/.DS_Store",
-    "docs/.DS_Store",
-    "docs/handoff/NOTION_OPS_AUTOMATION_SETUP_ko.md",
-    "docs/handoff/SLACK_SHEET_COMPLETION_AUTOMATION_ko.md",
-    "scripts/notion/upload-feedback-action-plan.mjs",
-    "scripts/notion/upload-naembi-ops-automation-setup.mjs",
-    "scripts/validate-mobile-flow.mjs"
+    "docs/verify/DYNAMIC_WORKFLOW_ko.md",
+    "docs/verify/NAEMBI_BETA_SCORECARD_ko.md",
+    "docs/verify/NAEMBI_RALPH_LOOP_LAST_ko.json",
+    "docs/verify/NAEMBI_RALPH_LOOP_LAST_ko.md",
+    "docs/verify/NAEMBI_RALPH_LOOP_ROUND_LAST_ko.html",
+    "docs/verify/NAEMBI_RALPH_LOOP_ROUND_LAST_ko.json",
+    "docs/verify/NAEMBI_RALPH_LOOP_ROUND_LAST_ko.md",
+    "docs/verify/NAEMBI_RALPH_LOOP_ko.md",
+    "docs/verify/NAEMBI_VALIDATION_POINTS_ko.md",
+    "package.json",
+    "scripts/validate-mobile-flow.mjs",
+    "scripts/verify-dynamic.mjs",
+    "scripts/validate-app-screens.mjs"
   ],
   "workflows": [
     "core",
@@ -37,7 +33,7 @@
     {
       "name": "package scripts",
       "status": "PASS",
-      "detail": "dev/check/verify:dynamic 스크립트 확인",
+      "detail": "dev/check/verify:dynamic/verify:app-screens 스크립트 확인",
       "fix": ""
     },
     {
@@ -153,6 +149,12 @@
       "status": "PASS",
       "detail": "/tmp/cook-wireframe-v3/dynamic-desktop.png, forbiddenVisibleTerms=[], croppedScreenImages=[]",
       "fix": ""
+    },
+    {
+      "name": "app screen clipping",
+      "status": "PASS",
+      "detail": "30개 앱 내부 상태 잘림/overflow 검사 PASS",
+      "fix": ""
     }
   ],
   "scorecard": {
@@ -186,7 +188,7 @@
         "weight": 10,
         "points": 10,
         "percent": 100,
-        "evidence": "6/6 신호 충족",
+        "evidence": "7/7 신호 충족",
         "fix": "랜딩 이탈 방지용 요리비서 추천, 앱 후기/팁, 완료 후 공유, 폰 내부 플로팅 피드백을 유지한다."
       },
       {
@@ -226,8 +228,8 @@
         "weight": 10,
         "points": 10,
         "percent": 100,
-        "evidence": "7/7 신호 충족",
-        "fix": "모바일/태블릿/데스크톱 캡처에서 CTA, 핵심 GIF, 앱 미리보기, 카피 신호가 모두 보여야 한다."
+        "evidence": "8/8 신호 충족",
+        "fix": "모바일/태블릿/데스크톱 캡처와 /app 내부 화면에서 CTA, 핵심 GIF, 앱 미리보기, 카피 신호, 잘림 없음이 모두 확인되어야 한다."
       },
       {
         "name": "배포 준비도",
@@ -541,6 +543,18 @@
         ],
         "croppedScreenImages": [],
         "forbiddenVisibleTerms": []
+      }
+    },
+    {
+      "mode": "app-screens",
+      "out": "/tmp/cook-wireframe-v3/app-clip",
+      "status": "PASS",
+      "payload": {
+        "status": "PASS",
+        "checked": 30,
+        "failed": 0,
+        "outDir": "/tmp/cook-wireframe-v3/app-clip",
+        "failures": []
       }
     }
   ]

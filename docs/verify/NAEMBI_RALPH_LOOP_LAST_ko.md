@@ -1,8 +1,8 @@
 # 냄비 Ralph 검증 루프 실행 리포트
-- 시작: 2026-07-05T23:07:05.898Z
-- 종료: 2026-07-05T23:07:20.067Z
+- 시작: 2026-07-08T16:39:37.200Z
+- 종료: 2026-07-08T16:40:36.582Z
 - 최종 판정: **PASS**
-- 기준 URL: `http://127.0.0.1:4191/`
+- 기준 URL: `http://127.0.0.1:4874/`
 - 통과 기준: **96% 초과**
 - 모드: visual 포함
 - 최소 실행 시간: 0분
@@ -11,21 +11,20 @@
 ## 라운드
 | round | at | summary | score | percent | exit |
 | ---: | --- | --- | --- | ---: | ---: |
-| 1 | 2026-07-05T23:07:20.066Z | PASS | 130 / 130 | 100% | 0 |
+| 1 | 2026-07-08T16:40:36.581Z | PASS | 130 / 130 | 100% | 0 |
 ## 최신 라운드 리포트
 - Markdown: `docs/verify/NAEMBI_RALPH_LOOP_ROUND_LAST_ko.md`
 - JSON: `docs/verify/NAEMBI_RALPH_LOOP_ROUND_LAST_ko.json`
 ## 최신 stdout tail
 ```text
-바일/태블릿/데스크톱 캡처에서 CTA, 핵심 GIF, 앱 미리보기, 카피 신호가 모두 보여야 한다. |
-| 배포 준비도 | 10 | 10 | 100% | 4/4 신호 충족 | 루트 랜딩과 /app 웹앱 라우팅, 수집 환경변수, 배포 제외, 검증 스크립트를 유지한다. |
+4 신호 충족 | 루트 랜딩과 /app 웹앱 라우팅, 수집 환경변수, 배포 제외, 검증 스크립트를 유지한다. |
 | 검증 루프 재현성 | 5 | 5 | 100% | 8/8 신호 충족 | 다음 세션에서도 같은 검증자 역할, 점수표, 마지막 리포트를 재사용할 수 있어야 한다. |
 
 ## 게이트 결과
 
 | 게이트 | 판정 | 근거 | 보정 후보 |
 | --- | --- | --- | --- |
-| package scripts | PASS | dev/check/verify:dynamic 스크립트 확인 | - |
+| package scripts | PASS | dev/check/verify:dynamic/verify:app-screens 스크립트 확인 | - |
 | vercel app route | PASS | /app -> /app.html, /design -> /design.html, 루트는 index.html 진입 | - |
 | landing structure | PASS | 사용자 후킹 카피, 정적 앱 캡쳐, 미리 써보기/요리 보내기 폼 확인 | - |
 | app structure | PASS | /app 기본 앱 홈, 조리 모드, 피드백 폼 확인 | - |
@@ -45,6 +44,7 @@
 | visual capture: mobile | PASS | /tmp/cook-wireframe-v3/dynamic-mobile.png, forbiddenVisibleTerms=[], croppedScreenImages=[] | - |
 | visual capture: tablet | PASS | /tmp/cook-wireframe-v3/dynamic-tablet.png, forbiddenVisibleTerms=[], croppedScreenImages=[] | - |
 | visual capture: desktop | PASS | /tmp/cook-wireframe-v3/dynamic-desktop.png, forbiddenVisibleTerms=[], croppedScreenImages=[] | - |
+| app screen clipping | PASS | 30개 앱 내부 상태 잘림/overflow 검사 PASS | - |
 
 ## 루프 규칙
 

@@ -1,11 +1,11 @@
 # 동적 검증 워크플로우 실행 리포트
 
-- 일시: 2026-07-07T17:43:06.942Z
+- 일시: 2026-07-08T16:37:44.420Z
 - 판정: **PASS**
 - 점수: **130 / 130 (100%)**
 - 통과 기준: **96% 초과**
 - 모드: visual 포함
-- 기준 URL: `http://127.0.0.1:4873/`
+- 기준 URL: `http://127.0.0.1:4874/`
 
 ## 왜 빠르게 끝났나
 
@@ -13,27 +13,23 @@
 
 ## 변경 파일
 
-- `.DS_Store`
-- `.env.example`
-- `README.md`
-- `api/_lib/collect.js`
-- `api/beta-signup.js`
-- `api/feedback.js`
 - `app.html`
-- `docs/handoff/BETA_COLLECTION_OPTIONS_ko.md`
-- `docs/handoff/GOOGLE_FORM_VERCEL_SETUP_GUIDE_ko.md`
 - `docs/verify/DYNAMIC_WORKFLOW_LAST_ko.html`
 - `docs/verify/DYNAMIC_WORKFLOW_LAST_ko.json`
 - `docs/verify/DYNAMIC_WORKFLOW_LAST_ko.md`
-- `scripts/.DS_Store`
-- `scripts/google-apps-script/create-naembi-beta-collection.js`
-- `android-wrapper/.DS_Store`
-- `docs/.DS_Store`
-- `docs/handoff/NOTION_OPS_AUTOMATION_SETUP_ko.md`
-- `docs/handoff/SLACK_SHEET_COMPLETION_AUTOMATION_ko.md`
-- `scripts/notion/upload-feedback-action-plan.mjs`
-- `scripts/notion/upload-naembi-ops-automation-setup.mjs`
+- `docs/verify/DYNAMIC_WORKFLOW_ko.md`
+- `docs/verify/NAEMBI_BETA_SCORECARD_ko.md`
+- `docs/verify/NAEMBI_RALPH_LOOP_LAST_ko.json`
+- `docs/verify/NAEMBI_RALPH_LOOP_LAST_ko.md`
+- `docs/verify/NAEMBI_RALPH_LOOP_ROUND_LAST_ko.html`
+- `docs/verify/NAEMBI_RALPH_LOOP_ROUND_LAST_ko.json`
+- `docs/verify/NAEMBI_RALPH_LOOP_ROUND_LAST_ko.md`
+- `docs/verify/NAEMBI_RALPH_LOOP_ko.md`
+- `docs/verify/NAEMBI_VALIDATION_POINTS_ko.md`
+- `package.json`
 - `scripts/validate-mobile-flow.mjs`
+- `scripts/verify-dynamic.mjs`
+- `scripts/validate-app-screens.mjs`
 
 ## 선택된 워크플로우
 
@@ -52,12 +48,12 @@
 | 사용자 가치·카피 명확성 | 15 | 15 | 100% | 4/4 신호 충족 | 히어로, CTA, 레시피 요청, 작은 냄비 감성 카피가 모두 사용자 행동으로 이어져야 한다. |
 | 베타 전환 흐름 | 15 | 15 | 100% | 5/5 신호 충족 | 모바일/데스크톱/하단 신청 폼과 성공 메시지를 모두 유지한다. |
 | 피드백·레시피 수집 | 15 | 15 | 100% | 5/5 신호 충족 | 베타 피드백과 레시피 요청이 같은 저장 흐름으로 수집되어야 한다. |
-| 후킹·상호작용 루프 | 10 | 10 | 100% | 6/6 신호 충족 | 랜딩 이탈 방지용 요리비서 추천, 앱 후기/팁, 완료 후 공유, 폰 내부 플로팅 피드백을 유지한다. |
+| 후킹·상호작용 루프 | 10 | 10 | 100% | 7/7 신호 충족 | 랜딩 이탈 방지용 요리비서 추천, 앱 후기/팁, 완료 후 공유, 폰 내부 플로팅 피드백을 유지한다. |
 | 정적 앱 화면 소개 | 15 | 15 | 100% | 6/6 신호 충족 | 홈/검색/상세/조리/완료 화면 캡쳐가 랜딩에서 정적으로 제공되어야 한다. |
 | 브랜드·디자인 검증 | 10 | 10 | 100% | 6/6 신호 충족 | /design에서 캐릭터/로고 후보, 아이덴티티 점수표, 음성비서 중심 배치, 커뮤니티 현실성을 검토할 수 있어야 한다. |
 | 내부 정보 비노출 | 15 | 15 | 100% | 정적 0건, 시각 0건 | 사용자 화면에서 내부 문서명, 버전 태그, 저장소/배포 구현명을 제거한다. |
 | 앱 캡쳐 전체 노출 | 10 | 10 | 100% | 잘림 0건, 캡쳐 세트 3/3 | 정적 앱 화면 이미지는 원본 비율 그대로 전체가 보여야 하며 object-fit: cover를 쓰지 않는다. |
-| 반응형·시각 증거 | 10 | 10 | 100% | 7/7 신호 충족 | 모바일/태블릿/데스크톱 캡처에서 CTA, 핵심 GIF, 앱 미리보기, 카피 신호가 모두 보여야 한다. |
+| 반응형·시각 증거 | 10 | 10 | 100% | 8/8 신호 충족 | 모바일/태블릿/데스크톱 캡처와 /app 내부 화면에서 CTA, 핵심 GIF, 앱 미리보기, 카피 신호, 잘림 없음이 모두 확인되어야 한다. |
 | 배포 준비도 | 10 | 10 | 100% | 4/4 신호 충족 | 루트 랜딩과 /app 웹앱 라우팅, 수집 환경변수, 배포 제외, 검증 스크립트를 유지한다. |
 | 검증 루프 재현성 | 5 | 5 | 100% | 8/8 신호 충족 | 다음 세션에서도 같은 검증자 역할, 점수표, 마지막 리포트를 재사용할 수 있어야 한다. |
 
@@ -65,7 +61,7 @@
 
 | 게이트 | 판정 | 근거 | 보정 후보 |
 | --- | --- | --- | --- |
-| package scripts | PASS | dev/check/verify:dynamic 스크립트 확인 | - |
+| package scripts | PASS | dev/check/verify:dynamic/verify:app-screens 스크립트 확인 | - |
 | vercel app route | PASS | /app -> /app.html, /design -> /design.html, 루트는 index.html 진입 | - |
 | landing structure | PASS | 사용자 후킹 카피, 정적 앱 캡쳐, 미리 써보기/요리 보내기 폼 확인 | - |
 | app structure | PASS | /app 기본 앱 홈, 조리 모드, 피드백 폼 확인 | - |
@@ -85,6 +81,7 @@
 | visual capture: mobile | PASS | /tmp/cook-wireframe-v3/dynamic-mobile.png, forbiddenVisibleTerms=[], croppedScreenImages=[] | - |
 | visual capture: tablet | PASS | /tmp/cook-wireframe-v3/dynamic-tablet.png, forbiddenVisibleTerms=[], croppedScreenImages=[] | - |
 | visual capture: desktop | PASS | /tmp/cook-wireframe-v3/dynamic-desktop.png, forbiddenVisibleTerms=[], croppedScreenImages=[] | - |
+| app screen clipping | PASS | 30개 앱 내부 상태 잘림/overflow 검사 PASS | - |
 
 ## 루프 규칙
 

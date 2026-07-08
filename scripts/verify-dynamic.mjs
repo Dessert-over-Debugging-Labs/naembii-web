@@ -67,7 +67,8 @@ function changedFiles() {
     .map((line) => {
       const path = line.slice(3).trim();
       return path.includes(' -> ') ? path.split(' -> ').pop().trim() : path;
-    });
+    })
+    .filter((path) => path && !path.endsWith('.DS_Store'));
 }
 
 function touches(files, matchers) {
@@ -114,11 +115,11 @@ function coreChecks() {
 
   try {
     const packageJson = parseJsonFile('package.json');
-    const needed = ['dev', 'check', 'verify:dynamic'];
+    const needed = ['dev', 'check', 'verify:dynamic', 'verify:app-screens'];
     const missing = needed.filter((name) => !packageJson.scripts?.[name]);
     gates.push(missing.length
-      ? fail('package scripts', `누락: ${missing.join(', ')}`, 'package.json scripts에 dev/check/verify:dynamic을 유지한다.')
-      : pass('package scripts', 'dev/check/verify:dynamic 스크립트 확인'));
+      ? fail('package scripts', `누락: ${missing.join(', ')}`, 'package.json scripts에 dev/check/verify:dynamic/verify:app-screens를 유지한다.')
+      : pass('package scripts', 'dev/check/verify:dynamic/verify:app-screens 스크립트 확인'));
   } catch (error) {
     gates.push(fail('package scripts', error.message, 'package.json JSON 형식과 scripts를 복구한다.'));
   }
@@ -170,7 +171,11 @@ function coreChecks() {
       ['feedbackForm', '앱 피드백 폼'],
       ['id="communityStrip"', '후기/팁 스트립'],
       ['shareCompletedRecipe', '완료 후 공유 루프'],
-      ['app-feedback-btn', '폰 화면 내부 플로팅 피드백']
+      ['app-feedback-btn', '폰 화면 내부 플로팅 피드백'],
+      ['id="ingSheet"', '재료 바텀시트'],
+      ['setIngSheetView', '재료 보기 전환'],
+      ['id="ingViewList"', '기존 재료 목록 보기'],
+      ['id="ingViewCheck"', '체크리스트 추가 보기']
     ];
     const missing = required.filter(([needle]) => !html.includes(needle)).map(([, label]) => label);
     gates.push(missing.length
@@ -403,6 +408,25 @@ function visualChecks() {
     }
   }
 
+  const appClipResult = run(process.execPath, ['scripts/validate-app-screens.mjs', baseURL, `${outDir}/app-clip`, '9344'], { timeout: 180000 });
+  if (!appClipResult.ok) {
+    const output = truncate(appClipResult.stderr || appClipResult.stdout, 900);
+    const status = /Chrome CDP|page target|operation not permitted|ECONNREFUSED/i.test(output) ? inconclusive : fail;
+    visualArtifacts.push({ mode: 'app-screens', out: `${outDir}/app-clip`, status: status === inconclusive ? 'INCONCLUSIVE' : 'FAIL', error: output });
+    gates.push(status('app screen clipping', output, '/app 내부 홈/검색/상세/조리/완료/시트 화면의 잘림 또는 overflow를 수정한다.'));
+  } else {
+    let payload = null;
+    try {
+      payload = JSON.parse(appClipResult.stdout);
+    } catch {
+      payload = { status: 'UNKNOWN', raw: truncate(appClipResult.stdout, 900) };
+    }
+    visualArtifacts.push({ mode: 'app-screens', out: `${outDir}/app-clip`, status: payload.status === 'PASS' ? 'PASS' : 'FAIL', payload });
+    gates.push(payload.status === 'PASS'
+      ? pass('app screen clipping', `${payload.checked || 0}개 앱 내부 상태 잘림/overflow 검사 PASS`)
+      : fail('app screen clipping', JSON.stringify(payload.failures || payload), '/app 내부 홈/검색/상세/조리/완료/시트 화면의 잘림 또는 overflow를 수정한다.'));
+  }
+
   return gates;
 }
 
@@ -453,8 +477,10 @@ function buildScorecard(gates, workflows) {
   const env = existsSync(resolve(root, '.env.example')) ? read('.env.example') : '';
   const ignored = existsSync(resolve(root, '.vercelignore')) ? read('.vercelignore') : '';
   const docs = existsSync(resolve(root, 'docs/verify/DYNAMIC_WORKFLOW_ko.md')) ? read('docs/verify/DYNAMIC_WORKFLOW_ko.md') : '';
-  const visualModes = new Set(visualArtifacts.filter((item) => item.status === 'PASS').map((item) => item.mode));
-  const visualPayloads = visualArtifacts.filter((item) => item.status === 'PASS').map((item) => item.payload || {});
+  const landingVisualArtifacts = visualArtifacts.filter((item) => ['mobile', 'tablet', 'desktop'].includes(item.mode));
+  const visualModes = new Set(landingVisualArtifacts.filter((item) => item.status === 'PASS').map((item) => item.mode));
+  const visualPayloads = landingVisualArtifacts.filter((item) => item.status === 'PASS').map((item) => item.payload || {});
+  const appScreenPayload = visualArtifacts.find((item) => item.mode === 'app-screens' && item.status === 'PASS')?.payload || null;
   const visualForbiddenTerms = visualPayloads.flatMap((payload) => payload.forbiddenVisibleTerms || []);
   const visualCroppedImages = visualPayloads.flatMap((payload) => payload.croppedScreenImages || []);
   const visualCopySignals = visualPayloads.map((payload) => (
@@ -517,13 +543,14 @@ function buildScorecard(gates, workflows) {
     !appHtml.includes('<span>영상 보내기</span>') && appHtml.includes('app-feedback-btn'),
     appHtml.includes('id="communityStrip"') && appHtml.includes('RECIPE_REACTIONS'),
     appHtml.includes('shareCompletedRecipe') && appHtml.includes('from=completed-share'),
-    existsSync(resolve(root, 'assets/screens/naembi-core-flow.gif')) && appHtml.includes('물어보기') && appHtml.includes('요리비서')
+    existsSync(resolve(root, 'assets/screens/naembi-core-flow.gif')) && appHtml.includes('물어보기') && appHtml.includes('요리비서'),
+    appHtml.includes('setIngSheetView') && appHtml.includes('한눈에 보기') && appHtml.includes('체크하며 준비') && appHtml.includes('ingGroupsHTML(currentRecipe)')
   ];
   items.push(scoreItem(
     '후킹·상호작용 루프',
     10,
     scoreBySignals(interactionSignals, 10),
-    `${interactionSignals.filter(Boolean).length}/6 신호 충족`,
+    `${interactionSignals.filter(Boolean).length}/${interactionSignals.length} 신호 충족`,
     '랜딩 이탈 방지용 요리비서 추천, 앱 후기/팁, 완료 후 공유, 폰 내부 플로팅 피드백을 유지한다.'
   ));
 
@@ -603,6 +630,7 @@ function buildScorecard(gates, workflows) {
       visualPayloads.some((payload) => payload.mobileMedia === true && payload.hasMobileAppCTA),
       visualPayloads.some((payload) => payload.mobileMedia === false && payload.hasVisibleAppPreview),
       mobilePressureSignals.length > 0 && mobilePressureSignals.every(Boolean),
+      appScreenPayload?.status === 'PASS',
       visualPayloads.some((payload) => payload.mobileMedia === true && payload.hasMobileAppCTA)
         && visualPayloads.some((payload) => payload.mobileMedia === false && payload.hasVisibleAppPreview)
         && visualCopySignals.every(Boolean)
@@ -612,8 +640,8 @@ function buildScorecard(gates, workflows) {
       '반응형·시각 증거',
       10,
       scoreBySignals(responsiveSignals, 10),
-      `${responsiveSignals.filter(Boolean).length}/7 신호 충족`,
-      '모바일/태블릿/데스크톱 캡처에서 CTA, 핵심 GIF, 앱 미리보기, 카피 신호가 모두 보여야 한다.'
+      `${responsiveSignals.filter(Boolean).length}/${responsiveSignals.length} 신호 충족`,
+      '모바일/태블릿/데스크톱 캡처와 /app 내부 화면에서 CTA, 핵심 GIF, 앱 미리보기, 카피 신호, 잘림 없음이 모두 확인되어야 한다.'
     ));
   }
 

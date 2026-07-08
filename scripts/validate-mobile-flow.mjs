@@ -141,6 +141,31 @@ try {
     };
   })()`);
 
+  const ingredients = await evaluate(`(async () => {
+    show('cook3');
+    hideCookHint();
+    closeTimer();
+    await new Promise((resolve) => setTimeout(resolve, 150));
+    openIngredients();
+    await new Promise((resolve) => setTimeout(resolve, 150));
+    const defaultState = {
+      sheetOpen: document.getElementById('ingSheet').classList.contains('show'),
+      listActive: document.getElementById('ingViewList').classList.contains('active'),
+      checkActive: document.getElementById('ingViewCheck').classList.contains('active'),
+      cardCount: document.querySelectorAll('#ingViewList .ing').length,
+      checkboxCount: document.querySelectorAll('#ingViewCheck input[type="checkbox"]').length
+    };
+    document.querySelector('[data-ing-view="check"]').click();
+    await new Promise((resolve) => setTimeout(resolve, 120));
+    const checkState = {
+      listActive: document.getElementById('ingViewList').classList.contains('active'),
+      checkActive: document.getElementById('ingViewCheck').classList.contains('active'),
+      checkboxCount: document.querySelectorAll('#ingViewCheck input[type="checkbox"]').length
+    };
+    closeIngredients();
+    return { defaultState, checkState };
+  })()`);
+
   const assistant = await evaluate(`(async () => {
     toggleHf3();
     await new Promise((resolve) => setTimeout(resolve, 250));
@@ -155,7 +180,7 @@ try {
     };
   })()`);
 
-  const result = { home, feedback, timer, assistant };
+  const result = { home, feedback, timer, ingredients, assistant };
   console.log(JSON.stringify(result, null, 2));
 
   if (home.marketing || home.active !== 'home') {
@@ -172,6 +197,15 @@ try {
   }
   if (!timer.visible || timer.timerTotal !== 420) {
     throw new Error('타이머 직접 입력 7분이 반영되지 않았습니다.');
+  }
+  if (!ingredients.defaultState.sheetOpen || !ingredients.defaultState.listActive || ingredients.defaultState.checkActive) {
+    throw new Error('재료 시트가 기본 목록 보기로 열리지 않았습니다.');
+  }
+  if (ingredients.defaultState.cardCount < 3 || ingredients.defaultState.checkboxCount < ingredients.defaultState.cardCount) {
+    throw new Error('재료 목록 보기와 체크리스트 보기가 함께 렌더링되지 않았습니다.');
+  }
+  if (ingredients.checkState.listActive || !ingredients.checkState.checkActive) {
+    throw new Error('재료 체크리스트 추가 보기로 전환되지 않았습니다.');
   }
   if (!assistant.user.includes('타이머 1분') || assistant.quickCount < 3) {
     throw new Error('요리비서 질문 입력/추천 질문이 동작하지 않았습니다.');

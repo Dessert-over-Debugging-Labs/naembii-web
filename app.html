@@ -513,7 +513,7 @@
   .listening .lt small{display:block;color:var(--text-sub);font-size:11px;margin-top:2px;}
 
   .cook-ctrl{flex:none;display:flex;align-items:center;justify-content:space-around;padding:16px 24px 24px;background:var(--surface);border-top:1px solid var(--border);}
-  .cbtn{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;border:none;background:none;font-family:inherit;}
+  .cbtn{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:72px;cursor:pointer;border:none;background:none;font-family:inherit;}
   .cbtn .cic{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
   .cbtn .cic svg{width:22px;height:22px;color:#fff;}
   .cbtn .cic.o{background:var(--green);}
@@ -659,7 +659,17 @@
   .ing-h span{cursor:pointer;color:var(--gray);display:flex;}
   .ing-h span svg{width:20px;height:20px;}
   .ing-sheet .ings{margin-bottom:0;}
+  .ing-mode{display:flex;gap:4px;background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:4px;margin:-2px 0 14px;}
+  .ing-mode button{flex:1;height:36px;border:0;border-radius:10px;background:transparent;color:var(--text-sub);font:inherit;font-size:13px;font-weight:900;cursor:pointer;}
+  .ing-mode button.active{background:var(--surface);color:var(--text);box-shadow:0 1px 5px rgba(0,0,0,.08);}
+  .ing-view{display:none;max-height:48vh;overflow-y:auto;padding-bottom:6px;}
+  .ing-view.active{display:block;}
+  .ing-view::-webkit-scrollbar{display:none;}
+  .ing-list-view .ing-group-label{margin-top:2px;}
+  .ing-list-view .ings{margin-bottom:12px;}
   .ing-check-list{display:grid;gap:8px;max-height:48vh;overflow-y:auto;padding-bottom:6px;}
+  .ing-view.ing-check-list{display:none;}
+  .ing-view.ing-check-list.active{display:grid;}
   .ing-check-list::-webkit-scrollbar{display:none;}
   .ing-check-title{font-size:13px;font-weight:900;color:var(--brand);margin:6px 0 2px;}
   .ing-check{display:flex;align-items:center;gap:10px;min-height:44px;background:var(--bg);border:1px solid var(--border);border-radius:13px;padding:9px 11px;color:var(--text);font-size:14px;font-weight:800;}
@@ -816,7 +826,7 @@
   .drating .rc{font-size:13px;font-weight:600;color:var(--text-sub);margin-left:2px;}
   /* 상세 섹션 탭바 (스티키) */
   .dtabs{position:sticky;top:0;z-index:5;display:flex;gap:4px;background:var(--bg);padding:6px 0 10px;margin-bottom:8px;border-bottom:1px solid var(--line);}
-  .dtab{flex:1;border:none;background:none;font-family:inherit;font-size:14px;font-weight:700;color:var(--text-sub);padding:9px 0;cursor:pointer;position:relative;}
+  .dtab{flex:1;border:none;background:none;font-family:inherit;font-size:14px;font-weight:700;line-height:1.2;color:var(--text-sub);padding:9px 0;cursor:pointer;position:relative;}
   .dtab.active{color:var(--ink);}
   .dtab.active::after{content:"";position:absolute;left:50%;bottom:-11px;transform:translateX(-50%);width:64%;height:3px;background:var(--green);border-radius:2px;}
   /* 평점 요약 */
@@ -2380,15 +2390,32 @@
     if(!arr.length){el.innerHTML='<div class="ing-empty">레시피 단계 준비 중이에요</div>';return;}
     el.innerHTML=arr.map(s=>'<div class="rstep"><div class="rstep-h"><span class="rstep-no">'+s.letter+'</span><b>'+esc(s.title)+'</b>'+(s.time?'<span class="rstep-time"><i data-lucide="play"></i>'+esc(s.time)+'</span>':'')+'</div><ul class="rstep-subs">'+s.subs.map(t=>'<li>'+esc(t)+'</li>').join('')+'</ul></div>').join('');
   }
+  let ingSheetView='list';
+  function setIngSheetView(view){
+    ingSheetView=view==='check'?'check':'list';
+    document.querySelectorAll('[data-ing-view]').forEach(btn=>btn.classList.toggle('active',btn.dataset.ingView===ingSheetView));
+    const list=document.getElementById('ingViewList');
+    const check=document.getElementById('ingViewCheck');
+    if(list)list.classList.toggle('active',ingSheetView==='list');
+    if(check)check.classList.toggle('active',ingSheetView==='check');
+  }
+  function ingChecklistHTML(r){
+    const group=(label,arr)=>arr.length?'<div class="ing-check-title">'+label+'</div>'+arr.map(x=>
+      '<label class="ing-check"><input type="checkbox" aria-label="'+esc(x.n)+' 준비 완료"><b>'+esc(x.n)+'</b><span>'+esc(x.q)+'</span></label>'
+    ).join(''):'';
+    return group('주재료',r.ingredients.main)+group('양념',r.ingredients.seasoning)||'<div class="ing-empty">재료 정보 준비 중이에요</div>';
+  }
   // 재료 시트 렌더 (currentRecipe 기준)
   function renderIngSheet(){
     document.getElementById('ingSheetCount').textContent='재료 '+ingCount(currentRecipe)+'개';
-    const group=(label,arr)=>arr.length?'<div class="ing-check-title">'+label+'</div>'+arr.map((x,i)=>
-      '<label class="ing-check"><input type="checkbox" aria-label="'+esc(x.n)+' 준비 완료"><b>'+esc(x.n)+'</b><span>'+esc(x.q)+'</span></label>'
-    ).join(''):'';
-    document.getElementById('ingSheetBody').innerHTML='<div class="ing-check-list">'+
-      group('주재료',currentRecipe.ingredients.main)+group('양념',currentRecipe.ingredients.seasoning)+
-      '</div>';
+    document.getElementById('ingSheetBody').innerHTML=
+      '<div class="ing-mode" role="tablist" aria-label="재료 보기 방식">'+
+        '<button type="button" data-ing-view="list" onclick="setIngSheetView(\'list\')">한눈에 보기</button>'+
+        '<button type="button" data-ing-view="check" onclick="setIngSheetView(\'check\')">체크하며 준비</button>'+
+      '</div>'+
+      '<div id="ingViewList" class="ing-view ing-list-view">'+ingGroupsHTML(currentRecipe)+'</div>'+
+      '<div id="ingViewCheck" class="ing-view ing-check-list">'+ingChecklistHTML(currentRecipe)+'</div>';
+    setIngSheetView(ingSheetView);
   }
   // 완료 화면 렌더 (currentRecipe 기준)
   function renderComplete(){
@@ -2940,7 +2967,7 @@
     closeVideoSettings(); // 화면 이탈 시 영상 설정 모달 닫기
     cook3StopTimeTracking();cook3Playing=false; // 재생 시간 추적 정리
   }
-  function openIngredients(){renderIngSheet();lucide.createIcons();document.getElementById('ingSheet').classList.add('show');}
+  function openIngredients(view='list'){ingSheetView=view==='check'?'check':'list';renderIngSheet();lucide.createIcons();document.getElementById('ingSheet').classList.add('show');}
   function closeIngredients(){document.getElementById('ingSheet').classList.remove('show');}
   function openVoice(){hideCookHint();document.getElementById('voiceModal').classList.add('show');document.getElementById('cook3').classList.add('voice-open');setActiveNav('voice');}
   function closeVoice(){
