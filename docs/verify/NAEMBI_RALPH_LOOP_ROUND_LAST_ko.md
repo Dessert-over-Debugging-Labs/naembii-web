@@ -1,11 +1,11 @@
 # 동적 검증 워크플로우 실행 리포트
 
-- 일시: 2026-07-09T11:52:49.209Z
+- 일시: 2026-07-09T12:07:03.866Z
 - 판정: **PASS**
 - 점수: **130 / 130 (100%)**
 - 통과 기준: **96% 초과**
 - 모드: visual 포함
-- 기준 URL: `http://127.0.0.1:4876`
+- 기준 URL: `https://naembii-web.vercel.app`
 
 ## 왜 빠르게 끝났나
 
@@ -13,14 +13,7 @@
 
 ## 변경 파일
 
-- `docs/COPY_CANDIDATES_SETUP_ko.md`
-- `docs/SEARCH_TUTORIAL_RESPONSIVE_PLAN_ko.md`
-- `package.json`
-- `scripts/notion/naembi-copy-candidate-data.mjs`
-- `scripts/notion/read-copy-candidates.mjs`
-- `scripts/notion/upload-copy-candidates.mjs`
-- `scripts/notion/apply-copy-candidates.mjs`
-- `scripts/notion/copy-candidate-notion.mjs`
+- 감지된 변경 없음
 
 ## 선택된 워크플로우
 
@@ -28,7 +21,7 @@
 | --- | --- |
 | core | 항상 실행 |
 | api | full 실행 |
-| deploy | 배포 설정 변경 감지 |
+| deploy | full 실행 |
 | docs | full 실행 |
 | visual | --visual 요청 |
 

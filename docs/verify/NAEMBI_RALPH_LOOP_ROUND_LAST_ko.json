@@ -1,18 +1,9 @@
 {
-  "startedAt": "2026-07-09T11:52:49.209Z",
+  "startedAt": "2026-07-09T12:07:03.866Z",
   "summary": "PASS",
   "visual": true,
-  "baseURL": "http://127.0.0.1:4876",
-  "files": [
-    "docs/COPY_CANDIDATES_SETUP_ko.md",
-    "docs/SEARCH_TUTORIAL_RESPONSIVE_PLAN_ko.md",
-    "package.json",
-    "scripts/notion/naembi-copy-candidate-data.mjs",
-    "scripts/notion/read-copy-candidates.mjs",
-    "scripts/notion/upload-copy-candidates.mjs",
-    "scripts/notion/apply-copy-candidates.mjs",
-    "scripts/notion/copy-candidate-notion.mjs"
-  ],
+  "baseURL": "https://naembii-web.vercel.app",
+  "files": [],
   "workflows": [
     "core",
     "api",

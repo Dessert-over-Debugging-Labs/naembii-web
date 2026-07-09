@@ -1,8 +1,8 @@
 # 냄비 Ralph 검증 루프 실행 리포트
-- 시작: 2026-07-09T11:52:49.083Z
-- 종료: 2026-07-09T11:54:30.913Z
+- 시작: 2026-07-09T12:07:03.784Z
+- 종료: 2026-07-09T12:08:40.674Z
 - 최종 판정: **PASS**
-- 기준 URL: `http://127.0.0.1:4876`
+- 기준 URL: `https://naembii-web.vercel.app`
 - 통과 기준: **96% 초과**
 - 모드: visual 포함
 - 최소 실행 시간: 0분
@@ -11,7 +11,7 @@
 ## 라운드
 | round | at | summary | score | percent | exit |
 | ---: | --- | --- | --- | ---: | ---: |
-| 1 | 2026-07-09T11:54:30.909Z | PASS | 130 / 130 | 100% | 0 |
+| 1 | 2026-07-09T12:08:40.674Z | PASS | 130 / 130 | 100% | 0 |
 ## 최신 라운드 리포트
 - Markdown: `docs/verify/NAEMBI_RALPH_LOOP_ROUND_LAST_ko.md`
 - JSON: `docs/verify/NAEMBI_RALPH_LOOP_ROUND_LAST_ko.json`
