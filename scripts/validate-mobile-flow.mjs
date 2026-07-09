@@ -213,6 +213,35 @@ try {
     return { defaultState, checkState };
   })()`);
 
+  const settings = await evaluate(`(async () => {
+    show('cook3');
+    hideCookHint();
+    await new Promise((resolve) => setTimeout(resolve, 160));
+    openVideoSettings();
+    setVsVoiceVol(35);
+    const voice = {
+      title: document.querySelector('#videoSettings .vset-head b')?.textContent.trim() || '',
+      value: document.getElementById('vsVoiceVolVal')?.textContent || '',
+      range: document.getElementById('vsVoiceVolRange')?.value || '',
+      switchOn: document.getElementById('vsVoiceVolSw')?.classList.contains('on') || false,
+      gain: Number(assistantVolumeGain().toFixed(2))
+    };
+    toggleVsVoiceVol();
+    const muted = {
+      collapsed: document.getElementById('vsVoiceVolWrap')?.classList.contains('collapsed') || false,
+      switchOn: document.getElementById('vsVoiceVolSw')?.classList.contains('on') || false,
+      gain: assistantVolumeGain()
+    };
+    toggleVsVoiceVol();
+    const restored = {
+      value: document.getElementById('vsVoiceVolVal')?.textContent || '',
+      switchOn: document.getElementById('vsVoiceVolSw')?.classList.contains('on') || false,
+      gain: Number(assistantVolumeGain().toFixed(2))
+    };
+    closeVideoSettings();
+    return { voice, muted, restored };
+  })()`);
+
   const tutorial = await evaluate(`(async () => {
     show('cook3');
     await new Promise((resolve) => setTimeout(resolve, 260));
@@ -317,7 +346,7 @@ try {
     };
   })()`);
 
-  const result = { home, search, feedback, timer, ingredients, tutorial, assistant };
+  const result = { home, search, feedback, timer, ingredients, settings, tutorial, assistant };
   console.log(JSON.stringify(result, null, 2));
 
   if (home.marketing || home.active !== 'home') {
@@ -364,6 +393,12 @@ try {
   }
   if (ingredients.checkState.listActive || !ingredients.checkState.checkActive) {
     throw new Error('재료 체크리스트 추가 보기로 전환되지 않았습니다.');
+  }
+  if (!settings.voice.title.includes('소리·재생') || settings.voice.value !== '35' || settings.voice.range !== '35' || settings.voice.gain !== 0.35) {
+    throw new Error('소리·재생 설정의 요리비서 볼륨이 반영되지 않았습니다.');
+  }
+  if (!settings.muted.collapsed || settings.muted.switchOn || settings.muted.gain !== 0 || !settings.restored.switchOn || settings.restored.gain !== 0.35) {
+    throw new Error('요리비서 볼륨 스위치가 음소거/복구 상태를 반영하지 못했습니다.');
   }
   if (!tutorial.visible || !tutorial.insideCookBody || tutorial.screenCoverage > 0.2 || tutorial.overlapRatio > 0.35) {
     throw new Error('조리 튜토리얼이 화면 내부 패널로 보이지 않거나 조리 카드를 과하게 가립니다.');

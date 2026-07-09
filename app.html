@@ -1578,6 +1578,16 @@
           <input type="range" min="0" max="100" value="100" id="vsVolRange" oninput="setVsVol(this.value)">
           <em id="vsVolVal">100</em>
         </div>
+        <!-- 요리비서 볼륨 -->
+        <div class="vset-row">
+          <div class="vset-label"><i data-lucide="bot"></i>요리비서 볼륨</div>
+          <button class="vset-switch on" id="vsVoiceVolSw" onclick="toggleVsVoiceVol()"><span></span></button>
+        </div>
+        <div class="vset-sub" id="vsVoiceVolWrap">
+          <span class="vset-mini">알림음 포함</span>
+          <input type="range" min="0" max="100" value="100" id="vsVoiceVolRange" oninput="setVsVoiceVol(this.value)">
+          <em id="vsVoiceVolVal">100</em>
+        </div>
         <!-- 재생 속도 -->
         <div class="vset-row">
           <div class="vset-label"><i data-lucide="gauge"></i>재생 속도</div>
@@ -2617,7 +2627,7 @@
   let cookHintDismissed=false; // "다시 보지 않기" (세션 한정, 저장 안 함)
   // 영상 조작 상태 (제스처 · 설정 모달)
   let cook3Playing=false, cook3Time=0, cook3TimeTimer=null, vgTapTimer=null;
-  let vsLoopOn=false, vsLoopCount=0, vsLoopEnd='stop', vsVol=100, vsSpeed=1; // 기본: 구간 반복 OFF (켜면 무한)
+  let vsLoopOn=false, vsLoopCount=0, vsLoopEnd='stop', vsVol=100, vsSpeed=1, vsVoiceVol=100, vsVoiceMuted=false; // 기본: 구간 반복 OFF (켜면 무한)
   let cook3LoopPlayed=0, cook3SuppressSeek=false; // 구간 반복 완료 횟수 · 단계 자동 전환 시 seek 억제(off=영상 이어짐)
   function makeCarousel(viewId,trackId){
     const viewEl=document.getElementById(viewId), trackEl=document.getElementById(trackId);
@@ -2766,6 +2776,7 @@
   /* ===== 소리·재생 설정 모달 ===== */
   function openVideoSettings(){
     syncVsVolUI();
+    syncVsVoiceVolUI();
     document.getElementById('videoSettings').classList.add('show');
     refreshIcons();
   }
@@ -2812,6 +2823,30 @@
     if(!sw)return;
     sw.classList.toggle('on',!cookYoutubeMuted);
     if(wrap)wrap.classList.toggle('collapsed',cookYoutubeMuted);
+  }
+  function assistantVolumeGain(){
+    return vsVoiceMuted?0:clampNumber((parseInt(vsVoiceVol,10)||0)/100,0,1);
+  }
+  function toggleVsVoiceVol(){
+    vsVoiceMuted=!vsVoiceMuted;
+    if(!vsVoiceMuted&&vsVoiceVol===0)vsVoiceVol=60;
+    syncVsVoiceVolUI();
+    toast(vsVoiceMuted?'요리비서 소리 꺼짐':'요리비서 소리 켜짐',vsVoiceMuted?'volume-x':'bot');
+  }
+  function setVsVoiceVol(v){
+    vsVoiceVol=clampNumber(parseInt(v,10)||0,0,100);
+    vsVoiceMuted=vsVoiceVol===0;
+    syncVsVoiceVolUI();
+  }
+  function syncVsVoiceVolUI(){
+    const sw=document.getElementById('vsVoiceVolSw');
+    const wrap=document.getElementById('vsVoiceVolWrap');
+    const range=document.getElementById('vsVoiceVolRange');
+    const val=document.getElementById('vsVoiceVolVal');
+    if(sw)sw.classList.toggle('on',!vsVoiceMuted);
+    if(wrap)wrap.classList.toggle('collapsed',vsVoiceMuted);
+    if(range)range.value=vsVoiceVol;
+    if(val)val.textContent=vsVoiceVol;
   }
   // 재생 속도
   function setVsSpeed(rate,el){
@@ -2964,6 +2999,8 @@
   function playTimerAlarmBurst(){
     window.__timerAlarmPlayed=(window.__timerAlarmPlayed||0)+1;
     if(navigator.vibrate)navigator.vibrate([140,80,140,80,260]);
+    const peakGain=.2*assistantVolumeGain();
+    if(peakGain<=0)return;
     try{
       const ctx=getTimerAudioContext();
       if(!ctx)return;
@@ -2975,7 +3012,7 @@
         osc.type='sine';
         osc.frequency.setValueAtTime(index===3?920:740,now+offset);
         gain.gain.setValueAtTime(.0001,now+offset);
-        gain.gain.exponentialRampToValueAtTime(.2,now+offset+.025);
+        gain.gain.exponentialRampToValueAtTime(Math.max(.0001,peakGain),now+offset+.025);
         gain.gain.exponentialRampToValueAtTime(.0001,now+offset+.22);
         osc.connect(gain).connect(ctx.destination);
         osc.start(now+offset);
@@ -3460,6 +3497,7 @@
   initLandingVariants();
   renderCookYoutubeSoundButton();
   syncVsVolUI(); // 초기 음소거 상태를 설정 모달 볼륨 UI에도 반영
+  syncVsVoiceVolUI();
   setActiveNav('home');
   renderHomeSections();
   {const db=document.querySelector('#detail .body');if(db)db.addEventListener('scroll',updateDetailTab);}
