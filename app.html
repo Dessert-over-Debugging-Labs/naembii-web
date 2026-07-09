@@ -771,7 +771,7 @@
   .vchips{display:flex;flex-wrap:wrap;gap:8px;}
   .vchips span{background:var(--green-soft);color:var(--brand-deep);font-size:13px;font-weight:600;padding:8px 12px;border-radius:12px;}
 
-  /* ===== 영상 설정 모달 (중앙 팝업) ===== */
+  /* ===== 소리·재생 설정 모달 (중앙 팝업) ===== */
   .vset{position:absolute;inset:0;z-index:200;display:none;align-items:center;justify-content:center;padding:24px;}
   .vset.show{display:flex;}
   .vset-scrim{position:absolute;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(2px);}
@@ -1547,11 +1547,11 @@
 
     <div class="toast" id="toast"></div>
 
-    <!-- 영상 설정 모달 (조리 모드: 구간 반복 · 볼륨 · 재생 속도) -->
+    <!-- 소리·재생 설정 모달 (조리 모드: 구간 반복 · 볼륨 · 재생 속도) -->
     <div class="vset" id="videoSettings">
       <div class="vset-scrim" onclick="closeVideoSettings()"></div>
       <div class="vset-card">
-        <div class="vset-head"><b>영상 설정</b><span class="x" onclick="closeVideoSettings()"><i data-lucide="x"></i></span></div>
+        <div class="vset-head"><b>소리·재생 설정</b><span class="x" onclick="closeVideoSettings()"><i data-lucide="x"></i></span></div>
         <!-- 구간 반복 -->
         <div class="vset-row">
           <div class="vset-label"><i data-lucide="repeat"></i>구간 반복</div>
@@ -2763,7 +2763,7 @@
     videoTogglePlay(); // 화면 한 번 탭 → 재생/일시정지
   }
 
-  /* ===== 영상 설정 모달 ===== */
+  /* ===== 소리·재생 설정 모달 ===== */
   function openVideoSettings(){
     syncVsVolUI();
     document.getElementById('videoSettings').classList.add('show');
