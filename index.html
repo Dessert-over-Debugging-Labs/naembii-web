@@ -137,6 +137,17 @@
         .roadmap{grid-template-columns:repeat(2,minmax(0,1fr));}
         .section-head{display:grid;gap:12px;}
       }
+      @media (min-width:621px) and (max-width:980px){
+        .hero{padding:28px 24px 42px;gap:24px;}
+        h1{font-size:clamp(42px,8vw,58px);}
+        .hero-copy{margin-top:14px;font-size:17px;line-height:1.5;}
+        .hero-helper{margin-top:14px;}
+        .hero-actions{margin-top:18px;}
+        .hero-proof{display:none;}
+        .phone-showcase{width:min(48vw,270px);}
+        .phone-frame{border-radius:30px;padding:8px;}
+        .phone-frame img{border-radius:23px;}
+      }
       @media (max-width:620px){
         .nav-inner{padding:13px 16px;}
         .brand{font-size:28px;}

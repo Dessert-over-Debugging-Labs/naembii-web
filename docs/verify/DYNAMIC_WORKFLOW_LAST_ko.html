@@ -16,12 +16,12 @@
 </head>
 <body><main><p class="status">PASS</p><h1>동적 검증 워크플로우 실행 리포트</h1>
 
-<p>- 일시: 2026-07-09T08:46:32.353Z</p>
+<p>- 일시: 2026-07-09T15:57:56.213Z</p>
 <p>- 판정: **PASS**</p>
-<p>- 점수: **130 / 130 (100%)**</p>
+<p>- 점수: **127 / 130 (98%)**</p>
 <p>- 통과 기준: **96% 초과**</p>
 <p>- 모드: visual 포함</p>
-<p>- 기준 URL: `http://127.0.0.1:4876/`</p>
+<p>- 기준 URL: `http://127.0.0.1:4873`</p>
 
 <h2>왜 빠르게 끝났나</h2>
 
@@ -29,16 +29,12 @@
 
 <h2>변경 파일</h2>
 
-<p>- `app.html`</p>
 <p>- `docs/verify/DYNAMIC_WORKFLOW_LAST_ko.html`</p>
 <p>- `docs/verify/DYNAMIC_WORKFLOW_LAST_ko.json`</p>
 <p>- `docs/verify/DYNAMIC_WORKFLOW_LAST_ko.md`</p>
-<p>- `scripts/validate-app-screens.mjs`</p>
-<p>- `scripts/validate-mobile-flow.mjs`</p>
-<p>- `docs/VOICE_ASSISTANT_PANEL_PLAN_ko.md`</p>
-<p>- `docs/VOICE_ASSISTANT_PANEL_REPORT_ko.md`</p>
-<p>- `scripts/notion/upload-voice-assistant-panel-plan.mjs`</p>
-<p>- `scripts/notion/upload-voice-assistant-panel-report.mjs`</p>
+<p>- `index.html`</p>
+<p>- `scripts/capture-landing.mjs`</p>
+<p>- `scripts/verify-dynamic.mjs`</p>
 
 <h2>선택된 워크플로우</h2>
 
@@ -56,7 +52,7 @@
 <pre>| --- | ---: | ---: | ---: | --- | --- |</pre>
 <pre>| 사용자 가치·카피 명확성 | 15 | 15 | 100% | 4/4 신호 충족 | 히어로, CTA, 레시피 요청, 작은 냄비 감성 카피가 모두 사용자 행동으로 이어져야 한다. |</pre>
 <pre>| 베타 전환 흐름 | 15 | 15 | 100% | 5/5 신호 충족 | 모바일/데스크톱/하단 신청 폼과 성공 메시지를 모두 유지한다. |</pre>
-<pre>| 피드백·레시피 수집 | 15 | 15 | 100% | 5/5 신호 충족 | 베타 피드백과 레시피 요청이 같은 저장 흐름으로 수집되어야 한다. |</pre>
+<pre>| 피드백·레시피 수집 | 15 | 12 | 80% | 4/5 신호 충족 | 베타 피드백과 레시피 요청이 같은 저장 흐름으로 수집되어야 한다. |</pre>
 <pre>| 후킹·상호작용 루프 | 10 | 10 | 100% | 7/7 신호 충족 | 랜딩 이탈 방지용 요리비서 추천, 앱 후기/팁, 완료 후 공유, 폰 내부 플로팅 피드백을 유지한다. |</pre>
 <pre>| 정적 앱 화면 소개 | 15 | 15 | 100% | 6/6 신호 충족 | 홈/검색/상세/조리/완료 화면 캡쳐가 랜딩에서 정적으로 제공되어야 한다. |</pre>
 <pre>| 브랜드·디자인 검증 | 10 | 10 | 100% | 6/6 신호 충족 | /design에서 캐릭터/로고 후보, 아이덴티티 점수표, 음성비서 중심 배치, 커뮤니티 현실성을 검토할 수 있어야 한다. |</pre>
@@ -90,7 +86,7 @@
 <pre>| visual capture: mobile | PASS | /tmp/cook-wireframe-v3/dynamic-mobile.png, forbiddenVisibleTerms=[], croppedScreenImages=[] | - |</pre>
 <pre>| visual capture: tablet | PASS | /tmp/cook-wireframe-v3/dynamic-tablet.png, forbiddenVisibleTerms=[], croppedScreenImages=[] | - |</pre>
 <pre>| visual capture: desktop | PASS | /tmp/cook-wireframe-v3/dynamic-desktop.png, forbiddenVisibleTerms=[], croppedScreenImages=[] | - |</pre>
-<pre>| app screen clipping | PASS | 30개 앱 내부 상태 잘림/overflow 검사 PASS | - |</pre>
+<pre>| app screen clipping | PASS | 84개 앱 내부 상태 잘림/overflow 검사 PASS | - |</pre>
 
 <h2>루프 규칙</h2>
 

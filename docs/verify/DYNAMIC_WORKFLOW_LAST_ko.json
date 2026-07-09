@@ -1,19 +1,15 @@
 {
-  "startedAt": "2026-07-09T08:46:32.353Z",
+  "startedAt": "2026-07-09T15:57:56.213Z",
   "summary": "PASS",
   "visual": true,
-  "baseURL": "http://127.0.0.1:4876/",
+  "baseURL": "http://127.0.0.1:4873",
   "files": [
-    "app.html",
     "docs/verify/DYNAMIC_WORKFLOW_LAST_ko.html",
     "docs/verify/DYNAMIC_WORKFLOW_LAST_ko.json",
     "docs/verify/DYNAMIC_WORKFLOW_LAST_ko.md",
-    "scripts/validate-app-screens.mjs",
-    "scripts/validate-mobile-flow.mjs",
-    "docs/VOICE_ASSISTANT_PANEL_PLAN_ko.md",
-    "docs/VOICE_ASSISTANT_PANEL_REPORT_ko.md",
-    "scripts/notion/upload-voice-assistant-panel-plan.mjs",
-    "scripts/notion/upload-voice-assistant-panel-report.mjs"
+    "index.html",
+    "scripts/capture-landing.mjs",
+    "scripts/verify-dynamic.mjs"
   ],
   "workflows": [
     "core",
@@ -146,7 +142,7 @@
     {
       "name": "app screen clipping",
       "status": "PASS",
-      "detail": "30개 앱 내부 상태 잘림/overflow 검사 PASS",
+      "detail": "84개 앱 내부 상태 잘림/overflow 검사 PASS",
       "fix": ""
     }
   ],
@@ -171,9 +167,9 @@
       {
         "name": "피드백·레시피 수집",
         "weight": 15,
-        "points": 15,
-        "percent": 100,
-        "evidence": "5/5 신호 충족",
+        "points": 12,
+        "percent": 80,
+        "evidence": "4/5 신호 충족",
         "fix": "베타 피드백과 레시피 요청이 같은 저장 흐름으로 수집되어야 한다."
       },
       {
@@ -241,9 +237,9 @@
         "fix": "다음 세션에서도 같은 검증자 역할, 점수표, 마지막 리포트를 재사용할 수 있어야 한다."
       }
     ],
-    "total": 130,
+    "total": 127,
     "max": 130,
-    "percent": 100,
+    "percent": 98,
     "threshold": 96,
     "thresholdOperator": ">",
     "status": "PASS",
@@ -359,7 +355,7 @@
         "path": "/",
         "headline": "SNS 요리 영상,\n따라 하다 막혔죠?",
         "heroTop": 75,
-        "heroHeight": 1730,
+        "heroHeight": 1061,
         "hasCookingPromise": true,
         "hasBetaCTA": true,
         "hasMascotCopy": true,
@@ -371,8 +367,8 @@
         "hasInteractiveGif": true,
         "heroPrimaryCtaVisible": true,
         "heroPhoneStartsInFirstViewport": true,
-        "heroPhoneFullyVisibleInFirstViewport": false,
-        "heroScrollPressureLow": false,
+        "heroPhoneFullyVisibleInFirstViewport": true,
+        "heroScrollPressureLow": true,
         "mobileScreensUseHorizontalScroll": true,
         "heroProofHiddenOnMobile": true,
         "hasVisibleAppPreview": true,
@@ -380,8 +376,8 @@
           {
             "src": "/assets/screens/naembi-core-flow.gif",
             "objectFit": "contain",
-            "width": 340,
-            "height": 736,
+            "width": 254,
+            "height": 550,
             "naturalRatio": 0.462,
             "renderedRatio": 0.462,
             "ratioDelta": 0,
@@ -544,7 +540,7 @@
       "status": "PASS",
       "payload": {
         "status": "PASS",
-        "checked": 30,
+        "checked": 84,
         "failed": 0,
         "outDir": "/tmp/cook-wireframe-v3/app-clip",
         "failures": []

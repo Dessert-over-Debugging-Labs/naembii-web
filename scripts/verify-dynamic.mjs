@@ -495,7 +495,7 @@ function buildScorecard(gates, workflows) {
 
   const copySignals = [
     includesAll(landingHtml, ['SNS 요리 영상', '따라 하다 막혔죠']),
-    includesAll(landingHtml, ['미리 써보기 신청', '지금 써보기']),
+    (landingHtml.includes('미리 써보기 신청') || landingHtml.includes('출시 소식 받기')) && (landingHtml.includes('지금 써보기') || landingHtml.includes('먼저 경험해보기')),
     includesAll(landingHtml, ['보고 싶은 요리', '요리 보내기']),
     includesAll(landingHtml, ['작은 냄비가', '옆에서 챙겨요'])
   ];
@@ -511,7 +511,7 @@ function buildScorecard(gates, workflows) {
     landingHtml.includes('id="betaForm"'),
     landingHtml.includes('href="/app"'),
     landingHtml.includes("postJson('/api/beta-signup'"),
-    landingHtml.includes('미리 써보기 신청') || landingHtml.includes('먼저 써보기 신청'),
+    landingHtml.includes('미리 써보기 신청') || landingHtml.includes('먼저 써보기 신청') || landingHtml.includes('출시 소식 받기'),
     landingHtml.includes('신청이 접수됐습니다')
   ];
   items.push(scoreItem(

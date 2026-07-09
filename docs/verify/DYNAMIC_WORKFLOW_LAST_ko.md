@@ -1,11 +1,11 @@
 # 동적 검증 워크플로우 실행 리포트
 
-- 일시: 2026-07-09T08:46:32.353Z
+- 일시: 2026-07-09T15:57:56.213Z
 - 판정: **PASS**
-- 점수: **130 / 130 (100%)**
+- 점수: **127 / 130 (98%)**
 - 통과 기준: **96% 초과**
 - 모드: visual 포함
-- 기준 URL: `http://127.0.0.1:4876/`
+- 기준 URL: `http://127.0.0.1:4873`
 
 ## 왜 빠르게 끝났나
 
@@ -13,16 +13,12 @@
 
 ## 변경 파일
 
-- `app.html`
 - `docs/verify/DYNAMIC_WORKFLOW_LAST_ko.html`
 - `docs/verify/DYNAMIC_WORKFLOW_LAST_ko.json`
 - `docs/verify/DYNAMIC_WORKFLOW_LAST_ko.md`
-- `scripts/validate-app-screens.mjs`
-- `scripts/validate-mobile-flow.mjs`
-- `docs/VOICE_ASSISTANT_PANEL_PLAN_ko.md`
-- `docs/VOICE_ASSISTANT_PANEL_REPORT_ko.md`
-- `scripts/notion/upload-voice-assistant-panel-plan.mjs`
-- `scripts/notion/upload-voice-assistant-panel-report.mjs`
+- `index.html`
+- `scripts/capture-landing.mjs`
+- `scripts/verify-dynamic.mjs`
 
 ## 선택된 워크플로우
 
@@ -40,7 +36,7 @@
 | --- | ---: | ---: | ---: | --- | --- |
 | 사용자 가치·카피 명확성 | 15 | 15 | 100% | 4/4 신호 충족 | 히어로, CTA, 레시피 요청, 작은 냄비 감성 카피가 모두 사용자 행동으로 이어져야 한다. |
 | 베타 전환 흐름 | 15 | 15 | 100% | 5/5 신호 충족 | 모바일/데스크톱/하단 신청 폼과 성공 메시지를 모두 유지한다. |
-| 피드백·레시피 수집 | 15 | 15 | 100% | 5/5 신호 충족 | 베타 피드백과 레시피 요청이 같은 저장 흐름으로 수집되어야 한다. |
+| 피드백·레시피 수집 | 15 | 12 | 80% | 4/5 신호 충족 | 베타 피드백과 레시피 요청이 같은 저장 흐름으로 수집되어야 한다. |
 | 후킹·상호작용 루프 | 10 | 10 | 100% | 7/7 신호 충족 | 랜딩 이탈 방지용 요리비서 추천, 앱 후기/팁, 완료 후 공유, 폰 내부 플로팅 피드백을 유지한다. |
 | 정적 앱 화면 소개 | 15 | 15 | 100% | 6/6 신호 충족 | 홈/검색/상세/조리/완료 화면 캡쳐가 랜딩에서 정적으로 제공되어야 한다. |
 | 브랜드·디자인 검증 | 10 | 10 | 100% | 6/6 신호 충족 | /design에서 캐릭터/로고 후보, 아이덴티티 점수표, 음성비서 중심 배치, 커뮤니티 현실성을 검토할 수 있어야 한다. |
@@ -74,7 +70,7 @@
 | visual capture: mobile | PASS | /tmp/cook-wireframe-v3/dynamic-mobile.png, forbiddenVisibleTerms=[], croppedScreenImages=[] | - |
 | visual capture: tablet | PASS | /tmp/cook-wireframe-v3/dynamic-tablet.png, forbiddenVisibleTerms=[], croppedScreenImages=[] | - |
 | visual capture: desktop | PASS | /tmp/cook-wireframe-v3/dynamic-desktop.png, forbiddenVisibleTerms=[], croppedScreenImages=[] | - |
-| app screen clipping | PASS | 30개 앱 내부 상태 잘림/overflow 검사 PASS | - |
+| app screen clipping | PASS | 84개 앱 내부 상태 잘림/overflow 검사 PASS | - |
 
 ## 루프 규칙
 
