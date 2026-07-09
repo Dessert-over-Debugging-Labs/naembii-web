@@ -159,19 +159,32 @@ try {
     await new Promise((resolve) => setTimeout(resolve, 150));
     const startedTotal = timerTotal;
     cancelStageTimer();
+    openTimer();
+    document.querySelector('.ts-presets button:nth-child(4)').click();
+    document.querySelector('.ts-sec-adjusts button:nth-child(3)').click();
+    const presetPlusThirty = tsDraftSeconds;
+    closeTimer();
+    const originalAutoStop = timerAlarmAutoStopMs;
+    timerAlarmAutoStopMs = 700;
+    window.__timerAlarmPlayed = 0;
     startUnifiedTimer(1, false);
-    await new Promise((resolve) => setTimeout(resolve, 1250));
+    await new Promise((resolve) => setTimeout(resolve, 1120));
     const alarmPlayed = window.__timerAlarmPlayed || 0;
-    const ringing = document.getElementById('stageTimer').classList.contains('ringing');
+    const ringingAfterFinish = document.getElementById('stageTimer').classList.contains('ringing');
+    await new Promise((resolve) => setTimeout(resolve, 850));
+    const alarmAutoStopped = !document.getElementById('stageTimer').classList.contains('ringing');
     const doneText = document.getElementById('stageTimerTime').textContent;
+    timerAlarmAutoStopMs = originalAutoStop;
     cancelStageTimer();
     return {
       timerText: doneText,
       startedTotal,
+      presetPlusThirty,
       minUnderline,
       secUnderline,
       alarmPlayed,
-      ringing
+      ringingAfterFinish,
+      alarmAutoStopped
     };
   })()`);
 
@@ -314,11 +327,17 @@ try {
   if (timer.startedTotal !== 450) {
     throw new Error('타이머 직접 입력 7분 20초와 +10초 조정이 반영되지 않았습니다.');
   }
+  if (timer.presetPlusThirty !== 630) {
+    throw new Error('타이머 10분 상태에서 +30초 조정이 10분 30초로 반영되지 않았습니다.');
+  }
   if (!parseFloat(timer.minUnderline) || !parseFloat(timer.secUnderline)) {
     throw new Error('타이머 직접 입력 가능 상태를 보여주는 밑줄 affordance가 없습니다.');
   }
-  if (!timer.ringing || timer.timerText !== '완료' || timer.alarmPlayed < 1) {
+  if (!timer.ringingAfterFinish || timer.timerText !== '완료' || timer.alarmPlayed < 1) {
     throw new Error('타이머 완료 시 알림 상태와 알림음 호출이 확인되지 않았습니다.');
+  }
+  if (!timer.alarmAutoStopped) {
+    throw new Error('타이머 완료 알림이 지정 시간 뒤 자동으로 멈추지 않았습니다.');
   }
   if (!ingredients.defaultState.sheetOpen || !ingredients.defaultState.listActive || ingredients.defaultState.checkActive) {
     throw new Error('재료 시트가 기본 목록 보기로 열리지 않았습니다.');

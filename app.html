@@ -1535,7 +1535,7 @@
         <div class="ts-sec-adjusts">
           <button onclick="tsAdjustSeconds(-10)">-10초</button>
           <button onclick="tsAdjustSeconds(10)">+10초</button>
-          <button onclick="tsSetSeconds(30)">30초</button>
+          <button onclick="tsAdjustSeconds(30)">+30초</button>
         </div>
         <div class="ts-presets">
           <button onclick="tsSet(1)">1분</button>
@@ -2863,7 +2863,8 @@
     hideCookHint();
   }
   let tsDraftSeconds=180, timerId=null, timerLeft=0, timerTotal=0, timerPaused=false, stageTimerHideId=null;
-  let timerAudioCtx=null, timerAlarmTimeouts=[], timerAlarmNodes=[];
+  let timerAudioCtx=null, timerAlarmTimeouts=[], timerAlarmNodes=[], timerAlarmRepeatId=null, timerAlarmStopId=null;
+  let timerAlarmAutoStopMs=60000;
   function timerInput(){return document.getElementById('tsMin');}
   function timerSecondInput(){return document.getElementById('tsSec');}
   function clampTimerSeconds(seconds){return Math.max(1,Math.min(99*60+59,Math.floor(Number(seconds)||0)));}
@@ -2913,19 +2914,24 @@
       if(ctx&&ctx.state==='suspended')ctx.resume();
     }catch{}
   }
-  function stopTimerAlarm(){
+  function stopTimerAlarm(clearVisual){
     timerAlarmTimeouts.forEach(id=>clearTimeout(id));
     timerAlarmTimeouts=[];
+    if(timerAlarmRepeatId){clearInterval(timerAlarmRepeatId);timerAlarmRepeatId=null;}
+    if(timerAlarmStopId){clearTimeout(timerAlarmStopId);timerAlarmStopId=null;}
     timerAlarmNodes.forEach(node=>{
       try{node.osc.stop();}catch{}
       try{node.osc.disconnect();node.gain.disconnect();}catch{}
     });
     timerAlarmNodes=[];
     if(navigator.vibrate)navigator.vibrate(0);
+    if(clearVisual){
+      const el=document.getElementById('stageTimer');
+      if(el)el.classList.remove('ringing');
+    }
   }
-  function playTimerAlarm(){
+  function playTimerAlarmBurst(){
     window.__timerAlarmPlayed=(window.__timerAlarmPlayed||0)+1;
-    stopTimerAlarm();
     if(navigator.vibrate)navigator.vibrate([140,80,140,80,260]);
     try{
       const ctx=getTimerAudioContext();
@@ -2950,6 +2956,12 @@
         },(offset+.35)*1000));
       });
     }catch{}
+  }
+  function playTimerAlarm(){
+    stopTimerAlarm(false);
+    playTimerAlarmBurst();
+    timerAlarmRepeatId=setInterval(playTimerAlarmBurst,3500);
+    timerAlarmStopId=setTimeout(()=>stopTimerAlarm(true),timerAlarmAutoStopMs);
   }
   function setTimerButtons(on){
     document.querySelectorAll('.js-timer-label').forEach(l=>{l.textContent='타이머';});
@@ -2992,7 +3004,7 @@
     updateStageTimer(timerLeft,timerTotal,false);
   }
   function startUnifiedTimer(seconds,showToast){
-    stopTimerAlarm();
+    stopTimerAlarm(false);
     prepareTimerAlarm();
     timerTotal=seconds;timerLeft=seconds;
     if(stageTimerHideId){clearTimeout(stageTimerHideId);stageTimerHideId=null;}
@@ -3020,7 +3032,7 @@
   function cancelStageTimer(){
     if(timerId){clearInterval(timerId);timerId=null;}
     if(stageTimerHideId){clearTimeout(stageTimerHideId);stageTimerHideId=null;}
-    stopTimerAlarm();
+    stopTimerAlarm(false);
     timerLeft=0;timerTotal=0;timerPaused=false;
     setTimerButtons(false);
     hideStageTimer();
