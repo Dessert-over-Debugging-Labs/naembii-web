@@ -218,6 +218,19 @@ try {
     hideCookHint();
     await new Promise((resolve) => setTimeout(resolve, 160));
     openVideoSettings();
+    setVsVol(42);
+    const videoVolume = {
+      value: document.getElementById('vsVolVal')?.textContent || '',
+      state: vsVol,
+      switchOn: document.getElementById('vsVolSw')?.classList.contains('on') || false
+    };
+    toggleVsVol();
+    toggleVsVol();
+    const videoRestored = {
+      value: document.getElementById('vsVolVal')?.textContent || '',
+      state: vsVol,
+      switchOn: document.getElementById('vsVolSw')?.classList.contains('on') || false
+    };
     setVsVoiceVol(35);
     const voice = {
       title: document.querySelector('#videoSettings .vset-head b')?.textContent.trim() || '',
@@ -253,7 +266,7 @@ try {
       downDisabled: document.getElementById('vsSpeedDown')?.disabled || false
     };
     closeVideoSettings();
-    return { voice, muted, restored, slower, slowest };
+    return { videoVolume, videoRestored, voice, muted, restored, slower, slowest };
   })()`);
 
   const tutorial = await evaluate(`(async () => {
@@ -410,6 +423,9 @@ try {
   }
   if (!settings.voice.title.includes('소리·재생') || settings.voice.value !== '35' || settings.voice.range !== '35' || settings.voice.gain !== 0.35) {
     throw new Error('소리·재생 설정의 요리비서 볼륨이 반영되지 않았습니다.');
+  }
+  if (settings.videoVolume.value !== '42' || settings.videoVolume.state !== 42 || !settings.videoVolume.switchOn || settings.videoRestored.state !== 42 || !settings.videoRestored.switchOn) {
+    throw new Error('영상 볼륨 설정값이 음소거/복구 뒤에도 유지되지 않았습니다.');
   }
   if (!settings.muted.collapsed || settings.muted.switchOn || settings.muted.gain !== 0 || !settings.restored.switchOn || settings.restored.gain !== 0.35) {
     throw new Error('요리비서 볼륨 스위치가 음소거/복구 상태를 반영하지 못했습니다.');
