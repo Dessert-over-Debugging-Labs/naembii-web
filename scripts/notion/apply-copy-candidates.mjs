@@ -93,9 +93,18 @@ for (const [file, items] of byFile) {
 summary.changedFiles = [...new Set(summary.changedFiles)];
 
 if (summary.missing.length) {
-  summary.ok = false;
-  console.error(JSON.stringify(summary, null, 2));
-  process.exit(1);
+  const completedIds = new Set([
+    ...summary.applied.map((item) => item.id),
+    ...summary.alreadyApplied.map((item) => item.id)
+  ]);
+  const blockingMissing = summary.missing.filter((item) => !completedIds.has(item.id));
+  if (blockingMissing.length) {
+    summary.ok = false;
+    summary.blockingMissing = blockingMissing;
+    console.error(JSON.stringify(summary, null, 2));
+    process.exit(1);
+  }
+  summary.nonBlockingMissing = summary.missing;
 }
 
 console.log(JSON.stringify(summary, null, 2));

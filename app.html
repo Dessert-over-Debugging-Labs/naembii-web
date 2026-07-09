@@ -593,10 +593,10 @@
   .ctrl-buttons{display:flex;align-items:center;justify-content:space-around;height:100%;box-sizing:border-box;padding:14px 24px clamp(14px, 3dvh, 24px);}
   /* 대화 패널 열림: 둥근 상단 모서리 뒤가 흰색(surface)으로 비쳐 위 틴트 배경과 틈이 생기던 문제 →
      컨트롤바 배경을 카드영역과 같은 틴트(--dark)로 맞추고 상단 경계선도 감춰 이음새 제거 */
-  #cook3 .cook-ctrl:has(.vpanel.open){background:var(--dark);border-top-color:transparent;}
-  #cook3 .cook-ctrl:has(.vpanel.open){height:clamp(248px,34dvh,304px);transition:height .22s ease;}
-  #cook3 .cook-ctrl:has(.vpanel.open.expanded){height:clamp(292px,46dvh,420px);}
-  #cook3 .cook-ctrl:has(.vpanel.open) .ctrl-buttons{visibility:hidden;}
+  #cook3 .cook-ctrl:has(.vpanel.open),#cook3 .cook-ctrl.vpanel-open{background:var(--dark);border-top-color:transparent;}
+  #cook3 .cook-ctrl:has(.vpanel.open),#cook3 .cook-ctrl.vpanel-open{height:clamp(270px,38dvh,330px);transition:height .22s ease;}
+  #cook3 .cook-ctrl:has(.vpanel.open.expanded),#cook3 .cook-ctrl.vpanel-open.vpanel-expanded{height:clamp(390px,62dvh,560px);}
+  #cook3 .cook-ctrl:has(.vpanel.open) .ctrl-buttons,#cook3 .cook-ctrl.vpanel-open .ctrl-buttons{visibility:hidden;}
   .vpanel{position:absolute;top:0;bottom:0;left:-1px;right:-1px;z-index:3;box-sizing:border-box;padding:16px 19px 22px;
     display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;
     width:auto;height:auto;min-width:0;max-width:none;margin:0;transform:none;border-radius:20px 20px 0 0;overflow:hidden;
@@ -636,7 +636,7 @@
   .youtube-sound-toggle:active{transform:scale(.96);}
   @keyframes aurora{0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}
   .vp-aurora{display:none;}
-  .vp-size-handle{position:absolute;top:7px;left:50%;transform:translateX(-50%);z-index:3;width:104px;height:22px;border:none;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .vp-size-handle{position:absolute;top:7px;left:50%;transform:translateX(-50%);z-index:4;width:118px;height:26px;border:none;background:transparent;display:flex;align-items:center;justify-content:center;cursor:ns-resize;touch-action:none;}
   .vp-size-handle span{width:52px;height:5px;border-radius:999px;background:rgba(255,255,255,.76);box-shadow:0 1px 8px rgba(0,0,0,.18);}
   .vp-size-handle:active span{background:#fff;}
   .vpanel.expanded .vp-size-handle span{width:72px;background:#fff;}
@@ -652,6 +652,8 @@
   .vp-collapse{position:absolute;top:0px;left:50%;transform:translateX(-50%);z-index:2;width:34px;height:24px;border:none;background:none;color:rgba(255,255,255,.82);display:flex;align-items:center;justify-content:center;cursor:pointer;}
   .vp-collapse svg{width:22px;height:22px;}
   .vp-collapse:active{transform:translateX(-50%) translateY(1px);}
+  .vp-scroll{position:relative;z-index:1;flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:24px 2px 8px 0;scrollbar-width:none;}
+  .vp-scroll::-webkit-scrollbar{display:none;}
   .vp-beta-note{position:relative;z-index:1;align-self:flex-start;display:inline-flex;align-items:center;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.13);color:#fff;border-radius:999px;padding:5px 9px;margin-bottom:10px;font-size:12px;font-weight:900;letter-spacing:0;backdrop-filter:blur(8px);}
   .vp-live-status{position:relative;z-index:1;margin:-4px 0 8px;color:rgba(255,255,255,.88);font-size:12px;font-weight:850;line-height:1.35;min-height:16px;}
   .vp-live-status.ok{color:#DFFFEA;}
@@ -661,7 +663,7 @@
   .vp-quick{position:relative;z-index:1;display:flex;gap:7px;overflow-x:auto;margin:6px 0 9px;padding-bottom:2px;}
   .vp-quick::-webkit-scrollbar{display:none;}
   .vp-quick button{height:32px;border:1px solid rgba(255,255,255,.28);border-radius:999px;background:rgba(255,255,255,.16);color:#fff;font:inherit;font-size:12px;font-weight:900;white-space:nowrap;padding:0 10px;cursor:pointer;}
-  .vp-chat-form{position:relative;z-index:1;display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.24);border-radius:14px;padding:7px;}
+  .vp-chat-form{position:relative;z-index:1;flex:none;display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.24);border-radius:14px;padding:7px;}
   .vp-chat-form input{flex:1;min-width:0;border:0;background:transparent;color:#fff;font:inherit;font-size:13px;font-weight:800;outline:none;}
   .vp-chat-form input::placeholder{color:rgba(255,255,255,.64);}
   .vp-chat-form button{width:32px;height:32px;border:0;border-radius:10px;background:#fff;color:var(--brand);display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;}
@@ -678,14 +680,15 @@
   }
   /* 대기(듣는 중): 가운데 크게 */
   .vpanel.idle{justify-content:center;align-items:center;}
+  .vpanel.idle .vp-scroll{display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;}
   .vpanel.idle .vp-user{font-size:24px;font-weight:800;color:#fff;text-align:center;margin:0;min-height:0;line-height:1.25;letter-spacing:0;text-shadow:0 1px 8px rgba(0,0,0,.22);}
   .vpanel.idle .vp-ai{display:none;}
   .vp-wave{display:none;position:relative;z-index:1;}
   .vpanel.idle .vp-wave{display:flex;justify-content:center;margin-bottom:16px;transform:scale(1.2);}
   .vp-wave span{background:#fff;animation:wv 1s ease-in-out infinite;}
   @media (max-height:700px){
-    #cook3 .cook-ctrl:has(.vpanel.open){height:clamp(232px,32dvh,270px);}
-    #cook3 .cook-ctrl:has(.vpanel.open.expanded){height:clamp(286px,44dvh,330px);}
+    #cook3 .cook-ctrl:has(.vpanel.open),#cook3 .cook-ctrl.vpanel-open{height:clamp(240px,38dvh,286px);}
+    #cook3 .cook-ctrl:has(.vpanel.open.expanded),#cook3 .cook-ctrl.vpanel-open.vpanel-expanded{height:clamp(360px,58dvh,430px);}
     .vp-user,.vp-ai{font-size:15px;}
     .vp-quick button{height:30px;font-size:11px;}
   }
@@ -721,18 +724,25 @@
   .ing-check input{width:19px;height:19px;accent-color:var(--brand);flex:none;}
   .ing-check span{margin-left:auto;color:var(--text-sub);font-size:13px;font-weight:750;}
   /* 타이머 시트 */
-  .ts-row{display:flex;align-items:center;justify-content:center;gap:24px;margin:8px 0 16px;}
+  .ts-edit-hint{display:flex;align-items:center;justify-content:center;gap:6px;margin:4px 0 10px;color:var(--gray);font-size:12px;font-weight:800;}
+  .ts-edit-hint svg{width:14px;height:14px;color:var(--brand);}
+  .ts-row{display:flex;align-items:center;justify-content:center;gap:14px;margin:8px 0 12px;}
   .ts-pm{width:48px;height:48px;border-radius:50%;border:none;background:var(--bg);color:var(--ink);display:flex;align-items:center;justify-content:center;cursor:pointer;}
   .ts-pm:active{background:var(--gray2);}
   .ts-pm svg{width:22px;height:22px;}
-  .ts-num{display:flex;align-items:baseline;gap:6px;min-width:96px;justify-content:center;}
+  .ts-time-editor{display:flex;align-items:flex-end;justify-content:center;gap:7px;min-width:160px;}
+  .ts-colon{padding-bottom:7px;color:var(--gray);font-size:30px;font-weight:900;line-height:1;}
+  .ts-num{position:relative;display:flex;align-items:baseline;gap:4px;min-width:68px;justify-content:center;}
   .ts-num b{font-size:48px;font-weight:800;color:var(--ink);line-height:1;}
-  .ts-num input{width:86px;border:0;background:transparent;color:var(--ink);font:inherit;font-size:48px;font-weight:850;line-height:1;text-align:center;outline:none;font-variant-numeric:tabular-nums;}
+  .ts-num input{width:58px;border:0;border-bottom:3px solid rgba(var(--brand-rgb),.55);border-radius:0;background:linear-gradient(180deg,transparent 62%,rgba(var(--brand-rgb),.08) 0);color:var(--ink);font:inherit;font-size:44px;font-weight:850;line-height:1;text-align:center;outline:none;font-variant-numeric:tabular-nums;cursor:text;transition:border-color .18s ease,box-shadow .18s ease,background .18s ease;}
+  .ts-num input:focus{border-bottom-color:var(--brand);box-shadow:0 7px 0 -4px rgba(var(--brand-rgb),.22);background:linear-gradient(180deg,transparent 56%,rgba(var(--brand-rgb),.16) 0);}
   .ts-num input::-webkit-outer-spin-button,.ts-num input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
-  .ts-num span{font-size:16px;color:var(--gray);font-weight:700;}
+  .ts-num span{font-size:15px;color:var(--gray);font-weight:800;}
+  .ts-sec-adjusts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 8px;}
   .ts-presets{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:4px;}
-  .ts-presets button{height:40px;border:none;border-radius:12px;background:var(--green-soft);color:var(--green);font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;}
-  .ts-presets button:active{transform:scale(.96);}
+  .ts-presets button,.ts-sec-adjusts button{height:40px;border:none;border-radius:12px;background:var(--green-soft);color:var(--green);font-weight:800;font-size:14px;cursor:pointer;font-family:inherit;}
+  .ts-sec-adjusts button{background:var(--bg);color:var(--ink);border:1px solid var(--border);}
+  .ts-presets button:active,.ts-sec-adjusts button:active{transform:scale(.96);}
   /* 카운트다운 중인 타이머 버튼 */
   .cbtn .cic.o.running{box-shadow:0 0 0 2px var(--green),0 0 14px rgba(var(--brand-rgb),.6);}
 
@@ -1140,7 +1150,7 @@
     <div class="landing-brand"><i data-lucide="cooking-pot"></i>냄비</div>
     <div class="mobile-trust-row" aria-label="냄비 베타 안내">
       <span class="trust-pill dark">먼저 써볼 분 모집 중</span>
-      <button class="trust-pill warm" type="button" onclick="openApp('home')">지금 써보기</button>
+      <button class="trust-pill warm" type="button" onclick="openApp('home')">먼저 경험해보기</button>
     </div>
     <h1 data-variant-copy="headlineMobile">SNS 요리 영상,<br><span>따라 하다 막혔죠?</span></h1>
     <p data-variant-copy="leadMobile">먼저 써볼 소식을 받고, 따라 해보고 싶은 요리를 남겨주세요.</p>
@@ -1156,13 +1166,13 @@
       <button type="submit"><i data-lucide="bell-ring"></i>베타 알림 받기</button>
       <p class="form-status" data-status></p>
     </form>
-    <button class="mobile-app-cta" type="button" onclick="openApp('home')"><i data-lucide="smartphone"></i>지금 써보기</button>
+    <button class="mobile-app-cta" type="button" onclick="openApp('home')"><i data-lucide="smartphone"></i>먼저 경험해보기</button>
     <div class="pot-feature pot-feature-mobile" aria-label="냄비 도우미 안내">
       <div class="pot-mascot" aria-hidden="true">
         <i class="pot-steam s1"></i><i class="pot-steam s2"></i><i class="pot-steam s3"></i><i class="pot-lid"></i>
       </div>
       <div class="pot-feature-copy">
-        <b data-variant-copy="potTitle">작은 냄비가<br>순서를 챙겨요</b>
+        <b data-variant-copy="potTitle">작은 냄비가<br>옆에서 챙겨요</b>
         <span data-variant-copy="potText">영상은 냄비가 넘기고, 당신은 손맛에 집중해요.</span>
       </div>
     </div>
@@ -1178,10 +1188,10 @@
       <div class="landing-brand"><i data-lucide="cooking-pot"></i>냄비</div>
       <div class="trust-stack" aria-label="냄비 서비스 안내">
         <span class="trust-pill dark">먼저 써볼 분 모집 중</span>
-        <button class="trust-pill warm" type="button" onclick="openApp('home')">지금 써보기</button>
+        <button class="trust-pill warm" type="button" onclick="openApp('home')">먼저 경험해보기</button>
       </div>
       <div class="landing-actions">
-        <button class="landing-link" type="button" onclick="openFeedback('landing-nav')"><i data-lucide="message-square"></i>피드백</button>
+        <button class="landing-link" type="button" onclick="openFeedback('landing-nav')"><i data-lucide="message-square"></i>의견 남기기</button>
         <button class="landing-btn" type="button" onclick="scrollToBeta()"><i data-lucide="mail-plus"></i>베타 신청</button>
       </div>
     </nav>
@@ -1204,8 +1214,8 @@
           <p class="form-status" data-status></p>
         </form>
         <div class="landing-cta">
-          <button class="primary" type="button" onclick="scrollToBeta()"><i data-lucide="send"></i><span data-variant-copy="primaryCta">먼저 써보기 신청</span></button>
-          <button class="secondary" type="button" onclick="openApp('home')"><i data-lucide="smartphone"></i><span data-variant-copy="secondaryCta">지금 써보기</span></button>
+          <button class="primary" type="button" onclick="scrollToBeta()"><i data-lucide="send"></i><span data-variant-copy="primaryCta">출시 소식 받기</span></button>
+          <button class="secondary" type="button" onclick="openApp('home')"><i data-lucide="smartphone"></i><span data-variant-copy="secondaryCta">먼저 경험해보기</span></button>
         </div>
         <div class="landing-points">
           <div class="landing-point"><i data-lucide="video"></i><b data-variant-copy="point1Title">앱 화면 먼저보기</b><span data-variant-copy="point1Text">홈, 레시피 상세, 조리 모드를 이 페이지에서 바로 확인할 수 있습니다.</span></div>
@@ -1232,7 +1242,7 @@
         <i class="pot-steam s1"></i><i class="pot-steam s2"></i><i class="pot-steam s3"></i><i class="pot-lid"></i>
       </div>
       <div class="pot-feature-copy">
-        <b data-variant-copy="potTitle">작은 냄비가<br>순서를 챙겨요</b>
+        <b data-variant-copy="potTitle">작은 냄비가<br>옆에서 챙겨요</b>
         <span data-variant-copy="potText">영상은 냄비가 넘기고, 당신은 손맛에 집중해요.</span>
       </div>
     </div>
@@ -1264,7 +1274,7 @@
 
     <section class="landing-section" id="beta">
       <div class="beta-panel">
-        <h2><span class="value-badge dark">베타</span> 출시 알림 · 먼저 써보기 신청</h2>
+        <h2><span class="value-badge dark">베타</span> 출시 알림 · 출시 소식 받기</h2>
         <p>초대 링크와 준비 중인 레시피 소식을 받을 이메일을 남겨주세요. 먼저 써볼 수 있는 순서가 오면 안내드릴게요.</p>
         <form class="beta-form" id="betaForm" onsubmit="submitBeta(event)">
           <label>이메일<input name="email" type="email" autocomplete="email" placeholder="you@example.com" required></label>
@@ -1309,11 +1319,11 @@
       <div class="statusbar"><span>9:41</span><span class="icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
       <div class="nav"><div class="logo"><i data-lucide="cooking-pot"></i>냄비</div><div class="hd-right"><div class="noti" onclick="toast('준비 중인 기능이에요','bell')"><i data-lucide="bell"></i>13</div><div class="ic-btn" onclick="toast('준비 중인 기능이에요','circle-user-round')"><i data-lucide="circle-user-round"></i></div></div></div>
       <div class="body">
-        <div class="search" onclick="openSearch()"><i data-lucide="search"></i>요리, 재료, 창작자 이름으로 찾아보세요</div>
+        <div class="search" onclick="openSearch()"><i data-lucide="search"></i>요리, 재료, 크리에이터 이름으로 찾아보세요</div>
         <div class="assistant-start">
           <div class="as-top">
             <div class="as-ic"><i data-lucide="bot"></i></div>
-            <div><b>요리비서에게 물어보고 시작하기</b><span>재료, 시간, 막히는 상황을 기준으로 따라 하기 쉬운 요리를 찾아봐요.</span></div>
+            <div><b>오늘 만들 요리부터 골라보기</b><span>재료, 시간, 막히는 상황을 기준으로 따라 하기 쉬운 요리를 찾아봐요.</span></div>
           </div>
           <div class="as-actions">
             <button type="button" onclick="openSearch('SNS 트렌드')">SNS에서 본 메뉴</button>
@@ -1350,10 +1360,10 @@
       <div class="body">
         <div class="search-live">
           <i data-lucide="search"></i>
-          <input id="recipeSearchInput" type="search" autocomplete="off" placeholder="요리, 재료, 창작자 이름으로 검색" oninput="runRecipeSearch(this.value)">
+          <input id="recipeSearchInput" type="search" autocomplete="off" placeholder="요리, 재료, 크리에이터 이름으로 검색" oninput="runRecipeSearch(this.value)">
           <button id="searchClearBtn" type="button" onclick="clearRecipeSearch()" aria-label="검색어 지우기"><i data-lucide="x"></i></button>
         </div>
-        <p class="search-helper"><b>요리 제목, 재료, 창작자 이름</b>을 함께 보고 가장 가까운 레시피를 먼저 보여줘요.</p>
+        <p class="search-helper"><b>요리 제목, 재료, 크리에이터 이름</b>을 함께 보고 가장 가까운 레시피를 먼저 보여줘요.</p>
         <div class="search-chip-group">
           <div class="chip-label">요리와 상황</div>
           <div class="search-chips" aria-label="요리 빠른 검색어">
@@ -1362,13 +1372,13 @@
             <button type="button" onclick="openSearch('재료 적게')">재료 적게</button>
             <button type="button" onclick="openSearch('야식')">야식</button>
           </div>
-          <div class="chip-label">창작자</div>
-          <div class="search-chips creator" aria-label="창작자 빠른 검색어">
+          <div class="chip-label">크리에이터</div>
+          <div class="search-chips creator" aria-label="크리에이터 빠른 검색어">
             <button type="button" onclick="openSearch('Maangchi')">Maangchi</button>
             <button type="button" onclick="openSearch('성시경')">성시경</button>
           </div>
         </div>
-        <div class="creator-results-head" id="creatorResultHead"><b>창작자 결과</b><span id="creatorResultMeta"></span></div>
+        <div class="creator-results-head" id="creatorResultHead"><b>크리에이터 결과</b><span id="creatorResultMeta"></span></div>
         <div class="creator-results" id="creatorResults"></div>
         <div class="search-results-head"><b id="searchResultTitle">요리 결과</b><span id="searchResultMeta">요즘 많이 찾는 메뉴</span></div>
         <div class="search-results" id="searchResults"></div>
@@ -1451,15 +1461,17 @@
         </div>
         <div class="vpanel" id="vpanel">
           <div class="vp-aurora"></div>
-          <button class="vp-size-handle" id="vpSizeHandle" type="button" onclick="toggleVpPanelSize()" aria-label="요리비서 패널 크게 보기" aria-expanded="false"><span></span></button>
+          <button class="vp-size-handle" id="vpSizeHandle" type="button" onpointerdown="startVpResizeDrag(event)" onclick="toggleVpPanelSize()" aria-label="요리비서 패널 크게 보기" aria-expanded="false"><span></span></button>
           <button class="vp-mic" onclick="toggleVpMic()"><i data-lucide="mic"></i></button>
           <button class="vp-close" onclick="toggleHf3()"><i data-lucide="x"></i></button>
-          <div class="vp-beta-note">요리비서 베타</div>
-          <div class="vp-live-status" id="vpLiveStatus" role="status" aria-live="polite"></div>
-          <div class="wave vp-wave"><span></span><span></span><span></span><span></span><span></span></div>
-          <div class="vp-user" id="vpUser">무엇이 궁금해요?</div>
-          <div class="vp-ai" id="vpAi">아래 질문을 누르거나 직접 물어보면 답할게요.</div>
-          <div class="vp-quick" id="vpQuick"></div>
+          <div class="vp-scroll" id="vpScroll">
+            <div class="vp-beta-note">요리비서 베타</div>
+            <div class="vp-live-status" id="vpLiveStatus" role="status" aria-live="polite"></div>
+            <div class="wave vp-wave"><span></span><span></span><span></span><span></span><span></span></div>
+            <div class="vp-user" id="vpUser">무엇이 궁금해요?</div>
+            <div class="vp-ai" id="vpAi">아래 질문을 누르거나 직접 물어보면 답할게요.</div>
+            <div class="vp-quick" id="vpQuick"></div>
+          </div>
           <form class="vp-chat-form" onsubmit="submitVpPrompt(event)">
             <input id="vpPromptInput" type="search" autocomplete="off" placeholder="예: 양념이 타는 것 같아">
             <button type="submit" aria-label="질문 보내기"><i data-lucide="send"></i></button>
@@ -1488,7 +1500,7 @@
         </div>
         <div class="done-next">
           <button type="button" onclick="showLanding();setTimeout(scrollToBeta,120)">출시 알림 신청</button>
-          <button type="button" onclick="openFeedback('complete-recipe-request')">요리 요청하기</button>
+          <button type="button" onclick="openFeedback('complete-recipe-request')">따라 하고 싶은 영상 보내기</button>
         </div>
       </div>
     </div>
@@ -1510,10 +1522,20 @@
       <div class="ing-panel">
         <div class="ing-grab"></div>
         <div class="ing-h"><b>타이머 설정</b><span onclick="closeTimer()"><i data-lucide="x"></i></span></div>
+        <div class="ts-edit-hint"><i data-lucide="pencil-line"></i><span>숫자를 눌러 직접 입력</span></div>
         <div class="ts-row">
-          <button class="ts-pm" onclick="tsAdjust(-1)"><i data-lucide="minus"></i></button>
-          <div class="ts-num"><input id="tsMin" type="number" min="1" max="99" inputmode="numeric" value="3" aria-label="타이머 분" oninput="tsInputChanged(this.value)" onblur="syncTimerInput()"><span>분</span></div>
-          <button class="ts-pm" onclick="tsAdjust(1)"><i data-lucide="plus"></i></button>
+          <button class="ts-pm" onclick="tsAdjust(-1)" aria-label="1분 줄이기"><i data-lucide="minus"></i></button>
+          <div class="ts-time-editor" aria-label="타이머 시간 직접 입력">
+            <div class="ts-num"><input id="tsMin" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" value="3" aria-label="타이머 분 직접 입력" oninput="tsInputChanged()" onblur="syncTimerInput()"><span>분</span></div>
+            <span class="ts-colon" aria-hidden="true">:</span>
+            <div class="ts-num"><input id="tsSec" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" value="00" aria-label="타이머 초 직접 입력" oninput="tsInputChanged()" onblur="syncTimerInput()"><span>초</span></div>
+          </div>
+          <button class="ts-pm" onclick="tsAdjust(1)" aria-label="1분 늘리기"><i data-lucide="plus"></i></button>
+        </div>
+        <div class="ts-sec-adjusts">
+          <button onclick="tsAdjustSeconds(-10)">-10초</button>
+          <button onclick="tsAdjustSeconds(10)">+10초</button>
+          <button onclick="tsSetSeconds(30)">30초</button>
         </div>
         <div class="ts-presets">
           <button onclick="tsSet(1)">1분</button>
@@ -1611,10 +1633,10 @@
   <div class="feedback-card">
     <div class="feedback-head">
       <div>
-        <h2 id="feedbackTitle">베타 피드백</h2>
+        <h2 id="feedbackTitle">의견 남기기</h2>
         <p>좋았던 점보다 막힌 지점이 더 중요합니다. 화면, 레시피, 음성, 영상 문제를 그대로 적어주세요.</p>
       </div>
-      <button class="feedback-close" type="button" onclick="closeFeedback()" aria-label="피드백 닫기"><i data-lucide="x"></i></button>
+      <button class="feedback-close" type="button" onclick="closeFeedback()" aria-label="의견 창 닫기"><i data-lucide="x"></i></button>
     </div>
     <form class="beta-form" id="feedbackForm" onsubmit="submitFeedback(event)">
       <input type="hidden" name="source" value="landing">
@@ -1629,7 +1651,7 @@
       </label>
       <label>이메일 (선택)<input name="email" type="email" autocomplete="email" placeholder="답변을 받아도 되는 이메일"></label>
       <label>내용<textarea name="message" required placeholder="어느 화면에서 무엇이 불편했는지 적어주세요. 유튜브 링크 제안도 여기에 남길 수 있어요."></textarea></label>
-      <button type="submit"><i data-lucide="send"></i>피드백 보내기</button>
+      <button type="submit"><i data-lucide="send"></i>의견 보내기</button>
       <p class="form-status" data-status></p>
     </form>
   </div>
@@ -1675,13 +1697,13 @@
       leadMobile:'먼저 써볼 소식을 받고, 따라 해보고 싶은 요리를 남겨주세요.',
       promiseTitle:'출시 전에 먼저 초대할게요',
       promiseText:'이메일을 남기면 베타 초대와 준비 중인 레시피 소식을 받을 수 있어요.',
-      primaryCta:'미리 써보기 신청',
-      secondaryCta:'지금 써보기',
+      primaryCta:'출시 소식 받기',
+      secondaryCta:'먼저 경험해보기',
       point1Title:'요즘 메뉴를 더 쉽게',
       point1Text:'릴스, 쇼츠, 유튜브에서 본 요리를 주방용 순서로 정리합니다.',
       point2Title:'준비 소식 받기',
       point2Text:'정식 오픈과 베타 초대 소식을 이메일로 안내합니다.',
-      point3Title:'보고 싶은 요리 보내기',
+      point3Title:'따라 하고 싶은 영상 보내기',
       point3Text:'따라 해보고 싶은 영상이나 요리를 보내주면 다음 메뉴를 고를 때 참고합니다.',
       potTitle:'작은 냄비가<br>옆에서 챙겨요',
       potText:'영상 찾고 되감는 시간은 줄이고, 재료 대체나 불 조절처럼 막히는 순간을 바로 물어볼 수 있게 도와줘요.'
@@ -1695,12 +1717,12 @@
       promiseTitle:'작은 초대 그룹부터 시작합니다',
       promiseText:'요리 스타일과 막히는 상황을 남기면 맞는 안내를 보내드릴게요.',
       primaryCta:'베타 신청하기',
-      secondaryCta:'지금 써보기',
+      secondaryCta:'먼저 경험해보기',
       point1Title:'먼저 써보기',
       point1Text:'퇴근 후 한 끼, 가족 식사, 초보 요리처럼 실제 상황별로 먼저 안내합니다.',
       point2Title:'초대 링크 안내',
       point2Text:'준비가 되는 순서대로 이메일로 초대 링크와 안내를 드립니다.',
-      point3Title:'개선 피드백 반영',
+      point3Title:'개선 의견 반영',
       point3Text:'조리 중 막힌 순간과 필요한 레시피를 다음 개선 목록에 반영합니다.',
       potTitle:'작은 냄비가<br>옆에서 물어봐요',
       potText:'어디서 막혔는지 알려주면 요리비서 질문과 답변 흐름을 다음 버전에 먼저 반영해요.'
@@ -1714,7 +1736,7 @@
       promiseTitle:'요청이 많은 레시피부터 준비합니다',
       promiseText:'요리 이름이나 링크만 남겨도 좋아요. 반영 소식이 필요하면 이메일도 함께 남겨주세요.',
       primaryCta:'레시피 요청하기',
-      secondaryCta:'지금 써보기',
+      secondaryCta:'먼저 경험해보기',
       point1Title:'요리 이름만 남겨도 됩니다',
       point1Text:'제육볶음, 순두부찌개처럼 요리 이름만 있어도 요청 목록에 넣습니다.',
       point2Title:'유튜브 링크 우선 반영',
@@ -1808,7 +1830,7 @@
       }
       setFormStatus(form,'','');
     }
-    if(title)title.textContent=String(source||'').includes('recipe')?'보고 싶은 요리 보내기':'의견 남기기';
+    if(title)title.textContent=String(source||'').includes('recipe')?'따라 하고 싶은 영상 보내기':'의견 남기기';
     if(desc)desc.textContent=String(source||'').includes('recipe')
       ? '따라 해보고 싶은 요리나 영상 링크를 남겨주세요. 다음 레시피를 고를 때 참고합니다.'
       : '막힌 지점, 좋았던 흐름, 다른 사람에게 남기고 싶은 팁을 그대로 적어주세요.';
@@ -1890,11 +1912,11 @@
       setFormStatus(form,'전송 중입니다.','');
       await postJson('/api/feedback',payload);
       form.reset();
-      setFormStatus(form,'피드백이 접수됐습니다. 베타 개선 목록에 반영할게요.','ok');
-      toast('피드백이 접수됐어요','send');
+      setFormStatus(form,'의견이 접수됐습니다. 개선 목록에 반영할게요.','ok');
+      toast('의견이 접수됐어요','send');
       setTimeout(closeFeedback,1200);
     }catch(error){
-      setFormStatus(form,error.message||'피드백 저장에 실패했습니다. 잠시 뒤 다시 시도해주세요.','bad');
+      setFormStatus(form,error.message||'의견 저장에 실패했습니다. 잠시 뒤 다시 시도해주세요.','bad');
     }finally{
       setFormBusy(form,false);
       if(submitButton)submitButton.innerHTML=originalLabel;
@@ -2318,7 +2340,7 @@
   function creatorGroups(){
     const map=new Map();
     RECIPES.forEach(r=>{
-      const key=r.channel||'창작자 미상';
+      const key=r.channel||'크리에이터 미상';
       const group=map.get(key)||{channel:key,recipes:[]};
       group.recipes.push(r);
       map.set(key,group);
@@ -2352,7 +2374,7 @@
     const names=group.recipes.slice(0,3).map(r=>r.name).join(' · ');
     return '<button class="creator-row" type="button" onclick="goDetail(\''+first.id+'\')">'+
       '<span class="creator-avatar"><i data-lucide="user-round"></i></span>'+
-      '<span class="creator-copy"><b>'+esc(group.channel)+'</b><span>창작자 · 레시피 '+group.recipes.length+'개 · '+esc(names)+'</span></span>'+
+      '<span class="creator-copy"><b>'+esc(group.channel)+'</b><span>크리에이터 · 레시피 '+group.recipes.length+'개 · '+esc(names)+'</span></span>'+
       '<i data-lucide="chevron-right"></i>'+
     '</button>';
   }
@@ -2840,18 +2862,95 @@
     cookHintDismissed=true;
     hideCookHint();
   }
-  let tsVal=3, timerId=null, timerLeft=0, timerTotal=0, timerPaused=false, stageTimerHideId=null;
+  let tsDraftSeconds=180, timerId=null, timerLeft=0, timerTotal=0, timerPaused=false, stageTimerHideId=null;
+  let timerAudioCtx=null, timerAlarmTimeouts=[], timerAlarmNodes=[];
   function timerInput(){return document.getElementById('tsMin');}
-  function syncTimerInput(){const input=timerInput();if(input)input.value=tsVal;}
-  function tsInputChanged(value){
-    const n=parseInt(value,10);
-    if(Number.isFinite(n))tsVal=Math.max(1,Math.min(99,n));
+  function timerSecondInput(){return document.getElementById('tsSec');}
+  function clampTimerSeconds(seconds){return Math.max(1,Math.min(99*60+59,Math.floor(Number(seconds)||0)));}
+  function readTimerPart(input){
+    if(!input)return null;
+    const clean=String(input.value||'').replace(/\D/g,'').slice(0,2);
+    if(clean!==input.value)input.value=clean;
+    return clean===''?null:parseInt(clean,10);
+  }
+  function setTimerDraft(seconds){
+    tsDraftSeconds=clampTimerSeconds(seconds);
+    syncTimerInput();
+  }
+  function syncTimerInput(){
+    const min=timerInput(), sec=timerSecondInput();
+    if(min)min.value=String(Math.floor(tsDraftSeconds/60));
+    if(sec)sec.value=String(tsDraftSeconds%60).padStart(2,'0');
+  }
+  function tsInputChanged(){
+    const minValue=readTimerPart(timerInput());
+    const secValue=readTimerPart(timerSecondInput());
+    if(minValue===null&&secValue===null)return;
+    tsDraftSeconds=clampTimerSeconds((minValue||0)*60+(secValue||0));
   }
   function openTimer(){syncTimerInput();document.getElementById('timerSheet').classList.add('show');}
   function closeTimer(){document.getElementById('timerSheet').classList.remove('show');}
-  function tsAdjust(d){tsVal=Math.max(1,Math.min(99,tsVal+d));syncTimerInput();}
-  function tsSet(v){tsVal=Math.max(1,Math.min(99,v));syncTimerInput();}
+  function tsAdjust(d){setTimerDraft(tsDraftSeconds+d*60);}
+  function tsAdjustSeconds(d){setTimerDraft(tsDraftSeconds+d);}
+  function tsSet(v){setTimerDraft(v*60);}
+  function tsSetSeconds(v){setTimerDraft(v);}
   function fmtTime(s){return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');}
+  function fmtDurationKo(seconds){
+    const min=Math.floor(seconds/60), sec=seconds%60;
+    if(min&&sec)return min+'분 '+sec+'초';
+    if(min)return min+'분';
+    return sec+'초';
+  }
+  function getTimerAudioContext(){
+    const AudioCtor=window.AudioContext||window.webkitAudioContext;
+    if(!AudioCtor)return null;
+    if(!timerAudioCtx)timerAudioCtx=new AudioCtor();
+    return timerAudioCtx;
+  }
+  function prepareTimerAlarm(){
+    try{
+      const ctx=getTimerAudioContext();
+      if(ctx&&ctx.state==='suspended')ctx.resume();
+    }catch{}
+  }
+  function stopTimerAlarm(){
+    timerAlarmTimeouts.forEach(id=>clearTimeout(id));
+    timerAlarmTimeouts=[];
+    timerAlarmNodes.forEach(node=>{
+      try{node.osc.stop();}catch{}
+      try{node.osc.disconnect();node.gain.disconnect();}catch{}
+    });
+    timerAlarmNodes=[];
+    if(navigator.vibrate)navigator.vibrate(0);
+  }
+  function playTimerAlarm(){
+    window.__timerAlarmPlayed=(window.__timerAlarmPlayed||0)+1;
+    stopTimerAlarm();
+    if(navigator.vibrate)navigator.vibrate([140,80,140,80,260]);
+    try{
+      const ctx=getTimerAudioContext();
+      if(!ctx)return;
+      if(ctx.state==='suspended')ctx.resume();
+      const now=ctx.currentTime+.03;
+      [0,.32,.64,1.02].forEach((offset,index)=>{
+        const osc=ctx.createOscillator();
+        const gain=ctx.createGain();
+        osc.type='sine';
+        osc.frequency.setValueAtTime(index===3?920:740,now+offset);
+        gain.gain.setValueAtTime(.0001,now+offset);
+        gain.gain.exponentialRampToValueAtTime(.2,now+offset+.025);
+        gain.gain.exponentialRampToValueAtTime(.0001,now+offset+.22);
+        osc.connect(gain).connect(ctx.destination);
+        osc.start(now+offset);
+        osc.stop(now+offset+.24);
+        timerAlarmNodes.push({osc,gain});
+        timerAlarmTimeouts.push(setTimeout(()=>{
+          timerAlarmNodes=timerAlarmNodes.filter(node=>node.osc!==osc);
+          try{osc.disconnect();gain.disconnect();}catch{}
+        },(offset+.35)*1000));
+      });
+    }catch{}
+  }
   function setTimerButtons(on){
     document.querySelectorAll('.js-timer-label').forEach(l=>{l.textContent='타이머';});
     document.querySelectorAll('.js-timer-btn').forEach(b=>b.classList.toggle('running',on));
@@ -2884,6 +2983,7 @@
     setTimerButtons(false);
     updateStageTimer(0,timerTotal,true);
     const el=document.getElementById('stageTimer');if(el)el.classList.add('ringing'); // 사용자가 멈출 때까지 계속 울림(부르르 흔들림)
+    playTimerAlarm();
     toast('타이머 완료!','timer');
   }
   function timerTick(){
@@ -2892,6 +2992,8 @@
     updateStageTimer(timerLeft,timerTotal,false);
   }
   function startUnifiedTimer(seconds,showToast){
+    stopTimerAlarm();
+    prepareTimerAlarm();
     timerTotal=seconds;timerLeft=seconds;
     if(stageTimerHideId){clearTimeout(stageTimerHideId);stageTimerHideId=null;}
     {const _st=document.getElementById('stageTimer');if(_st)_st.classList.remove('ringing');} // 재시작 시 이전 울림 해제
@@ -2900,7 +3002,7 @@
     setTimerButtons(true);
     updateStageTimer(timerLeft,timerTotal,false);
     timerId=setInterval(timerTick,1000);
-    if(showToast)toast(Math.round(seconds/60)+'분 타이머 시작','timer');
+    if(showToast)toast(fmtDurationKo(seconds)+' 타이머 시작','timer');
   }
   function toggleStageTimerPause(){
     if(!timerTotal||timerLeft<=0)return;
@@ -2918,15 +3020,17 @@
   function cancelStageTimer(){
     if(timerId){clearInterval(timerId);timerId=null;}
     if(stageTimerHideId){clearTimeout(stageTimerHideId);stageTimerHideId=null;}
+    stopTimerAlarm();
     timerLeft=0;timerTotal=0;timerPaused=false;
     setTimerButtons(false);
     hideStageTimer();
     toast('타이머 취소','x');
   }
   function startCountdown(){
+    tsInputChanged();
     syncTimerInput();
     closeTimer();
-    startUnifiedTimer(tsVal*60,true);
+    startUnifiedTimer(tsDraftSeconds,true);
   }
   let handsfree=true;
   function toggleHandsfree(){
@@ -2938,7 +3042,7 @@
     toast(handsfree?'핸즈프리 모드 켜짐 — 음성으로 진행해요':'핸즈프리 모드 꺼짐',handsfree?'mic':'mic-off');
   }
   /* 조리 모드(신) 실시간 음성 패널 */
-  let hf3On=false, vpi=0, vpTimers=[], vpMicMuted=false, geminiLiveReady=null, geminiLiveBusy=false;
+  let hf3On=false, vpi=0, vpTimers=[], vpMicMuted=false, geminiLiveReady=null, geminiLiveBusy=false, vpResizeDrag=null, vpSuppressResizeClick=false;
   function setVpLiveStatus(message,type){
     const node=document.getElementById('vpLiveStatus');
     if(!node)return;
@@ -2949,7 +3053,12 @@
   function setVpPanelExpanded(expanded){
     const panel=document.getElementById('vpanel');
     const handle=document.getElementById('vpSizeHandle');
+    const ctrl=document.getElementById('cook3Ctrl');
     if(!panel)return;
+    if(ctrl){
+      ctrl.classList.toggle('vpanel-open',panel.classList.contains('open'));
+      ctrl.classList.toggle('vpanel-expanded',!!expanded);
+    }
     panel.classList.toggle('expanded',!!expanded);
     if(handle){
       handle.setAttribute('aria-expanded',expanded?'true':'false');
@@ -2957,8 +3066,37 @@
     }
   }
   function toggleVpPanelSize(){
+    if(vpSuppressResizeClick){
+      vpSuppressResizeClick=false;
+      return;
+    }
     const panel=document.getElementById('vpanel');
     setVpPanelExpanded(!(panel&&panel.classList.contains('expanded')));
+  }
+  function startVpResizeDrag(event){
+    const panel=document.getElementById('vpanel');
+    if(!panel?.classList.contains('open'))return;
+    vpResizeDrag={startY:event.clientY,moved:false};
+    try{event.currentTarget?.setPointerCapture?.(event.pointerId);}catch{}
+    const onMove=(moveEvent)=>{
+      if(!vpResizeDrag)return;
+      const dy=moveEvent.clientY-vpResizeDrag.startY;
+      if(Math.abs(dy)>18){
+        vpResizeDrag.moved=true;
+        setVpPanelExpanded(dy<0);
+      }
+    };
+    const onUp=(upEvent)=>{
+      if(vpResizeDrag?.moved)vpSuppressResizeClick=true;
+      try{event.currentTarget?.releasePointerCapture?.(event.pointerId);}catch{}
+      window.removeEventListener('pointermove',onMove);
+      window.removeEventListener('pointerup',onUp);
+      window.removeEventListener('pointercancel',onUp);
+      vpResizeDrag=null;
+    };
+    window.addEventListener('pointermove',onMove);
+    window.addEventListener('pointerup',onUp,{once:true});
+    window.addEventListener('pointercancel',onUp,{once:true});
   }
   function currentCookStep(){
     const steps=currentRecipe?.steps||[];

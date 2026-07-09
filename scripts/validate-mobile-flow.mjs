@@ -147,15 +147,31 @@ try {
     hideCookHint();
     await new Promise((resolve) => setTimeout(resolve, 200));
     openTimer();
-    const input = document.getElementById('tsMin');
-    input.value = '7';
-    tsInputChanged(input.value);
+    const minInput = document.getElementById('tsMin');
+    const secInput = document.getElementById('tsSec');
+    minInput.value = '7';
+    secInput.value = '20';
+    tsInputChanged();
+    document.querySelector('.ts-sec-adjusts button:nth-child(2)').click();
+    const minUnderline = getComputedStyle(minInput).borderBottomWidth;
+    const secUnderline = getComputedStyle(secInput).borderBottomWidth;
     document.querySelector('#timerSheet .btn').click();
     await new Promise((resolve) => setTimeout(resolve, 150));
+    const startedTotal = timerTotal;
+    cancelStageTimer();
+    startUnifiedTimer(1, false);
+    await new Promise((resolve) => setTimeout(resolve, 1250));
+    const alarmPlayed = window.__timerAlarmPlayed || 0;
+    const ringing = document.getElementById('stageTimer').classList.contains('ringing');
+    const doneText = document.getElementById('stageTimerTime').textContent;
+    cancelStageTimer();
     return {
-      timerText: document.getElementById('stageTimerTime').textContent,
-      timerTotal,
-      visible: document.getElementById('stageTimer').classList.contains('show')
+      timerText: doneText,
+      startedTotal,
+      minUnderline,
+      secUnderline,
+      alarmPlayed,
+      ringing
     };
   })()`);
 
@@ -238,10 +254,24 @@ try {
     };
     document.getElementById('vpSizeHandle').click();
     await new Promise((resolve) => setTimeout(resolve, 160));
+    const longAnswer = Array(10).fill('양념이 타는 것 같으면 불을 한 단계 낮추고 팬 가장자리의 양념을 가운데로 모아주세요. 물이나 면수를 한 숟갈씩 넣어 농도를 풀고, 재료는 한 번에 많이 뒤집지 말고 천천히 섞으면 좋아요.').join(' ');
+    document.getElementById('vpUser').textContent = '질문이 길어져도 읽을 수 있어?';
+    document.getElementById('vpAi').textContent = longAnswer;
+    await new Promise((resolve) => setTimeout(resolve, 80));
+    const vpScroll = document.getElementById('vpScroll');
+    const scrollBefore = vpScroll.scrollTop;
+    vpScroll.scrollTop = vpScroll.scrollHeight;
+    await new Promise((resolve) => setTimeout(resolve, 60));
     const resized = {
       panel: document.getElementById('vpanel').className,
       handleExpanded: document.getElementById('vpSizeHandle').getAttribute('aria-expanded'),
-      ctrlHeight: Math.round(document.getElementById('cook3Ctrl').getBoundingClientRect().height)
+      ctrlHeight: Math.round(document.getElementById('cook3Ctrl').getBoundingClientRect().height),
+      ctrlHasExpandedClass: document.getElementById('cook3Ctrl').classList.contains('vpanel-expanded'),
+      scrollClientHeight: vpScroll.clientHeight,
+      scrollHeight: vpScroll.scrollHeight,
+      scrollTopAfter: vpScroll.scrollTop,
+      scrollOverflowY: getComputedStyle(vpScroll).overflowY,
+      scrollMoved: vpScroll.scrollTop > scrollBefore
     };
     document.getElementById('vpPromptInput').value = '타이머 1분 맞춰줘';
     document.querySelector('.vp-chat-form button').click();
@@ -267,13 +297,13 @@ try {
     throw new Error('앱 내부 피드백 버튼이 보이지 않습니다.');
   }
   if (search.active !== 'searchPage' || !search.creatorHeadVisible || !search.creatorRows.some((row) => row.includes('Maangchi'))) {
-    throw new Error('Maangchi 검색이 창작자 결과로 분리되지 않았습니다.');
+    throw new Error('Maangchi 검색이 크리에이터 결과로 분리되지 않았습니다.');
   }
   if (search.foodChipTexts.includes('Maangchi') || !search.creatorChipTexts.includes('Maangchi')) {
-    throw new Error('창작자 빠른 검색어가 요리 칩과 분리되지 않았습니다.');
+    throw new Error('크리에이터 빠른 검색어가 요리 칩과 분리되지 않았습니다.');
   }
   if (search.recipeCards.length < 1 || !search.recipeCards.every((card) => card.title && !/^Maangchi$/i.test(card.title))) {
-    throw new Error('창작자 검색의 요리 결과가 실제 레시피 카드로 표시되지 않았습니다.');
+    throw new Error('크리에이터 검색의 요리 결과가 실제 레시피 카드로 표시되지 않았습니다.');
   }
   if (!feedback.modalOpen || !feedback.requests.some((request) => request.url.endsWith('/api/feedback'))) {
     throw new Error('피드백 제출이 /api/feedback으로 이어지지 않았습니다.');
@@ -281,8 +311,14 @@ try {
   if (!feedback.status.includes('접수')) {
     throw new Error('피드백 제출 성공 메시지가 표시되지 않았습니다.');
   }
-  if (!timer.visible || timer.timerTotal !== 420) {
-    throw new Error('타이머 직접 입력 7분이 반영되지 않았습니다.');
+  if (timer.startedTotal !== 450) {
+    throw new Error('타이머 직접 입력 7분 20초와 +10초 조정이 반영되지 않았습니다.');
+  }
+  if (!parseFloat(timer.minUnderline) || !parseFloat(timer.secUnderline)) {
+    throw new Error('타이머 직접 입력 가능 상태를 보여주는 밑줄 affordance가 없습니다.');
+  }
+  if (!timer.ringing || timer.timerText !== '완료' || timer.alarmPlayed < 1) {
+    throw new Error('타이머 완료 시 알림 상태와 알림음 호출이 확인되지 않았습니다.');
   }
   if (!ingredients.defaultState.sheetOpen || !ingredients.defaultState.listActive || ingredients.defaultState.checkActive) {
     throw new Error('재료 시트가 기본 목록 보기로 열리지 않았습니다.');
@@ -308,8 +344,11 @@ try {
   if (!assistant.opened.liveStatus.includes('마이크 버튼')) {
     throw new Error('Gemini Live 모바일 권한 확인 안내가 표시되지 않았습니다.');
   }
-  if (assistant.opened.handleExpanded !== 'false' || assistant.resized.handleExpanded !== 'true' || assistant.resized.ctrlHeight <= assistant.opened.ctrlHeight) {
+  if (assistant.opened.handleExpanded !== 'false' || assistant.resized.handleExpanded !== 'true' || !assistant.resized.ctrlHasExpandedClass || assistant.resized.ctrlHeight < assistant.opened.ctrlHeight + 90) {
     throw new Error('요리비서 패널 크기 조절 바가 기본/확장 상태를 전환하지 못했습니다.');
+  }
+  if (!/auto|scroll/.test(assistant.resized.scrollOverflowY) || assistant.resized.scrollHeight <= assistant.resized.scrollClientHeight || !assistant.resized.scrollMoved) {
+    throw new Error('요리비서 긴 답변이 패널 내부에서 스크롤되지 않습니다.');
   }
   if (!assistant.user.includes('타이머 1분') || assistant.quickCount < 3 || assistant.activeStep !== '0') {
     throw new Error('요리비서 질문 입력/추천 질문이 동작하지 않았습니다.');

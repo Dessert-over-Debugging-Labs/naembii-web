@@ -52,7 +52,7 @@ const states = [
   {
     name: 'timer-sheet',
     setup: `currentRecipe=recipeById('${recipeId}'); show('cook3'); hideCookHint(); openTimer();`,
-    required: ['#timerSheet.show .ing-panel', '#tsMin', '#timerSheet .btn']
+    required: ['#timerSheet.show .ing-panel', '.ts-edit-hint', '#tsMin', '#tsSec', '.ts-sec-adjusts button', '#timerSheet .btn']
   },
   {
     name: 'ingredients-list',
@@ -67,7 +67,12 @@ const states = [
   {
     name: 'assistant-panel',
     setup: `currentRecipe=recipeById('${recipeId}'); show('cook3'); hideCookHint(); toggleHf3();`,
-    required: ['#vpanel.open', '#vpSizeHandle', '#vpPromptInput', '#vpQuick button', '.vp-close']
+    required: ['#vpanel.open', '#vpSizeHandle', '#vpScroll', '#vpPromptInput', '#vpQuick button', '.vp-close']
+  },
+  {
+    name: 'assistant-panel-expanded',
+    setup: `currentRecipe=recipeById('${recipeId}'); show('cook3'); hideCookHint(); if(!hf3On){toggleHf3();}else{resetVpPromptPanel();} setVpPanelExpanded(true); document.getElementById('vpUser').textContent='질문이 길어져도 읽을 수 있어?'; document.getElementById('vpAi').textContent=Array(10).fill('양념이 타는 것 같으면 불을 한 단계 낮추고 팬 가장자리의 양념을 가운데로 모아주세요. 물이나 면수를 한 숟갈씩 넣어 농도를 풀고, 재료는 천천히 섞으면 좋아요.').join(' ');`,
+    required: ['#vpanel.open.expanded', '#cook3Ctrl.vpanel-expanded', '#vpScroll', '#vpPromptInput', '.vp-close']
   },
   {
     name: 'complete',
@@ -187,7 +192,10 @@ try {
           try { closeVoice(); } catch {}
           try { closeVideoSettings(); } catch {}
           const vpanel = document.getElementById('vpanel');
-          if (vpanel) vpanel.classList.remove('open','idle','listening','thinking','answering');
+          if (vpanel) vpanel.classList.remove('open','idle','listening','thinking','answering','expanded');
+          const cookCtrl = document.getElementById('cook3Ctrl');
+          if (cookCtrl) cookCtrl.classList.remove('vpanel-open','vpanel-expanded');
+          try { hf3On = false; vpClear(); } catch {}
           const feedback = document.getElementById('feedbackModal');
           if (feedback) feedback.classList.remove('show');
           document.querySelectorAll('.body,.cook-body,.hf-chat').forEach((el) => { el.scrollTop = 0; });
