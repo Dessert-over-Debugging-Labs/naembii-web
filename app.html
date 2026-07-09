@@ -437,24 +437,29 @@
   #cook3 .cook-body{justify-content:flex-start;overflow:hidden;padding:0 16px 10px;position:relative;gap:8px;}
   #cook3 .cook-track{flex:1;min-height:0;height:auto;}
   .stage-timer{
-    position:absolute;left:16px;right:16px;top:50%;z-index:180;
-    min-height:58px;box-sizing:border-box;padding:9px 11px;border-radius:16px;
+    position:relative;z-index:180;margin:0 16px;box-sizing:border-box;
+    min-height:0;max-height:0;padding:0 11px;border-radius:16px;overflow:hidden;
     background:var(--dark2);
-    border:1.5px solid var(--green);
-    box-shadow:0 10px 26px rgba(0,0,0,.3),0 0 0 1px rgba(255,255,255,.06) inset;
-    transform:translateY(calc(-50% - 128px)) scale(.94);
-    opacity:0;pointer-events:none;transition:opacity .24s ease,transform .32s cubic-bezier(.32,.72,0,1);
+    border:0 solid var(--green);
+    box-shadow:none;
+    transform:translateY(-6px) scale(.98);
+    opacity:0;pointer-events:none;
+    transition:opacity .24s ease,transform .28s cubic-bezier(.32,.72,0,1),max-height .28s ease,padding .28s ease,margin .28s ease,border-width .28s ease;
   }
-  .stage-timer.show{opacity:1;pointer-events:auto;transform:translateY(calc(-50% - 128px)) scale(1);}
+  .stage-timer.show{
+    min-height:58px;max-height:86px;margin:6px 16px 4px;padding:9px 11px;
+    border-width:1.5px;box-shadow:0 10px 26px rgba(0,0,0,.18),0 0 0 1px rgba(255,255,255,.06) inset;
+    opacity:1;pointer-events:auto;transform:translateY(0) scale(1);
+  }
   .stage-timer.done{background:var(--dark2);}
-  /* 타이머 완료 후 계속 울리는 상태 — 부르르 흔들림 (위치 translateY 유지) */
+  /* 타이머 완료 후 자동 종료 전까지 반복 알림 상태 */
   .stage-timer.ringing{animation:ringShake .62s ease-in-out infinite;}
   @keyframes ringShake{
-    0%,100%{transform:translateY(calc(-50% - 128px)) translateX(0) rotate(0);}
-    20%{transform:translateY(calc(-50% - 128px)) translateX(-2.5px) rotate(-.7deg);}
-    40%{transform:translateY(calc(-50% - 128px)) translateX(2.5px) rotate(.7deg);}
-    60%{transform:translateY(calc(-50% - 128px)) translateX(-1.5px) rotate(-.4deg);}
-    80%{transform:translateY(calc(-50% - 128px)) translateX(1.5px) rotate(.4deg);}
+    0%,100%{transform:translateY(0) translateX(0) rotate(0);}
+    20%{transform:translateY(0) translateX(-2.5px) rotate(-.7deg);}
+    40%{transform:translateY(0) translateX(2.5px) rotate(.7deg);}
+    60%{transform:translateY(0) translateX(-1.5px) rotate(-.4deg);}
+    80%{transform:translateY(0) translateX(1.5px) rotate(.4deg);}
   }
   .stimer-main{display:grid;grid-template-columns:38px 38px minmax(0,1fr) auto;align-items:center;gap:10px;}
   .stimer-btn{width:38px;height:38px;border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--dark3);color:var(--text);cursor:pointer;font-family:inherit;}
@@ -1434,21 +1439,21 @@
           <div class="vg-flash" id="vgFlash"><i data-lucide="play"></i></div>
         </div>
       </div>
+      <div class="stage-timer" id="stageTimer" aria-live="polite">
+        <div class="stimer-main">
+          <button class="stimer-btn primary" id="stageTimerPause" onclick="toggleStageTimerPause()" aria-label="타이머 일시정지"><i data-lucide="pause"></i></button>
+          <button class="stimer-btn danger" id="stageTimerCancel" onclick="cancelStageTimer()" aria-label="타이머 취소"><i data-lucide="x"></i></button>
+          <div class="stimer-copy">
+            <div class="stimer-label"><i data-lucide="timer"></i>타이머</div>
+          </div>
+          <div class="stimer-time" id="stageTimerTime">3:00</div>
+        </div>
+      </div>
       <div class="cook-progress">
         <div class="seg cur"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div>
       </div>
       <div class="cook-body">
         <div class="cook-track" id="cookTrack3"></div>
-        <div class="stage-timer" id="stageTimer" aria-live="polite">
-          <div class="stimer-main">
-            <button class="stimer-btn primary" id="stageTimerPause" onclick="toggleStageTimerPause()" aria-label="타이머 일시정지"><i data-lucide="pause"></i></button>
-            <button class="stimer-btn danger" id="stageTimerCancel" onclick="cancelStageTimer()" aria-label="타이머 취소"><i data-lucide="x"></i></button>
-            <div class="stimer-copy">
-              <div class="stimer-label"><i data-lucide="timer"></i>타이머</div>
-            </div>
-            <div class="stimer-time" id="stageTimerTime">3:00</div>
-          </div>
-        </div>
         <div class="cook-hint" id="cookHint" onclick="hideCookHint()">
           <div class="hint-gesture"><i class="hand" data-lucide="hand"></i><i class="ar" data-lucide="chevrons-up"></i></div>
           <div class="hint-copy"><b>위로 스와이프하세요</b><span>다음 단계 카드도 터치할 수 있어요</span></div>
@@ -2966,6 +2971,7 @@
   let tsDraftSeconds=180, timerId=null, timerLeft=0, timerTotal=0, timerPaused=false, stageTimerHideId=null;
   let timerAudioCtx=null, timerAlarmTimeouts=[], timerAlarmNodes=[], timerAlarmRepeatId=null, timerAlarmStopId=null;
   let timerAlarmAutoStopMs=60000;
+  let timerAlarmRepeatMs=1400;
   function timerInput(){return document.getElementById('tsMin');}
   function timerSecondInput(){return document.getElementById('tsSec');}
   function clampTimerSeconds(seconds){return Math.max(1,Math.min(99*60+59,Math.floor(Number(seconds)||0)));}
@@ -3051,6 +3057,7 @@
         gain.gain.exponentialRampToValueAtTime(.0001,now+offset+.22);
         osc.connect(gain).connect(ctx.destination);
         osc.start(now+offset);
+        window.__timerAlarmToneStarts=(window.__timerAlarmToneStarts||0)+1;
         osc.stop(now+offset+.24);
         timerAlarmNodes.push({osc,gain});
         timerAlarmTimeouts.push(setTimeout(()=>{
@@ -3063,7 +3070,7 @@
   function playTimerAlarm(){
     stopTimerAlarm(false);
     playTimerAlarmBurst();
-    timerAlarmRepeatId=setInterval(playTimerAlarmBurst,3500);
+    timerAlarmRepeatId=setInterval(playTimerAlarmBurst,timerAlarmRepeatMs);
     timerAlarmStopId=setTimeout(()=>stopTimerAlarm(true),timerAlarmAutoStopMs);
   }
   function setTimerButtons(on){

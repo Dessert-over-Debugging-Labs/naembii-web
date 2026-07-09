@@ -165,16 +165,26 @@ try {
     const presetPlusThirty = tsDraftSeconds;
     closeTimer();
     const originalAutoStop = timerAlarmAutoStopMs;
-    timerAlarmAutoStopMs = 700;
+    const originalRepeat = timerAlarmRepeatMs;
+    timerAlarmAutoStopMs = 1500;
+    timerAlarmRepeatMs = 450;
     window.__timerAlarmPlayed = 0;
+    window.__timerAlarmToneStarts = 0;
     startUnifiedTimer(1, false);
-    await new Promise((resolve) => setTimeout(resolve, 1120));
+    await new Promise((resolve) => setTimeout(resolve, 1620));
     const alarmPlayed = window.__timerAlarmPlayed || 0;
+    const alarmToneStarts = window.__timerAlarmToneStarts || 0;
     const ringingAfterFinish = document.getElementById('stageTimer').classList.contains('ringing');
-    await new Promise((resolve) => setTimeout(resolve, 850));
+    const timerRect = document.getElementById('stageTimer').getBoundingClientRect();
+    const videoRect = document.querySelector('#cook3 .cook-video').getBoundingClientRect();
+    const progressRect = document.querySelector('#cook3 .cook-progress').getBoundingClientRect();
+    const timerBelowVideo = timerRect.top >= videoRect.bottom - 1;
+    const timerAboveProgress = timerRect.bottom <= progressRect.top + 1;
+    await new Promise((resolve) => setTimeout(resolve, 1100));
     const alarmAutoStopped = !document.getElementById('stageTimer').classList.contains('ringing');
     const doneText = document.getElementById('stageTimerTime').textContent;
     timerAlarmAutoStopMs = originalAutoStop;
+    timerAlarmRepeatMs = originalRepeat;
     cancelStageTimer();
     return {
       timerText: doneText,
@@ -183,8 +193,11 @@ try {
       minUnderline,
       secUnderline,
       alarmPlayed,
+      alarmToneStarts,
       ringingAfterFinish,
-      alarmAutoStopped
+      alarmAutoStopped,
+      timerBelowVideo,
+      timerAboveProgress
     };
   })()`);
 
@@ -406,11 +419,14 @@ try {
   if (!parseFloat(timer.minUnderline) || !parseFloat(timer.secUnderline)) {
     throw new Error('타이머 직접 입력 가능 상태를 보여주는 밑줄 affordance가 없습니다.');
   }
-  if (!timer.ringingAfterFinish || timer.timerText !== '완료' || timer.alarmPlayed < 1) {
+  if (!timer.ringingAfterFinish || timer.timerText !== '완료' || timer.alarmPlayed < 2 || timer.alarmToneStarts < 2) {
     throw new Error('타이머 완료 시 알림 상태와 알림음 호출이 확인되지 않았습니다.');
   }
   if (!timer.alarmAutoStopped) {
     throw new Error('타이머 완료 알림이 지정 시간 뒤 자동으로 멈추지 않았습니다.');
+  }
+  if (!timer.timerBelowVideo || !timer.timerAboveProgress) {
+    throw new Error('타이머가 조리 영상 바로 아래 독립 영역에 배치되지 않았습니다.');
   }
   if (!ingredients.defaultState.sheetOpen || !ingredients.defaultState.listActive || ingredients.defaultState.checkActive) {
     throw new Error('재료 시트가 기본 목록 보기로 열리지 않았습니다.');
