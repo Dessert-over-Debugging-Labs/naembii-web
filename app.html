@@ -1398,13 +1398,13 @@
           <div class="vp-aurora"></div>
           <button class="vp-mic" onclick="toggleVpMic()"><i data-lucide="mic"></i></button>
           <button class="vp-close" onclick="toggleHf3()"><i data-lucide="x"></i></button>
-          <div class="vp-beta-note">지금 물어볼 수 있는 말</div>
+          <div class="vp-beta-note">추천 질문</div>
           <div class="wave vp-wave"><span></span><span></span><span></span><span></span><span></span></div>
-          <div class="vp-user" id="vpUser">불 조절이 애매해</div>
-          <div class="vp-ai" id="vpAi"></div>
+          <div class="vp-user" id="vpUser">무엇이 궁금해요?</div>
+          <div class="vp-ai" id="vpAi">아래 질문을 누르거나 직접 물어보면 답할게요.</div>
           <div class="vp-quick" id="vpQuick"></div>
           <form class="vp-chat-form" onsubmit="submitVpPrompt(event)">
-            <input id="vpPromptInput" type="search" autocomplete="off" placeholder="질문을 고르거나 입력해보세요">
+            <input id="vpPromptInput" type="search" autocomplete="off" placeholder="예: 양념이 타는 것 같아">
             <button type="submit" aria-label="질문 보내기"><i data-lucide="send"></i></button>
           </form>
         </div>
@@ -2832,23 +2832,16 @@
     lucide.createIcons();
     toast(handsfree?'핸즈프리 모드 켜짐 — 음성으로 진행해요':'핸즈프리 모드 꺼짐',handsfree?'mic':'mic-off');
   }
-  /* 조리 모드(신) 실시간 음성 패널 — 자동 데모 */
+  /* 조리 모드(신) 실시간 음성 패널 */
   let hf3On=false, vpi=0, vpTimers=[], vpMicMuted=false;
-  // 대화 패널 마이크 음소거 토글
+  // 음성 입력은 아직 가짜로 켜지지 않게 하고, 현재 가능한 질문 입력만 안내한다.
   function toggleVpMic(){
-    vpMicMuted=!vpMicMuted;
     const panel=document.getElementById('vpanel');
-    panel.classList.toggle('mic-muted',vpMicMuted);
+    vpMicMuted=false;
+    panel.classList.remove('mic-muted');
     const btn=panel.querySelector('.vp-mic');
-    if(btn){btn.innerHTML='<i data-lucide="'+(vpMicMuted?'mic-off':'mic')+'"></i>';lucide.createIcons();}
-    if(vpMicMuted){
-      // 즉시 멈추지 않고, 진행 중이던 답변은 끝까지 출력한 뒤 "다음 발화"부터 멈춘다.
-      // (runVp의 다음-발화 예약이 vpMicMuted를 확인하므로 현재 응답만 마저 나오고 정지)
-    }else if(hf3On){
-      vpClear(); // 재개 전 잔여 타이머 정리(중복 실행 방지)
-      vpTimers.push(setTimeout(runVp,800)); // 음소거 해제 시 데모 재개
-    }
-    toast(vpMicMuted?'마이크 음소거':'마이크 켜짐',vpMicMuted?'mic-off':'mic');
+    if(btn){btn.innerHTML='<i data-lucide="mic"></i>';lucide.createIcons();}
+    toast('추천 질문이나 직접 입력으로 물어봐 주세요','message-circle');
   }
   function vpClear(){vpTimers.forEach(t=>clearTimeout(t));vpTimers=[];}
   function vpType(el,text,speed,done){
@@ -2894,6 +2887,19 @@
     const script=voiceScriptFor(currentRecipe).slice(0,4);
     wrap.innerHTML=script.map((ex,i)=>'<button type="button" onclick="useVpPrompt('+i+')">'+esc(ex.u)+'</button>').join('');
     lucide.createIcons();
+  }
+  function resetVpPromptPanel(){
+    const panel=document.getElementById('vpanel'), u=document.getElementById('vpUser'), a=document.getElementById('vpAi'), input=document.getElementById('vpPromptInput');
+    vpClear();
+    vpi=0;
+    vpMicMuted=false;
+    panel.classList.remove('mic-muted','idle','listening','thinking','answering');
+    panel.classList.add('open');
+    if(u)u.textContent='무엇이 궁금해요?';
+    if(a)a.textContent='아래 질문을 누르거나 직접 물어보면 답할게요.';
+    if(input)input.value='';
+    {const mb=panel.querySelector('.vp-mic');if(mb){mb.innerHTML='<i data-lucide="mic"></i>';lucide.createIcons();}}
+    renderVpQuickPrompts();
   }
   function answerForPrompt(prompt){
     const q=(prompt||'').trim();
@@ -2947,15 +2953,8 @@
     vpClear();
     hideCookHint();
     if(hf3On){
-      // 버튼을 누르면 바로 물어보기 패널을 표시한다.
-      vpMicMuted=false;panel.classList.remove('mic-muted');
-      {const mb=panel.querySelector('.vp-mic');if(mb){mb.innerHTML='<i data-lucide="mic"></i>';lucide.createIcons();}}
-      document.getElementById('vpUser').textContent='불 조절이 애매해';
-      document.getElementById('vpAi').textContent='';
-      renderVpQuickPrompts();
-      panel.classList.remove('thinking','answering','listening');panel.classList.add('open','idle');
-      vpi=0;
-      vpTimers.push(setTimeout(runVp,1500));      // 잠시 뒤 대화 데모 시작
+      // 패널을 열 때는 대기 상태만 보여준다. 단계 이동은 사용자가 질문을 누르거나 입력했을 때만 실행한다.
+      resetVpPromptPanel();
     }else{
       panel.classList.remove('open','idle','listening','thinking','answering');
     }

@@ -169,14 +169,23 @@ try {
   const assistant = await evaluate(`(async () => {
     toggleHf3();
     await new Promise((resolve) => setTimeout(resolve, 250));
+    const opened = {
+      panel: document.getElementById('vpanel').className,
+      user: document.getElementById('vpUser').textContent,
+      answer: document.getElementById('vpAi').textContent,
+      queuedTimers: vpTimers.length,
+      activeStep: document.querySelector('#cookTrack3 .scard.active')?.dataset.i
+    };
     document.getElementById('vpPromptInput').value = '타이머 1분 맞춰줘';
     document.querySelector('.vp-chat-form button').click();
     await new Promise((resolve) => setTimeout(resolve, 900));
     return {
+      opened,
       panel: document.getElementById('vpanel').className,
       user: document.getElementById('vpUser').textContent,
       answer: document.getElementById('vpAi').textContent,
-      quickCount: document.querySelectorAll('#vpQuick button').length
+      quickCount: document.querySelectorAll('#vpQuick button').length,
+      activeStep: document.querySelector('#cookTrack3 .scard.active')?.dataset.i
     };
   })()`);
 
@@ -207,7 +216,13 @@ try {
   if (ingredients.checkState.listActive || !ingredients.checkState.checkActive) {
     throw new Error('재료 체크리스트 추가 보기로 전환되지 않았습니다.');
   }
-  if (!assistant.user.includes('타이머 1분') || assistant.quickCount < 3) {
+  if (!assistant.opened.panel.includes('open') || assistant.opened.queuedTimers !== 0 || assistant.opened.activeStep !== '0') {
+    throw new Error('요리비서 패널이 열리자마자 자동 대화/단계 진행을 시작했습니다.');
+  }
+  if (!assistant.opened.user.includes('궁금') || !assistant.opened.answer.includes('직접 물어보면')) {
+    throw new Error('요리비서 대기 상태 안내가 표시되지 않았습니다.');
+  }
+  if (!assistant.user.includes('타이머 1분') || assistant.quickCount < 3 || assistant.activeStep !== '0') {
     throw new Error('요리비서 질문 입력/추천 질문이 동작하지 않았습니다.');
   }
 } finally {

@@ -1,6 +1,6 @@
 # 동적 검증 워크플로우 실행 리포트
 
-- 일시: 2026-07-08T16:37:44.420Z
+- 일시: 2026-07-09T07:10:17.479Z
 - 판정: **PASS**
 - 점수: **130 / 130 (100%)**
 - 통과 기준: **96% 초과**
@@ -17,19 +17,7 @@
 - `docs/verify/DYNAMIC_WORKFLOW_LAST_ko.html`
 - `docs/verify/DYNAMIC_WORKFLOW_LAST_ko.json`
 - `docs/verify/DYNAMIC_WORKFLOW_LAST_ko.md`
-- `docs/verify/DYNAMIC_WORKFLOW_ko.md`
-- `docs/verify/NAEMBI_BETA_SCORECARD_ko.md`
-- `docs/verify/NAEMBI_RALPH_LOOP_LAST_ko.json`
-- `docs/verify/NAEMBI_RALPH_LOOP_LAST_ko.md`
-- `docs/verify/NAEMBI_RALPH_LOOP_ROUND_LAST_ko.html`
-- `docs/verify/NAEMBI_RALPH_LOOP_ROUND_LAST_ko.json`
-- `docs/verify/NAEMBI_RALPH_LOOP_ROUND_LAST_ko.md`
-- `docs/verify/NAEMBI_RALPH_LOOP_ko.md`
-- `docs/verify/NAEMBI_VALIDATION_POINTS_ko.md`
-- `package.json`
 - `scripts/validate-mobile-flow.mjs`
-- `scripts/verify-dynamic.mjs`
-- `scripts/validate-app-screens.mjs`
 
 ## 선택된 워크플로우
 
@@ -37,7 +25,7 @@
 | --- | --- |
 | core | 항상 실행 |
 | api | api/app/landing 변경 감지 |
-| deploy | 배포 설정 변경 감지 |
+| deploy | full 실행 |
 | docs | 검증 문서 변경 감지 |
 | visual | --visual 요청 |
 

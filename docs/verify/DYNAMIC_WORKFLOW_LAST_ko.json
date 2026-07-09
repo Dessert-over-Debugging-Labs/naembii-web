@@ -1,5 +1,5 @@
 {
-  "startedAt": "2026-07-08T16:37:44.420Z",
+  "startedAt": "2026-07-09T07:10:17.479Z",
   "summary": "PASS",
   "visual": true,
   "baseURL": "http://127.0.0.1:4874/",
@@ -8,19 +8,7 @@
     "docs/verify/DYNAMIC_WORKFLOW_LAST_ko.html",
     "docs/verify/DYNAMIC_WORKFLOW_LAST_ko.json",
     "docs/verify/DYNAMIC_WORKFLOW_LAST_ko.md",
-    "docs/verify/DYNAMIC_WORKFLOW_ko.md",
-    "docs/verify/NAEMBI_BETA_SCORECARD_ko.md",
-    "docs/verify/NAEMBI_RALPH_LOOP_LAST_ko.json",
-    "docs/verify/NAEMBI_RALPH_LOOP_LAST_ko.md",
-    "docs/verify/NAEMBI_RALPH_LOOP_ROUND_LAST_ko.html",
-    "docs/verify/NAEMBI_RALPH_LOOP_ROUND_LAST_ko.json",
-    "docs/verify/NAEMBI_RALPH_LOOP_ROUND_LAST_ko.md",
-    "docs/verify/NAEMBI_RALPH_LOOP_ko.md",
-    "docs/verify/NAEMBI_VALIDATION_POINTS_ko.md",
-    "package.json",
-    "scripts/validate-mobile-flow.mjs",
-    "scripts/verify-dynamic.mjs",
-    "scripts/validate-app-screens.mjs"
+    "scripts/validate-mobile-flow.mjs"
   ],
   "workflows": [
     "core",
