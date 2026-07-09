@@ -591,8 +591,9 @@
   /* 대화 패널 열림: 둥근 상단 모서리 뒤가 흰색(surface)으로 비쳐 위 틴트 배경과 틈이 생기던 문제 →
      컨트롤바 배경을 카드영역과 같은 틴트(--dark)로 맞추고 상단 경계선도 감춰 이음새 제거 */
   #cook3 .cook-ctrl:has(.vpanel.open),#cook3 .cook-ctrl.vpanel-open{background:var(--dark);border-top-color:transparent;}
-  #cook3 .cook-ctrl:has(.vpanel.open),#cook3 .cook-ctrl.vpanel-open{height:clamp(270px,38dvh,330px);transition:height .22s ease;}
-  #cook3 .cook-ctrl:has(.vpanel.open.expanded),#cook3 .cook-ctrl.vpanel-open.vpanel-expanded{height:clamp(390px,62dvh,560px);}
+  #cook3 .cook-ctrl:has(.vpanel.open),#cook3 .cook-ctrl.vpanel-open{height:var(--vp-panel-height,clamp(270px,38dvh,330px));transition:height .18s ease;}
+  #cook3 .cook-ctrl:has(.vpanel.open.expanded),#cook3 .cook-ctrl.vpanel-open.vpanel-expanded{height:var(--vp-panel-height,clamp(390px,62dvh,560px));}
+  #cook3 .cook-ctrl.vpanel-dragging{transition:none;}
   #cook3 .cook-ctrl:has(.vpanel.open) .ctrl-buttons,#cook3 .cook-ctrl.vpanel-open .ctrl-buttons{visibility:hidden;}
   .vpanel{position:absolute;top:0;bottom:0;left:-1px;right:-1px;z-index:3;box-sizing:border-box;padding:16px 19px 22px;
     display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;
@@ -684,8 +685,8 @@
   .vpanel.idle .vp-wave{display:flex;justify-content:center;margin-bottom:16px;transform:scale(1.2);}
   .vp-wave span{background:#fff;animation:wv 1s ease-in-out infinite;}
   @media (max-height:700px){
-    #cook3 .cook-ctrl:has(.vpanel.open),#cook3 .cook-ctrl.vpanel-open{height:clamp(240px,38dvh,286px);}
-    #cook3 .cook-ctrl:has(.vpanel.open.expanded),#cook3 .cook-ctrl.vpanel-open.vpanel-expanded{height:clamp(360px,58dvh,430px);}
+    #cook3 .cook-ctrl:has(.vpanel.open),#cook3 .cook-ctrl.vpanel-open{height:var(--vp-panel-height,clamp(240px,38dvh,286px));}
+    #cook3 .cook-ctrl:has(.vpanel.open.expanded),#cook3 .cook-ctrl.vpanel-open.vpanel-expanded{height:var(--vp-panel-height,clamp(360px,58dvh,430px));}
     .vp-user,.vp-ai{font-size:15px;}
     .vp-quick button{height:30px;font-size:11px;}
   }
@@ -3092,20 +3093,57 @@
     node.classList.remove('ok','bad');
     if(type)node.classList.add(type);
   }
-  function setVpPanelExpanded(expanded){
+  function clampNumber(value,min,max){
+    return Math.max(min,Math.min(max,value));
+  }
+  function vpPanelBounds(){
+    const vh=window.innerHeight||document.documentElement.clientHeight||720;
+    const cssClamp=(min,ratio,max)=>clampNumber(Math.round(vh*ratio),min,max);
+    const compact=vh<=700;
+    const min=compact?cssClamp(240,.38,286):cssClamp(270,.38,330);
+    let max=compact?cssClamp(360,.58,430):cssClamp(390,.62,560);
+    const topReserve=clampNumber(Math.round(vh*.36),230,320);
+    max=Math.min(max,Math.max(min+56,vh-topReserve));
+    return {min,max,mid:Math.round(min+(max-min)*.55)};
+  }
+  function syncVpPanelHeightState(height){
     const panel=document.getElementById('vpanel');
     const handle=document.getElementById('vpSizeHandle');
     const ctrl=document.getElementById('cook3Ctrl');
-    if(!panel)return;
-    if(ctrl){
-      ctrl.classList.toggle('vpanel-open',panel.classList.contains('open'));
-      ctrl.classList.toggle('vpanel-expanded',!!expanded);
+    if(!panel||!ctrl)return;
+    const open=panel.classList.contains('open');
+    ctrl.classList.toggle('vpanel-open',open);
+    if(!open){
+      ctrl.classList.remove('vpanel-expanded','vpanel-dragging');
+      ctrl.style.removeProperty('--vp-panel-height');
+      panel.classList.remove('expanded');
+      if(handle){
+        handle.setAttribute('aria-expanded','false');
+        handle.setAttribute('aria-label','요리비서 패널 크게 보기');
+      }
+      return;
     }
-    panel.classList.toggle('expanded',!!expanded);
+    const bounds=vpPanelBounds();
+    const h=clampNumber(Math.round(height),bounds.min,bounds.max);
+    const expanded=h>=bounds.mid;
+    ctrl.style.setProperty('--vp-panel-height',h+'px');
+    ctrl.classList.toggle('vpanel-expanded',expanded);
+    panel.classList.toggle('expanded',expanded);
     if(handle){
       handle.setAttribute('aria-expanded',expanded?'true':'false');
       handle.setAttribute('aria-label',expanded?'요리비서 패널 기본 크기로 줄이기':'요리비서 패널 크게 보기');
+      handle.setAttribute('aria-valuenow',String(h));
     }
+  }
+  function setVpPanelExpanded(expanded){
+    const panel=document.getElementById('vpanel');
+    if(!panel)return;
+    if(!panel.classList.contains('open')){
+      syncVpPanelHeightState(0);
+      return;
+    }
+    const bounds=vpPanelBounds();
+    syncVpPanelHeightState(expanded?bounds.max:bounds.min);
   }
   function toggleVpPanelSize(){
     if(vpSuppressResizeClick){
@@ -3117,19 +3155,23 @@
   }
   function startVpResizeDrag(event){
     const panel=document.getElementById('vpanel');
+    const ctrl=document.getElementById('cook3Ctrl');
     if(!panel?.classList.contains('open'))return;
-    vpResizeDrag={startY:event.clientY,moved:false};
+    const startHeight=ctrl?.getBoundingClientRect().height||vpPanelBounds().min;
+    vpResizeDrag={startY:event.clientY,startHeight,moved:false};
+    ctrl?.classList.add('vpanel-dragging');
     try{event.currentTarget?.setPointerCapture?.(event.pointerId);}catch{}
     const onMove=(moveEvent)=>{
       if(!vpResizeDrag)return;
       const dy=moveEvent.clientY-vpResizeDrag.startY;
-      if(Math.abs(dy)>18){
+      if(Math.abs(dy)>4){
         vpResizeDrag.moved=true;
-        setVpPanelExpanded(dy<0);
+        syncVpPanelHeightState(vpResizeDrag.startHeight-dy);
       }
     };
     const onUp=(upEvent)=>{
       if(vpResizeDrag?.moved)vpSuppressResizeClick=true;
+      ctrl?.classList.remove('vpanel-dragging');
       try{event.currentTarget?.releasePointerCapture?.(event.pointerId);}catch{}
       window.removeEventListener('pointermove',onMove);
       window.removeEventListener('pointerup',onUp);

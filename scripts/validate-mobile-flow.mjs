@@ -270,7 +270,7 @@ try {
     const longAnswer = Array(10).fill('양념이 타는 것 같으면 불을 한 단계 낮추고 팬 가장자리의 양념을 가운데로 모아주세요. 물이나 면수를 한 숟갈씩 넣어 농도를 풀고, 재료는 한 번에 많이 뒤집지 말고 천천히 섞으면 좋아요.').join(' ');
     document.getElementById('vpUser').textContent = '질문이 길어져도 읽을 수 있어?';
     document.getElementById('vpAi').textContent = longAnswer;
-    await new Promise((resolve) => setTimeout(resolve, 80));
+    await new Promise((resolve) => setTimeout(resolve, 240));
     const vpScroll = document.getElementById('vpScroll');
     const scrollBefore = vpScroll.scrollTop;
     vpScroll.scrollTop = vpScroll.scrollHeight;
@@ -278,6 +278,7 @@ try {
     const resized = {
       panel: document.getElementById('vpanel').className,
       handleExpanded: document.getElementById('vpSizeHandle').getAttribute('aria-expanded'),
+      handleValue: document.getElementById('vpSizeHandle').getAttribute('aria-valuenow'),
       ctrlHeight: Math.round(document.getElementById('cook3Ctrl').getBoundingClientRect().height),
       ctrlHasExpandedClass: document.getElementById('cook3Ctrl').classList.contains('vpanel-expanded'),
       scrollClientHeight: vpScroll.clientHeight,
@@ -285,6 +286,16 @@ try {
       scrollTopAfter: vpScroll.scrollTop,
       scrollOverflowY: getComputedStyle(vpScroll).overflowY,
       scrollMoved: vpScroll.scrollTop > scrollBefore
+    };
+    const handle = document.getElementById('vpSizeHandle');
+    const rect = handle.getBoundingClientRect();
+    handle.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, pointerId: 7, clientY: rect.top + 12 }));
+    window.dispatchEvent(new PointerEvent('pointermove', { bubbles: true, pointerId: 7, clientY: rect.top + 92 }));
+    window.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, pointerId: 7, clientY: rect.top + 92 }));
+    await new Promise((resolve) => setTimeout(resolve, 240));
+    const intermediate = {
+      ctrlHeight: Math.round(document.getElementById('cook3Ctrl').getBoundingClientRect().height),
+      handleValue: document.getElementById('vpSizeHandle').getAttribute('aria-valuenow')
     };
     document.getElementById('vpPromptInput').value = '타이머 1분 맞춰줘';
     document.querySelector('.vp-chat-form button').click();
@@ -296,6 +307,7 @@ try {
     return {
       opened,
       resized,
+      intermediate,
       panel: document.getElementById('vpanel').className,
       user: document.getElementById('vpUser').textContent,
       answer: document.getElementById('vpAi').textContent,
@@ -370,6 +382,9 @@ try {
   }
   if (assistant.opened.handleExpanded !== 'false' || assistant.resized.handleExpanded !== 'true' || !assistant.resized.ctrlHasExpandedClass || assistant.resized.ctrlHeight < assistant.opened.ctrlHeight + 90) {
     throw new Error('요리비서 패널 크기 조절 바가 기본/확장 상태를 전환하지 못했습니다.');
+  }
+  if (assistant.intermediate.ctrlHeight >= assistant.resized.ctrlHeight - 20 || assistant.intermediate.ctrlHeight <= assistant.opened.ctrlHeight + 20) {
+    throw new Error('요리비서 패널 드래그가 중간 높이에 머물지 못했습니다.');
   }
   if (!/auto|scroll/.test(assistant.resized.scrollOverflowY) || assistant.resized.scrollHeight <= assistant.resized.scrollClientHeight || !assistant.resized.scrollMoved) {
     throw new Error('요리비서 긴 답변이 패널 내부에서 스크롤되지 않습니다.');
