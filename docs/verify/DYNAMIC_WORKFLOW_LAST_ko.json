@@ -1,14 +1,22 @@
 {
-  "startedAt": "2026-07-09T07:10:17.479Z",
+  "startedAt": "2026-07-09T08:02:00.378Z",
   "summary": "PASS",
   "visual": true,
-  "baseURL": "http://127.0.0.1:4874/",
+  "baseURL": "http://127.0.0.1:4875/",
   "files": [
+    ".env.example",
+    ".gitignore",
     "app.html",
     "docs/verify/DYNAMIC_WORKFLOW_LAST_ko.html",
     "docs/verify/DYNAMIC_WORKFLOW_LAST_ko.json",
     "docs/verify/DYNAMIC_WORKFLOW_LAST_ko.md",
-    "scripts/validate-mobile-flow.mjs"
+    "package.json",
+    "scripts/validate-mobile-flow.mjs",
+    "scripts/verify-dynamic.mjs",
+    "api/gemini-live-token.js",
+    "docs/GEMINI_LIVE_MOBILE_WEB_SETUP_ko.md",
+    "package-lock.json",
+    "scripts/notion/upload-gemini-live-mobile-setup.mjs"
   ],
   "workflows": [
     "core",

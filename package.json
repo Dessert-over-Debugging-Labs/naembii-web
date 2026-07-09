@@ -13,5 +13,8 @@
     "verify:app-screens": "node scripts/validate-app-screens.mjs",
     "verify:mobile-flow": "node scripts/validate-mobile-flow.mjs",
     "verify:ralph-loop": "node scripts/run-naembi-ralph-loop.mjs --visual --full --min-score=96"
+  },
+  "dependencies": {
+    "@google/genai": "^2.10.0"
   }
 }

@@ -173,6 +173,7 @@ try {
       panel: document.getElementById('vpanel').className,
       user: document.getElementById('vpUser').textContent,
       answer: document.getElementById('vpAi').textContent,
+      liveStatus: document.getElementById('vpLiveStatus').textContent,
       queuedTimers: vpTimers.length,
       activeStep: document.querySelector('#cookTrack3 .scard.active')?.dataset.i
     };
@@ -221,6 +222,9 @@ try {
   }
   if (!assistant.opened.user.includes('궁금') || !assistant.opened.answer.includes('직접 물어보면')) {
     throw new Error('요리비서 대기 상태 안내가 표시되지 않았습니다.');
+  }
+  if (!assistant.opened.liveStatus.includes('마이크 버튼')) {
+    throw new Error('Gemini Live 모바일 권한 확인 안내가 표시되지 않았습니다.');
   }
   if (!assistant.user.includes('타이머 1분') || assistant.quickCount < 3 || assistant.activeStep !== '0') {
     throw new Error('요리비서 질문 입력/추천 질문이 동작하지 않았습니다.');

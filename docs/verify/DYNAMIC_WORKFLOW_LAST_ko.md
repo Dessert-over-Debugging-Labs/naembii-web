@@ -1,11 +1,11 @@
 # 동적 검증 워크플로우 실행 리포트
 
-- 일시: 2026-07-09T07:10:17.479Z
+- 일시: 2026-07-09T08:02:00.378Z
 - 판정: **PASS**
 - 점수: **130 / 130 (100%)**
 - 통과 기준: **96% 초과**
 - 모드: visual 포함
-- 기준 URL: `http://127.0.0.1:4874/`
+- 기준 URL: `http://127.0.0.1:4875/`
 
 ## 왜 빠르게 끝났나
 
@@ -13,11 +13,19 @@
 
 ## 변경 파일
 
+- `.env.example`
+- `.gitignore`
 - `app.html`
 - `docs/verify/DYNAMIC_WORKFLOW_LAST_ko.html`
 - `docs/verify/DYNAMIC_WORKFLOW_LAST_ko.json`
 - `docs/verify/DYNAMIC_WORKFLOW_LAST_ko.md`
+- `package.json`
 - `scripts/validate-mobile-flow.mjs`
+- `scripts/verify-dynamic.mjs`
+- `api/gemini-live-token.js`
+- `docs/GEMINI_LIVE_MOBILE_WEB_SETUP_ko.md`
+- `package-lock.json`
+- `scripts/notion/upload-gemini-live-mobile-setup.mjs`
 
 ## 선택된 워크플로우
 
@@ -25,7 +33,7 @@
 | --- | --- |
 | core | 항상 실행 |
 | api | api/app/landing 변경 감지 |
-| deploy | full 실행 |
+| deploy | 배포 설정 변경 감지 |
 | docs | 검증 문서 변경 감지 |
 | visual | --visual 요청 |
 

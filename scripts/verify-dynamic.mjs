@@ -68,7 +68,7 @@ function changedFiles() {
       const path = line.slice(3).trim();
       return path.includes(' -> ') ? path.split(' -> ').pop().trim() : path;
     })
-    .filter((path) => path && !path.endsWith('.DS_Store'));
+    .filter((path) => path && !path.endsWith('.DS_Store') && path !== 'node_modules' && !path.startsWith('node_modules/'));
 }
 
 function touches(files, matchers) {

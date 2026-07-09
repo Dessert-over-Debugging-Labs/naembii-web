@@ -16,12 +16,12 @@
 </head>
 <body><main><p class="status">PASS</p><h1>동적 검증 워크플로우 실행 리포트</h1>
 
-<p>- 일시: 2026-07-09T07:10:17.479Z</p>
+<p>- 일시: 2026-07-09T08:02:00.378Z</p>
 <p>- 판정: **PASS**</p>
 <p>- 점수: **130 / 130 (100%)**</p>
 <p>- 통과 기준: **96% 초과**</p>
 <p>- 모드: visual 포함</p>
-<p>- 기준 URL: `http://127.0.0.1:4874/`</p>
+<p>- 기준 URL: `http://127.0.0.1:4875/`</p>
 
 <h2>왜 빠르게 끝났나</h2>
 
@@ -29,11 +29,19 @@
 
 <h2>변경 파일</h2>
 
+<p>- `.env.example`</p>
+<p>- `.gitignore`</p>
 <p>- `app.html`</p>
 <p>- `docs/verify/DYNAMIC_WORKFLOW_LAST_ko.html`</p>
 <p>- `docs/verify/DYNAMIC_WORKFLOW_LAST_ko.json`</p>
 <p>- `docs/verify/DYNAMIC_WORKFLOW_LAST_ko.md`</p>
+<p>- `package.json`</p>
 <p>- `scripts/validate-mobile-flow.mjs`</p>
+<p>- `scripts/verify-dynamic.mjs`</p>
+<p>- `api/gemini-live-token.js`</p>
+<p>- `docs/GEMINI_LIVE_MOBILE_WEB_SETUP_ko.md`</p>
+<p>- `package-lock.json`</p>
+<p>- `scripts/notion/upload-gemini-live-mobile-setup.mjs`</p>
 
 <h2>선택된 워크플로우</h2>
 
@@ -41,7 +49,7 @@
 <pre>| --- | --- |</pre>
 <pre>| core | 항상 실행 |</pre>
 <pre>| api | api/app/landing 변경 감지 |</pre>
-<pre>| deploy | full 실행 |</pre>
+<pre>| deploy | 배포 설정 변경 감지 |</pre>
 <pre>| docs | 검증 문서 변경 감지 |</pre>
 <pre>| visual | --visual 요청 |</pre>
 

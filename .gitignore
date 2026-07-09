@@ -7,6 +7,7 @@ scripts/ralph/.last-branch
 # Figma 이식 트랙 (ralph-figma)
 .env
 .vercel/
+node_modules/
 scripts/ralph-figma/session_logs/
 scripts/ralph-figma/archive/
 scripts/ralph-figma/exports/*.png
