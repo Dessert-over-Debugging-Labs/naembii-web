@@ -563,7 +563,8 @@
   /* 대화 패널 열림: 둥근 상단 모서리 뒤가 흰색(surface)으로 비쳐 위 틴트 배경과 틈이 생기던 문제 →
      컨트롤바 배경을 카드영역과 같은 틴트(--dark)로 맞추고 상단 경계선도 감춰 이음새 제거 */
   #cook3 .cook-ctrl:has(.vpanel.open){background:var(--dark);border-top-color:transparent;}
-  #cook3 .cook-ctrl:has(.vpanel.open){height:clamp(236px,32dvh,280px);}
+  #cook3 .cook-ctrl:has(.vpanel.open){height:clamp(248px,34dvh,304px);transition:height .22s ease;}
+  #cook3 .cook-ctrl:has(.vpanel.open.expanded){height:clamp(292px,46dvh,420px);}
   #cook3 .cook-ctrl:has(.vpanel.open) .ctrl-buttons{visibility:hidden;}
   .vpanel{position:absolute;top:0;bottom:0;left:-1px;right:-1px;z-index:3;box-sizing:border-box;padding:16px 19px 22px;
     display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;
@@ -604,6 +605,10 @@
   .youtube-sound-toggle:active{transform:scale(.96);}
   @keyframes aurora{0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}
   .vp-aurora{display:none;}
+  .vp-size-handle{position:absolute;top:7px;left:50%;transform:translateX(-50%);z-index:3;width:104px;height:22px;border:none;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .vp-size-handle span{width:52px;height:5px;border-radius:999px;background:rgba(255,255,255,.76);box-shadow:0 1px 8px rgba(0,0,0,.18);}
+  .vp-size-handle:active span{background:#fff;}
+  .vpanel.expanded .vp-size-handle span{width:72px;background:#fff;}
   .vp-close{position:absolute;top:8px;right:12px;z-index:2;width:32px;height:32px;border:none;background:rgba(255,255,255,.14);border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;}
   .vp-close svg{width:17px;height:17px;}
   .vp-close:active{transform:translateY(1px);}
@@ -647,6 +652,12 @@
   .vp-wave{display:none;position:relative;z-index:1;}
   .vpanel.idle .vp-wave{display:flex;justify-content:center;margin-bottom:16px;transform:scale(1.2);}
   .vp-wave span{background:#fff;animation:wv 1s ease-in-out infinite;}
+  @media (max-height:700px){
+    #cook3 .cook-ctrl:has(.vpanel.open){height:clamp(232px,32dvh,270px);}
+    #cook3 .cook-ctrl:has(.vpanel.open.expanded){height:clamp(286px,44dvh,330px);}
+    .vp-user,.vp-ai{font-size:15px;}
+    .vp-quick button{height:30px;font-size:11px;}
+  }
   .cbtn .cic .wave{height:22px;}
   .cbtn .cic .wave span{width:3px;background:#fff;}
   .cbtn.hf-on small{color:var(--green);font-weight:800;}
@@ -1199,7 +1210,7 @@
       <div class="assistant-demo" aria-label="요리비서 답변 예시">
         <div class="assistant-head">
           <i data-lucide="bot"></i>
-          <div><b>막히는 순간, 짧게 물어봐요</b><span>레시피와 현재 단계에 맞춘 조리 답변 예시</span></div>
+          <div><b>요리하다 막히면, 냄비에게 물어봐요</b><span>지금은 추천 질문과 직접 입력으로 먼저 검증 중이에요</span></div>
         </div>
         <div class="assistant-thread">
           <div class="assistant-bubble user">양념이 타는 것 같아</div>
@@ -1211,9 +1222,10 @@
 
       <div class="ops-panel">
         <h2>직접 써보고 알려주세요</h2>
-        <p>앱 화면을 먼저 둘러보고, 따라 해보고 싶은 요리나 막히는 지점을 남겨주세요. 그 반응으로 다음 레시피와 기능 우선순위를 정하겠습니다.</p>
+        <p>앱 화면을 먼저 둘러보고, 따라 해보고 싶은 요리나 조리 중 물어보고 싶은 상황을 남겨주세요. 그 반응으로 다음 레시피와 요리비서 답변 우선순위를 정하겠습니다.</p>
         <div class="ops-list">
           <div class="ops-item"><i data-lucide="smartphone"></i><div><b>앱 화면 체험</b><span>홈, 상세, 조리, 완료 흐름을 바로 확인합니다.</span></div></div>
+          <div class="ops-item"><i data-lucide="message-circle-question"></i><div><b>조리 중 질문 확인</b><span>재료 대체, 불 조절, 타이머처럼 실제로 물어볼 상황을 남깁니다.</span></div></div>
           <div class="ops-item"><i data-lucide="messages-square"></i><div><b>요리 요청</b><span>보고 있던 영상이나 만들고 싶은 메뉴를 남깁니다.</span></div></div>
         </div>
       </div>
@@ -1270,7 +1282,7 @@
         <div class="assistant-start">
           <div class="as-top">
             <div class="as-ic"><i data-lucide="bot"></i></div>
-            <div><b>냄비에게 물어보고 시작하기</b><span>지금 상황을 고르면 바로 만들 만한 SNS 요리를 추천해요.</span></div>
+            <div><b>요리비서에게 물어보고 시작하기</b><span>재료, 시간, 막히는 상황을 기준으로 따라 하기 쉬운 요리를 찾아봐요.</span></div>
           </div>
           <div class="as-actions">
             <button type="button" onclick="openSearch('SNS 트렌드')">SNS에서 본 메뉴</button>
@@ -1399,9 +1411,10 @@
         </div>
         <div class="vpanel" id="vpanel">
           <div class="vp-aurora"></div>
+          <button class="vp-size-handle" id="vpSizeHandle" type="button" onclick="toggleVpPanelSize()" aria-label="요리비서 패널 크게 보기" aria-expanded="false"><span></span></button>
           <button class="vp-mic" onclick="toggleVpMic()"><i data-lucide="mic"></i></button>
           <button class="vp-close" onclick="toggleHf3()"><i data-lucide="x"></i></button>
-          <div class="vp-beta-note">추천 질문</div>
+          <div class="vp-beta-note">요리비서 베타</div>
           <div class="vp-live-status" id="vpLiveStatus" role="status" aria-live="polite"></div>
           <div class="wave vp-wave"><span></span><span></span><span></span><span></span><span></span></div>
           <div class="vp-user" id="vpUser">무엇이 궁금해요?</div>
@@ -1618,7 +1631,7 @@
       kicker:'요즘 뜨는 요리, 직접 해보고 싶다면',
       headline:'SNS 요리 영상,<br><span>따라 하다 막혔죠?</span>',
       headlineMobile:'SNS 요리 영상,<br><span>따라 하다 막혔죠?</span>',
-      lead:'냄비는 유튜브와 SNS에서 본 요리를 주방에서 따라 하기 쉽게 정리해줍니다. 재료는 한눈에 보고, 조리 중에는 지금 할 일과 타이밍을 놓치지 않게 챙겨요.',
+      lead:'냄비는 유튜브와 SNS에서 본 요리를 주방에서 따라 하기 쉽게 정리해줍니다. 재료는 한눈에 보고, 조리 중에는 막히는 순간을 짧게 물어볼 수 있게 준비하고 있어요.',
       leadMobile:'먼저 써볼 소식을 받고, 따라 해보고 싶은 요리를 남겨주세요.',
       promiseTitle:'출시 전에 먼저 초대할게요',
       promiseText:'이메일을 남기면 베타 초대와 준비 중인 레시피 소식을 받을 수 있어요.',
@@ -1631,13 +1644,13 @@
       point3Title:'보고 싶은 요리 보내기',
       point3Text:'따라 해보고 싶은 영상이나 요리를 보내주면 다음 메뉴를 고를 때 참고합니다.',
       potTitle:'작은 냄비가<br>옆에서 챙겨요',
-      potText:'영상 찾고 되감는 시간은 줄이고, 지금 해야 할 요리에 집중하게 도와줘요.'
+      potText:'영상 찾고 되감는 시간은 줄이고, 재료 대체나 불 조절처럼 막히는 순간을 바로 물어볼 수 있게 도와줘요.'
     },
     beta:{
       kicker:'주방에서 먼저 써볼 분 모집',
       headline:'요리하다 막히는 순간을<br><span>같이 줄여볼 사람</span>',
       headlineMobile:'요리하다 막히는 순간을<br><span>같이 줄여볼 사람</span>',
-      lead:'냄비는 실제 주방에서 손이 바쁜 순간을 기준으로 다듬고 있습니다. 먼저 써보기 신청을 하면 초대 링크와 준비 중인 레시피 소식을 받을 수 있어요.',
+      lead:'냄비는 실제 주방에서 손이 바쁜 순간을 기준으로 다듬고 있습니다. 조리 중 질문, 재료 대체, 타이머 같은 상황을 먼저 검증하고 있어요.',
       leadMobile:'주방에서 직접 써보고 싶은 분을 먼저 초대합니다. 자주 막히는 상황을 남겨주세요.',
       promiseTitle:'작은 초대 그룹부터 시작합니다',
       promiseText:'요리 스타일과 막히는 상황을 남기면 맞는 안내를 보내드릴게요.',
@@ -1650,13 +1663,13 @@
       point3Title:'개선 피드백 반영',
       point3Text:'조리 중 막힌 순간과 필요한 레시피를 다음 개선 목록에 반영합니다.',
       potTitle:'작은 냄비가<br>옆에서 물어봐요',
-      potText:'어디서 막혔는지 알려주면 다음 버전에 먼저 반영해요.'
+      potText:'어디서 막혔는지 알려주면 요리비서 질문과 답변 흐름을 다음 버전에 먼저 반영해요.'
     },
     recipe:{
       kicker:'넣고 싶은 레시피를 먼저 모집합니다',
       headline:'첫 레시피를<br><span>골라주세요</span>',
       headlineMobile:'첫 레시피를<br><span>골라주세요</span>',
-      lead:'자주 보는 유튜브 요리 영상이나 따라 하기 어려웠던 레시피를 남겨주세요. 베타 콘텐츠 우선순위를 실제 요청 기준으로 정합니다.',
+      lead:'자주 보는 유튜브 요리 영상이나 따라 하기 어려웠던 레시피를 남겨주세요. 조리 중 어떤 질문이 필요할지도 함께 모아 베타 콘텐츠 우선순위를 정합니다.',
       leadMobile:'따라하고 싶은 요리나 유튜브 링크를 남겨주세요. 준비할 레시피로 모을게요.',
       promiseTitle:'요청이 많은 레시피부터 준비합니다',
       promiseText:'요리 이름이나 링크만 남겨도 좋아요. 반영 소식이 필요하면 이메일도 함께 남겨주세요.',
@@ -1669,7 +1682,7 @@
       point3Title:'반영 소식 받기',
       point3Text:'이메일을 남기면 요청한 레시피가 준비될 때 안내할 수 있습니다.',
       potTitle:'작은 냄비가<br>레시피를 기다려요',
-      potText:'보고 싶은 영상을 보내주면 조리 순서로 바꿔볼게요.'
+      potText:'보고 싶은 영상을 보내주면 조리 순서와 요리비서 질문 예시까지 함께 바꿔볼게요.'
     }
   };
   function setLandingVariant(name){
@@ -2845,6 +2858,20 @@
     node.classList.remove('ok','bad');
     if(type)node.classList.add(type);
   }
+  function setVpPanelExpanded(expanded){
+    const panel=document.getElementById('vpanel');
+    const handle=document.getElementById('vpSizeHandle');
+    if(!panel)return;
+    panel.classList.toggle('expanded',!!expanded);
+    if(handle){
+      handle.setAttribute('aria-expanded',expanded?'true':'false');
+      handle.setAttribute('aria-label',expanded?'요리비서 패널 기본 크기로 줄이기':'요리비서 패널 크게 보기');
+    }
+  }
+  function toggleVpPanelSize(){
+    const panel=document.getElementById('vpanel');
+    setVpPanelExpanded(!(panel&&panel.classList.contains('expanded')));
+  }
   function currentCookStep(){
     const steps=currentRecipe?.steps||[];
     return steps[cook3CurrentStep]||steps[0]||null;
@@ -2948,8 +2975,9 @@
     vpClear();
     vpi=0;
     vpMicMuted=false;
-    panel.classList.remove('mic-muted','idle','listening','thinking','answering');
+    panel.classList.remove('mic-muted','idle','listening','thinking','answering','expanded');
     panel.classList.add('open');
+    setVpPanelExpanded(false);
     if(u)u.textContent='무엇이 궁금해요?';
     if(a)a.textContent='아래 질문을 누르거나 직접 물어보면 답할게요.';
     if(input)input.value='';
@@ -3012,12 +3040,14 @@
       // 패널을 열 때는 대기 상태만 보여준다. 단계 이동은 사용자가 질문을 누르거나 입력했을 때만 실행한다.
       resetVpPromptPanel();
     }else{
-      panel.classList.remove('open','idle','listening','thinking','answering');
+      panel.classList.remove('open','idle','listening','thinking','answering','expanded');
+      setVpPanelExpanded(false);
     }
   }
   function hf3Reset(){
     vpClear();
-    const panel=document.getElementById('vpanel');if(panel)panel.classList.remove('open','idle','listening','thinking','answering');
+    const panel=document.getElementById('vpanel');if(panel)panel.classList.remove('open','idle','listening','thinking','answering','expanded');
+    setVpPanelExpanded(false);
     hf3On=false;
     closeVideoSettings(); // 화면 이탈 시 영상 설정 모달 닫기
     cook3StopTimeTracking();cook3Playing=false; // 재생 시간 추적 정리

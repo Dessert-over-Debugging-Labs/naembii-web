@@ -58,7 +58,7 @@ const states = [
   {
     name: 'assistant-panel',
     setup: `currentRecipe=recipeById('${recipeId}'); show('cook3'); hideCookHint(); toggleHf3();`,
-    required: ['#vpanel.open', '#vpPromptInput', '#vpQuick button', '.vp-close']
+    required: ['#vpanel.open', '#vpSizeHandle', '#vpPromptInput', '#vpQuick button', '.vp-close']
   },
   {
     name: 'complete',

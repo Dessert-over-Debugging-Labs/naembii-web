@@ -174,14 +174,24 @@ try {
       user: document.getElementById('vpUser').textContent,
       answer: document.getElementById('vpAi').textContent,
       liveStatus: document.getElementById('vpLiveStatus').textContent,
+      handleExpanded: document.getElementById('vpSizeHandle').getAttribute('aria-expanded'),
+      ctrlHeight: Math.round(document.getElementById('cook3Ctrl').getBoundingClientRect().height),
       queuedTimers: vpTimers.length,
       activeStep: document.querySelector('#cookTrack3 .scard.active')?.dataset.i
+    };
+    document.getElementById('vpSizeHandle').click();
+    await new Promise((resolve) => setTimeout(resolve, 160));
+    const resized = {
+      panel: document.getElementById('vpanel').className,
+      handleExpanded: document.getElementById('vpSizeHandle').getAttribute('aria-expanded'),
+      ctrlHeight: Math.round(document.getElementById('cook3Ctrl').getBoundingClientRect().height)
     };
     document.getElementById('vpPromptInput').value = '타이머 1분 맞춰줘';
     document.querySelector('.vp-chat-form button').click();
     await new Promise((resolve) => setTimeout(resolve, 900));
     return {
       opened,
+      resized,
       panel: document.getElementById('vpanel').className,
       user: document.getElementById('vpUser').textContent,
       answer: document.getElementById('vpAi').textContent,
@@ -225,6 +235,9 @@ try {
   }
   if (!assistant.opened.liveStatus.includes('마이크 버튼')) {
     throw new Error('Gemini Live 모바일 권한 확인 안내가 표시되지 않았습니다.');
+  }
+  if (assistant.opened.handleExpanded !== 'false' || assistant.resized.handleExpanded !== 'true' || assistant.resized.ctrlHeight <= assistant.opened.ctrlHeight) {
+    throw new Error('요리비서 패널 크기 조절 바가 기본/확장 상태를 전환하지 못했습니다.');
   }
   if (!assistant.user.includes('타이머 1분') || assistant.quickCount < 3 || assistant.activeStep !== '0') {
     throw new Error('요리비서 질문 입력/추천 질문이 동작하지 않았습니다.');

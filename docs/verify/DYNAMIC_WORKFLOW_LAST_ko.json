@@ -1,22 +1,19 @@
 {
-  "startedAt": "2026-07-09T08:02:00.378Z",
+  "startedAt": "2026-07-09T08:46:32.353Z",
   "summary": "PASS",
   "visual": true,
-  "baseURL": "http://127.0.0.1:4875/",
+  "baseURL": "http://127.0.0.1:4876/",
   "files": [
-    ".env.example",
-    ".gitignore",
     "app.html",
     "docs/verify/DYNAMIC_WORKFLOW_LAST_ko.html",
     "docs/verify/DYNAMIC_WORKFLOW_LAST_ko.json",
     "docs/verify/DYNAMIC_WORKFLOW_LAST_ko.md",
-    "package.json",
+    "scripts/validate-app-screens.mjs",
     "scripts/validate-mobile-flow.mjs",
-    "scripts/verify-dynamic.mjs",
-    "api/gemini-live-token.js",
-    "docs/GEMINI_LIVE_MOBILE_WEB_SETUP_ko.md",
-    "package-lock.json",
-    "scripts/notion/upload-gemini-live-mobile-setup.mjs"
+    "docs/VOICE_ASSISTANT_PANEL_PLAN_ko.md",
+    "docs/VOICE_ASSISTANT_PANEL_REPORT_ko.md",
+    "scripts/notion/upload-voice-assistant-panel-plan.mjs",
+    "scripts/notion/upload-voice-assistant-panel-report.mjs"
   ],
   "workflows": [
     "core",

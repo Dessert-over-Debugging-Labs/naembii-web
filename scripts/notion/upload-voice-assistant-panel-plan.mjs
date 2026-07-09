@@ -1,0 +1,99 @@
+const NOTION_VERSION = '2022-06-28';
+const parentPageId = process.env.NOTION_VOICE_ASSISTANT_PARENT_PAGE_ID || '396b1da1d9f98036b1a9ff5fdd8d020e';
+const token = process.env.NOTION_TOKEN;
+const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul' }).format(new Date());
+const title = `음성비서 패널 적용 계획 · ${today}`;
+
+if (!token) {
+  throw new Error('NOTION_TOKEN 환경변수가 필요합니다.');
+}
+
+function text(content, href) {
+  return [{ type: 'text', text: { content, ...(href ? { link: { url: href } } : {}) } }];
+}
+
+function paragraph(content) {
+  return { object: 'block', type: 'paragraph', paragraph: { rich_text: text(content) } };
+}
+
+function heading(level, content) {
+  const type = `heading_${level}`;
+  return { object: 'block', type, [type]: { rich_text: text(content) } };
+}
+
+function bullet(content) {
+  return { object: 'block', type: 'bulleted_list_item', bulleted_list_item: { rich_text: text(content) } };
+}
+
+function todo(content, checked = false) {
+  return { object: 'block', type: 'to_do', to_do: { rich_text: text(content), checked } };
+}
+
+function code(content) {
+  return { object: 'block', type: 'code', code: { rich_text: text(content), language: 'plain text' } };
+}
+
+async function notion(path, body, method = 'POST') {
+  const response = await fetch(`https://api.notion.com/v1${path}`, {
+    method,
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Notion-Version': NOTION_VERSION,
+      'Content-Type': 'application/json'
+    },
+    ...(body ? { body: JSON.stringify(body) } : {})
+  });
+
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(`${response.status} ${response.statusText}: ${JSON.stringify(data)}`);
+  }
+  return data;
+}
+
+const children = [
+  paragraph(`작성일: ${today}`),
+  heading(2, '목적'),
+  paragraph('요리 중 핵심 기능인 음성비서가 현재 웹앱에서 더 명확하게 보이도록 한다. 베타 단계에서는 실제 완성형 음성 대화처럼 과장하지 않고, 지금 가능한 입력 기반 추천 질문과 향후 Gemini Live 연결 준비 상태를 분리해서 보여준다.'),
+  heading(2, '이번 작업 범위'),
+  bullet('랜딩/앱 내부 문구에서 음성비서의 역할을 더 전면에 배치한다.'),
+  bullet('조리모드의 요리비서 패널에 상단 손잡이 바를 추가한다.'),
+  bullet('손잡이 바로 패널 크기를 기본과 크게 보기 사이에서 전환한다.'),
+  bullet('모바일 화면에서 패널이 영상과 단계 카드를 과도하게 가리지 않는지 검증한다.'),
+  bullet('기존 피드백, 레시피 요청, Gemini Live 토큰 준비 흐름은 유지한다.'),
+  heading(2, '제외 범위'),
+  bullet('실제 실시간 Gemini Live 음성 송수신은 이번에 켜지 않는다.'),
+  bullet('사용자 음성을 지속 녹음하거나 서버로 전송하는 구현은 하지 않는다.'),
+  bullet('레시피 데이터 구조와 영상 타임코드는 이번 범위에서 변경하지 않는다.'),
+  bullet('AWS 또는 별도 DB는 추가하지 않는다.'),
+  heading(2, '사용자에게 보여줄 기준'),
+  bullet('"AI가 모든 요리를 완벽히 대신한다"가 아니라 "요리하다 막히는 순간을 줄여준다"로 표현한다.'),
+  bullet('마이크 버튼은 모바일 권한과 Live 연결 준비 확인으로 설명한다.'),
+  bullet('추천 질문/직접 입력은 지금 바로 동작하는 체험으로 둔다.'),
+  bullet('패널 크기 전환은 별도 설명 문구 없이 손잡이와 접근성 라벨로 자연스럽게 제공한다.'),
+  heading(2, '구현 체크리스트'),
+  todo('랜딩의 음성비서 소개 카피 보정'),
+  todo('앱 홈의 요리비서 진입 카드 카피 보정'),
+  todo('조리모드 음성비서 패널 상단 손잡이 바 추가'),
+  todo('패널 compact/expanded 상태 CSS 추가'),
+  todo('패널 크기 전환 JS 함수 추가'),
+  todo('모바일 플로우 검증 스크립트에 크기 전환 확인 추가'),
+  todo('앱 화면 캡처 검증 및 동적 검증 실행'),
+  heading(2, '완료 기준'),
+  code([
+    '1. 조리모드에서 물어보기를 누르면 패널이 기본 크기로 열린다.',
+    '2. 패널 상단 바를 누르면 패널이 크게 보기로 확장되고 다시 누르면 기본 크기로 돌아간다.',
+    '3. 패널을 닫았다가 다시 열면 기본 크기로 초기화된다.',
+    '4. 추천 질문과 직접 입력은 자동 진행 없이 그대로 동작한다.',
+    '5. Gemini Live 준비 상태 안내는 유지된다.',
+    '6. 모바일 검증에서 주요 화면이 잘리거나 텍스트가 넘치지 않는다.'
+  ].join('\n'))
+];
+
+const page = await notion('/pages', {
+  parent: { type: 'page_id', page_id: parentPageId },
+  properties: { title: { title: text(title) } },
+  children
+});
+
+console.log(JSON.stringify({ title, pageId: page.id, url: page.url }, null, 2));
