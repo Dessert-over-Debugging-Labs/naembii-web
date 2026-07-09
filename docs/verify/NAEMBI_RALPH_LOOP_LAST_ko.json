@@ -1,9 +1,9 @@
 {
-  "startedAt": "2026-07-08T16:39:37.200Z",
-  "endedAt": "2026-07-08T16:40:36.582Z",
+  "startedAt": "2026-07-09T11:27:30.074Z",
+  "endedAt": "2026-07-09T11:29:07.577Z",
   "finalStatus": "PASS",
   "note": "점수 기준과 게이트를 만족했다.",
-  "baseURL": "http://127.0.0.1:4874/",
+  "baseURL": "http://127.0.0.1:4876",
   "minScore": 96,
   "visual": true,
   "full": true,
@@ -14,14 +14,14 @@
   "rounds": [
     {
       "round": 1,
-      "at": "2026-07-08T16:40:36.581Z",
-      "command": "/opt/homebrew/Cellar/node/26.0.0/bin/node scripts/verify-dynamic.mjs --base-url=http://127.0.0.1:4874/ --min-score=96 --report=docs/verify/NAEMBI_RALPH_LOOP_ROUND_LAST_ko.md --full --visual",
+      "at": "2026-07-09T11:29:07.575Z",
+      "command": "/opt/homebrew/Cellar/node/26.0.0/bin/node scripts/verify-dynamic.mjs --base-url=http://127.0.0.1:4876 --min-score=96 --report=docs/verify/NAEMBI_RALPH_LOOP_ROUND_LAST_ko.md --full --visual",
       "exitCode": 0,
       "summary": "PASS",
       "percent": 100,
       "score": "130 / 130",
       "scorePass": true,
-      "stdoutTail": "4 신호 충족 | 루트 랜딩과 /app 웹앱 라우팅, 수집 환경변수, 배포 제외, 검증 스크립트를 유지한다. |\n| 검증 루프 재현성 | 5 | 5 | 100% | 8/8 신호 충족 | 다음 세션에서도 같은 검증자 역할, 점수표, 마지막 리포트를 재사용할 수 있어야 한다. |\n\n## 게이트 결과\n\n| 게이트 | 판정 | 근거 | 보정 후보 |\n| --- | --- | --- | --- |\n| package scripts | PASS | dev/check/verify:dynamic/verify:app-screens 스크립트 확인 | - |\n| vercel app route | PASS | /app -> /app.html, /design -> /design.html, 루트는 index.html 진입 | - |\n| landing structure | PASS | 사용자 후킹 카피, 정적 앱 캡쳐, 미리 써보기/요리 보내기 폼 확인 | - |\n| app structure | PASS | /app 기본 앱 홈, 조리 모드, 피드백 폼 확인 | - |\n| design review page | PASS | 브랜드 캐릭터, 점수표, 서비스 배치, 현실성 검토 확인 | - |\n| public copy static guard | PASS | 공개 HTML 내부 작업 용어 0건 | - |\n| inline script syntax | PASS | app.html inline script 문법 통과 | - |\n| api syntax: api/_lib/collect.js | PASS | 문법 통과 | - |\n| api syntax: api/beta-signup.js | PASS | 문법 통과 | - |\n| api syntax: api/feedback.js | PASS | 문법 통과 | - |\n| api validation: beta email | PASS | 잘못된 이메일 400 응답 | - |\n| api validation: feedback required | PASS | 빈 피드백 400 응답 | - |\n| api validation: feedback email | PASS | 잘못된 선택 이메일 400 응답 | - |\n| deploy env contract | PASS | Google Form/webhook/GitHub 수집 환경변수 문서화 확인 | - |\n| vercel ignore hygiene | PASS | docs/scripts/.env 배포 제외 확인 | - |\n| workflow script hook | PASS | npm run verify:dynamic 가능 | - |\n| verification docs | PASS | 동적 워크플로우/랜딩 검증 문서 확인 | - |\n| visual capture: mobile | PASS | /tmp/cook-wireframe-v3/dynamic-mobile.png, forbiddenVisibleTerms=[], croppedScreenImages=[] | - |\n| visual capture: tablet | PASS | /tmp/cook-wireframe-v3/dynamic-tablet.png, forbiddenVisibleTerms=[], croppedScreenImages=[] | - |\n| visual capture: desktop | PASS | /tmp/cook-wireframe-v3/dynamic-desktop.png, forbiddenVisibleTerms=[], croppedScreenImages=[] | - |\n| app screen clipping | PASS | 30개 앱 내부 상태 잘림/overflow 검사 PASS | - |\n\n## 루프 규칙\n\n- `FAIL`: 해당 게이트의 보정 후보만 고치고 같은 게이트를 재실행한다.\n- `INCONCLUSIVE`: 제품 실패로 보지 않고 실행 환경, 권한, 서버 상태를 먼저 복구한다.\n- `PASS`: 다음 워크플로우로 진행한다.\n- 공개 사용자 화면은 내부 작업명, 버전 태그, 저장소/배포 구현명을 노출하지 않는다.",
+      "stdoutTail": "4 신호 충족 | 루트 랜딩과 /app 웹앱 라우팅, 수집 환경변수, 배포 제외, 검증 스크립트를 유지한다. |\n| 검증 루프 재현성 | 5 | 5 | 100% | 8/8 신호 충족 | 다음 세션에서도 같은 검증자 역할, 점수표, 마지막 리포트를 재사용할 수 있어야 한다. |\n\n## 게이트 결과\n\n| 게이트 | 판정 | 근거 | 보정 후보 |\n| --- | --- | --- | --- |\n| package scripts | PASS | dev/check/verify:dynamic/verify:app-screens 스크립트 확인 | - |\n| vercel app route | PASS | /app -> /app.html, /design -> /design.html, 루트는 index.html 진입 | - |\n| landing structure | PASS | 사용자 후킹 카피, 정적 앱 캡쳐, 미리 써보기/요리 보내기 폼 확인 | - |\n| app structure | PASS | /app 기본 앱 홈, 조리 모드, 피드백 폼 확인 | - |\n| design review page | PASS | 브랜드 캐릭터, 점수표, 서비스 배치, 현실성 검토 확인 | - |\n| public copy static guard | PASS | 공개 HTML 내부 작업 용어 0건 | - |\n| inline script syntax | PASS | app.html inline script 문법 통과 | - |\n| api syntax: api/_lib/collect.js | PASS | 문법 통과 | - |\n| api syntax: api/beta-signup.js | PASS | 문법 통과 | - |\n| api syntax: api/feedback.js | PASS | 문법 통과 | - |\n| api validation: beta email | PASS | 잘못된 이메일 400 응답 | - |\n| api validation: feedback required | PASS | 빈 피드백 400 응답 | - |\n| api validation: feedback email | PASS | 잘못된 선택 이메일 400 응답 | - |\n| deploy env contract | PASS | Google Form/webhook/GitHub 수집 환경변수 문서화 확인 | - |\n| vercel ignore hygiene | PASS | docs/scripts/.env 배포 제외 확인 | - |\n| workflow script hook | PASS | npm run verify:dynamic 가능 | - |\n| verification docs | PASS | 동적 워크플로우/랜딩 검증 문서 확인 | - |\n| visual capture: mobile | PASS | /tmp/cook-wireframe-v3/dynamic-mobile.png, forbiddenVisibleTerms=[], croppedScreenImages=[] | - |\n| visual capture: tablet | PASS | /tmp/cook-wireframe-v3/dynamic-tablet.png, forbiddenVisibleTerms=[], croppedScreenImages=[] | - |\n| visual capture: desktop | PASS | /tmp/cook-wireframe-v3/dynamic-desktop.png, forbiddenVisibleTerms=[], croppedScreenImages=[] | - |\n| app screen clipping | PASS | 77개 앱 내부 상태 잘림/overflow 검사 PASS | - |\n\n## 루프 규칙\n\n- `FAIL`: 해당 게이트의 보정 후보만 고치고 같은 게이트를 재실행한다.\n- `INCONCLUSIVE`: 제품 실패로 보지 않고 실행 환경, 권한, 서버 상태를 먼저 복구한다.\n- `PASS`: 다음 워크플로우로 진행한다.\n- 공개 사용자 화면은 내부 작업명, 버전 태그, 저장소/배포 구현명을 노출하지 않는다.",
       "stderrTail": ""
     }
   ]

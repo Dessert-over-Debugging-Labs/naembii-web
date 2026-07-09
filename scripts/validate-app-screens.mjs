@@ -11,6 +11,10 @@ const recipeId = process.argv[5] || 'vlPqkuHIdCc';
 const viewports = [
   { name: 'mobile-390', width: 390, height: 844, deviceScaleFactor: 2, mobile: true },
   { name: 'mobile-short', width: 375, height: 667, deviceScaleFactor: 2, mobile: true },
+  { name: 'iphone-16', width: 393, height: 852, deviceScaleFactor: 3, mobile: true },
+  { name: 'iphone-16-pro-max', width: 430, height: 932, deviceScaleFactor: 3, mobile: true },
+  { name: 'fold-closed', width: 344, height: 882, deviceScaleFactor: 3, mobile: true },
+  { name: 'fold-open', width: 674, height: 842, deviceScaleFactor: 2, mobile: true },
   { name: 'desktop-shell', width: 1280, height: 900, deviceScaleFactor: 1, mobile: false }
 ];
 
@@ -24,6 +28,11 @@ const states = [
     name: 'search',
     setup: `openSearch('콘치즈');`,
     required: ['#searchPage .nav', '#recipeSearchInput', '#searchResultTitle', '#searchResults .rcard']
+  },
+  {
+    name: 'search-creator',
+    setup: `openSearch('Maangchi');`,
+    required: ['#searchPage .nav', '#recipeSearchInput', '#creatorResultHead.show', '#creatorResults .creator-row', '#searchResults .rcard']
   },
   {
     name: 'detail',
@@ -242,7 +251,8 @@ try {
           };
         };
 
-        const active = document.querySelector('.view.active');
+        const activeViews = [...document.querySelectorAll('.view.active')];
+        const active = activeViews[0];
         const screen = document.querySelector('.screen');
         const body = active?.querySelector('.body');
         const bodyScrollable = body ? body.scrollHeight > body.clientHeight + 2 : false;
@@ -283,6 +293,7 @@ try {
           viewport,
           path: location.pathname,
           activeView: active?.id || '',
+          activeViewCount: activeViews.length,
           documentOverflowX: document.documentElement.scrollWidth > window.innerWidth + 1,
           bodyOverflowX: document.body.scrollWidth > window.innerWidth + 1,
           screenOverflowX: screen ? screen.scrollWidth > screen.clientWidth + 1 : false,
@@ -308,6 +319,9 @@ try {
       const stateFailures = [];
       if (metrics.documentOverflowX || metrics.bodyOverflowX || metrics.screenOverflowX || metrics.activeOverflowX) {
         stateFailures.push('horizontal-overflow');
+      }
+      if (metrics.activeViewCount !== 1) {
+        stateFailures.push(`active-view-count:${metrics.activeViewCount}`);
       }
       if (metrics.viewVerticalOverflow) {
         stateFailures.push('non-scrollable-vertical-overflow');
@@ -343,9 +357,10 @@ try {
       failures: item.failures,
       screenshot: item.screenshot,
       missingOrClipped: item.metrics.missingOrClipped,
-      textOverflow: item.metrics.textOverflow,
-      active: item.metrics.active
-    }))
+          textOverflow: item.metrics.textOverflow,
+          activeViewCount: item.metrics.activeViewCount,
+          active: item.metrics.active
+        }))
   };
 
   await writeFile(join(outDir, 'summary.json'), JSON.stringify({ summary, results }, null, 2));

@@ -1,11 +1,11 @@
 # 동적 검증 워크플로우 실행 리포트
 
-- 일시: 2026-07-08T16:39:37.273Z
+- 일시: 2026-07-09T11:27:30.161Z
 - 판정: **PASS**
 - 점수: **130 / 130 (100%)**
 - 통과 기준: **96% 초과**
 - 모드: visual 포함
-- 기준 URL: `http://127.0.0.1:4874/`
+- 기준 URL: `http://127.0.0.1:4876`
 
 ## 왜 빠르게 끝났나
 
@@ -14,22 +14,14 @@
 ## 변경 파일
 
 - `app.html`
-- `docs/verify/DYNAMIC_WORKFLOW_LAST_ko.html`
-- `docs/verify/DYNAMIC_WORKFLOW_LAST_ko.json`
-- `docs/verify/DYNAMIC_WORKFLOW_LAST_ko.md`
-- `docs/verify/DYNAMIC_WORKFLOW_ko.md`
-- `docs/verify/NAEMBI_BETA_SCORECARD_ko.md`
 - `docs/verify/NAEMBI_RALPH_LOOP_LAST_ko.json`
 - `docs/verify/NAEMBI_RALPH_LOOP_LAST_ko.md`
 - `docs/verify/NAEMBI_RALPH_LOOP_ROUND_LAST_ko.html`
 - `docs/verify/NAEMBI_RALPH_LOOP_ROUND_LAST_ko.json`
 - `docs/verify/NAEMBI_RALPH_LOOP_ROUND_LAST_ko.md`
-- `docs/verify/NAEMBI_RALPH_LOOP_ko.md`
-- `docs/verify/NAEMBI_VALIDATION_POINTS_ko.md`
-- `package.json`
-- `scripts/validate-mobile-flow.mjs`
-- `scripts/verify-dynamic.mjs`
+- `index.html`
 - `scripts/validate-app-screens.mjs`
+- `scripts/validate-mobile-flow.mjs`
 
 ## 선택된 워크플로우
 
@@ -37,7 +29,7 @@
 | --- | --- |
 | core | 항상 실행 |
 | api | api/app/landing 변경 감지 |
-| deploy | 배포 설정 변경 감지 |
+| deploy | full 실행 |
 | docs | 검증 문서 변경 감지 |
 | visual | --visual 요청 |
 
@@ -81,7 +73,7 @@
 | visual capture: mobile | PASS | /tmp/cook-wireframe-v3/dynamic-mobile.png, forbiddenVisibleTerms=[], croppedScreenImages=[] | - |
 | visual capture: tablet | PASS | /tmp/cook-wireframe-v3/dynamic-tablet.png, forbiddenVisibleTerms=[], croppedScreenImages=[] | - |
 | visual capture: desktop | PASS | /tmp/cook-wireframe-v3/dynamic-desktop.png, forbiddenVisibleTerms=[], croppedScreenImages=[] | - |
-| app screen clipping | PASS | 30개 앱 내부 상태 잘림/overflow 검사 PASS | - |
+| app screen clipping | PASS | 77개 앱 내부 상태 잘림/overflow 검사 PASS | - |
 
 ## 루프 규칙
 

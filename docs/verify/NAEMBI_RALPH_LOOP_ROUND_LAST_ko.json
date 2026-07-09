@@ -1,26 +1,18 @@
 {
-  "startedAt": "2026-07-08T16:39:37.273Z",
+  "startedAt": "2026-07-09T11:27:30.161Z",
   "summary": "PASS",
   "visual": true,
-  "baseURL": "http://127.0.0.1:4874/",
+  "baseURL": "http://127.0.0.1:4876",
   "files": [
     "app.html",
-    "docs/verify/DYNAMIC_WORKFLOW_LAST_ko.html",
-    "docs/verify/DYNAMIC_WORKFLOW_LAST_ko.json",
-    "docs/verify/DYNAMIC_WORKFLOW_LAST_ko.md",
-    "docs/verify/DYNAMIC_WORKFLOW_ko.md",
-    "docs/verify/NAEMBI_BETA_SCORECARD_ko.md",
     "docs/verify/NAEMBI_RALPH_LOOP_LAST_ko.json",
     "docs/verify/NAEMBI_RALPH_LOOP_LAST_ko.md",
     "docs/verify/NAEMBI_RALPH_LOOP_ROUND_LAST_ko.html",
     "docs/verify/NAEMBI_RALPH_LOOP_ROUND_LAST_ko.json",
     "docs/verify/NAEMBI_RALPH_LOOP_ROUND_LAST_ko.md",
-    "docs/verify/NAEMBI_RALPH_LOOP_ko.md",
-    "docs/verify/NAEMBI_VALIDATION_POINTS_ko.md",
-    "package.json",
-    "scripts/validate-mobile-flow.mjs",
-    "scripts/verify-dynamic.mjs",
-    "scripts/validate-app-screens.mjs"
+    "index.html",
+    "scripts/validate-app-screens.mjs",
+    "scripts/validate-mobile-flow.mjs"
   ],
   "workflows": [
     "core",
@@ -153,7 +145,7 @@
     {
       "name": "app screen clipping",
       "status": "PASS",
-      "detail": "30개 앱 내부 상태 잘림/overflow 검사 PASS",
+      "detail": "77개 앱 내부 상태 잘림/overflow 검사 PASS",
       "fix": ""
     }
   ],
@@ -551,7 +543,7 @@
       "status": "PASS",
       "payload": {
         "status": "PASS",
-        "checked": 30,
+        "checked": 77,
         "failed": 0,
         "outDir": "/tmp/cook-wireframe-v3/app-clip",
         "failures": []

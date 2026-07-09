@@ -152,17 +152,47 @@
   .search-live button{width:30px;height:30px;border:0;border-radius:50%;background:var(--surface-2);color:var(--text-sub);display:none;align-items:center;justify-content:center;cursor:pointer;}
   .search-live button.show{display:flex;}
   .search-live button svg{width:16px;height:16px;}
-  .search-helper{padding:0 16px 14px;color:var(--text-sub);font-size:13px;font-weight:700;line-height:1.45;}
+  .search-helper{padding:0 16px 12px;color:var(--text-sub);font-size:13px;font-weight:700;line-height:1.45;}
   .search-helper b{color:var(--brand);}
-  .search-chips{display:flex;gap:8px;overflow-x:auto;padding:0 16px 18px;}
+  .search-chip-group{display:flex;flex-direction:column;gap:8px;padding-bottom:14px;}
+  .chip-label{padding:0 16px;color:var(--text-sub);font-size:11px;font-weight:900;letter-spacing:.3px;}
+  .search-chips{display:flex;gap:8px;overflow-x:auto;padding:0 16px;}
   .search-chips::-webkit-scrollbar{display:none;}
   .search-chips button{height:36px;border:1px solid var(--border);border-radius:999px;background:var(--surface);color:var(--text);padding:0 13px;font:inherit;font-size:13px;font-weight:850;white-space:nowrap;cursor:pointer;}
+  .search-chips.creator button{background:var(--brand-soft);border-color:rgba(var(--brand-rgb),.22);color:var(--brand-deep);}
   .search-results-head{display:flex;align-items:center;justify-content:space-between;padding:0 16px 12px;color:var(--text);}
   .search-results-head b{font-size:17px;}
   .search-results-head span{font-size:13px;color:var(--text-sub);font-weight:700;}
   .search-results{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 16px 30px;}
+  .search-results .rcard .thumb{aspect-ratio:4/3;border-radius:14px;}
+  .search-results .rcard .cap{padding-top:6px;}
+  .search-results .rcard .cap b{-webkit-line-clamp:1;line-clamp:1;font-size:14px;}
+  .search-results .rcard .social{gap:9px;margin-top:4px;}
+  .creator-results-head{display:none;align-items:center;justify-content:space-between;padding:0 16px 10px;color:var(--text);}
+  .creator-results-head.show{display:flex;}
+  .creator-results-head b{font-size:15px;}
+  .creator-results-head span{font-size:12px;color:var(--text-sub);font-weight:800;}
+  .creator-results{display:flex;flex-direction:column;gap:8px;padding:0 16px 16px;}
+  .creator-row{width:100%;border:1px solid var(--border);border-radius:14px;background:var(--surface);padding:12px;display:flex;align-items:center;gap:12px;text-align:left;color:var(--text);font:inherit;cursor:pointer;}
+  .creator-avatar{width:38px;height:38px;border-radius:50%;background:var(--brand-soft);color:var(--brand);display:flex;align-items:center;justify-content:center;flex:none;}
+  .creator-avatar svg{width:19px;height:19px;}
+  .creator-copy{min-width:0;display:flex;flex-direction:column;gap:3px;flex:1;}
+  .creator-copy b{font-size:14px;font-weight:900;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .creator-copy span{font-size:12px;font-weight:750;color:var(--text-sub);line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .creator-row>svg{width:16px;height:16px;color:var(--text-sub);}
   .search-empty{grid-column:1/-1;margin:0 0 24px;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px;text-align:center;color:var(--text-sub);font-size:14px;font-weight:700;line-height:1.55;}
   .search-empty b{display:block;color:var(--text);font-size:16px;margin-bottom:5px;}
+  @media (max-height:700px){
+    .search-live{height:46px;margin-bottom:8px;}
+    .search-helper{padding-bottom:8px;font-size:12px;}
+    .search-chip-group{gap:6px;padding-bottom:10px;}
+    .chip-label{font-size:10px;}
+    .search-chips button{height:32px;font-size:12px;padding:0 11px;}
+    .creator-row{padding:9px 11px;}
+    .creator-avatar{width:34px;height:34px;}
+    .creator-results{padding-bottom:10px;}
+    .creator-results-head,.search-results-head{padding-bottom:8px;}
+  }
 
   /* 카테고리 */
   .cats{display:flex;gap:16px;overflow-x:auto;padding:0 16px 24px;}
@@ -407,7 +437,8 @@
   .scard.below .sc-arrow .ar-up{display:none;}
   .scard.static{position:static;transform:none;}
   #cook2 .cook-body{flex:none;overflow:visible;padding-top:6px;}
-  #cook3 .cook-body{justify-content:center;overflow:hidden;padding:0 16px;position:relative;}
+  #cook3 .cook-body{justify-content:flex-start;overflow:hidden;padding:0 16px 10px;position:relative;gap:8px;}
+  #cook3 .cook-track{flex:1;min-height:0;height:auto;}
   .stage-timer{
     position:absolute;left:16px;right:16px;top:50%;z-index:180;
     min-height:58px;box-sizing:border-box;padding:9px 11px;border-radius:16px;
@@ -447,22 +478,22 @@
   .fin-badge{width:28px;height:28px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;flex:none;box-shadow:0 2px 8px rgba(0,0,0,.18);}
   .fin-badge svg{width:16px;height:16px;color:var(--brand);stroke-width:3;}
   .cook-hint{
-    position:absolute;inset:0;z-index:190;display:flex;flex-direction:column;align-items:center;justify-content:center;
-    padding:32px 32px 100px;text-align:center;color:var(--text);background:rgba(226,228,233,.88);backdrop-filter:blur(3px);
-    opacity:0;pointer-events:none;transition:opacity .3s ease;
+    position:relative;z-index:190;display:grid;grid-template-columns:48px minmax(0,1fr);grid-template-areas:"gesture copy" "gesture action";align-items:center;gap:7px 10px;
+    min-height:78px;padding:10px 12px;border:1px solid var(--border);border-radius:16px;text-align:left;color:var(--text);
+    background:var(--dark2);box-shadow:0 12px 26px rgba(0,0,0,.12);
+    opacity:0;max-height:0;overflow:hidden;pointer-events:none;transform:translateY(6px);transition:opacity .22s ease,max-height .22s ease,transform .22s ease,padding .22s ease,min-height .22s ease;
   }
-  .cook-hint.show{opacity:1;pointer-events:auto;}
-  :root[data-mode="dark"] .cook-hint{background:rgba(18,18,20,.78);}
-  .hint-gesture{position:relative;width:84px;height:110px;display:flex;align-items:center;justify-content:center;color:#fff;margin-bottom:18px;}
-  .hint-gesture .hand{width:36px;height:36px;color:var(--text);animation:hintSwipeHand 1.55s ease-in-out infinite;}
-  .hint-gesture .ar{position:absolute;top:0;left:50%;width:36px;height:36px;color:var(--green);transform:translateX(-50%);animation:hintSwipeArrow 1.55s ease-in-out infinite;}
-  .hint-copy{display:flex;flex-direction:column;align-items:center;gap:8px;line-height:1.2;}
-  .hint-copy b{font-size:24px;font-weight:900;color:var(--text);}
-  .hint-copy span{font-size:15px;font-weight:800;color:var(--text-sub);}
-  .hint-never{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);display:inline-flex;align-items:center;gap:5px;background:none;border:none;color:var(--text-sub);font-family:inherit;font-size:12px;font-weight:700;padding:6px;cursor:pointer;}
+  .cook-hint.show{opacity:1;max-height:110px;pointer-events:auto;transform:translateY(0);}
+  .hint-gesture{grid-area:gesture;position:relative;width:48px;height:48px;border-radius:15px;background:var(--brand-soft);display:flex;align-items:center;justify-content:center;color:var(--brand);flex:none;}
+  .hint-gesture .hand{width:22px;height:22px;color:var(--text);animation:hintSwipeHand 1.55s ease-in-out infinite;}
+  .hint-gesture .ar{position:absolute;top:4px;left:50%;width:20px;height:20px;color:var(--green);transform:translateX(-50%);animation:hintSwipeArrow 1.55s ease-in-out infinite;}
+  .hint-copy{grid-area:copy;min-width:0;display:flex;flex-direction:column;gap:4px;line-height:1.25;}
+  .hint-copy b{font-size:16px;font-weight:900;color:var(--text);}
+  .hint-copy span{font-size:12px;font-weight:800;color:var(--text-sub);line-height:1.35;}
+  .hint-never{grid-area:action;justify-self:start;display:inline-flex;align-items:center;gap:4px;background:var(--surface-2);border:none;border-radius:999px;color:var(--text-sub);font-family:inherit;font-size:11px;font-weight:800;padding:7px 9px;cursor:pointer;white-space:nowrap;}
   .hint-never svg{width:14px;height:14px;}
-  .hint-never:active{transform:translateX(-50%) scale(.94);}
-  .hint-dismiss{margin-top:22px;font-size:12px;font-weight:700;color:var(--text-sub);}
+  .hint-never:active{transform:scale(.94);}
+  .hint-dismiss{display:none;}
   @keyframes hintSwipeHand{0%,100%{transform:translateY(22px) scale(.98);opacity:.7;}45%{transform:translateY(-18px) scale(1.05);opacity:1;}}
   @keyframes hintSwipeArrow{0%,100%{transform:translateX(-50%) translateY(22px);opacity:.18;}45%{transform:translateX(-50%) translateY(-12px);opacity:1;}}
   /* 핸즈프리 모드: 얇은 듣고있어요 바 + 대화창 */
@@ -1319,18 +1350,27 @@
       <div class="body">
         <div class="search-live">
           <i data-lucide="search"></i>
-          <input id="recipeSearchInput" type="search" autocomplete="off" placeholder="콘치즈, 명란, Maangchi처럼 검색" oninput="runRecipeSearch(this.value)">
+          <input id="recipeSearchInput" type="search" autocomplete="off" placeholder="요리, 재료, 창작자 이름으로 검색" oninput="runRecipeSearch(this.value)">
           <button id="searchClearBtn" type="button" onclick="clearRecipeSearch()" aria-label="검색어 지우기"><i data-lucide="x"></i></button>
         </div>
         <p class="search-helper"><b>요리 제목, 재료, 창작자 이름</b>을 함께 보고 가장 가까운 레시피를 먼저 보여줘요.</p>
-        <div class="search-chips" aria-label="빠른 검색어">
-          <button type="button" onclick="openSearch('콘치즈 불닭')">콘치즈 불닭</button>
-          <button type="button" onclick="openSearch('명란 파스타')">명란 파스타</button>
-          <button type="button" onclick="openSearch('Maangchi')">Maangchi</button>
-          <button type="button" onclick="openSearch('재료 적게')">재료 적게</button>
-          <button type="button" onclick="openSearch('야식')">야식</button>
+        <div class="search-chip-group">
+          <div class="chip-label">요리와 상황</div>
+          <div class="search-chips" aria-label="요리 빠른 검색어">
+            <button type="button" onclick="openSearch('콘치즈 불닭')">콘치즈 불닭</button>
+            <button type="button" onclick="openSearch('명란 파스타')">명란 파스타</button>
+            <button type="button" onclick="openSearch('재료 적게')">재료 적게</button>
+            <button type="button" onclick="openSearch('야식')">야식</button>
+          </div>
+          <div class="chip-label">창작자</div>
+          <div class="search-chips creator" aria-label="창작자 빠른 검색어">
+            <button type="button" onclick="openSearch('Maangchi')">Maangchi</button>
+            <button type="button" onclick="openSearch('성시경')">성시경</button>
+          </div>
         </div>
-        <div class="search-results-head"><b id="searchResultTitle">추천 레시피</b><span id="searchResultMeta">요즘 많이 찾는 메뉴</span></div>
+        <div class="creator-results-head" id="creatorResultHead"><b>창작자 결과</b><span id="creatorResultMeta"></span></div>
+        <div class="creator-results" id="creatorResults"></div>
+        <div class="search-results-head"><b id="searchResultTitle">요리 결과</b><span id="searchResultMeta">요즘 많이 찾는 메뉴</span></div>
         <div class="search-results" id="searchResults"></div>
       </div>
     </div>
@@ -2275,6 +2315,47 @@
         '<span class="badge"><i data-lucide="clock"></i>'+r.time+'</span></div>'+
       '<div class="cap"><b>'+esc(r.title)+'</b><small>'+esc(r.channel+' · '+r.servings)+'</small><div class="social"><span><i data-lucide="utensils"></i><em>'+reaction.made+'</em></span><span><i data-lucide="star"></i><em>'+reaction.stars+'</em></span></div></div></div>';
   }
+  function creatorGroups(){
+    const map=new Map();
+    RECIPES.forEach(r=>{
+      const key=r.channel||'창작자 미상';
+      const group=map.get(key)||{channel:key,recipes:[]};
+      group.recipes.push(r);
+      map.set(key,group);
+    });
+    return [...map.values()].sort((a,b)=>b.recipes.length-a.recipes.length||a.channel.localeCompare(b.channel));
+  }
+  function creatorSearchScore(group,query){
+    const terms=searchTerms(query);
+    if(!terms.length)return 0;
+    const channel=group.channel.toLowerCase();
+    const recipeText=group.recipes.map(r=>r.title+' '+r.name+' '+recipeIngredientsText(r)).join(' ').toLowerCase();
+    let score=0;
+    terms.forEach(term=>{
+      const t=term.toLowerCase();
+      if(channel.includes(t))score+=20;
+      if(recipeText.includes(t))score+=4;
+    });
+    return score;
+  }
+  function searchCreators(query){
+    const q=(query||'').trim();
+    if(!q)return [];
+    return creatorGroups()
+      .map(group=>({group,score:creatorSearchScore(group,q)}))
+      .filter(item=>item.score>0)
+      .sort((a,b)=>b.score-a.score||b.group.recipes.length-a.group.recipes.length)
+      .map(item=>item.group);
+  }
+  function creatorRowHTML(group){
+    const first=group.recipes[0];
+    const names=group.recipes.slice(0,3).map(r=>r.name).join(' · ');
+    return '<button class="creator-row" type="button" onclick="goDetail(\''+first.id+'\')">'+
+      '<span class="creator-avatar"><i data-lucide="user-round"></i></span>'+
+      '<span class="creator-copy"><b>'+esc(group.channel)+'</b><span>창작자 · 레시피 '+group.recipes.length+'개 · '+esc(names)+'</span></span>'+
+      '<i data-lucide="chevron-right"></i>'+
+    '</button>';
+  }
   const SEARCH_BOOSTS={
     'sns 트렌드':['불닭','로제','티라미수','아보카도','콘치즈','명란'],
     '요즘 뜨는':['불닭','로제','티라미수','아보카도','콘치즈','명란'],
@@ -2336,12 +2417,19 @@
     const title=document.getElementById('searchResultTitle');
     const meta=document.getElementById('searchResultMeta');
     const results=document.getElementById('searchResults');
+    const creatorHead=document.getElementById('creatorResultHead');
+    const creatorMeta=document.getElementById('creatorResultMeta');
+    const creatorResults=document.getElementById('creatorResults');
     if(!results)return;
     const q=(query||'').trim();
     if(input&&input.value!==query)input.value=query||'';
     if(clear)clear.classList.toggle('show',!!q);
     const list=searchRecipes(q);
-    if(title)title.textContent=q?'검색 결과':'추천 레시피';
+    const creators=searchCreators(q);
+    if(creatorHead)creatorHead.classList.toggle('show',!!q&&creators.length>0);
+    if(creatorMeta)creatorMeta.textContent=creators.length+'명';
+    if(creatorResults)creatorResults.innerHTML=(q&&creators.length)?creators.map(creatorRowHTML).join(''):'';
+    if(title)title.textContent=q?'요리 결과':'추천 레시피';
     if(meta)meta.textContent=q?list.length+'개 찾았어요':'요즘 많이 찾는 메뉴';
     results.innerHTML=list.length
       ? list.map(cardHTML).join('')

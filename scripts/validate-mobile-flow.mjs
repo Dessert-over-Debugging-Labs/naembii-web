@@ -101,6 +101,24 @@ try {
     feedbackVisible: getComputedStyle(document.querySelector('.app-feedback-btn')).display
   })`);
 
+  const search = await evaluate(`(async () => {
+    openSearch('Maangchi');
+    await new Promise((resolve) => setTimeout(resolve, 220));
+    const creatorRows = [...document.querySelectorAll('#creatorResults .creator-row')].map((row) => row.textContent.trim().replace(/\\s+/g, ' '));
+    const recipeCards = [...document.querySelectorAll('#searchResults .rcard')].map((card) => ({
+      title: card.querySelector('.cap b')?.textContent.trim() || '',
+      meta: card.querySelector('.cap small')?.textContent.trim() || ''
+    }));
+    return {
+      active: document.querySelector('.view.active')?.id || '',
+      creatorHeadVisible: document.getElementById('creatorResultHead').classList.contains('show'),
+      creatorRows,
+      recipeCards,
+      foodChipTexts: [...document.querySelectorAll('.search-chips:not(.creator) button')].map((button) => button.textContent.trim()),
+      creatorChipTexts: [...document.querySelectorAll('.search-chips.creator button')].map((button) => button.textContent.trim())
+    };
+  })()`);
+
   const feedback = await evaluate(`(async () => {
     window.__feedbackRequests = [];
     window.fetch = (url, opts) => {
@@ -166,6 +184,45 @@ try {
     return { defaultState, checkState };
   })()`);
 
+  const tutorial = await evaluate(`(async () => {
+    show('cook3');
+    await new Promise((resolve) => setTimeout(resolve, 260));
+    const hint = document.getElementById('cookHint');
+    const card = document.querySelector('#cookTrack3 .scard.active');
+    const body = document.querySelector('#cook3 .cook-body');
+    const rect = hint.getBoundingClientRect();
+    const cardRect = card.getBoundingClientRect();
+    const bodyRect = body.getBoundingClientRect();
+    const area = Math.max(1, rect.width * rect.height);
+    const screenArea = window.innerWidth * window.innerHeight;
+    const overlapX = Math.max(0, Math.min(rect.right, cardRect.right) - Math.max(rect.left, cardRect.left));
+    const overlapY = Math.max(0, Math.min(rect.bottom, cardRect.bottom) - Math.max(rect.top, cardRect.top));
+    const overlapRatio = (overlapX * overlapY) / Math.max(1, cardRect.width * cardRect.height);
+    const initialVisible = hint.classList.contains('show');
+    hideCookHint();
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    show('detail');
+    show('cook3');
+    await new Promise((resolve) => setTimeout(resolve, 180));
+    const reopensAfterClose = document.getElementById('cookHint').classList.contains('show');
+    dismissHintForever();
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    show('detail');
+    show('cook3');
+    await new Promise((resolve) => setTimeout(resolve, 180));
+    const hiddenAfterNever = !document.getElementById('cookHint').classList.contains('show');
+    return {
+      visible: initialVisible,
+      rect: { width: Math.round(rect.width), height: Math.round(rect.height), top: Math.round(rect.top), bottom: Math.round(rect.bottom) },
+      bodyRect: { top: Math.round(bodyRect.top), bottom: Math.round(bodyRect.bottom) },
+      screenCoverage: Number((area / screenArea).toFixed(3)),
+      overlapRatio: Number(overlapRatio.toFixed(3)),
+      insideCookBody: rect.top >= bodyRect.top - 1 && rect.bottom <= bodyRect.bottom + 1,
+      reopensAfterClose,
+      hiddenAfterNever
+    };
+  })()`);
+
   const assistant = await evaluate(`(async () => {
     toggleHf3();
     await new Promise((resolve) => setTimeout(resolve, 250));
@@ -200,7 +257,7 @@ try {
     };
   })()`);
 
-  const result = { home, feedback, timer, ingredients, assistant };
+  const result = { home, search, feedback, timer, ingredients, tutorial, assistant };
   console.log(JSON.stringify(result, null, 2));
 
   if (home.marketing || home.active !== 'home') {
@@ -208,6 +265,15 @@ try {
   }
   if (home.feedbackVisible === 'none') {
     throw new Error('앱 내부 피드백 버튼이 보이지 않습니다.');
+  }
+  if (search.active !== 'searchPage' || !search.creatorHeadVisible || !search.creatorRows.some((row) => row.includes('Maangchi'))) {
+    throw new Error('Maangchi 검색이 창작자 결과로 분리되지 않았습니다.');
+  }
+  if (search.foodChipTexts.includes('Maangchi') || !search.creatorChipTexts.includes('Maangchi')) {
+    throw new Error('창작자 빠른 검색어가 요리 칩과 분리되지 않았습니다.');
+  }
+  if (search.recipeCards.length < 1 || !search.recipeCards.every((card) => card.title && !/^Maangchi$/i.test(card.title))) {
+    throw new Error('창작자 검색의 요리 결과가 실제 레시피 카드로 표시되지 않았습니다.');
   }
   if (!feedback.modalOpen || !feedback.requests.some((request) => request.url.endsWith('/api/feedback'))) {
     throw new Error('피드백 제출이 /api/feedback으로 이어지지 않았습니다.');
@@ -226,6 +292,12 @@ try {
   }
   if (ingredients.checkState.listActive || !ingredients.checkState.checkActive) {
     throw new Error('재료 체크리스트 추가 보기로 전환되지 않았습니다.');
+  }
+  if (!tutorial.visible || !tutorial.insideCookBody || tutorial.screenCoverage > 0.2 || tutorial.overlapRatio > 0.35) {
+    throw new Error('조리 튜토리얼이 화면 내부 패널로 보이지 않거나 조리 카드를 과하게 가립니다.');
+  }
+  if (!tutorial.reopensAfterClose || !tutorial.hiddenAfterNever) {
+    throw new Error('조리 튜토리얼 다시 보기/다시 보지 않기 흐름이 동작하지 않습니다.');
   }
   if (!assistant.opened.panel.includes('open') || assistant.opened.queuedTimers !== 0 || assistant.opened.activeStep !== '0') {
     throw new Error('요리비서 패널이 열리자마자 자동 대화/단계 진행을 시작했습니다.');

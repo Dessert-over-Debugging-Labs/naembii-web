@@ -1,8 +1,8 @@
 # 냄비 Ralph 검증 루프 실행 리포트
-- 시작: 2026-07-08T16:39:37.200Z
-- 종료: 2026-07-08T16:40:36.582Z
+- 시작: 2026-07-09T11:27:30.074Z
+- 종료: 2026-07-09T11:29:07.576Z
 - 최종 판정: **PASS**
-- 기준 URL: `http://127.0.0.1:4874/`
+- 기준 URL: `http://127.0.0.1:4876`
 - 통과 기준: **96% 초과**
 - 모드: visual 포함
 - 최소 실행 시간: 0분
@@ -11,7 +11,7 @@
 ## 라운드
 | round | at | summary | score | percent | exit |
 | ---: | --- | --- | --- | ---: | ---: |
-| 1 | 2026-07-08T16:40:36.581Z | PASS | 130 / 130 | 100% | 0 |
+| 1 | 2026-07-09T11:29:07.575Z | PASS | 130 / 130 | 100% | 0 |
 ## 최신 라운드 리포트
 - Markdown: `docs/verify/NAEMBI_RALPH_LOOP_ROUND_LAST_ko.md`
 - JSON: `docs/verify/NAEMBI_RALPH_LOOP_ROUND_LAST_ko.json`
@@ -44,7 +44,7 @@
 | visual capture: mobile | PASS | /tmp/cook-wireframe-v3/dynamic-mobile.png, forbiddenVisibleTerms=[], croppedScreenImages=[] | - |
 | visual capture: tablet | PASS | /tmp/cook-wireframe-v3/dynamic-tablet.png, forbiddenVisibleTerms=[], croppedScreenImages=[] | - |
 | visual capture: desktop | PASS | /tmp/cook-wireframe-v3/dynamic-desktop.png, forbiddenVisibleTerms=[], croppedScreenImages=[] | - |
-| app screen clipping | PASS | 30개 앱 내부 상태 잘림/overflow 검사 PASS | - |
+| app screen clipping | PASS | 77개 앱 내부 상태 잘림/overflow 검사 PASS | - |
 
 ## 루프 규칙
 
