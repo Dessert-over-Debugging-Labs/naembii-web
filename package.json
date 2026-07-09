@@ -8,6 +8,8 @@
     "check": "node scripts/check-app-script.mjs",
     "capture:screens": "node scripts/capture-app-screens.mjs",
     "capture:flow-gif": "node scripts/capture-core-flow-gif.mjs",
+    "notion:copy-candidates:upload": "node scripts/notion/upload-copy-candidates.mjs",
+    "notion:copy-candidates:read": "node scripts/notion/read-copy-candidates.mjs",
     "verify:dynamic": "node scripts/verify-dynamic.mjs",
     "verify:visual": "node scripts/verify-dynamic.mjs --visual",
     "verify:app-screens": "node scripts/validate-app-screens.mjs",
