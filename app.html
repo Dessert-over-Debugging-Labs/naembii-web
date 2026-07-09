@@ -3226,14 +3226,21 @@
   function answerForPrompt(prompt){
     const q=(prompt||'').trim();
     const script=voiceScriptFor(currentRecipe);
-    const direct=script.find(ex=>ex.u===q)||script.find(ex=>q.includes(ex.u)||ex.u.includes(q));
+    const norm=(value)=>String(value||'').replace(/\s+/g,' ').trim();
+    const normalized=norm(q);
+    const direct=script.find(ex=>norm(ex.u)===normalized)
+      ||(normalized.length>=6?script.find(ex=>{
+        const sample=norm(ex.u);
+        if(ex.next)return false;
+        return normalized.includes(sample)||sample.includes(normalized);
+      }):null);
     if(direct)return direct;
     const minute=q.match(/(\d+)\s*분/);
     if(minute){
       const minutes=Math.max(1,Math.min(99,parseInt(minute[1],10)));
       return {u:q,a:minutes+'분 타이머를 시작했어요. 다음 재료를 미리 꺼내두면 조리 흐름이 덜 끊겨요.',timer:minutes*60};
     }
-    if(/다음|넘어/.test(q))return {u:q,a:'네, 다음 단계로 넘어갈게요.',next:true};
+    if(/^(다음|다음\s*단계|다음으로|다음\s*단계로|넘어가|넘어가줘|다음\s*단계로\s*가줘)$/i.test(normalized))return {u:q,a:'네, 다음 단계로 넘어갈게요.',next:true};
     if(/재료|대체|없/.test(q))return {u:q,a:currentRecipe.name+'은 핵심 재료를 유지하고 비슷한 식감이나 간의 재료로 바꾸면 돼요. 양념은 한 번에 많이 넣지 말고 조금씩 맞춰보세요.'};
     if(/불|타|익|간/.test(q))return {u:q,a:'불을 한 단계 낮추고 현재 단계 설명을 보며 천천히 맞춰보세요. 간은 마지막에 한 번 더 보는 편이 실패가 적어요.'};
     return {u:q,a:'지금은 정해진 예시 질문으로 답변을 보여드려요. 재료 대체, 불 조절, 타이머, 다음 단계 질문을 해볼 수 있어요.'};

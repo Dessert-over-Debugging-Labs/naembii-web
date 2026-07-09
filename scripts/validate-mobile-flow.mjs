@@ -289,6 +289,10 @@ try {
     document.getElementById('vpPromptInput').value = '타이머 1분 맞춰줘';
     document.querySelector('.vp-chat-form button').click();
     await new Promise((resolve) => setTimeout(resolve, 900));
+    const afterTimerStep = document.querySelector('#cookTrack3 .scard.active')?.dataset.i;
+    document.getElementById('vpPromptInput').value = '다음 재료는 뭐 준비하면 돼?';
+    document.querySelector('.vp-chat-form button').click();
+    await new Promise((resolve) => setTimeout(resolve, 900));
     return {
       opened,
       resized,
@@ -296,6 +300,7 @@ try {
       user: document.getElementById('vpUser').textContent,
       answer: document.getElementById('vpAi').textContent,
       quickCount: document.querySelectorAll('#vpQuick button').length,
+      afterTimerStep,
       activeStep: document.querySelector('#cookTrack3 .scard.active')?.dataset.i
     };
   })()`);
@@ -369,7 +374,7 @@ try {
   if (!/auto|scroll/.test(assistant.resized.scrollOverflowY) || assistant.resized.scrollHeight <= assistant.resized.scrollClientHeight || !assistant.resized.scrollMoved) {
     throw new Error('요리비서 긴 답변이 패널 내부에서 스크롤되지 않습니다.');
   }
-  if (!assistant.user.includes('타이머 1분') || assistant.quickCount < 3 || assistant.activeStep !== '0') {
+  if (assistant.afterTimerStep !== '0' || !assistant.user.includes('다음 재료') || assistant.quickCount < 3 || assistant.activeStep !== '0') {
     throw new Error('요리비서 질문 입력/추천 질문이 동작하지 않았습니다.');
   }
 } finally {
