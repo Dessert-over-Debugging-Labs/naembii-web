@@ -10,6 +10,7 @@
     "capture:flow-gif": "node scripts/capture-core-flow-gif.mjs",
     "notion:copy-candidates:upload": "node scripts/notion/upload-copy-candidates.mjs",
     "notion:copy-candidates:read": "node scripts/notion/read-copy-candidates.mjs",
+    "notion:copy-candidates:apply": "node scripts/notion/apply-copy-candidates.mjs",
     "notion:search-tutorial-report:upload": "node scripts/notion/upload-search-tutorial-responsive-report.mjs",
     "verify:dynamic": "node scripts/verify-dynamic.mjs",
     "verify:visual": "node scripts/verify-dynamic.mjs --visual",

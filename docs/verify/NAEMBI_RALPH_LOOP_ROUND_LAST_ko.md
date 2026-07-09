@@ -1,6 +1,6 @@
 # 동적 검증 워크플로우 실행 리포트
 
-- 일시: 2026-07-09T11:27:30.161Z
+- 일시: 2026-07-09T11:52:49.209Z
 - 판정: **PASS**
 - 점수: **130 / 130 (100%)**
 - 통과 기준: **96% 초과**
@@ -13,24 +13,23 @@
 
 ## 변경 파일
 
-- `app.html`
-- `docs/verify/NAEMBI_RALPH_LOOP_LAST_ko.json`
-- `docs/verify/NAEMBI_RALPH_LOOP_LAST_ko.md`
-- `docs/verify/NAEMBI_RALPH_LOOP_ROUND_LAST_ko.html`
-- `docs/verify/NAEMBI_RALPH_LOOP_ROUND_LAST_ko.json`
-- `docs/verify/NAEMBI_RALPH_LOOP_ROUND_LAST_ko.md`
-- `index.html`
-- `scripts/validate-app-screens.mjs`
-- `scripts/validate-mobile-flow.mjs`
+- `docs/COPY_CANDIDATES_SETUP_ko.md`
+- `docs/SEARCH_TUTORIAL_RESPONSIVE_PLAN_ko.md`
+- `package.json`
+- `scripts/notion/naembi-copy-candidate-data.mjs`
+- `scripts/notion/read-copy-candidates.mjs`
+- `scripts/notion/upload-copy-candidates.mjs`
+- `scripts/notion/apply-copy-candidates.mjs`
+- `scripts/notion/copy-candidate-notion.mjs`
 
 ## 선택된 워크플로우
 
 | workflow | 선택 이유 |
 | --- | --- |
 | core | 항상 실행 |
-| api | api/app/landing 변경 감지 |
-| deploy | full 실행 |
-| docs | 검증 문서 변경 감지 |
+| api | full 실행 |
+| deploy | 배포 설정 변경 감지 |
+| docs | full 실행 |
 | visual | --visual 요청 |
 
 ## 점수표

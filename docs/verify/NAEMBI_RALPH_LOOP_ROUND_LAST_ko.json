@@ -1,18 +1,17 @@
 {
-  "startedAt": "2026-07-09T11:27:30.161Z",
+  "startedAt": "2026-07-09T11:52:49.209Z",
   "summary": "PASS",
   "visual": true,
   "baseURL": "http://127.0.0.1:4876",
   "files": [
-    "app.html",
-    "docs/verify/NAEMBI_RALPH_LOOP_LAST_ko.json",
-    "docs/verify/NAEMBI_RALPH_LOOP_LAST_ko.md",
-    "docs/verify/NAEMBI_RALPH_LOOP_ROUND_LAST_ko.html",
-    "docs/verify/NAEMBI_RALPH_LOOP_ROUND_LAST_ko.json",
-    "docs/verify/NAEMBI_RALPH_LOOP_ROUND_LAST_ko.md",
-    "index.html",
-    "scripts/validate-app-screens.mjs",
-    "scripts/validate-mobile-flow.mjs"
+    "docs/COPY_CANDIDATES_SETUP_ko.md",
+    "docs/SEARCH_TUTORIAL_RESPONSIVE_PLAN_ko.md",
+    "package.json",
+    "scripts/notion/naembi-copy-candidate-data.mjs",
+    "scripts/notion/read-copy-candidates.mjs",
+    "scripts/notion/upload-copy-candidates.mjs",
+    "scripts/notion/apply-copy-candidates.mjs",
+    "scripts/notion/copy-candidate-notion.mjs"
   ],
   "workflows": [
     "core",

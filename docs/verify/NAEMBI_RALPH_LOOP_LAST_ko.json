@@ -1,6 +1,6 @@
 {
-  "startedAt": "2026-07-09T11:27:30.074Z",
-  "endedAt": "2026-07-09T11:29:07.577Z",
+  "startedAt": "2026-07-09T11:52:49.083Z",
+  "endedAt": "2026-07-09T11:54:30.914Z",
   "finalStatus": "PASS",
   "note": "점수 기준과 게이트를 만족했다.",
   "baseURL": "http://127.0.0.1:4876",
@@ -14,7 +14,7 @@
   "rounds": [
     {
       "round": 1,
-      "at": "2026-07-09T11:29:07.575Z",
+      "at": "2026-07-09T11:54:30.909Z",
       "command": "/opt/homebrew/Cellar/node/26.0.0/bin/node scripts/verify-dynamic.mjs --base-url=http://127.0.0.1:4876 --min-score=96 --report=docs/verify/NAEMBI_RALPH_LOOP_ROUND_LAST_ko.md --full --visual",
       "exitCode": 0,
       "summary": "PASS",

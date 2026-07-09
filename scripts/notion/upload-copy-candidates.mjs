@@ -62,7 +62,8 @@ const children = [
   heading(2, '사용 방법'),
   bullet('실제 반영할 후보만 체크합니다. 체크하지 않은 문구는 코드에 반영하지 않습니다.'),
   bullet('같은 묶음 안에서는 하나만 체크합니다. 여러 개를 체크하면 읽기 스크립트가 실패하도록 만들었습니다.'),
-  bullet('체크 후 Codex에 "어휘 후보 체크 완료"라고 말하면 체크된 항목만 읽어서 반영합니다.'),
+  bullet('체크 후 Codex에 "어휘 후보 체크 완료"라고 말하면 체크된 항목만 읽고 dry-run 검증 후 반영합니다.'),
+  bullet('적용 순서: notion:copy-candidates:read → notion:copy-candidates:apply -- --dry-run → notion:copy-candidates:apply'),
   bullet('검색 결과 분리, 모바일 레이아웃 같은 구조 수정은 별도로 진행하고, 문구 교체는 이 페이지의 체크 상태를 기준으로 합니다.'),
   divider()
 ];
@@ -80,4 +81,3 @@ const page = await notion('/pages', {
 });
 
 console.log(JSON.stringify({ title, pageId: page.id, url: page.url }, null, 2));
-
