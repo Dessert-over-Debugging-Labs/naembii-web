@@ -8,10 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>냄비 - SNS 요리 영상 따라하기 쉽게</title>
 <link rel="icon" href="data:,">
-<script src="https://unpkg.com/lucide@latest"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+<script async src="https://unpkg.com/lucide@latest" onload="window.refreshIcons&&window.refreshIcons()"></script>
 <style>
   :root{
     /* ===== 뉴트럴 시맨틱 토큰 (라이트 기본 · data-mode="dark"에서 명암 반전) ===== */
@@ -133,7 +130,7 @@
   .nav .title{font-size:16px;font-weight:700;}
   .nav.dark .title{color:var(--text);}
 
-  .logo{display:flex;align-items:center;gap:7px;font-family:'Jua',sans-serif;font-size:25px;font-weight:400;color:var(--green);}
+  .logo{display:flex;align-items:center;gap:7px;font-family:"Apple SD Gothic Neo","Arial Rounded MT Bold",-apple-system,BlinkMacSystemFont,sans-serif;font-size:25px;font-weight:800;color:var(--green);}
   .logo svg{width:24px;height:24px;stroke-width:2.2;}
   .hd-right{display:flex;align-items:center;gap:10px;}
   .noti{display:flex;align-items:center;gap:4px;background:var(--green-soft);color:var(--green);font-size:13px;font-weight:800;padding:6px 12px;border-radius:12px;}
@@ -945,7 +942,7 @@
   .variant-switcher button{border:1px solid #E3E4E8;background:#F8F9FB;color:#3A3D42;border-radius:999px;padding:9px 12px;font:inherit;font-size:13px;font-weight:900;cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
   .variant-switcher button.active{background:#1E2024;color:#fff;border-color:#1E2024;}
   .landing-nav{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:30px;}
-  .landing-brand{display:flex;align-items:center;gap:10px;font-family:'Jua',sans-serif;font-size:30px;color:var(--brand);}
+  .landing-brand{display:flex;align-items:center;gap:10px;font-family:"Apple SD Gothic Neo","Arial Rounded MT Bold",-apple-system,BlinkMacSystemFont,sans-serif;font-size:30px;font-weight:800;color:var(--brand);}
   .landing-brand svg{width:28px;height:28px;}
   .trust-stack{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
   .trust-pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:7px 10px;font-size:12px;font-weight:950;line-height:1;border:1px solid #E6E0DA;background:#fff;color:#6A4638;}
@@ -1226,7 +1223,7 @@
 
       <div class="landing-preview">
         <div class="demo-frame-wrap">
-          <iframe class="demo-app-frame" id="landingDemoFrame" title="냄비 앱 화면 미리보기" src="./app.html#home"></iframe>
+          <iframe class="demo-app-frame" id="landingDemoFrame" title="냄비 앱 화면 미리보기" loading="lazy"></iframe>
         </div>
         <div class="demo-tabs" aria-label="앱 흐름 미리보기">
           <button class="demo-tab active" type="button" data-demo="home" onclick="setDemoScreen('home')"><i data-lucide="home"></i>홈</button>
@@ -1671,6 +1668,8 @@
 
 <script>
   if('scrollRestoration' in history)history.scrollRestoration='manual';
+  function refreshIcons(){if(window.lucide)window.lucide.createIcons();}
+  window.refreshIcons=refreshIcons;
   function setFormStatus(form,msg,type){
     const node=form&&form.querySelector('[data-status]');
     if(!node)return;
@@ -1761,7 +1760,7 @@
     const mobile=document.querySelector('#mobileBetaForm input[name="note"]');
     if(quick)quick.value='화면 방향 '+key+' 히어로 출시 알림 신청';
     if(mobile)mobile.value='화면 방향 '+key+' 모바일 출시 알림 신청';
-    if(window.lucide)lucide.createIcons();
+    refreshIcons();
   }
   function initLandingVariants(){
     const params=new URLSearchParams(location.search);
@@ -1794,7 +1793,10 @@
   function setDemoScreen(route){
     const target=route||'home';
     const frame=document.getElementById('landingDemoFrame');
-    if(frame)frame.src='./app.html#'+target;
+    if(frame && frame.dataset.currentDemo!==target){
+      frame.src='./app.html#'+target;
+      frame.dataset.currentDemo=target;
+    }
     document.querySelectorAll('.demo-tab').forEach(btn=>btn.classList.toggle('active',btn.dataset.demo===target));
   }
   function openApp(route){
@@ -1810,6 +1812,7 @@
     stopCook3Video();
     stopDetailVideo();
     document.body.classList.add('marketing-open');
+    setDemoScreen(document.querySelector('.demo-tab.active')?.dataset.demo||'home');
     document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
     document.getElementById('home').classList.add('active');
     if(location.hash)history.replaceState(null,'',location.pathname+location.search);
@@ -1835,7 +1838,7 @@
       ? '따라 해보고 싶은 요리나 영상 링크를 남겨주세요. 다음 레시피를 고를 때 참고합니다.'
       : '막힌 지점, 좋았던 흐름, 다른 사람에게 남기고 싶은 팁을 그대로 적어주세요.';
     modal.classList.add('show');
-    lucide.createIcons();
+    refreshIcons();
   }
   function closeFeedback(){
     document.getElementById('feedbackModal')?.classList.remove('show');
@@ -1908,7 +1911,7 @@
     try{
       setFormBusy(form,true);
       if(submitButton)submitButton.innerHTML='<i data-lucide="loader-circle"></i>보내는 중';
-      if(window.lucide)lucide.createIcons();
+      refreshIcons();
       setFormStatus(form,'전송 중입니다.','');
       await postJson('/api/feedback',payload);
       form.reset();
@@ -1920,7 +1923,7 @@
     }finally{
       setFormBusy(form,false);
       if(submitButton)submitButton.innerHTML=originalLabel;
-      if(window.lucide)lucide.createIcons();
+      refreshIcons();
     }
   }
   function setActiveNav(key){
@@ -2330,10 +2333,35 @@
     }).join('');
   }
 
+  let recipeThumbObserver=null;
+  function loadRecipeThumb(img){
+    if(!img||img.hasAttribute('src'))return;
+    const src=img.dataset.src;
+    if(src)img.setAttribute('src',src);
+  }
+  function observeRecipeThumbs(root=document){
+    const imgs=[...root.querySelectorAll('img[data-recipe-thumb][data-src]:not([src])')];
+    if(!imgs.length)return;
+    if(!('IntersectionObserver' in window)){
+      imgs.slice(0,6).forEach(loadRecipeThumb);
+      return;
+    }
+    if(!recipeThumbObserver){
+      recipeThumbObserver=new IntersectionObserver((entries)=>{
+        entries.forEach(entry=>{
+          if(!entry.isIntersecting)return;
+          loadRecipeThumb(entry.target);
+          recipeThumbObserver.unobserve(entry.target);
+        });
+      },{root:null,rootMargin:'160px 80px',threshold:0.01});
+    }
+    imgs.forEach(img=>recipeThumbObserver.observe(img));
+  }
+
   function cardHTML(r){
     const reaction=reactionFor(r);
     return '<div class="rcard" data-vid="'+r.id+'" onclick="goDetail(\''+r.id+'\')">'+
-      '<div class="thumb '+r.food+'"><img src="https://i.ytimg.com/vi/'+r.id+'/mqdefault.jpg" onerror="this.style.display=\'none\'">'+
+      '<div class="thumb '+r.food+'"><img data-recipe-thumb data-src="https://i.ytimg.com/vi/'+r.id+'/mqdefault.jpg" alt="'+esc(r.name)+' 썸네일" loading="lazy" decoding="async" width="320" height="180" onerror="this.style.display=\'none\'">'+
         '<span class="badge"><i data-lucide="clock"></i>'+r.time+'</span></div>'+
       '<div class="cap"><b>'+esc(r.title)+'</b><small>'+esc(r.channel+' · '+r.servings)+'</small><div class="social"><span><i data-lucide="utensils"></i><em>'+reaction.made+'</em></span><span><i data-lucide="star"></i><em>'+reaction.stars+'</em></span></div></div></div>';
   }
@@ -2456,7 +2484,8 @@
     results.innerHTML=list.length
       ? list.map(cardHTML).join('')
       : '<div class="search-empty"><b>아직 찾는 요리가 없어요</b>요리 이름이나 유튜브 링크를 보내주면 다음 메뉴를 고를 때 참고할게요.</div>';
-    lucide.createIcons();
+    refreshIcons();
+    observeRecipeThumbs(results);
   }
   function openSearch(query=''){
     show('searchPage');
@@ -2492,7 +2521,8 @@
     const trendEl=document.getElementById('trendScroll');
     if(trendEl)trendEl.innerHTML=trendIds.map(id=>RECIPES.find(r=>r.id===id)).filter(Boolean).map(cardHTML).join('');
     renderCommunityStrip();
-    lucide.createIcons();
+    refreshIcons();
+    observeRecipeThumbs(document.getElementById('home'));
   }
   function goDetail(id){currentRecipe=recipeById(id);show('detail');}
   // 상세 화면 렌더 (제목·요약·메타·재료·단계·영상) — 전부 currentRecipe 기준
@@ -2509,7 +2539,7 @@
     document.getElementById('detIngs').innerHTML=ingGroupsHTML(r);
     renderSteps();
     initDetailYoutube();
-    lucide.createIcons();
+    refreshIcons();
   }
   function renderSteps(){
     const el=document.getElementById('detSteps');if(!el)return;
@@ -2644,7 +2674,7 @@
     viewEl.addEventListener('pointercancel',()=>{dragY=null;});
     document.addEventListener('keydown',e=>{ if(!viewEl.classList.contains('active'))return; if(e.code==='Space'||e.code==='ArrowRight'||e.code==='ArrowDown'){e.preventDefault();next();} else if(e.code==='ArrowUp'||e.code==='ArrowLeft'){e.preventDefault();prev();} });
     build();layout();
-    return {reset(){cur=0;layout();}, rebuild(){build();cur=0;layout();lucide.createIcons();}, layout, next, prev, advance(){cur=(cur+1)%stepsArr().length;layout();}, goTo(i){cur=Math.max(0,Math.min(maxIdx(),i));layout();}};
+    return {reset(){cur=0;layout();}, rebuild(){build();cur=0;layout();refreshIcons();}, layout, next, prev, advance(){cur=(cur+1)%stepsArr().length;layout();}, goTo(i){cur=Math.max(0,Math.min(maxIdx(),i));layout();}};
   }
   const cook3Car=makeCarousel('cook3','cookTrack3');
   function startCook(){show('cook3');} // show('cook3')에서 현재 레시피로 캐러셀·영상 재구성
@@ -2667,7 +2697,7 @@
     if(!btn)return;
     btn.classList.toggle('muted',cookYoutubeMuted);
     btn.innerHTML='<i data-lucide="'+(cookYoutubeMuted?'volume-x':'volume-2')+'"></i><span>5번 영상 소리: '+(cookYoutubeMuted?'꺼짐':'켜짐')+'</span>';
-    lucide.createIcons();
+    refreshIcons();
   }
   function toggleCookYoutubeSound(){
     cookYoutubeMuted=!cookYoutubeMuted;
@@ -2706,7 +2736,7 @@
     const f=document.getElementById('vgFlash');
     if(!f)return;
     f.innerHTML='<i data-lucide="'+icon+'"></i>';
-    lucide.createIcons();
+    refreshIcons();
     f.classList.remove('show');void f.offsetWidth;f.classList.add('show');
     clearTimeout(f._t);f._t=setTimeout(()=>f.classList.remove('show'),620);
   }
@@ -2736,7 +2766,7 @@
   function openVideoSettings(){
     syncVsVolUI();
     document.getElementById('videoSettings').classList.add('show');
-    lucide.createIcons();
+    refreshIcons();
   }
   function closeVideoSettings(){
     document.getElementById('videoSettings').classList.remove('show');
@@ -2827,7 +2857,7 @@
     void h.offsetWidth;
     h.classList.add('show');
     if(cookHintTimer){clearTimeout(cookHintTimer);cookHintTimer=null;} // 자동으로 사라지지 않음 — 사용자 액션(탭/다시 보지 않기/단계 전환)으로만 닫힘
-    lucide.createIcons();
+    refreshIcons();
   }
   function playCookYoutubeAfterGuide(){
     const cook=document.getElementById('cook3');
@@ -2976,7 +3006,7 @@
     if(pause.dataset.state!==state){
       pause.dataset.state=state;
       pause.innerHTML='<i data-lucide="'+state+'"></i>';
-      lucide.createIcons();
+      refreshIcons();
     }
   }
   function updateStageTimer(left,total,done){
@@ -3050,7 +3080,7 @@
     const btn=document.getElementById('hfBtn');
     btn.classList.toggle('off',!handsfree);
     btn.innerHTML='<i data-lucide="'+(handsfree?'mic':'mic-off')+'"></i>';
-    lucide.createIcons();
+    refreshIcons();
     toast(handsfree?'핸즈프리 모드 켜짐 — 음성으로 진행해요':'핸즈프리 모드 꺼짐',handsfree?'mic':'mic-off');
   }
   /* 조리 모드(신) 실시간 음성 패널 */
@@ -3131,7 +3161,7 @@
     const btn=panel?.querySelector('.vp-mic');
     const original=btn?btn.innerHTML:'';
     try{
-      if(btn){btn.innerHTML='<i data-lucide="loader-circle"></i>';lucide.createIcons();}
+      if(btn){btn.innerHTML='<i data-lucide="loader-circle"></i>';refreshIcons();}
       setVpLiveStatus('모바일 마이크 권한을 확인하고 있어요.','');
       await requestMicPermissionProbe();
       setVpLiveStatus('Gemini Live 세션을 준비하고 있어요.','');
@@ -3154,7 +3184,7 @@
       toast('추천 질문이나 직접 입력으로 계속 쓸 수 있어요','message-circle');
     }finally{
       geminiLiveBusy=false;
-      if(btn){btn.innerHTML=original||'<i data-lucide="mic"></i>';lucide.createIcons();}
+      if(btn){btn.innerHTML=original||'<i data-lucide="mic"></i>';refreshIcons();}
     }
   }
   // 실제 음성 입력은 연결 설정과 모바일 권한이 준비됐는지만 먼저 확인한다.
@@ -3206,7 +3236,7 @@
     if(!wrap)return;
     const script=voiceScriptFor(currentRecipe).slice(0,4);
     wrap.innerHTML=script.map((ex,i)=>'<button type="button" onclick="useVpPrompt('+i+')">'+esc(ex.u)+'</button>').join('');
-    lucide.createIcons();
+    refreshIcons();
   }
   function resetVpPromptPanel(){
     const panel=document.getElementById('vpanel'), u=document.getElementById('vpUser'), a=document.getElementById('vpAi'), input=document.getElementById('vpPromptInput');
@@ -3220,7 +3250,7 @@
     if(a)a.textContent='아래 질문을 누르거나 직접 물어보면 답할게요.';
     if(input)input.value='';
     setVpLiveStatus('마이크 버튼을 누르면 모바일 권한과 Live 연결 준비를 확인해요.','');
-    {const mb=panel.querySelector('.vp-mic');if(mb){mb.innerHTML='<i data-lucide="mic"></i>';lucide.createIcons();}}
+    {const mb=panel.querySelector('.vp-mic');if(mb){mb.innerHTML='<i data-lucide="mic"></i>';refreshIcons();}}
     renderVpQuickPrompts();
   }
   function answerForPrompt(prompt){
@@ -3297,7 +3327,7 @@
     closeVideoSettings(); // 화면 이탈 시 영상 설정 모달 닫기
     cook3StopTimeTracking();cook3Playing=false; // 재생 시간 추적 정리
   }
-  function openIngredients(view='list'){ingSheetView=view==='check'?'check':'list';renderIngSheet();lucide.createIcons();document.getElementById('ingSheet').classList.add('show');}
+  function openIngredients(view='list'){ingSheetView=view==='check'?'check':'list';renderIngSheet();refreshIcons();document.getElementById('ingSheet').classList.add('show');}
   function closeIngredients(){document.getElementById('ingSheet').classList.remove('show');}
   function openVoice(){hideCookHint();document.getElementById('voiceModal').classList.add('show');document.getElementById('cook3').classList.add('voice-open');setActiveNav('voice');}
   function closeVoice(){
@@ -3310,7 +3340,7 @@
   function toast(msg,icon){
     const t=document.getElementById('toast');
     t.innerHTML=(icon?'<i data-lucide="'+icon+'"></i>':'')+'<span>'+msg+'</span>';
-    lucide.createIcons();
+    refreshIcons();
     t.classList.add('show');
     clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1800);
   }
@@ -3360,7 +3390,7 @@
       if(insertFirst)container.insertBefore(mount,container.firstChild); else container.appendChild(mount);}
     if(!/^https?:$/.test(location.protocol)){
       mount.innerHTML='<div class="video-fallback"><i data-lucide="play-circle"></i><b>로컬 서버로 열면 영상이 재생돼요</b><span>YouTube 임베드는 파일 직접 열기에서 오류 153이 날 수 있어요.</span><a href="https://youtu.be/'+videoId+'" target="_blank" rel="noopener">YouTube에서 보기</a></div>';
-      lucide.createIcons();
+      refreshIcons();
       return;
     }
     const iframe=document.createElement('iframe');
@@ -3384,14 +3414,12 @@
     embedYoutube(document.querySelector('#detail .hero'),'detailYoutube','detailYoutubePlayer',currentRecipe.id,currentRecipe.title,params,false);
   }
 
-  lucide.createIcons();
+  refreshIcons();
   initLandingVariants();
   renderCookYoutubeSoundButton();
   syncVsVolUI(); // 초기 음소거 상태를 설정 모달 볼륨 UI에도 반영
   setActiveNav('home');
   renderHomeSections();
-  renderDetail();     // 기본 레시피(순두부)로 상세 렌더 + 상세 영상 임베드
-  initCookYoutube();  // 조리 영상 임베드(기본 레시피)
   {const db=document.querySelector('#detail .body');if(db)db.addEventListener('scroll',updateDetailTab);}
 
   // 플로우 보드(iframe)에서 특정 화면을 바로 표시하기 위한 해시 처리
@@ -3416,7 +3444,7 @@
     if(willDark)el.setAttribute('data-mode','dark'); else el.removeAttribute('data-mode');
     const btn=document.getElementById('modeToggle');
     btn.innerHTML=(willDark?'<i data-lucide="moon"></i><span>모드: 다크</span>':'<i data-lucide="sun"></i><span>모드: 라이트</span>');
-    if(window.lucide)lucide.createIcons();
+    refreshIcons();
   }
   function isStandaloneAppPath(){
     const path=(location.pathname||'/').replace(/\/+$/,'')||'/';
@@ -3431,7 +3459,7 @@
         show('home');
         return;
       }
-      document.body.classList.add('marketing-open');pinLandingTopSoon();return;
+      document.body.classList.add('marketing-open');setDemoScreen('home');pinLandingTopSoon();return;
     }
     if(h==='landing'){showLanding();return;}
     document.body.classList.remove('marketing-open');
