@@ -802,6 +802,11 @@
   /* 볼륨 슬라이더 */
   .vset-sub input[type=range]{flex:1;min-width:120px;accent-color:var(--brand);height:4px;cursor:pointer;}
   .vset-sub em{font-style:normal;font-size:13px;font-weight:800;color:var(--text-sub);min-width:34px;text-align:right;}
+  .vset-stepper{display:flex;align-items:center;justify-content:space-between;width:100%;gap:10px;margin-bottom:2px;}
+  .vset-stepper button{width:36px;height:36px;border:none;border-radius:50%;background:var(--green-soft);color:var(--brand-deep);display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .vset-stepper button:disabled{opacity:.35;cursor:not-allowed;}
+  .vset-stepper button svg{width:17px;height:17px;}
+  .vset-speed-value{flex:1;text-align:center;font-size:18px;font-weight:900;color:var(--text);}
 
   /* ===== 완료 ===== */
   #complete{background:var(--bg);}
@@ -1593,10 +1598,17 @@
           <div class="vset-label"><i data-lucide="gauge"></i>재생 속도</div>
         </div>
         <div class="vset-sub" id="vsSpeed" style="border-bottom:none;">
-          <button class="vchip on" onclick="setVsSpeed(1,this)">1×</button>
-          <button class="vchip" onclick="setVsSpeed(1.2,this)">1.2×</button>
-          <button class="vchip" onclick="setVsSpeed(1.5,this)">1.5×</button>
-          <button class="vchip" onclick="setVsSpeed(2,this)">2×</button>
+          <div class="vset-stepper">
+            <button type="button" id="vsSpeedDown" onclick="adjustVsSpeed(-1)" aria-label="재생 속도 느리게"><i data-lucide="minus"></i></button>
+            <strong class="vset-speed-value" id="vsSpeedVal">1×</strong>
+            <button type="button" id="vsSpeedUp" onclick="adjustVsSpeed(1)" aria-label="재생 속도 빠르게"><i data-lucide="plus"></i></button>
+          </div>
+          <button class="vchip" data-speed="0.5" onclick="setVsSpeed(0.5)">0.5×</button>
+          <button class="vchip" data-speed="0.75" onclick="setVsSpeed(0.75)">0.75×</button>
+          <button class="vchip on" data-speed="1" onclick="setVsSpeed(1)">1×</button>
+          <button class="vchip" data-speed="1.25" onclick="setVsSpeed(1.25)">1.25×</button>
+          <button class="vchip" data-speed="1.5" onclick="setVsSpeed(1.5)">1.5×</button>
+          <button class="vchip" data-speed="2" onclick="setVsSpeed(2)">2×</button>
         </div>
       </div>
     </div>
@@ -2777,6 +2789,7 @@
   function openVideoSettings(){
     syncVsVolUI();
     syncVsVoiceVolUI();
+    syncVsSpeedUI();
     document.getElementById('videoSettings').classList.add('show');
     refreshIcons();
   }
@@ -2849,12 +2862,34 @@
     if(val)val.textContent=vsVoiceVol;
   }
   // 재생 속도
-  function setVsSpeed(rate,el){
-    vsSpeed=rate;
-    postCookYoutube('setPlaybackRate',[rate]);
-    document.querySelectorAll('#vsSpeed .vchip').forEach(b=>b.classList.remove('on'));
-    if(el)el.classList.add('on');
-    toast('재생 속도 '+rate+'×','gauge');
+  const vsSpeedOptions=[0.5,0.75,1,1.25,1.5,2];
+  function formatVsSpeed(rate){
+    return Number(rate).toFixed(2).replace(/\.?0+$/,'')+'×';
+  }
+  function syncVsSpeedUI(){
+    const current=Number(vsSpeed);
+    const idx=vsSpeedOptions.indexOf(current);
+    const val=document.getElementById('vsSpeedVal');
+    const down=document.getElementById('vsSpeedDown');
+    const up=document.getElementById('vsSpeedUp');
+    if(val)val.textContent=formatVsSpeed(current);
+    if(down)down.disabled=idx<=0;
+    if(up)up.disabled=idx>=vsSpeedOptions.length-1;
+    document.querySelectorAll('#vsSpeed .vchip[data-speed]').forEach(btn=>{
+      btn.classList.toggle('on',Number(btn.dataset.speed)===current);
+    });
+  }
+  function setVsSpeed(rate){
+    const next=vsSpeedOptions.includes(Number(rate))?Number(rate):1;
+    vsSpeed=next;
+    postCookYoutube('setPlaybackRate',[next]);
+    syncVsSpeedUI();
+    toast('재생 속도 '+formatVsSpeed(next),'gauge');
+  }
+  function adjustVsSpeed(direction){
+    const idx=Math.max(0,vsSpeedOptions.indexOf(Number(vsSpeed)));
+    const nextIdx=clampNumber(idx+direction,0,vsSpeedOptions.length-1);
+    setVsSpeed(vsSpeedOptions[nextIdx]);
   }
   function stopCookYoutubeLoop(){
     if(cookYoutubeLoopTimer){clearInterval(cookYoutubeLoopTimer);cookYoutubeLoopTimer=null;}
@@ -3486,6 +3521,7 @@
     const params=new URLSearchParams({rel:'0',modestbranding:'1',controls:'0',disablekb:'1',fs:'0',iv_load_policy:'3',playsinline:'1',enablejsapi:'1',origin:location.origin});
     embedYoutube(document.querySelector('#cook3 .cook-video'),'cook3Youtube','cook3YoutubePlayer',currentRecipe.id,currentRecipe.title,params,true);
     applyCookYoutubeSound();
+    postCookYoutube('setPlaybackRate',[vsSpeed]);
   }
   // 레시피 상세 hero 영상: 기본 컨트롤 노출·직접 재생
   function initDetailYoutube(){
@@ -3498,6 +3534,7 @@
   renderCookYoutubeSoundButton();
   syncVsVolUI(); // 초기 음소거 상태를 설정 모달 볼륨 UI에도 반영
   syncVsVoiceVolUI();
+  syncVsSpeedUI();
   setActiveNav('home');
   renderHomeSections();
   {const db=document.querySelector('#detail .body');if(db)db.addEventListener('scroll',updateDetailTab);}

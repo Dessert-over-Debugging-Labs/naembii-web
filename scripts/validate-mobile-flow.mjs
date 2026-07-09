@@ -238,8 +238,22 @@ try {
       switchOn: document.getElementById('vsVoiceVolSw')?.classList.contains('on') || false,
       gain: Number(assistantVolumeGain().toFixed(2))
     };
+    setVsSpeed(1);
+    adjustVsSpeed(-1);
+    const slower = {
+      value: document.getElementById('vsSpeedVal')?.textContent || '',
+      active: document.querySelector('#vsSpeed .vchip.on')?.textContent.trim() || '',
+      downDisabled: document.getElementById('vsSpeedDown')?.disabled || false,
+      upDisabled: document.getElementById('vsSpeedUp')?.disabled || false
+    };
+    adjustVsSpeed(-1);
+    const slowest = {
+      value: document.getElementById('vsSpeedVal')?.textContent || '',
+      active: document.querySelector('#vsSpeed .vchip.on')?.textContent.trim() || '',
+      downDisabled: document.getElementById('vsSpeedDown')?.disabled || false
+    };
     closeVideoSettings();
-    return { voice, muted, restored };
+    return { voice, muted, restored, slower, slowest };
   })()`);
 
   const tutorial = await evaluate(`(async () => {
@@ -399,6 +413,12 @@ try {
   }
   if (!settings.muted.collapsed || settings.muted.switchOn || settings.muted.gain !== 0 || !settings.restored.switchOn || settings.restored.gain !== 0.35) {
     throw new Error('요리비서 볼륨 스위치가 음소거/복구 상태를 반영하지 못했습니다.');
+  }
+  if (settings.slower.value !== '0.75×' || settings.slower.active !== '0.75×' || settings.slower.downDisabled || settings.slower.upDisabled) {
+    throw new Error('재생속도 - 조절이 0.75× 단계로 동작하지 않았습니다.');
+  }
+  if (settings.slowest.value !== '0.5×' || settings.slowest.active !== '0.5×' || !settings.slowest.downDisabled) {
+    throw new Error('재생속도 최저 단계와 - 버튼 비활성화가 동작하지 않았습니다.');
   }
   if (!tutorial.visible || !tutorial.insideCookBody || tutorial.screenCoverage > 0.2 || tutorial.overlapRatio > 0.35) {
     throw new Error('조리 튜토리얼이 화면 내부 패널로 보이지 않거나 조리 카드를 과하게 가립니다.');
