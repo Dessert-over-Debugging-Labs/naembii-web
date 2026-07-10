@@ -832,11 +832,11 @@
   .vset-speed-value{flex:1;text-align:center;font-size:18px;font-weight:900;color:var(--text);}
 
   /* ===== 완료 ===== */
-  #complete{background:var(--bg);}
+  #complete{background:var(--bg);overflow-y:auto;}
   .done-back{position:absolute;top:44px;left:10px;z-index:5;width:40px;height:40px;display:flex;align-items:center;justify-content:center;background:none;border:none;color:var(--text);cursor:pointer;}
   .done-back svg{width:26px;height:26px;}
   .done-back:active{transform:scale(.92);}
-  .done-view{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:13px;padding:24px 24px 28px;text-align:center;}
+  .done-view{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:13px;padding:24px 24px 28px;text-align:center;overflow-y:auto;}
   .done-badge{width:76px;height:76px;border-radius:50%;background:var(--brand-soft);color:var(--brand);display:flex;align-items:center;justify-content:center;position:relative;flex:none;animation:pop .5s cubic-bezier(.18,.89,.32,1.28);}
   .done-badge::after{content:"";position:absolute;inset:-8px;border-radius:50%;border:2px solid var(--brand);opacity:.2;}
   .done-badge svg{width:38px;height:38px;}
@@ -866,6 +866,21 @@
   .done-next button{min-height:42px;border:1px solid var(--border);border-radius:12px;background:var(--surface);color:var(--text);font:inherit;font-size:13px;font-weight:800;cursor:pointer;padding:0 8px;}
   .done-next.secondary{margin-top:0;}
   .done-next.secondary button{background:transparent;color:var(--text-sub);}
+  @media (max-height:700px){
+    .done-view{justify-content:flex-start;gap:9px;padding:50px 20px 18px;}
+    .done-badge{width:58px;height:58px;}
+    .done-badge::after{inset:-6px;}
+    .done-badge svg{width:29px;height:29px;}
+    .done-view h2{font-size:22px;}
+    .done-view p{font-size:13px;line-height:1.45;}
+    .done-stats{gap:8px;margin:2px 0 0;}
+    .ds-card{padding:9px 5px;gap:4px;}
+    .ds-ic{width:27px;height:27px;}
+    .ds-card b{font-size:16px;}
+    .done-actions{gap:8px;margin-top:4px;}
+    .done-actions .btn{height:46px;font-size:15px;}
+    .done-next button{min-height:37px;font-size:12px;}
+  }
 
   .toast{
     position:absolute;left:50%;bottom:120px;transform:translateX(-50%) translateY(20px);
