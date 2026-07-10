@@ -40,6 +40,31 @@ const states = [
     required: ['#detail .nav', '#detailYoutubePlayer', '#detTitle', '.cta-bar .btn']
   },
   {
+    name: 'reviews',
+    setup: `currentRecipe=recipeById('${recipeId}'); show('reviews');`,
+    required: ['#reviews .nav', '#reviewsSummary .rsum', '#reviewsList .reviews', '#reviews .cta-bar .btn']
+  },
+  {
+    name: 'recipe-review-sheet',
+    setup: `currentRecipe=recipeById('${recipeId}'); show('detail'); openRecipeReview();`,
+    required: ['#recipeReviewSheet.show .ing-panel', '#recipeReviewStars', '#recipeReviewForm .rv-text', '#recipeReviewForm .btn']
+  },
+  {
+    name: 'tip-write',
+    setup: `currentRecipe=recipeById('${recipeId}'); show('tipWrite');`,
+    required: ['#tipWrite .nav', '#tipWrite .tip-hero', '#tipTags button.active', '#tipForm .tip-box', '#tipWrite .tip-actions .btn']
+  },
+  {
+    name: 'account-plan',
+    setup: `show('accountPlan');`,
+    required: ['#accountPlan .nav', '#accountPlan .plan-hero', '#accountPlan .plan-card', '#accountPlan .plan-actions .btn']
+  },
+  {
+    name: 'notification-plan',
+    setup: `show('notificationPlan');`,
+    required: ['#notificationPlan .nav', '#notificationPlan .plan-hero', '#notificationPlan .plan-card', '#notificationPlan .plan-actions .btn']
+  },
+  {
     name: 'cook3-hint',
     setup: `currentRecipe=recipeById('${recipeId}'); show('cook3');`,
     required: ['#cook3 .nav', '#cook3 .cook-video', '#cookTrack3 .scard.active', '#cookHint.show', '#cook3Ctrl']
@@ -189,6 +214,7 @@ try {
         const cleanup = () => {
           try { closeIngredients(); } catch {}
           try { closeTimer(); } catch {}
+          try { closeRecipeReview(); } catch {}
           try { closeVoice(); } catch {}
           try { closeVideoSettings(); } catch {}
           const vpanel = document.getElementById('vpanel');

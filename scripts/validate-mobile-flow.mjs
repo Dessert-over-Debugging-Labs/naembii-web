@@ -142,6 +142,80 @@ try {
     };
   })()`);
 
+  const recipeNotes = await evaluate(`(async () => {
+    localStorage.removeItem(LOCAL_RECIPE_NOTE_KEY);
+    currentRecipe = recipeById('vlPqkuHIdCc');
+    show('detail');
+    await new Promise((resolve) => setTimeout(resolve, 220));
+    openRecipeReview();
+    await new Promise((resolve) => setTimeout(resolve, 120));
+    setRecipeReviewRating(4);
+    document.querySelector('#recipeReviewForm textarea[name="message"]').value = '치즈는 1분 더 녹이니 더 좋았어요.';
+    document.querySelector('#recipeReviewForm button[type="submit"]').click();
+    await new Promise((resolve) => setTimeout(resolve, 880));
+    const reviewSaved = localNotesFor(currentRecipe.id, 'review').length;
+    showTipWrite();
+    await new Promise((resolve) => setTimeout(resolve, 160));
+    document.querySelectorAll('#tipTags button')[1].click();
+    document.querySelector('#tipForm textarea[name="message"]').value = '모짜렐라 대신 체다를 쓰면 설탕을 조금 줄이는 게 좋아요.';
+    document.querySelector('#tipForm button[type="submit"]').click();
+    await new Promise((resolve) => setTimeout(resolve, 900));
+    const tipSaved = localNotesFor(currentRecipe.id, 'tip').length;
+    show('detail');
+    await new Promise((resolve) => setTimeout(resolve, 180));
+    const detailText = document.getElementById('detLocalNotes').textContent;
+    const proofText = document.getElementById('detProof').textContent;
+    show('reviews');
+    await new Promise((resolve) => setTimeout(resolve, 180));
+    const reviewsText = document.getElementById('reviewsList').textContent;
+    show('home');
+    await new Promise((resolve) => setTimeout(resolve, 180));
+    const communityText = document.getElementById('communityStrip').textContent;
+    show('complete');
+    await new Promise((resolve) => setTimeout(resolve, 120));
+    const doneButtons = [...document.querySelectorAll('#complete .done-actions button,#complete .done-next button')].map((button) => button.textContent.trim());
+    document.querySelector('#complete .done-next button').click();
+    await new Promise((resolve) => setTimeout(resolve, 120));
+    return {
+      reviewSaved,
+      tipSaved,
+      detailText,
+      proofText,
+      reviewsText,
+      communityText,
+      doneButtons,
+      activeAfterHome: document.querySelector('.view.active')?.id || ''
+    };
+  })()`);
+
+  const accountNotification = await evaluate(`(async () => {
+    show('home');
+    await new Promise((resolve) => setTimeout(resolve, 120));
+    document.querySelector('[aria-label="게스트 계정 보기"]').click();
+    await new Promise((resolve) => setTimeout(resolve, 120));
+    const account = {
+      active: document.querySelector('.view.active')?.id || '',
+      text: document.getElementById('accountPlan').textContent
+    };
+    show('home');
+    await new Promise((resolve) => setTimeout(resolve, 120));
+    document.querySelector('.noti').click();
+    await new Promise((resolve) => setTimeout(resolve, 120));
+    const notification = {
+      active: document.querySelector('.view.active')?.id || '',
+      text: document.getElementById('notificationPlan').textContent
+    };
+    document.querySelector('#notificationPlan .plan-actions .btn').click();
+    await new Promise((resolve) => setTimeout(resolve, 160));
+    const modal = {
+      open: document.getElementById('feedbackModal').classList.contains('show'),
+      title: document.getElementById('feedbackTitle').textContent,
+      source: document.querySelector('#feedbackForm input[name="source"]').value
+    };
+    closeFeedback();
+    return { account, notification, modal };
+  })()`);
+
   const timer = await evaluate(`(async () => {
     show('cook3');
     hideCookHint();
@@ -386,7 +460,7 @@ try {
     };
   })()`);
 
-  const result = { home, search, feedback, timer, ingredients, settings, tutorial, assistant };
+  const result = { home, search, feedback, recipeNotes, accountNotification, timer, ingredients, settings, tutorial, assistant };
   console.log(JSON.stringify(result, null, 2));
 
   if (home.marketing || home.active !== 'home') {
@@ -409,6 +483,27 @@ try {
   }
   if (!feedback.status.includes('접수')) {
     throw new Error('피드백 제출 성공 메시지가 표시되지 않았습니다.');
+  }
+  if (recipeNotes.reviewSaved < 1 || recipeNotes.tipSaved < 1) {
+    throw new Error('요리 후기와 조리 팁이 로컬 저장소에 저장되지 않았습니다.');
+  }
+  if (!recipeNotes.detailText.includes('치즈는 1분 더') || !recipeNotes.detailText.includes('체다') || !recipeNotes.proofText.includes('내 기록')) {
+    throw new Error('상세 화면에서 로컬 후기/팁 저장 결과가 보이지 않습니다.');
+  }
+  if (!recipeNotes.reviewsText.includes('치즈는 1분 더') || !recipeNotes.communityText.includes('게스트 저장')) {
+    throw new Error('후기 화면 또는 홈 커뮤니티 영역에서 로컬 기록이 보이지 않습니다.');
+  }
+  if (!recipeNotes.doneButtons.includes('홈으로 가기') || !recipeNotes.doneButtons.includes('이 요리 후기 남기기') || recipeNotes.activeAfterHome !== 'home') {
+    throw new Error('완료 화면의 홈 이동과 요리 후기 액션이 동작하지 않았습니다.');
+  }
+  if (accountNotification.account.active !== 'accountPlan' || !accountNotification.account.text.includes('게스트로') || !accountNotification.account.text.includes('이 브라우저')) {
+    throw new Error('홈 계정 아이콘이 게스트 저장 안내 화면으로 연결되지 않았습니다.');
+  }
+  if (accountNotification.notification.active !== 'notificationPlan' || !accountNotification.notification.text.includes('영상 링크') || !accountNotification.notification.text.includes('알림')) {
+    throw new Error('홈 알림 아이콘이 영상 링크/알림 예정 화면으로 연결되지 않았습니다.');
+  }
+  if (!accountNotification.modal.open || accountNotification.modal.source !== 'notification-recipe-request' || !accountNotification.modal.title.includes('영상')) {
+    throw new Error('알림 예정 화면의 영상 링크 보내기가 레시피 요청 모달로 이어지지 않았습니다.');
   }
   if (timer.startedTotal !== 450) {
     throw new Error('타이머 직접 입력 7분 20초와 +10초 조정이 반영되지 않았습니다.');
