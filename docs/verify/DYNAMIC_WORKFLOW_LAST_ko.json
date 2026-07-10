@@ -1,16 +1,9 @@
 {
-  "startedAt": "2026-07-09T15:57:56.213Z",
+  "startedAt": "2026-07-10T05:12:43.237Z",
   "summary": "PASS",
   "visual": true,
   "baseURL": "http://127.0.0.1:4873",
-  "files": [
-    "docs/verify/DYNAMIC_WORKFLOW_LAST_ko.html",
-    "docs/verify/DYNAMIC_WORKFLOW_LAST_ko.json",
-    "docs/verify/DYNAMIC_WORKFLOW_LAST_ko.md",
-    "index.html",
-    "scripts/capture-landing.mjs",
-    "scripts/verify-dynamic.mjs"
-  ],
+  "files": [],
   "workflows": [
     "core",
     "api",
@@ -142,7 +135,7 @@
     {
       "name": "app screen clipping",
       "status": "PASS",
-      "detail": "84개 앱 내부 상태 잘림/overflow 검사 PASS",
+      "detail": "119개 앱 내부 상태 잘림/overflow 검사 PASS",
       "fix": ""
     }
   ],
@@ -540,7 +533,7 @@
       "status": "PASS",
       "payload": {
         "status": "PASS",
-        "checked": 84,
+        "checked": 119,
         "failed": 0,
         "outDir": "/tmp/cook-wireframe-v3/app-clip",
         "failures": []

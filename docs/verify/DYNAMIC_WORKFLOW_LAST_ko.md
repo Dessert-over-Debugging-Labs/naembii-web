@@ -1,6 +1,6 @@
 # 동적 검증 워크플로우 실행 리포트
 
-- 일시: 2026-07-09T15:57:56.213Z
+- 일시: 2026-07-10T05:12:43.237Z
 - 판정: **PASS**
 - 점수: **127 / 130 (98%)**
 - 통과 기준: **96% 초과**
@@ -13,21 +13,16 @@
 
 ## 변경 파일
 
-- `docs/verify/DYNAMIC_WORKFLOW_LAST_ko.html`
-- `docs/verify/DYNAMIC_WORKFLOW_LAST_ko.json`
-- `docs/verify/DYNAMIC_WORKFLOW_LAST_ko.md`
-- `index.html`
-- `scripts/capture-landing.mjs`
-- `scripts/verify-dynamic.mjs`
+- 감지된 변경 없음
 
 ## 선택된 워크플로우
 
 | workflow | 선택 이유 |
 | --- | --- |
 | core | 항상 실행 |
-| api | api/app/landing 변경 감지 |
+| api | full 실행 |
 | deploy | full 실행 |
-| docs | 검증 문서 변경 감지 |
+| docs | full 실행 |
 | visual | --visual 요청 |
 
 ## 점수표
@@ -70,7 +65,7 @@
 | visual capture: mobile | PASS | /tmp/cook-wireframe-v3/dynamic-mobile.png, forbiddenVisibleTerms=[], croppedScreenImages=[] | - |
 | visual capture: tablet | PASS | /tmp/cook-wireframe-v3/dynamic-tablet.png, forbiddenVisibleTerms=[], croppedScreenImages=[] | - |
 | visual capture: desktop | PASS | /tmp/cook-wireframe-v3/dynamic-desktop.png, forbiddenVisibleTerms=[], croppedScreenImages=[] | - |
-| app screen clipping | PASS | 84개 앱 내부 상태 잘림/overflow 검사 PASS | - |
+| app screen clipping | PASS | 119개 앱 내부 상태 잘림/overflow 검사 PASS | - |
 
 ## 루프 규칙
 
