@@ -701,11 +701,11 @@
   .vp-quick{position:relative;z-index:1;display:flex;gap:7px;overflow-x:auto;margin:6px 0 9px;padding-bottom:2px;}
   .vp-quick::-webkit-scrollbar{display:none;}
   .vp-quick button{height:32px;border:1px solid rgba(255,255,255,.28);border-radius:999px;background:rgba(255,255,255,.16);color:#fff;font:inherit;font-size:12px;font-weight:900;white-space:nowrap;padding:0 10px;cursor:pointer;}
-  .vp-chat-form{position:relative;z-index:1;flex:none;display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.24);border-radius:14px;padding:7px;}
-  .vp-chat-form input{flex:1;min-width:0;border:0;background:transparent;color:#fff;font:inherit;font-size:13px;font-weight:800;outline:none;}
-  .vp-chat-form input::placeholder{color:rgba(255,255,255,.64);}
-  .vp-chat-form button{width:32px;height:32px;border:0;border-radius:10px;background:#fff;color:var(--brand);display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;}
-  .vp-chat-form button svg{width:16px;height:16px;}
+  .vp-input-mode{position:relative;z-index:1;flex:none;display:flex;align-items:center;gap:9px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.24);border-radius:14px;padding:7px 9px 7px 7px;color:#fff;}
+  .vp-speak-btn{height:34px;border:0;border-radius:10px;background:#fff;color:var(--brand);display:inline-flex;align-items:center;gap:6px;padding:0 11px;font:inherit;font-size:12px;font-weight:950;white-space:nowrap;cursor:pointer;flex:none;}
+  .vp-speak-btn svg{width:15px;height:15px;}
+  .vp-input-mode span{min-width:0;color:rgba(255,255,255,.82);font-size:12px;line-height:1.34;font-weight:850;}
+  .vp-input-mode .vp-speak-btn span{color:var(--brand);font-size:12px;line-height:1;font-weight:950;}
   .vp-thinking-wave{display:inline-flex;align-items:center;gap:5px;height:24px;padding-top:8px;}
   .vp-thinking-wave span{width:4px;height:4px;border-radius:50%;background:#fff;animation:vpDotWave 1.05s ease-in-out infinite;}
   .vp-thinking-wave span:nth-child(2){animation-delay:.1s;}
@@ -1341,7 +1341,7 @@
       <div class="assistant-demo" aria-label="요리비서 답변 예시">
         <div class="assistant-head">
           <i data-lucide="bot"></i>
-          <div><b>요리하다 막히면, 냄비에게 물어봐요</b><span>지금은 추천 질문과 직접 입력으로 먼저 검증 중이에요</span></div>
+          <div><b>요리하다 막히면, 냄비에게 물어봐요</b><span>지금은 말하기 준비와 추천 질문으로 먼저 검증 중이에요</span></div>
         </div>
         <div class="assistant-thread">
           <div class="assistant-bubble user">양념이 타는 것 같아</div>
@@ -1651,13 +1651,13 @@
             <div class="vp-live-status" id="vpLiveStatus" role="status" aria-live="polite"></div>
             <div class="wave vp-wave"><span></span><span></span><span></span><span></span><span></span></div>
             <div class="vp-user" id="vpUser">무엇이 궁금해요?</div>
-            <div class="vp-ai" id="vpAi">아래 질문을 누르거나 직접 물어보면 답할게요.</div>
+            <div class="vp-ai" id="vpAi">말하기 준비나 질문 선택으로 답변을 확인해요.</div>
             <div class="vp-quick" id="vpQuick"></div>
           </div>
-          <form class="vp-chat-form" onsubmit="submitVpPrompt(event)">
-            <input id="vpPromptInput" type="search" autocomplete="off" placeholder="예: 양념이 타는 것 같아">
-            <button type="submit" aria-label="질문 보내기"><i data-lucide="send"></i></button>
-          </form>
+          <div class="vp-input-mode" aria-label="요리비서 입력 방식">
+            <button class="vp-speak-btn" type="button" onclick="toggleVpMic()"><i data-lucide="mic"></i><span>말하기 준비</span></button>
+            <span>또는 준비된 질문을 선택하세요</span>
+          </div>
         </div>
       </div>
     </div>
@@ -3166,7 +3166,7 @@
   let cookHintDismissed=false; // "다시 보지 않기" (세션 한정, 저장 안 함)
   // 영상 조작 상태 (제스처 · 설정 모달)
   let cook3Playing=false, cook3Time=0, cook3TimeTimer=null, vgTapTimer=null;
-  let vsLoopOn=false, vsLoopCount=0, vsLoopEnd='stop', vsVol=100, vsSpeed=1, vsVoiceVol=100, vsVoiceMuted=false; // 기본: 구간 반복 OFF (켜면 무한)
+  let vsLoopOn=false, vsLoopCount=0, vsLoopEnd='stop', vsVol=100, vsSpeed=1, vsVoiceVol=100, vsVoiceMuted=false, vpAudioDuckState=null; // 기본: 구간 반복 OFF (켜면 무한)
   let cook3LoopPlayed=0, cook3SuppressSeek=false; // 구간 반복 완료 횟수 · 단계 자동 전환 시 seek 억제(off=영상 이어짐)
   function makeCarousel(viewId,trackId){
     const viewEl=document.getElementById(viewId), trackEl=document.getElementById(trackId);
@@ -3234,12 +3234,39 @@
     frame.contentWindow.postMessage(JSON.stringify({event:'command',func:func,args:args||[]}), 'https://www.youtube.com');
     return true;
   }
+  function vpDuckedVideoVolume(){
+    const base=clampNumber(parseInt(vsVol,10)||0,0,100);
+    if(base<=12)return base;
+    return Math.min(base,clampNumber(Math.round(base*.28),8,24));
+  }
+  function currentCookVideoVolume(){
+    return vpAudioDuckState?.active&&!cookYoutubeMuted?vpAudioDuckState.volume:vsVol;
+  }
+  function beginVpVideoDuck(){
+    if(vpAudioDuckState?.active)return;
+    const volume=vpDuckedVideoVolume();
+    vpAudioDuckState={active:false,volume};
+    if(cookYoutubeMuted||volume>=vsVol)return;
+    if(postCookYoutube('setVolume',[volume])){
+      vpAudioDuckState.active=true;
+      window.__vpVideoDuckEvents=(window.__vpVideoDuckEvents||0)+1;
+    }
+  }
+  function endVpVideoDuck(){
+    const state=vpAudioDuckState;
+    if(!state)return;
+    vpAudioDuckState=null;
+    if(state.active&&!cookYoutubeMuted){
+      postCookYoutube('setVolume',[vsVol]);
+      window.__vpVideoDuckRestores=(window.__vpVideoDuckRestores||0)+1;
+    }
+  }
   function applyCookYoutubeSound(){
     if(cookYoutubeMuted){
       postCookYoutube('mute');
     }else{
       postCookYoutube('unMute');
-      postCookYoutube('setVolume',[vsVol]);
+      postCookYoutube('setVolume',[currentCookVideoVolume()]);
     }
   }
   function renderCookYoutubeSoundButton(){
@@ -3356,7 +3383,7 @@
   function setVsVol(v){
     vsVol=parseInt(v,10);
     document.getElementById('vsVolVal').textContent=vsVol;
-    if(!cookYoutubeMuted)postCookYoutube('setVolume',[vsVol]);
+    if(!cookYoutubeMuted)postCookYoutube('setVolume',[currentCookVideoVolume()]);
   }
   function syncVsVolUI(){ // cookYoutubeMuted → 모달 볼륨 스위치/슬라이더 반영
     const sw=document.getElementById('vsVolSw');const wrap=document.getElementById('vsVolWrap');
@@ -3805,9 +3832,9 @@
     const original=btn?btn.innerHTML:'';
     try{
       if(btn){btn.innerHTML='<i data-lucide="loader-circle"></i>';refreshIcons();}
-      setVpLiveStatus('모바일 마이크 권한을 확인하고 있어요.','');
+      setVpLiveStatus('마이크 권한을 확인하고 있어요.','');
       await requestMicPermissionProbe();
-      setVpLiveStatus('Gemini Live 세션을 준비하고 있어요.','');
+      setVpLiveStatus('음성 연결을 준비하고 있어요.','');
       const step=currentCookStep();
       const data=await postJson('/api/gemini-live-token',{
         recipe:currentRecipe?.name||'',
@@ -3816,15 +3843,15 @@
         createdAt:new Date().toISOString()
       });
       geminiLiveReady=data;
-      setVpLiveStatus('마이크 권한 확인 · Gemini Live 연결 준비됨','ok');
-      toast('Gemini Live 준비 완료','mic');
+      setVpLiveStatus('마이크 권한 확인 · 음성 연결 준비됨','ok');
+      toast('음성 연결 준비 완료','mic');
     }catch(error){
       geminiLiveReady=null;
       const friendly=String(error.message||'').includes('NAEMBI')
         ? '음성 연결 설정이 아직 준비되지 않았어요.'
-        : (error.message||'Gemini Live 준비에 실패했어요.');
+        : (error.message||'음성 연결 준비에 실패했어요.');
       setVpLiveStatus(friendly,'bad');
-      toast('추천 질문이나 직접 입력으로 계속 쓸 수 있어요','message-circle');
+      toast('준비된 질문으로 계속 쓸 수 있어요','message-circle');
     }finally{
       geminiLiveBusy=false;
       if(btn){btn.innerHTML=original||'<i data-lucide="mic"></i>';refreshIcons();}
@@ -3836,7 +3863,7 @@
     document.getElementById('vpanel')?.classList.remove('mic-muted');
     requestGeminiLiveSetup();
   }
-  function vpClear(){vpTimers.forEach(t=>clearTimeout(t));vpTimers=[];}
+  function vpClear(){vpTimers.forEach(t=>clearTimeout(t));vpTimers=[];endVpVideoDuck();}
   function vpType(el,text,speed,done){
     el.textContent='';let i=0;
     (function step(){
@@ -3859,6 +3886,7 @@
     vpType(u,ex.u,45,()=>{                       // ① 사용자 발화 타이핑
       if(!hf3On)return;
       panel.classList.remove('listening');panel.classList.add('thinking');
+      beginVpVideoDuck();
       vpThinking(a);                               // ② 추론(생각 중)
       vpTimers.push(setTimeout(()=>{
         if(!hf3On)return;
@@ -3868,6 +3896,7 @@
           panel.classList.remove('answering');panel.classList.add('listening');
           if(ex.timer)startVpTimer(ex.timer);        // 타이머 설정 발화면 타이머 패널 시작
           if(ex.next)cook3Car.advance();             // "다음 단계" 발화면 실제 카드 전진
+          endVpVideoDuck();
           vpi++;                                    // ④ 답변 유지 후 다음 발화로 (음소거면 이 응답까지만 출력하고 멈춤)
           vpTimers.push(setTimeout(()=>{ if(hf3On&&!vpMicMuted){u.textContent='다음 예시를 보여줄게요…';runVp();} },1000)); // 발화 사이 텀 ~1초
         });
@@ -3882,7 +3911,7 @@
     refreshIcons();
   }
   function resetVpPromptPanel(){
-    const panel=document.getElementById('vpanel'), u=document.getElementById('vpUser'), a=document.getElementById('vpAi'), input=document.getElementById('vpPromptInput');
+    const panel=document.getElementById('vpanel'), u=document.getElementById('vpUser'), a=document.getElementById('vpAi');
     vpClear();
     vpi=0;
     vpMicMuted=false;
@@ -3890,33 +3919,10 @@
     panel.classList.add('open');
     setVpPanelExpanded(false);
     if(u)u.textContent='무엇이 궁금해요?';
-    if(a)a.textContent='아래 질문을 누르거나 직접 물어보면 답할게요.';
-    if(input)input.value='';
-    setVpLiveStatus('마이크 버튼을 누르면 모바일 권한과 Live 연결 준비를 확인해요.','');
+    if(a)a.textContent='말하기 준비나 질문 선택으로 답변을 확인해요.';
+    setVpLiveStatus('마이크 버튼은 음성 연결 준비를 확인해요.','');
     {const mb=panel.querySelector('.vp-mic');if(mb){mb.innerHTML='<i data-lucide="mic"></i>';refreshIcons();}}
     renderVpQuickPrompts();
-  }
-  function answerForPrompt(prompt){
-    const q=(prompt||'').trim();
-    const script=voiceScriptFor(currentRecipe);
-    const norm=(value)=>String(value||'').replace(/\s+/g,' ').trim();
-    const normalized=norm(q);
-    const direct=script.find(ex=>norm(ex.u)===normalized)
-      ||(normalized.length>=6?script.find(ex=>{
-        const sample=norm(ex.u);
-        if(ex.next)return false;
-        return normalized.includes(sample)||sample.includes(normalized);
-      }):null);
-    if(direct)return direct;
-    const minute=q.match(/(\d+)\s*분/);
-    if(minute){
-      const minutes=Math.max(1,Math.min(99,parseInt(minute[1],10)));
-      return {u:q,a:minutes+'분 타이머를 시작했어요. 다음 재료를 미리 꺼내두면 조리 흐름이 덜 끊겨요.',timer:minutes*60};
-    }
-    if(/^(다음|다음\s*단계|다음으로|다음\s*단계로|넘어가|넘어가줘|다음\s*단계로\s*가줘)$/i.test(normalized))return {u:q,a:'네, 다음 단계로 넘어갈게요.',next:true};
-    if(/재료|대체|없/.test(q))return {u:q,a:currentRecipe.name+'은 핵심 재료를 유지하고 비슷한 식감이나 간의 재료로 바꾸면 돼요. 양념은 한 번에 많이 넣지 말고 조금씩 맞춰보세요.'};
-    if(/불|타|익|간/.test(q))return {u:q,a:'불을 한 단계 낮추고 현재 단계 설명을 보며 천천히 맞춰보세요. 간은 마지막에 한 번 더 보는 편이 실패가 적어요.'};
-    return {u:q,a:'지금은 정해진 예시 질문으로 답변을 보여드려요. 재료 대체, 불 조절, 타이머, 다음 단계 질문을 해볼 수 있어요.'};
   }
   function showVpAnswer(ex){
     if(!hf3On)return;
@@ -3924,6 +3930,7 @@
     vpClear();
     panel.classList.remove('idle','listening','answering');panel.classList.add('thinking');
     u.textContent=ex.u;
+    beginVpVideoDuck();
     vpThinking(a);
     vpTimers.push(setTimeout(()=>{
       if(!hf3On)return;
@@ -3931,20 +3938,13 @@
       vpType(a,ex.a,24,()=>{
         if(ex.timer)startVpTimer(ex.timer);
         if(ex.next)cook3Car.advance();
+        endVpVideoDuck();
       });
     },420));
   }
   function useVpPrompt(index){
     const ex=voiceScriptFor(currentRecipe)[index]||voiceScriptFor(currentRecipe)[0];
     showVpAnswer(ex);
-  }
-  function submitVpPrompt(event){
-    event.preventDefault();
-    const input=document.getElementById('vpPromptInput');
-    const prompt=(input?.value||'').trim();
-    if(!prompt)return;
-    if(input)input.value='';
-    showVpAnswer(answerForPrompt(prompt));
   }
   function startVpTimer(sec){
     startUnifiedTimer(sec,false);

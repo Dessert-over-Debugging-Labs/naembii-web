@@ -439,6 +439,9 @@ try {
   })()`);
 
   const assistant = await evaluate(`(async () => {
+    show('cook3');
+    hideCookHint();
+    await new Promise((resolve) => setTimeout(resolve, 180));
     toggleHf3();
     await new Promise((resolve) => setTimeout(resolve, 250));
     const opened = {
@@ -446,6 +449,8 @@ try {
       user: document.getElementById('vpUser').textContent,
       answer: document.getElementById('vpAi').textContent,
       liveStatus: document.getElementById('vpLiveStatus').textContent,
+      promptInputExists: !!document.getElementById('vpPromptInput'),
+      inputModeText: document.querySelector('.vp-input-mode')?.textContent.trim().replace(/\\s+/g, ' ') || '',
       handleExpanded: document.getElementById('vpSizeHandle').getAttribute('aria-expanded'),
       ctrlHeight: Math.round(document.getElementById('cook3Ctrl').getBoundingClientRect().height),
       queuedTimers: vpTimers.length,
@@ -483,13 +488,35 @@ try {
       ctrlHeight: Math.round(document.getElementById('cook3Ctrl').getBoundingClientRect().height),
       handleValue: document.getElementById('vpSizeHandle').getAttribute('aria-valuenow')
     };
-    document.getElementById('vpPromptInput').value = '타이머 1분 맞춰줘';
-    document.querySelector('.vp-chat-form button').click();
-    await new Promise((resolve) => setTimeout(resolve, 900));
-    const afterTimerStep = document.querySelector('#cookTrack3 .scard.active')?.dataset.i;
-    document.getElementById('vpPromptInput').value = '다음 재료는 뭐 준비하면 돼?';
-    document.querySelector('.vp-chat-form button').click();
-    await new Promise((resolve) => setTimeout(resolve, 900));
+    const originalPostCookYoutube = postCookYoutube;
+    window.__ytVolumeCommands = [];
+    postCookYoutube = (func, args) => {
+      if (func === 'setVolume') window.__ytVolumeCommands.push(args?.[0]);
+      return true;
+    };
+    cookYoutubeMuted = false;
+    window.__vpVideoDuckEvents = 0;
+    window.__vpVideoDuckRestores = 0;
+    setVsVol(80);
+    const beforePromptStep = document.querySelector('#cookTrack3 .scard.active')?.dataset.i;
+    document.querySelector('#vpQuick button').click();
+    await new Promise((resolve) => setTimeout(resolve, 780));
+    const ducked = {
+      commands: [...window.__ytVolumeCommands],
+      duckEvents: window.__vpVideoDuckEvents || 0,
+      restores: window.__vpVideoDuckRestores || 0,
+      answerClass: document.getElementById('vpanel').className
+    };
+    await new Promise((resolve) => setTimeout(resolve, 2600));
+    const restored = {
+      commands: [...window.__ytVolumeCommands],
+      duckEvents: window.__vpVideoDuckEvents || 0,
+      restores: window.__vpVideoDuckRestores || 0,
+      currentVolumeSetting: vsVol,
+      user: document.getElementById('vpUser').textContent,
+      answer: document.getElementById('vpAi').textContent
+    };
+    postCookYoutube = originalPostCookYoutube;
     return {
       opened,
       resized,
@@ -498,7 +525,9 @@ try {
       user: document.getElementById('vpUser').textContent,
       answer: document.getElementById('vpAi').textContent,
       quickCount: document.querySelectorAll('#vpQuick button').length,
-      afterTimerStep,
+      beforePromptStep,
+      ducked,
+      restored,
       activeStep: document.querySelector('#cookTrack3 .scard.active')?.dataset.i
     };
   })()`);
@@ -617,11 +646,14 @@ try {
   if (!assistant.opened.panel.includes('open') || assistant.opened.queuedTimers !== 0 || assistant.opened.activeStep !== '0') {
     throw new Error('요리비서 패널이 열리자마자 자동 대화/단계 진행을 시작했습니다.');
   }
-  if (!assistant.opened.user.includes('궁금') || !assistant.opened.answer.includes('직접 물어보면')) {
+  if (!assistant.opened.user.includes('궁금') || !assistant.opened.answer.includes('말하기')) {
     throw new Error('요리비서 대기 상태 안내가 표시되지 않았습니다.');
   }
   if (!assistant.opened.liveStatus.includes('마이크 버튼')) {
     throw new Error('Gemini Live 모바일 권한 확인 안내가 표시되지 않았습니다.');
+  }
+  if (assistant.opened.promptInputExists || !assistant.opened.inputModeText.includes('준비된 질문')) {
+    throw new Error('요리비서 패널이 직접 입력 대신 음성/준비 질문 흐름으로 보이지 않습니다.');
   }
   if (assistant.opened.handleExpanded !== 'false' || assistant.resized.handleExpanded !== 'true' || !assistant.resized.ctrlHasExpandedClass || assistant.resized.ctrlHeight < assistant.opened.ctrlHeight + 90) {
     throw new Error('요리비서 패널 크기 조절 바가 기본/확장 상태를 전환하지 못했습니다.');
@@ -632,8 +664,11 @@ try {
   if (!/auto|scroll/.test(assistant.resized.scrollOverflowY) || assistant.resized.scrollHeight <= assistant.resized.scrollClientHeight || !assistant.resized.scrollMoved) {
     throw new Error('요리비서 긴 답변이 패널 내부에서 스크롤되지 않습니다.');
   }
-  if (assistant.afterTimerStep !== '0' || !assistant.user.includes('다음 재료') || assistant.quickCount < 3 || assistant.activeStep !== '0') {
-    throw new Error('요리비서 질문 입력/추천 질문이 동작하지 않았습니다.');
+  if (assistant.quickCount < 3 || assistant.beforePromptStep !== '0' || assistant.activeStep !== '0' || !assistant.user.trim() || !assistant.answer.trim()) {
+    throw new Error('요리비서 추천 질문 선택이 답변으로 이어지지 않았습니다.');
+  }
+  if (!assistant.ducked.commands.some((value) => value > 0 && value < 80) || !assistant.restored.commands.includes(80) || assistant.restored.currentVolumeSetting !== 80 || assistant.restored.restores < assistant.ducked.restores + 1) {
+    throw new Error('요리비서 답변 중 영상 볼륨 낮춤과 복구가 확인되지 않았습니다.');
   }
 } finally {
   if (ws) ws.close();

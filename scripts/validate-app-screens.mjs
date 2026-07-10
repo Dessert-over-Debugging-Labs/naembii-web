@@ -97,12 +97,12 @@ const states = [
   {
     name: 'assistant-panel',
     setup: `currentRecipe=recipeById('${recipeId}'); show('cook3'); hideCookHint(); toggleHf3();`,
-    required: ['#vpanel.open', '#vpSizeHandle', '#vpScroll', '#vpPromptInput', '#vpQuick button', '.vp-close']
+    required: ['#vpanel.open', '#vpSizeHandle', '#vpScroll', '.vp-input-mode', '.vp-speak-btn', '#vpQuick button', '.vp-close']
   },
   {
     name: 'assistant-panel-expanded',
     setup: `currentRecipe=recipeById('${recipeId}'); show('cook3'); hideCookHint(); if(!hf3On){toggleHf3();}else{resetVpPromptPanel();} setVpPanelExpanded(true); document.getElementById('vpUser').textContent='질문이 길어져도 읽을 수 있어?'; document.getElementById('vpAi').textContent=Array(10).fill('양념이 타는 것 같으면 불을 한 단계 낮추고 팬 가장자리의 양념을 가운데로 모아주세요. 물이나 면수를 한 숟갈씩 넣어 농도를 풀고, 재료는 천천히 섞으면 좋아요.').join(' ');`,
-    required: ['#vpanel.open.expanded', '#cook3Ctrl.vpanel-expanded', '#vpScroll', '#vpPromptInput', '.vp-close']
+    required: ['#vpanel.open.expanded', '#cook3Ctrl.vpanel-expanded', '#vpScroll', '.vp-input-mode', '.vp-close']
   },
   {
     name: 'complete',
@@ -310,7 +310,7 @@ try {
             samples: item.samples
           }));
 
-        const textOverflow = [...document.querySelectorAll('.view.active button,.view.active input,.view.active .btn,.ing-sheet.show button,.ing-sheet.show input,.vpanel.open input')]
+        const textOverflow = [...document.querySelectorAll('.view.active button,.view.active input,.view.active .btn,.ing-sheet.show button,.ing-sheet.show input')]
           .filter(isRendered)
           .filter((el) => !el.matches('.dtab,.ai-assistant-btn'))
           .map((el) => {
