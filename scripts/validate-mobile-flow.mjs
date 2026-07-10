@@ -102,20 +102,55 @@ try {
   })`);
 
   const search = await evaluate(`(async () => {
-    openSearch('Maangchi');
+    localStorage.removeItem('naembi.recentSearches.v1');
+    openSearch();
+    await new Promise((resolve) => setTimeout(resolve, 120));
+    const initial = {
+      active: document.querySelector('.view.active')?.id || '',
+      recipeCards: document.querySelectorAll('#searchPage .rcard').length,
+      fixedSuggestions: document.querySelectorAll('#searchPage .search-chip-group').length,
+      emptyText: document.getElementById('recentSearches')?.textContent.trim() || ''
+    };
+    const startInput = document.getElementById('recipeSearchInput');
+    startInput.value = '명란 파스타';
+    startInput.dispatchEvent(new Event('input', { bubbles: true }));
+    startInput.closest('form').requestSubmit();
+    await new Promise((resolve) => setTimeout(resolve, 220));
+    const submitted = {
+      active: document.querySelector('.view.active')?.id || '',
+      query: document.getElementById('searchQueryLabel')?.textContent.trim() || '',
+      recipeCount: document.querySelectorAll('#searchResults .rcard').length
+    };
+    openSearch();
+    await new Promise((resolve) => setTimeout(resolve, 120));
+    const recentAfterSubmit = [...document.querySelectorAll('.recent-search-query span')].map((item) => item.textContent.trim());
+    executeRecipeSearch('Maangchi');
     await new Promise((resolve) => setTimeout(resolve, 220));
     const creatorRows = [...document.querySelectorAll('#creatorResults .creator-row')].map((row) => row.textContent.trim().replace(/\\s+/g, ' '));
     const recipeCards = [...document.querySelectorAll('#searchResults .rcard')].map((card) => ({
       title: card.querySelector('.cap b')?.textContent.trim() || '',
       meta: card.querySelector('.cap small')?.textContent.trim() || ''
     }));
+    const resultActive = document.querySelector('.view.active')?.id || '';
+    const creatorHeadVisible = document.getElementById('creatorResultHead').classList.contains('show');
+    openSearch();
+    await new Promise((resolve) => setTimeout(resolve, 120));
+    const recentBeforeDelete = [...document.querySelectorAll('.recent-search-query span')].map((item) => item.textContent.trim());
+    document.querySelector('.recent-search-remove')?.click();
+    const recentAfterDelete = [...document.querySelectorAll('.recent-search-query span')].map((item) => item.textContent.trim());
+    clearRecentSearches();
+    const recentAfterClear = readRecentSearches();
     return {
-      active: document.querySelector('.view.active')?.id || '',
-      creatorHeadVisible: document.getElementById('creatorResultHead').classList.contains('show'),
+      initial,
+      submitted,
+      recentAfterSubmit,
+      resultActive,
+      creatorHeadVisible,
       creatorRows,
       recipeCards,
-      foodChipTexts: [...document.querySelectorAll('.search-chips:not(.creator) button')].map((button) => button.textContent.trim()),
-      creatorChipTexts: [...document.querySelectorAll('.search-chips.creator button')].map((button) => button.textContent.trim())
+      recentBeforeDelete,
+      recentAfterDelete,
+      recentAfterClear
     };
   })()`);
 
@@ -469,14 +504,23 @@ try {
   if (home.feedbackVisible === 'none') {
     throw new Error('앱 내부 피드백 버튼이 보이지 않습니다.');
   }
-  if (search.active !== 'searchPage' || !search.creatorHeadVisible || !search.creatorRows.some((row) => row.includes('Maangchi'))) {
-    throw new Error('Maangchi 검색이 크리에이터 결과로 분리되지 않았습니다.');
+  if (search.initial.active !== 'searchPage' || search.initial.recipeCards !== 0 || search.initial.fixedSuggestions !== 0 || !search.initial.emptyText.includes('아직 검색한 요리가 없어요')) {
+    throw new Error('검색 시작 화면이 최근 검색 전용 상태로 열리지 않았습니다.');
   }
-  if (search.foodChipTexts.includes('Maangchi') || !search.creatorChipTexts.includes('Maangchi')) {
-    throw new Error('크리에이터 빠른 검색어가 요리 칩과 분리되지 않았습니다.');
+  if (search.submitted.active !== 'searchResultsPage' || !search.submitted.query.includes('명란 파스타') || search.submitted.recipeCount < 1) {
+    throw new Error('검색 제출 후 별도 결과 목록 화면으로 이동하지 않았습니다.');
+  }
+  if (!search.recentAfterSubmit.includes('명란 파스타') || search.recentBeforeDelete[0] !== 'Maangchi') {
+    throw new Error('최근 검색어가 최신순으로 저장되지 않았습니다.');
+  }
+  if (search.resultActive !== 'searchResultsPage' || !search.creatorHeadVisible || !search.creatorRows.some((row) => row.includes('Maangchi'))) {
+    throw new Error('Maangchi 검색이 크리에이터 결과로 분리되지 않았습니다.');
   }
   if (search.recipeCards.length < 1 || !search.recipeCards.every((card) => card.title && !/^Maangchi$/i.test(card.title))) {
     throw new Error('크리에이터 검색의 요리 결과가 실제 레시피 카드로 표시되지 않았습니다.');
+  }
+  if (search.recentAfterDelete.includes('Maangchi') || search.recentAfterClear.length !== 0) {
+    throw new Error('최근 검색어 개별 삭제 또는 전체 삭제가 저장소에 반영되지 않았습니다.');
   }
   if (!feedback.modalOpen || !feedback.requests.some((request) => request.url.endsWith('/api/feedback'))) {
     throw new Error('피드백 제출이 /api/feedback으로 이어지지 않았습니다.');

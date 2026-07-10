@@ -170,14 +170,26 @@ try {
       new Promise(resolve => {
         const input = document.getElementById('recipeSearchInput');
         if (input) input.value = '${query}';
-        runRecipeSearch('${query}');
+        syncRecipeSearchInput(input, 'searchClearBtn');
         setTimeout(resolve, 180);
       });
     `);
     await capture(`typing-${query}`, 220);
   }
 
-  await evaluate(`window.__moveDemoFinger(82, 292, true);`);
+  await evaluate(`
+    new Promise(resolve => {
+      executeRecipeSearch('콘치즈');
+      setTimeout(() => {
+        ${installDemoLayer}
+        window.__moveDemoFinger(82, 310, false);
+        resolve(true);
+      }, 360);
+    });
+  `);
+  await capture('search-results', 320);
+
+  await evaluate(`window.__moveDemoFinger(82, 310, true);`);
   await delay(380);
   await capture('tap-result', 220);
 

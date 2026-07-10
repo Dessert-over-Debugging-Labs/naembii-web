@@ -26,13 +26,18 @@ const states = [
   },
   {
     name: 'search',
-    setup: `openSearch('콘치즈');`,
-    required: ['#searchPage .nav', '#recipeSearchInput', '#searchResultTitle', '#searchResults .rcard']
+    setup: `localStorage.setItem('naembi.recentSearches.v1', JSON.stringify(['명란 파스타', '두부', '간단한 야식'])); openSearch();`,
+    required: ['#searchPage .nav', '#recipeSearchInput', '#recentSearches .recent-search-row']
+  },
+  {
+    name: 'search-results',
+    setup: `executeRecipeSearch('콘치즈');`,
+    required: ['#searchResultsPage .nav', '#recipeResultSearchInput', '#searchQueryLabel', '#searchResultTitle', '#searchResults .rcard']
   },
   {
     name: 'search-creator',
     setup: `openSearch('Maangchi');`,
-    required: ['#searchPage .nav', '#recipeSearchInput', '#creatorResultHead.show', '#creatorResults .creator-row', '#searchResults .rcard']
+    required: ['#searchResultsPage .nav', '#recipeResultSearchInput', '#creatorResultHead.show', '#creatorResults .creator-row', '#searchResults .rcard']
   },
   {
     name: 'detail',
