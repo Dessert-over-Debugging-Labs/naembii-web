@@ -725,10 +725,19 @@
   .vpanel.idle .vp-wave{display:flex;justify-content:center;margin-bottom:16px;transform:scale(1.2);}
   .vp-wave span{background:#fff;animation:wv 1s ease-in-out infinite;}
   @media (max-height:700px){
-    #cook3 .cook-ctrl:has(.vpanel.open),#cook3 .cook-ctrl.vpanel-open{height:var(--vp-panel-height,clamp(240px,38dvh,286px));}
-    #cook3 .cook-ctrl:has(.vpanel.open.expanded),#cook3 .cook-ctrl.vpanel-open.vpanel-expanded{height:var(--vp-panel-height,clamp(360px,58dvh,430px));}
-    .vp-user,.vp-ai{font-size:15px;}
-    .vp-quick button{height:30px;font-size:11px;}
+    .cook-video{height:118px;}
+    #cook3 .cook-ctrl:has(.vpanel.open),#cook3 .cook-ctrl.vpanel-open{height:var(--vp-panel-height,clamp(210px,32dvh,232px));}
+    #cook3 .cook-ctrl:has(.vpanel.open.expanded),#cook3 .cook-ctrl.vpanel-open.vpanel-expanded{height:var(--vp-panel-height,clamp(320px,52dvh,390px));}
+    .vpanel{padding:13px 18px 18px;}
+    .vp-scroll{padding-top:20px;}
+    .vp-beta-note{display:none;}
+    .vp-live-status{margin:0 0 5px;font-size:11px;min-height:14px;}
+    .vp-user{font-size:15px;margin-bottom:5px;min-height:18px;}
+    .vp-ai{font-size:14px;line-height:1.34;min-height:34px;}
+    .vp-quick{margin:4px 0 6px;}
+    .vp-quick button{height:29px;font-size:11px;padding:0 9px;}
+    .vp-input-mode{padding:6px 8px 6px 6px;}
+    .vp-speak-btn{height:32px;padding:0 10px;}
   }
   .cbtn .cic .wave{height:22px;}
   .cbtn .cic .wave span{width:3px;background:#fff;}
@@ -3728,9 +3737,9 @@
     const vh=window.innerHeight||document.documentElement.clientHeight||720;
     const cssClamp=(min,ratio,max)=>clampNumber(Math.round(vh*ratio),min,max);
     const compact=vh<=700;
-    const min=compact?cssClamp(240,.38,286):cssClamp(270,.38,330);
-    let max=compact?cssClamp(360,.58,430):cssClamp(390,.62,560);
-    const topReserve=clampNumber(Math.round(vh*.36),230,320);
+    const min=compact?cssClamp(210,.32,232):cssClamp(270,.38,330);
+    let max=compact?cssClamp(320,.52,390):cssClamp(390,.62,560);
+    const topReserve=compact?clampNumber(Math.round(vh*.44),278,340):clampNumber(Math.round(vh*.36),230,320);
     max=Math.min(max,Math.max(min+56,vh-topReserve));
     return {min,max,mid:Math.round(min+(max-min)*.55)};
   }
