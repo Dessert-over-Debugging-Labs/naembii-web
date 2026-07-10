@@ -4,6 +4,8 @@ const token = process.env.NOTION_TOKEN;
 const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul' }).format(new Date());
 const title = `검색 시작·결과 화면 분리 작업 리포트 · ${today}`;
 const planUrl = 'https://app.notion.com/p/2026-07-10-399b1da1d9f981a99759f2d7f788c30b';
+const reportPageId = process.env.NOTION_RECENT_SEARCH_REPORT_PAGE_ID || '399b1da1d9f98186bc6ce68f56707df6';
+const appendDeployOnly = process.argv.includes('--append-deploy');
 
 if (!token) throw new Error('NOTION_TOKEN 환경변수가 필요합니다.');
 
@@ -29,6 +31,21 @@ async function notion(path, body, method = 'POST') {
   const data = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(`${response.status} ${response.statusText}: ${JSON.stringify(data)}`);
   return data;
+}
+
+const deployChildren = [
+  block('heading_2', '배포 확인'),
+  block('to_do', 'GitHub main 2290f04까지 push 완료', true),
+  block('to_do', 'https://naembii-web.vercel.app/app HTTP 200 및 최근 검색·별도 결과 화면 코드 확인', true),
+  block('to_do', '실제 Vercel URL에서 모바일 전체 흐름 검증 PASS', true),
+  block('bulleted_list_item', '현재 프로젝트명과 기본 배포 주소는 naembii-web이다.'),
+  block('bulleted_list_item', '기존 https://naembi.vercel.app 주소는 Vercel NOT_FOUND 404 상태이므로, 해당 주소를 계속 쓸 경우 Vercel Domains에서 현재 프로젝트 alias로 연결해야 한다.')
+];
+
+if (appendDeployOnly) {
+  await notion(`/blocks/${reportPageId}/children`, { children: deployChildren }, 'PATCH');
+  console.log(JSON.stringify({ reportPageId, appended: 'deploy verification', blocks: deployChildren.length }, null, 2));
+  process.exit(0);
 }
 
 const children = [
@@ -57,7 +74,8 @@ const children = [
   block('heading_2', '저장 범위'),
   block('bulleted_list_item', '최근 검색은 localStorage 키 naembi.recentSearches.v1에 저장한다.'),
   block('bulleted_list_item', '같은 브라우저에서만 유지되며 로그인 계정이나 다른 기기와는 아직 동기화하지 않는다.'),
-  block('bulleted_list_item', '고정 예시였던 Maangchi와 성시경은 사용자가 직접 검색한 경우에만 최근 검색에 나타난다.')
+  block('bulleted_list_item', '고정 예시였던 Maangchi와 성시경은 사용자가 직접 검색한 경우에만 최근 검색에 나타난다.'),
+  ...deployChildren
 ];
 
 const page = await notion('/pages', {
