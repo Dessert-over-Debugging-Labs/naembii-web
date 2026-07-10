@@ -4,8 +4,14 @@ import { createRequire } from 'node:module';
 import { extname, join, normalize, resolve } from 'node:path';
 
 const root = resolve(new URL('..', import.meta.url).pathname);
+const envFile = join(root, '.env');
+if (existsSync(envFile) && typeof process.loadEnvFile === 'function') {
+  process.loadEnvFile(envFile);
+}
 const host = process.env.HOST || '127.0.0.1';
-const port = Number(process.env.PORT || 4190);
+// 4190 is blocked by the Fetch "bad port" list, so browser calls from the app
+// to its same-origin /api routes fail during local development.
+const port = Number(process.env.PORT || 4876);
 const require = createRequire(import.meta.url);
 
 const mime = {

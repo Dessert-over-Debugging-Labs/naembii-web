@@ -216,7 +216,7 @@ try {
 
   await evaluate(`
     new Promise(resolve => {
-      toggleHf3();
+      toggleHf3({startLive:false});
       setTimeout(resolve, 2300);
     });
   `);

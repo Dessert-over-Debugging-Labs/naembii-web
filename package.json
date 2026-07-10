@@ -18,6 +18,8 @@
     "verify:app-screens": "node scripts/validate-app-screens.mjs",
     "verify:load-performance": "node scripts/validate-load-performance.mjs",
     "verify:mobile-flow": "node scripts/validate-mobile-flow.mjs",
+    "verify:gemini-live": "node scripts/verify-gemini-live.mjs",
+    "verify:gemini-live-browser": "node scripts/verify-gemini-live-browser.mjs",
     "verify:ralph-loop": "node scripts/run-naembi-ralph-loop.mjs --visual --full --min-score=96"
   },
   "dependencies": {

@@ -592,6 +592,7 @@
      컨트롤바 배경을 카드영역과 같은 틴트(--dark)로 맞추고 상단 경계선도 감춰 이음새 제거 */
   #cook3 .cook-ctrl:has(.vpanel.open),#cook3 .cook-ctrl.vpanel-open{background:var(--dark);border-top-color:transparent;}
   #cook3 .cook-ctrl:has(.vpanel.open),#cook3 .cook-ctrl.vpanel-open{height:var(--vp-panel-height,clamp(270px,38dvh,330px));transition:height .18s ease;}
+  #cook3 .cook-ctrl:has(.vpanel.open.compact),#cook3 .cook-ctrl.vpanel-open:has(.vpanel.compact){height:var(--vp-panel-height,152px);}
   #cook3 .cook-ctrl:has(.vpanel.open.expanded),#cook3 .cook-ctrl.vpanel-open.vpanel-expanded{height:var(--vp-panel-height,clamp(390px,62dvh,560px));}
   #cook3 .cook-ctrl.vpanel-dragging{transition:none;}
   #cook3 .cook-ctrl:has(.vpanel.open) .ctrl-buttons,#cook3 .cook-ctrl.vpanel-open .ctrl-buttons{visibility:hidden;}
@@ -645,50 +646,37 @@
   .vp-mic{position:absolute;top:8px;right:52px;z-index:2;width:32px;height:32px;border:none;background:rgba(255,255,255,.14);border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;}
   .vp-mic svg{width:17px;height:17px;}
   .vpanel.mic-muted .vp-mic{color:#FF8A8A;} /* 음소거 시 붉은 톤 */
-  .vpanel.mic-muted .vp-wave span{animation-play-state:paused;opacity:.45;}
   /* 아래로 내리기 버튼 — 패널 위쪽 가운데 */
   .vp-collapse{position:absolute;top:0px;left:50%;transform:translateX(-50%);z-index:2;width:34px;height:24px;border:none;background:none;color:rgba(255,255,255,.82);display:flex;align-items:center;justify-content:center;cursor:pointer;}
   .vp-collapse svg{width:22px;height:22px;}
   .vp-collapse:active{transform:translateX(-50%) translateY(1px);}
-  .vp-scroll{position:relative;z-index:1;flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:24px 2px 8px 0;scrollbar-width:none;}
+  .vp-scroll{position:relative;z-index:1;flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:46px 6px 10px 0;scrollbar-width:none;display:flex;flex-direction:column;}
   .vp-scroll::-webkit-scrollbar{display:none;}
-  .vp-beta-note{position:relative;z-index:1;align-self:flex-start;display:inline-flex;align-items:center;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.13);color:#fff;border-radius:999px;padding:5px 9px;margin-bottom:10px;font-size:12px;font-weight:900;letter-spacing:0;backdrop-filter:blur(8px);}
-  .vp-live-status{position:relative;z-index:1;margin:-4px 0 8px;color:rgba(255,255,255,.88);font-size:12px;font-weight:850;line-height:1.35;min-height:16px;}
-  .vp-live-status.ok{color:#DFFFEA;}
-  .vp-live-status.bad{color:#FFE1DC;}
-  .vp-user{position:relative;z-index:1;flex:none;width:100%;font-size:16px;font-weight:800;color:#fff;margin-bottom:9px;min-height:21px;line-height:1.28;letter-spacing:0;text-shadow:0 1px 4px rgba(0,0,0,.3);}
-  .vp-ai{position:relative;z-index:1;flex:none;width:100%;font-size:16px;font-weight:750;color:#fff;line-height:1.42;min-height:44px;letter-spacing:0;text-shadow:0 1px 6px rgba(0,0,0,.4);}
-  .vp-quick{position:relative;z-index:1;display:flex;gap:7px;overflow-x:auto;margin:6px 0 9px;padding-bottom:2px;}
-  .vp-quick::-webkit-scrollbar{display:none;}
-  .vp-quick button{height:32px;border:1px solid rgba(255,255,255,.28);border-radius:999px;background:rgba(255,255,255,.16);color:#fff;font:inherit;font-size:12px;font-weight:900;white-space:nowrap;padding:0 10px;cursor:pointer;}
-  .vp-chat-form{position:relative;z-index:1;flex:none;display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.24);border-radius:14px;padding:7px;}
-  .vp-chat-form input{flex:1;min-width:0;border:0;background:transparent;color:#fff;font:inherit;font-size:13px;font-weight:800;outline:none;}
-  .vp-chat-form input::placeholder{color:rgba(255,255,255,.64);}
-  .vp-chat-form button{width:32px;height:32px;border:0;border-radius:10px;background:#fff;color:var(--brand);display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;}
-  .vp-chat-form button svg{width:16px;height:16px;}
-  .vp-thinking-wave{display:inline-flex;align-items:center;gap:5px;height:24px;padding-top:8px;}
-  .vp-thinking-wave span{width:4px;height:4px;border-radius:50%;background:#fff;animation:vpDotWave 1.05s ease-in-out infinite;}
-  .vp-thinking-wave span:nth-child(2){animation-delay:.1s;}
-  .vp-thinking-wave span:nth-child(3){animation-delay:.2s;}
-  .vp-thinking-wave span:nth-child(4){animation-delay:.3s;}
-  .vp-thinking-wave span:nth-child(5){animation-delay:.4s;}
-  @keyframes vpDotWave{
-    0%,100%{opacity:.45;transform:translateY(2px) scale(.9);}
-    45%{opacity:1;transform:translateY(-4px) scale(1);}
-  }
-  /* 대기(듣는 중): 가운데 크게 */
-  .vpanel.idle{justify-content:center;align-items:center;}
-  .vpanel.idle .vp-scroll{display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;}
-  .vpanel.idle .vp-user{font-size:24px;font-weight:800;color:#fff;text-align:center;margin:0;min-height:0;line-height:1.25;letter-spacing:0;text-shadow:0 1px 8px rgba(0,0,0,.22);}
-  .vpanel.idle .vp-ai{display:none;}
-  .vp-wave{display:none;position:relative;z-index:1;}
-  .vpanel.idle .vp-wave{display:flex;justify-content:center;margin-bottom:16px;transform:scale(1.2);}
-  .vp-wave span{background:#fff;animation:wv 1s ease-in-out infinite;}
+  .vp-idle-state{position:relative;z-index:1;display:flex;flex:1;flex-direction:column;align-items:center;justify-content:center;min-height:0;color:#fff;text-align:center;}
+  .vp-idle-state p{margin:0;font-size:18px;font-weight:850;line-height:1.35;text-shadow:0 1px 6px rgba(0,0,0,.2);}
+  .vp-scroll.has-transcript .vp-idle-state{display:none;}
+  .vp-transcript{position:relative;z-index:1;display:grid;gap:14px;margin:auto 0 6px;padding:0;border:0;}
+  .vp-transcript:empty{display:none;}
+  .vp-transcript-entry{display:flex;gap:8px;align-items:flex-start;font-size:15px;font-weight:750;line-height:1.45;color:rgba(255,255,255,.94);}
+  .vp-transcript-entry b{flex:none;color:rgba(255,255,255,.66);font-size:11px;font-weight:900;}
+  .vp-transcript-entry.assistant b{color:#FFF2C5;}
+  .vpanel.compact .vp-transcript{gap:5px;margin:0 0 3px;}
+  .vpanel.compact .vp-transcript-entry{font-size:13px;line-height:1.3;}
+  .vpanel.compact .vp-input-wave{height:20px;margin-bottom:0;}
+  .vpanel.compact .vp-input-wave .wave{height:20px;}
+  .vpanel.compact .vp-input-wave .wave span:nth-child(1){height:6px;}.vpanel.compact .vp-input-wave .wave span:nth-child(2){height:14px;}
+  .vpanel.compact .vp-input-wave .wave span:nth-child(3){height:20px;}.vpanel.compact .vp-input-wave .wave span:nth-child(4){height:11px;}.vpanel.compact .vp-input-wave .wave span:nth-child(5){height:16px;}
+  .vp-input-wave{position:relative;z-index:1;display:none;align-items:center;height:28px;margin:0 0 3px;}
+  .vpanel.mic-active .vp-input-wave{display:flex;}
+  .vp-input-wave .wave{height:28px;gap:4px;}
+  .vp-input-wave .wave span{width:3px;background:#fff;border-radius:3px;}
+  .vp-input-wave .wave span:nth-child(1){height:8px;}.vp-input-wave .wave span:nth-child(2){height:20px;}
+  .vp-input-wave .wave span:nth-child(3){height:28px;}.vp-input-wave .wave span:nth-child(4){height:15px;}.vp-input-wave .wave span:nth-child(5){height:23px;}
   @media (max-height:700px){
     #cook3 .cook-ctrl:has(.vpanel.open),#cook3 .cook-ctrl.vpanel-open{height:var(--vp-panel-height,clamp(240px,38dvh,286px));}
     #cook3 .cook-ctrl:has(.vpanel.open.expanded),#cook3 .cook-ctrl.vpanel-open.vpanel-expanded{height:var(--vp-panel-height,clamp(360px,58dvh,430px));}
-    .vp-user,.vp-ai{font-size:15px;}
-    .vp-quick button{height:30px;font-size:11px;}
+    .vp-idle-state p{font-size:16px;}
+    .vp-transcript-entry{font-size:14px;}
   }
   .cbtn .cic .wave{height:22px;}
   .cbtn .cic .wave span{width:3px;background:#fff;}
@@ -1254,7 +1242,7 @@
       <div class="assistant-demo" aria-label="요리비서 답변 예시">
         <div class="assistant-head">
           <i data-lucide="bot"></i>
-          <div><b>요리하다 막히면, 냄비에게 물어봐요</b><span>지금은 추천 질문과 직접 입력으로 먼저 검증 중이에요</span></div>
+          <div><b>요리하다 막히면, 냄비에게 물어봐요</b><span>요리 비서를 누르면 음성으로 바로 물어볼 수 있어요</span></div>
         </div>
         <div class="assistant-thread">
           <div class="assistant-bubble user">양념이 타는 것 같아</div>
@@ -1459,26 +1447,21 @@
       <div class="cook-ctrl" id="cook3Ctrl">
         <div class="ctrl-buttons">
           <button class="cbtn" onclick="openTimer()"><div class="cic o js-timer-btn"><i data-lucide="timer"></i></div><small class="js-timer-label">타이머</small></button>
-          <button class="cbtn ai-assistant-btn" id="hf3" onclick="toggleHf3()"><div class="cic ai-assistant"><i data-lucide="bot"></i></div><small>물어보기</small></button>
+          <button class="cbtn ai-assistant-btn" id="hf3" onclick="toggleHf3()"><div class="cic ai-assistant"><i data-lucide="bot"></i></div><small>요리 비서</small></button>
           <button class="cbtn" onclick="openIngredients()"><div class="cic d"><i data-lucide="carrot"></i></div><small>재료 보기</small></button>
         </div>
         <div class="vpanel" id="vpanel">
           <div class="vp-aurora"></div>
           <button class="vp-size-handle" id="vpSizeHandle" type="button" onpointerdown="startVpResizeDrag(event)" onclick="toggleVpPanelSize()" aria-label="요리비서 패널 크게 보기" aria-expanded="false"><span></span></button>
-          <button class="vp-mic" onclick="toggleVpMic()"><i data-lucide="mic"></i></button>
-          <button class="vp-close" onclick="toggleHf3()"><i data-lucide="x"></i></button>
+          <button class="vp-mic" type="button" onclick="toggleVpMic()" aria-label="마이크 음소거"><i data-lucide="mic"></i></button>
+          <button class="vp-close" type="button" onclick="toggleHf3()" aria-label="요리비서 종료"><i data-lucide="x"></i></button>
           <div class="vp-scroll" id="vpScroll">
-            <div class="vp-beta-note">요리비서 베타</div>
-            <div class="vp-live-status" id="vpLiveStatus" role="status" aria-live="polite"></div>
-            <div class="wave vp-wave"><span></span><span></span><span></span><span></span><span></span></div>
-            <div class="vp-user" id="vpUser">무엇이 궁금해요?</div>
-            <div class="vp-ai" id="vpAi">아래 질문을 누르거나 직접 물어보면 답할게요.</div>
-            <div class="vp-quick" id="vpQuick"></div>
+            <div class="vp-idle-state" id="vpIdleState">
+              <p>무엇이 궁금해요?</p>
+            </div>
+            <div class="vp-transcript" id="vpTranscript" role="log" aria-live="polite" aria-label="음성 대화 기록"></div>
+            <div class="vp-input-wave" aria-hidden="true"><div class="wave"><span></span><span></span><span></span><span></span><span></span></div></div>
           </div>
-          <form class="vp-chat-form" onsubmit="submitVpPrompt(event)">
-            <input id="vpPromptInput" type="search" autocomplete="off" placeholder="예: 양념이 타는 것 같아">
-            <button type="submit" aria-label="질문 보내기"><i data-lucide="send"></i></button>
-          </form>
         </div>
       </div>
     </div>
@@ -1986,6 +1969,7 @@
   }
   // 조리 모드 이탈 시 영상 제거 → 소리 확실히 정지 (재진입 때 새로 임베드됨)
   function stopCook3Video(){
+    stopGeminiLiveSession('leaving cooking mode');
     cook3StopTimeTracking();
     stopCookYoutubeLoop();
     cook3Playing=false;
@@ -2635,12 +2619,14 @@
     setDetTab(cur);
   }
 
-  let cook3CurrentStep=0, cookYoutubeLoopTimer=null, cookHintTimer=null, cookYoutubeAutoplayStarted=false, cookYoutubePlayTimer=null, cookYoutubeMuted=false; // 기본: 조리 영상 소리 켜짐
+  let cook3CurrentStep=0, cookYoutubeLoopTimer=null, cookHintTimer=null, cookYoutubeAutoplayStarted=false, cookYoutubePlayTimer=null, cookYoutubeMuted=false, cookYoutubeDucked=false; // 기본: 조리 영상 소리 켜짐
   let cookHintDismissed=false; // "다시 보지 않기" (세션 한정, 저장 안 함)
   // 영상 조작 상태 (제스처 · 설정 모달)
   let cook3Playing=false, cook3Time=0, cook3TimeTimer=null, vgTapTimer=null;
   let vsLoopOn=false, vsLoopCount=0, vsLoopEnd='stop', vsVol=100, vsSpeed=1, vsVoiceVol=100, vsVoiceMuted=false; // 기본: 구간 반복 OFF (켜면 무한)
   let cook3LoopPlayed=0, cook3SuppressSeek=false; // 구간 반복 완료 횟수 · 단계 자동 전환 시 seek 억제(off=영상 이어짐)
+  // Gemini Live 초기화 전에도 캐러셀이 layout()을 호출하므로 기본 핸들러를 둔다.
+  let onCookingStageContextChanged=()=>{};
   function makeCarousel(viewId,trackId){
     const viewEl=document.getElementById(viewId), trackEl=document.getElementById(trackId);
     const isCook3=viewId==='cook3';
@@ -2707,12 +2693,15 @@
     frame.contentWindow.postMessage(JSON.stringify({event:'command',func:func,args:args||[]}), 'https://www.youtube.com');
     return true;
   }
+  function effectiveCookYoutubeVolume(){
+    return cookYoutubeDucked?Math.min(vsVol,25):vsVol;
+  }
   function applyCookYoutubeSound(){
     if(cookYoutubeMuted){
       postCookYoutube('mute');
     }else{
       postCookYoutube('unMute');
-      postCookYoutube('setVolume',[vsVol]);
+      postCookYoutube('setVolume',[effectiveCookYoutubeVolume()]);
     }
   }
   function renderCookYoutubeSoundButton(){
@@ -2829,7 +2818,7 @@
   function setVsVol(v){
     vsVol=parseInt(v,10);
     document.getElementById('vsVolVal').textContent=vsVol;
-    if(!cookYoutubeMuted)postCookYoutube('setVolume',[vsVol]);
+    applyCookYoutubeSound();
   }
   function syncVsVolUI(){ // cookYoutubeMuted → 모달 볼륨 스위치/슬라이더 반영
     const sw=document.getElementById('vsVolSw');const wrap=document.getElementById('vsVolWrap');
@@ -2843,12 +2832,14 @@
   function toggleVsVoiceVol(){
     vsVoiceMuted=!vsVoiceMuted;
     if(!vsVoiceMuted&&vsVoiceVol===0)vsVoiceVol=60;
+    syncGeminiLiveOutputGain();
     syncVsVoiceVolUI();
     toast(vsVoiceMuted?'요리비서 소리 꺼짐':'요리비서 소리 켜짐',vsVoiceMuted?'volume-x':'bot');
   }
   function setVsVoiceVol(v){
     vsVoiceVol=clampNumber(parseInt(v,10)||0,0,100);
     vsVoiceMuted=vsVoiceVol===0;
+    syncGeminiLiveOutputGain();
     syncVsVoiceVolUI();
   }
   function syncVsVoiceVolUI(){
@@ -2904,10 +2895,12 @@
     return true;
   }
   function syncCookYoutubeStage(stepIndex){
+    const changed=cook3CurrentStep!==stepIndex;
     cook3CurrentStep=stepIndex;
     cook3LoopPlayed=0;
     // 자동 재생 중이고 seek 억제 상태가 아니면 해당 구간 시작으로 정렬(수동 단계 이동 등)
     if(cookYoutubeAutoplayStarted&&!cook3SuppressSeek)startCookYoutubeLoop(stepIndex);
+    if(changed)onCookingStageContextChanged();
   }
   // 다음 단계로 자동 전환 (반복 off=영상 자연 연속 / on 완료=다음 구간 시작부터)
   function cook3AdvanceStage(){
@@ -3157,13 +3150,161 @@
     toast(handsfree?'핸즈프리 모드 켜짐 — 음성으로 진행해요':'핸즈프리 모드 꺼짐',handsfree?'mic':'mic-off');
   }
   /* 조리 모드(신) 실시간 음성 패널 */
-  let hf3On=false, vpi=0, vpTimers=[], vpMicMuted=false, geminiLiveReady=null, geminiLiveBusy=false, vpResizeDrag=null, vpSuppressResizeClick=false;
+  let hf3On=false, vpMicMuted=false, vpResizeDrag=null, vpSuppressResizeClick=false;
   function setVpLiveStatus(message,type){
     const node=document.getElementById('vpLiveStatus');
     if(!node)return;
     node.textContent=message||'';
     node.classList.remove('ok','bad');
     if(type)node.classList.add(type);
+  }
+  function setVpVoiceHint(message){
+    const node=document.getElementById('vpVoiceHint');
+    if(node)node.textContent=message||'';
+  }
+  function setVpInputMeter(level=0,label='',active=false){
+    const meter=document.getElementById('vpInputMeter');
+    const fill=document.getElementById('vpInputMeterFill');
+    const text=document.getElementById('vpInputMeterLabel');
+    const normalized=Math.max(0,Math.min(1,Number(level)||0));
+    if(fill)fill.style.width=Math.max(3,Math.round(normalized*100))+'%';
+    if(text&&label)text.textContent=label;
+    meter?.classList.toggle('is-active',!!active);
+  }
+  function setVpInputSource(label){
+    const node=document.getElementById('vpInputSource');
+    if(node)node.textContent=label||'입력 장치 확인 중';
+  }
+  function renderGeminiInputDeviceOptions(live,devices,selectedId){
+    if(geminiLive!==live||live.closing)return;
+    const select=document.getElementById('vpInputDevice');
+    if(!select)return;
+    const inputs=(devices||[]).filter(device=>device.kind==='audioinput');
+    if(inputs.length<2){
+      select.hidden=true;
+      select.replaceChildren();
+      return;
+    }
+    const options=[{value:'',label:'브라우저 기본 마이크'},...inputs.map(device=>({value:device.deviceId,label:device.label||'이름 없는 마이크'}))];
+    select.replaceChildren(...options.map(option=>{
+      const node=document.createElement('option');
+      node.value=option.value;
+      node.textContent=option.label;
+      return node;
+    }));
+    select.value=options.some(option=>option.value===selectedId)?selectedId:'';
+    select.hidden=false;
+  }
+  async function identifyGeminiInputDevice(live,stream){
+    const track=stream?.getAudioTracks?.()[0];
+    if(!track||geminiLive!==live||live.closing)return;
+    const settings=track.getSettings?.()||{};
+    let label=track.label||'';
+    let devices=[];
+    try{
+      devices=await navigator.mediaDevices?.enumerateDevices?.()||[];
+      const selected=devices?.find(device=>device.kind==='audioinput'&&device.deviceId===settings.deviceId);
+      if(selected?.label)label=selected.label;
+    }catch{}
+    if(geminiLive!==live||live.closing)return;
+    const selectedId=settings.deviceId||live.inputDeviceId||'';
+    live.inputDeviceId=selectedId;
+    live.inputDeviceLabel=label||'기본 마이크';
+    live.micTrack=track;
+    const rate=Number(settings.sampleRate);
+    const details=rate?' · '+Math.round(rate/1000)+' kHz':'';
+    const sourceLabel='입력 장치: '+live.inputDeviceLabel+details;
+    const updateState=state=>{
+      if(geminiLive!==live||live.closing)return;
+      setVpInputSource(sourceLabel+' · '+state);
+    };
+    const virtualInput=/blackhole|loopback|soundflower|zoomaudio|vb-cable/i.test(live.inputDeviceLabel);
+    if(virtualInput){
+      setVpLiveStatus('시스템 또는 가상 오디오 장치가 선택됐어요. 실제 마이크를 선택해 주세요.','bad');
+      setVpVoiceHint('macOS 사운드 설정이나 Chrome 마이크 설정에서 내장 또는 외장 마이크를 선택하세요.');
+    }
+    renderGeminiInputDeviceOptions(live,devices,selectedId);
+    updateState(track.muted?'음소거됨':track.enabled===false?'사용 안 함':'사용 중');
+    track.addEventListener?.('mute',()=>{
+      updateState('브라우저에서 음소거됨');
+      setVpInputMeter(0,'입력 장치가 브라우저에서 음소거됐어요.',false);
+    });
+    track.addEventListener?.('unmute',()=>updateState('사용 중'));
+    track.addEventListener?.('ended',()=>{
+      if(live.micStopExpected)return;
+      updateState('입력 중단됨');
+      setVpLiveStatus('마이크 입력이 중단됐어요. 요리 비서를 다시 열어 주세요.','bad');
+    });
+  }
+  async function changeGeminiInputDevice(deviceId){
+    const live=geminiLive;
+    if(!live||live.closing||String(deviceId||'')===String(live.inputDeviceId||''))return;
+    const select=document.getElementById('vpInputDevice');
+    if(select)select.disabled=true;
+    releaseGeminiMicrophone(live,true);
+    live.inputDeviceId=String(deviceId||'');
+    setVpLiveStatus('선택한 마이크로 전환하고 있어요.','');
+    setVpVoiceHint('마이크 연결이 끝나면 다시 말씀해 주세요.');
+    setVpInputSource('입력 장치 전환 중');
+    setVpInputMeter(0,'마이크 입력을 다시 확인하고 있어요.',false);
+    try{
+      await startGeminiMicrophone(live);
+      if(isGeminiLiveOpen(live)){
+        setVpLiveStatus('Gemini Live가 듣고 있어요. 말씀해 주세요.','ok');
+        setVpVoiceHint('말하면 입력 막대와 전사가 표시돼요.');
+        armGeminiMicWatchdog(live);
+      }
+    }catch(error){
+      setVpLiveStatus(geminiVoiceErrorMessage(error),'bad');
+      setVpVoiceHint('다른 마이크를 선택하거나 권한을 확인해 주세요.');
+      setVpInputSource('입력 장치를 연결하지 못했어요.');
+    }finally{
+      if(select)select.disabled=false;
+    }
+  }
+  function updateGeminiMicActivity(live,byteLength,level){
+    if(!live)return;
+    const rawLevel=Math.max(0,Math.min(1,Number(level)||0));
+    const smoothed=(Number(live.inputLevel)||0)*.68+rawLevel*.32;
+    const active=smoothed>=.002;
+    const now=Date.now();
+    if(rawLevel>=.01)live.voiceWaveUntil=now+220;
+    const voiceActive=now<(live.voiceWaveUntil||0);
+    const weak=smoothed>=.00035;
+    live.capturedAudioFrames=(live.capturedAudioFrames||0)+1;
+    live.capturedAudioBytes=(live.capturedAudioBytes||0)+Math.max(0,Number(byteLength)||0);
+    live.lastAudioAt=Date.now();
+    live.inputLevel=smoothed;
+    if(active){
+      live.activeAudioFrames=(live.activeAudioFrames||0)+1;
+      live.lastNonSilentAt=live.lastAudioAt;
+    }
+    document.getElementById('vpanel')?.classList.toggle('mic-active',voiceActive);
+    const displayLevel=Math.min(1,Math.max(.03,Math.log10(1+smoothed*1200)/Math.log10(1201)));
+    const mode=active?'active':weak?'weak':'waiting';
+    if(live.micMeterMode!==mode){
+      live.micMeterMode=mode;
+      setVpInputMeter(displayLevel,active?(live.ready?'마이크 입력을 Gemini에 전송하고 있어요.':'마이크 입력을 준비하고 있어요.'):(weak?'마이크 신호가 약해요. 더 가까이 말해 보세요.':'마이크 입력을 기다리고 있어요.'),active);
+    }else{
+      setVpInputMeter(displayLevel,'',active);
+    }
+  }
+  function clearGeminiMicWatchdog(live){
+    if(live?.micWatchdog){clearTimeout(live.micWatchdog);live.micWatchdog=null;}
+  }
+  function armGeminiMicWatchdog(live){
+    clearGeminiMicWatchdog(live);
+    if(!live?.micStream||!live.ready)return;
+    live.micWatchdog=setTimeout(()=>{
+      if(geminiLive!==live||live.closing||!live.micStream)return;
+      if(!live.sentAudioFrames){
+        setVpLiveStatus('마이크 권한은 허용됐지만 입력 프레임을 받지 못했어요. 시스템 입력 장치를 확인해 주세요.','bad');
+        setVpVoiceHint('말할 때 입력 막대가 움직여야 Gemini에 목소리가 전송돼요.');
+        setVpInputMeter(0,'마이크 프레임을 받지 못했어요.',false);
+      }else if(!live.activeAudioFrames){
+        setVpVoiceHint('마이크 프레임은 전송 중이에요. 말할 때 입력 막대가 움직이는지 확인해 주세요.');
+      }
+    },5000);
   }
   function clampNumber(value,min,max){
     return Math.max(min,Math.min(max,value));
@@ -3172,11 +3313,12 @@
     const vh=window.innerHeight||document.documentElement.clientHeight||720;
     const cssClamp=(min,ratio,max)=>clampNumber(Math.round(vh*ratio),min,max);
     const compact=vh<=700;
+    const idle=152;
     const min=compact?cssClamp(240,.38,286):cssClamp(270,.38,330);
     let max=compact?cssClamp(360,.58,430):cssClamp(390,.62,560);
     const topReserve=clampNumber(Math.round(vh*.36),230,320);
     max=Math.min(max,Math.max(min+56,vh-topReserve));
-    return {min,max,mid:Math.round(min+(max-min)*.55)};
+    return {idle,min,max,mid:Math.round(min+(max-min)*.55)};
   }
   function syncVpPanelHeightState(height){
     const panel=document.getElementById('vpanel');
@@ -3196,7 +3338,8 @@
       return;
     }
     const bounds=vpPanelBounds();
-    const h=clampNumber(Math.round(height),bounds.min,bounds.max);
+    const min=panel.classList.contains('compact')?bounds.idle:bounds.min;
+    const h=clampNumber(Math.round(height),min,bounds.max);
     const expanded=h>=bounds.mid;
     ctrl.style.setProperty('--vp-panel-height',h+'px');
     ctrl.classList.toggle('vpanel-expanded',expanded);
@@ -3215,7 +3358,8 @@
       return;
     }
     const bounds=vpPanelBounds();
-    syncVpPanelHeightState(expanded?bounds.max:bounds.min);
+    if(expanded)panel.classList.remove('compact');
+    syncVpPanelHeightState(expanded?bounds.max:(panel.classList.contains('compact')?bounds.idle:bounds.min));
   }
   function toggleVpPanelSize(){
     if(vpSuppressResizeClick){
@@ -3254,192 +3398,843 @@
     window.addEventListener('pointerup',onUp,{once:true});
     window.addEventListener('pointercancel',onUp,{once:true});
   }
-  function currentCookStep(){
+  const GEMINI_LIVE_WSS='wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContentConstrained';
+  let geminiLive=null, geminiLiveConnecting=null;
+  function currentGeminiCookingContext(){
     const steps=currentRecipe?.steps||[];
-    return steps[cook3CurrentStep]||steps[0]||null;
+    const totalSteps=steps.length;
+    const completed=totalSteps>0&&cook3CurrentStep>=totalSteps;
+    const safeIndex=totalSteps?Math.min(Math.max(cook3CurrentStep,0),totalSteps-1):0;
+    const step=completed?null:steps[safeIndex]||null;
+    const stepIndex=completed?totalSteps:(step?safeIndex+1:0);
+    const status=completed?'completed':'cooking';
+    return {
+      recipeId:currentRecipe?.id||'',
+      recipe:currentRecipe?.title||currentRecipe?.name||'',
+      stepIndex,
+      totalSteps,
+      stepTitle:completed?'요리 완료':step?.title||'현재 단계',
+      stepNotes:completed?'':(step?.subs||[]).join(' · '),
+      status,
+      key:(currentRecipe?.id||'recipe')+':'+status+':'+stepIndex
+    };
   }
-  async function requestMicPermissionProbe(){
-    if(!window.isSecureContext)throw new Error('마이크는 HTTPS 배포 주소에서만 확인할 수 있어요.');
-    if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)throw new Error('이 브라우저는 모바일 웹 마이크 권한을 지원하지 않아요.');
-    const stream=await navigator.mediaDevices.getUserMedia({
-      audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true},
-      video:false
-    });
-    stream.getTracks().forEach(track=>track.stop());
-    return true;
+  function geminiLivePayload(){
+    const context=currentGeminiCookingContext();
+    const ingredients=[...(currentRecipe?.ingredients?.main||[]),...(currentRecipe?.ingredients?.seasoning||[])]
+      .map(item=>item.n+(item.q?' '+item.q:'')).join(', ');
+    return {
+      recipe:context.recipe,
+      step:context.status==='completed'?'요리 완료':context.stepIndex+'/'+context.totalSteps+' · '+context.stepTitle,
+      stepNotes:context.stepNotes,
+      stepIndex:context.stepIndex,
+      totalSteps:context.totalSteps,
+      cookingStatus:context.status,
+      contextKey:context.key,
+      ingredients,
+      page:location.href,
+      createdAt:new Date().toISOString()
+    };
   }
-  async function requestGeminiLiveSetup(){
-    if(geminiLiveBusy)return;
-    geminiLiveBusy=true;
-    const panel=document.getElementById('vpanel');
-    const btn=panel?.querySelector('.vp-mic');
-    const original=btn?btn.innerHTML:'';
+  function isGeminiLiveOpen(live=geminiLive){
+    return !!(live&&live.ready&&live.socket&&live.socket.readyState===WebSocket.OPEN);
+  }
+  function scheduleGeminiContextRestart(live=geminiLive){
+    if(!live||geminiLive!==live||live.closing||!hf3On)return;
+    const contextKey=currentGeminiCookingContext().key;
+    if(live.contextKey===contextKey){
+      live.pendingContextRestart=false;
+      return;
+    }
+    live.pendingContextRestart=true;
+    if(!live.ready||live.toolResponsePending||live.responseInFlight||live.contextRestarting)return;
+    if(live.contextRestartTimer)clearTimeout(live.contextRestartTimer);
+    live.contextRestartTimer=setTimeout(()=>{
+      live.contextRestartTimer=null;
+      void restartGeminiLiveContext(live);
+    },220);
+  }
+  async function restartGeminiLiveContext(live){
+    if(!live||geminiLive!==live||live.closing||!hf3On)return;
+    const latestContext=currentGeminiCookingContext();
+    if(live.contextKey===latestContext.key){
+      live.pendingContextRestart=false;
+      return;
+    }
+    if(!live.ready||live.toolResponsePending||live.responseInFlight||live.contextRestarting){
+      live.pendingContextRestart=true;
+      return;
+    }
+    live.pendingContextRestart=false;
+    live.contextRestarting=true;
+    live.ready=false;
+    clearGeminiPlayback(live);
+    const previousSocket=live.socket;
+    live.socket=null;
+    if(previousSocket&&previousSocket.readyState<WebSocket.CLOSING){
+      try{previousSocket.close(1000,'cooking stage changed');}catch{}
+    }
+    setVpMicButton('busy');
+    setVpLiveStatus('현재 조리 단계로 Gemini Live를 다시 연결하고 있어요.','');
+    setVpVoiceHint('현재 단계 정보를 최신화하고 있어요.');
     try{
-      if(btn){btn.innerHTML='<i data-lucide="loader-circle"></i>';refreshIcons();}
-      setVpLiveStatus('모바일 마이크 권한을 확인하고 있어요.','');
-      await requestMicPermissionProbe();
-      setVpLiveStatus('Gemini Live 세션을 준비하고 있어요.','');
-      const step=currentCookStep();
-      const data=await postJson('/api/gemini-live-token',{
-        recipe:currentRecipe?.name||'',
-        step:step?.title||'',
-        page:location.href,
-        createdAt:new Date().toISOString()
-      });
-      geminiLiveReady=data;
-      setVpLiveStatus('마이크 권한 확인 · Gemini Live 연결 준비됨','ok');
-      toast('Gemini Live 준비 완료','mic');
+      const payload=geminiLivePayload();
+      live.contextKey=payload.contextKey;
+      const data=await withGeminiLiveTimeout(postJson('/api/gemini-live-token',payload),12000,'현재 조리 단계의 Gemini Live 인증 정보를 받지 못했어요.');
+      if(live.closing||geminiLive!==live||!hf3On)return;
+      await openGeminiLiveSocket(live,data);
+      setVpMicButton(live.micStream?'listening':'idle');
     }catch(error){
-      geminiLiveReady=null;
-      const friendly=String(error.message||'').includes('NAEMBI')
-        ? '음성 연결 설정이 아직 준비되지 않았어요.'
-        : (error.message||'Gemini Live 준비에 실패했어요.');
-      setVpLiveStatus(friendly,'bad');
-      toast('추천 질문이나 직접 입력으로 계속 쓸 수 있어요','message-circle');
+      if(geminiLive===live&&!live.closing){
+        stopGeminiLiveSession('context refresh failed');
+        setVpLiveStatus(geminiVoiceErrorMessage(error),'bad');
+        setVpVoiceHint('마이크 버튼을 눌러 다시 연결해 주세요.');
+        setVpInputMeter(0,'Gemini Live 연결을 다시 확인해 주세요.',false);
+      }
     }finally{
-      geminiLiveBusy=false;
-      if(btn){btn.innerHTML=original||'<i data-lucide="mic"></i>';refreshIcons();}
+      live.contextRestarting=false;
+      if(geminiLive===live&&!live.closing&&(live.pendingContextRestart||live.contextKey!==currentGeminiCookingContext().key))scheduleGeminiContextRestart(live);
     }
   }
-  // 실제 음성 입력은 연결 설정과 모바일 권한이 준비됐는지만 먼저 확인한다.
-  function toggleVpMic(){
-    vpMicMuted=false;
-    document.getElementById('vpanel')?.classList.remove('mic-muted');
-    requestGeminiLiveSetup();
-  }
-  function vpClear(){vpTimers.forEach(t=>clearTimeout(t));vpTimers=[];}
-  function vpType(el,text,speed,done){
-    el.textContent='';let i=0;
-    (function step(){
-      if(!hf3On)return;
-      el.textContent=text.slice(0,++i);
-      if(i<text.length)vpTimers.push(setTimeout(step,speed));
-      else if(done)vpTimers.push(setTimeout(done,300));
-    })();
-  }
-  function vpThinking(el){
-    el.innerHTML='<span class="vp-thinking-wave" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></span>';
-  }
-  function runVp(){
-    if(!hf3On)return;
-    const script=voiceScriptFor(currentRecipe);
-    const ex=script[vpi%script.length];
-    const panel=document.getElementById('vpanel'), u=document.getElementById('vpUser'), a=document.getElementById('vpAi');
-    panel.classList.remove('idle','thinking','answering');panel.classList.add('listening');
-    a.textContent='';
-    vpType(u,ex.u,45,()=>{                       // ① 사용자 발화 타이핑
-      if(!hf3On)return;
-      panel.classList.remove('listening');panel.classList.add('thinking');
-      vpThinking(a);                               // ② 추론(생각 중)
-      vpTimers.push(setTimeout(()=>{
-        if(!hf3On)return;
-        panel.classList.remove('thinking');panel.classList.add('answering');
-        vpType(a,ex.a,28,()=>{                     // ③ 답변 스트리밍
-          if(!hf3On)return;
-          panel.classList.remove('answering');panel.classList.add('listening');
-          if(ex.timer)startVpTimer(ex.timer);        // 타이머 설정 발화면 타이머 패널 시작
-          if(ex.next)cook3Car.advance();             // "다음 단계" 발화면 실제 카드 전진
-          vpi++;                                    // ④ 답변 유지 후 다음 발화로 (음소거면 이 응답까지만 출력하고 멈춤)
-          vpTimers.push(setTimeout(()=>{ if(hf3On&&!vpMicMuted){u.textContent='다음 예시를 보여줄게요…';runVp();} },1000)); // 발화 사이 텀 ~1초
-        });
-      },900));
-    });
-  }
-  function renderVpQuickPrompts(){
-    const wrap=document.getElementById('vpQuick');
-    if(!wrap)return;
-    const script=voiceScriptFor(currentRecipe).slice(0,4);
-    wrap.innerHTML=script.map((ex,i)=>'<button type="button" onclick="useVpPrompt('+i+')">'+esc(ex.u)+'</button>').join('');
+  onCookingStageContextChanged=()=>scheduleGeminiContextRestart();
+  function setVpMicButton(state='idle'){
+    const panel=document.getElementById('vpanel');
+    const button=panel?.querySelector('.vp-mic');
+    if(!button)return;
+    const icon=state==='busy'?'loader-circle':state==='muted'||state==='error'?'mic-off':'mic';
+    const label=state==='busy'?'Gemini Live 연결 중':state==='listening'?'마이크 음소거':state==='muted'?'마이크 다시 켜기':state==='error'?'마이크 다시 시도':'Gemini Live 마이크 켜기';
+    button.innerHTML='<i data-lucide="'+icon+'"></i>';
+    button.setAttribute('aria-label',label);
     refreshIcons();
   }
-  function resetVpPromptPanel(){
-    const panel=document.getElementById('vpanel'), u=document.getElementById('vpUser'), a=document.getElementById('vpAi'), input=document.getElementById('vpPromptInput');
-    vpClear();
-    vpi=0;
-    vpMicMuted=false;
-    panel.classList.remove('mic-muted','idle','listening','thinking','answering','expanded');
-    panel.classList.add('open');
-    setVpPanelExpanded(false);
-    if(u)u.textContent='무엇이 궁금해요?';
-    if(a)a.textContent='아래 질문을 누르거나 직접 물어보면 답할게요.';
-    if(input)input.value='';
-    setVpLiveStatus('마이크 버튼을 누르면 모바일 권한과 Live 연결 준비를 확인해요.','');
-    {const mb=panel.querySelector('.vp-mic');if(mb){mb.innerHTML='<i data-lucide="mic"></i>';refreshIcons();}}
-    renderVpQuickPrompts();
+  function scrollVpTranscript(){
+    const scroll=document.getElementById('vpScroll');
+    if(scroll)scroll.scrollTop=scroll.scrollHeight;
   }
-  function answerForPrompt(prompt){
-    const q=(prompt||'').trim();
-    const script=voiceScriptFor(currentRecipe);
-    const norm=(value)=>String(value||'').replace(/\s+/g,' ').trim();
-    const normalized=norm(q);
-    const direct=script.find(ex=>norm(ex.u)===normalized)
-      ||(normalized.length>=6?script.find(ex=>{
-        const sample=norm(ex.u);
-        if(ex.next)return false;
-        return normalized.includes(sample)||sample.includes(normalized);
-      }):null);
-    if(direct)return direct;
-    const minute=q.match(/(\d+)\s*분/);
-    if(minute){
-      const minutes=Math.max(1,Math.min(99,parseInt(minute[1],10)));
-      return {u:q,a:minutes+'분 타이머를 시작했어요. 다음 재료를 미리 꺼내두면 조리 흐름이 덜 끊겨요.',timer:minutes*60};
+  function clearVpTranscript(){
+    const transcript=document.getElementById('vpTranscript');
+    if(transcript)transcript.replaceChildren();
+    document.getElementById('vpScroll')?.classList.remove('has-transcript');
+  }
+  function createVpTranscriptEntry(role,value){
+    const entry=document.createElement('div');
+    entry.className='vp-transcript-entry '+(role==='assistant'?'assistant':'user');
+    const label=document.createElement('b');
+    label.textContent=role==='assistant'?'냄비':'나';
+    const text=document.createElement('span');
+    text.textContent=value||'';
+    entry.append(label,text);
+    return entry;
+  }
+  function mergeVpTranscript(previous,next){
+    const before=String(previous||'').trim();
+    const incoming=String(next||'').trim();
+    if(!before||incoming.startsWith(before))return incoming||before;
+    if(before.endsWith(incoming))return before;
+    return before+(before.endsWith(' ')||incoming.startsWith(' ')?'':' ')+incoming;
+  }
+  function ensureVpTranscriptState(live){
+    if(!live.transcript){
+      live.transcript={epoch:0,userText:'',assistantText:'',pendingAssistantText:'',hasUser:false,complete:false,lastAssistantText:''};
     }
-    if(/^(다음|다음\s*단계|다음으로|다음\s*단계로|넘어가|넘어가줘|다음\s*단계로\s*가줘)$/i.test(normalized))return {u:q,a:'네, 다음 단계로 넘어갈게요.',next:true};
-    if(/재료|대체|없/.test(q))return {u:q,a:currentRecipe.name+'은 핵심 재료를 유지하고 비슷한 식감이나 간의 재료로 바꾸면 돼요. 양념은 한 번에 많이 넣지 말고 조금씩 맞춰보세요.'};
-    if(/불|타|익|간/.test(q))return {u:q,a:'불을 한 단계 낮추고 현재 단계 설명을 보며 천천히 맞춰보세요. 간은 마지막에 한 번 더 보는 편이 실패가 적어요.'};
-    return {u:q,a:'지금은 정해진 예시 질문으로 답변을 보여드려요. 재료 대체, 불 조절, 타이머, 다음 단계 질문을 해볼 수 있어요.'};
+    return live.transcript;
   }
-  function showVpAnswer(ex){
-    if(!hf3On)return;
-    const panel=document.getElementById('vpanel'), u=document.getElementById('vpUser'), a=document.getElementById('vpAi');
-    vpClear();
-    panel.classList.remove('idle','listening','answering');panel.classList.add('thinking');
-    u.textContent=ex.u;
-    vpThinking(a);
-    vpTimers.push(setTimeout(()=>{
-      if(!hf3On)return;
-      panel.classList.remove('thinking');panel.classList.add('answering');
-      vpType(a,ex.a,24,()=>{
-        if(ex.timer)startVpTimer(ex.timer);
-        if(ex.next)cook3Car.advance();
-      });
-    },420));
+  function renderVpTranscript(live){
+    const transcript=document.getElementById('vpTranscript');
+    if(!transcript||!live)return;
+    const state=ensureVpTranscriptState(live);
+    const entries=[];
+    if(state.userText)entries.push(createVpTranscriptEntry('user',state.userText));
+    if(state.assistantText)entries.push(createVpTranscriptEntry('assistant',state.assistantText));
+    transcript.replaceChildren(...entries);
+    document.getElementById('vpScroll')?.classList.toggle('has-transcript',entries.length>0);
+    scrollVpTranscript();
   }
-  function useVpPrompt(index){
-    const ex=voiceScriptFor(currentRecipe)[index]||voiceScriptFor(currentRecipe)[0];
-    showVpAnswer(ex);
+  function beginVpTranscriptTurn(live){
+    const state=ensureVpTranscriptState(live);
+    if(state.assistantText)state.lastAssistantText=state.assistantText;
+    state.epoch+=1;
+    state.userText='';
+    state.assistantText='';
+    state.pendingAssistantText='';
+    state.hasUser=false;
+    state.complete=false;
+    renderVpTranscript(live);
+    return state;
   }
-  function submitVpPrompt(event){
-    event.preventDefault();
-    const input=document.getElementById('vpPromptInput');
-    const prompt=(input?.value||'').trim();
-    if(!prompt)return;
-    if(input)input.value='';
-    showVpAnswer(answerForPrompt(prompt));
+  function updateVpTranscript(live,role,text){
+    const value=String(text||'').trim();
+    if(!value)return '';
+    let state=ensureVpTranscriptState(live);
+    if(role==='user'){
+      if(state.complete)state=beginVpTranscriptTurn(live);
+      else if(!state.epoch)state.epoch=1;
+      state.hasUser=true;
+      state.userText=mergeVpTranscript(state.userText,value);
+      if(state.pendingAssistantText){
+        state.assistantText=mergeVpTranscript(state.assistantText,state.pendingAssistantText);
+        state.pendingAssistantText='';
+      }
+      renderVpTranscript(live);
+      return state.userText;
+    }
+    if(!state.hasUser){
+      const prior=state.lastAssistantText;
+      if(prior&&(prior.startsWith(value)||value.startsWith(prior)))return state.assistantText;
+      state.pendingAssistantText=mergeVpTranscript(state.pendingAssistantText,value);
+    }else{
+      state.assistantText=mergeVpTranscript(state.assistantText,value);
+    }
+    renderVpTranscript(live);
+    return state.assistantText||state.pendingAssistantText;
   }
-  function startVpTimer(sec){
-    startUnifiedTimer(sec,false);
+  function clearGeminiPlayback(live=geminiLive){
+    if(!live)return;
+    live.playbackNodes?.forEach(node=>{try{node.stop();}catch{}});
+    live.playbackNodes?.clear();
+    live.nextAudioTime=live.audioContext?.currentTime||0;
+    syncCookYoutubeDucking();
   }
-  function toggleHf3(){
-    hf3On=!hf3On;
+  function syncCookYoutubeDucking(){
+    const live=geminiLive;
+    const shouldDuck=!!(live&&!live.closing&&live.playbackNodes?.size&&assistantVolumeGain()>0);
+    if(cookYoutubeDucked===shouldDuck)return;
+    cookYoutubeDucked=shouldDuck;
+    applyCookYoutubeSound();
+  }
+  function syncGeminiLiveOutputGain(){
+    if(geminiLive?.outputGain)geminiLive.outputGain.gain.value=assistantVolumeGain();
+    syncCookYoutubeDucking();
+  }
+  async function ensureGeminiAudioOutput(live){
+    const AudioCtor=window.AudioContext||window.webkitAudioContext;
+    if(!AudioCtor)throw new Error('이 브라우저는 Gemini Live 오디오 재생을 지원하지 않아요.');
+    if(!live.audioContext){
+      live.audioContext=new AudioCtor();
+      live.outputGain=live.audioContext.createGain();
+      live.outputGain.gain.value=assistantVolumeGain();
+      live.outputGain.connect(live.audioContext.destination);
+      live.nextAudioTime=live.audioContext.currentTime;
+    }
+    if(live.audioContext.state==='suspended')await live.audioContext.resume();
+    return live.audioContext;
+  }
+  function arrayBufferToBase64(buffer){
+    const bytes=new Uint8Array(buffer);
+    let binary='';
+    for(let start=0;start<bytes.length;start+=0x8000){
+      binary+=String.fromCharCode(...bytes.subarray(start,start+0x8000));
+    }
+    return btoa(binary);
+  }
+  function base64ToPcm(base64){
+    const binary=atob(base64||'');
+    const bytes=new Uint8Array(binary.length);
+    for(let index=0;index<binary.length;index+=1)bytes[index]=binary.charCodeAt(index);
+    return new Int16Array(bytes.buffer,bytes.byteOffset,Math.floor(bytes.byteLength/2));
+  }
+  function sendGeminiLiveMessage(live,message){
+    if(!isGeminiLiveOpen(live))throw new Error('Gemini Live 세션이 연결되어 있지 않아요.');
+    const text=String(message?.realtimeInput?.text||'').trim();
+    if(text){
+      beginVpTranscriptTurn(live);
+      updateVpTranscript(live,'user',text);
+    }
+    live.socket.send(JSON.stringify(message));
+  }
+  function createGeminiPcmResampler(sourceRate,targetRate=16000){
+    let phase=0,sum=0,count=0;
+    return input=>{
+      const pcm=new Int16Array(Math.ceil(input.length*targetRate/sourceRate)+2);
+      let length=0,energy=0;
+      for(let index=0;index<input.length;index+=1){
+        const sample=Math.max(-1,Math.min(1,input[index]));
+        energy+=sample*sample;
+        sum+=sample;
+        count+=1;
+        phase+=targetRate;
+        if(phase>=sourceRate){
+          const averaged=sum/count;
+          pcm[length++]=averaged<0?averaged*0x8000:averaged*0x7fff;
+          phase-=sourceRate;
+          sum=0;
+          count=0;
+        }
+      }
+      return {buffer:pcm.buffer.slice(0,length*Int16Array.BYTES_PER_ELEMENT),level:Math.sqrt(energy/Math.max(1,input.length))};
+    };
+  }
+  function createGeminiScriptProcessor(live,context){
+    const processor=context.createScriptProcessor(2048,1,1);
+    const resample=createGeminiPcmResampler(context.sampleRate||16000);
+    processor.onaudioprocess=event=>{
+      const input=event.inputBuffer.getChannelData(0);
+      const pcm=resample(input);
+      sendGeminiPcm(live,pcm.buffer,pcm.level);
+    };
+    return processor;
+  }
+  function switchToGeminiScriptProcessor(live){
+    const context=live?.audioContext, source=live?.inputSource, silent=live?.inputSilence, previous=live?.inputProcessor;
+    if(!context||!source||!silent||!previous||!live.inputUsingWorklet)return false;
+    try{source.disconnect(previous);}catch{return false;}
+    try{previous.disconnect();}catch{}
+    if(previous.port)previous.port.onmessage=null;
+    const processor=createGeminiScriptProcessor(live,context);
+    source.connect(processor);
+    processor.connect(silent);
+    live.inputProcessor=processor;
+    live.inputUsingWorklet=false;
+    setVpVoiceHint('마이크 캡처 경로를 호환 모드로 전환했어요. 다시 말씀해 주세요.');
+    return true;
+  }
+  function attachGeminiInputMonitor(live){
+    const context=live?.audioContext, source=live?.inputSource, silent=live?.inputSilence;
+    if(!context?.createAnalyser||!source||!silent||typeof requestAnimationFrame!=='function')return;
+    const analyser=context.createAnalyser();
+    analyser.fftSize=256;
+    const samples=new Float32Array(analyser.fftSize);
+    source.connect(analyser);
+    analyser.connect(silent);
+    live.inputAnalyser=analyser;
+    live.inputMonitorStartedAt=performance.now();
+    const monitor=()=>{
+      if(geminiLive!==live||live.closing||!live.micStream)return;
+      analyser.getFloatTimeDomainData(samples);
+      let energy=0;
+      for(let index=0;index<samples.length;index+=1)energy+=samples[index]*samples[index];
+      const rawLevel=Math.sqrt(energy/samples.length);
+      live.rawInputLevel=rawLevel;
+      if(live.inputUsingWorklet&&!live.capturedAudioFrames&&rawLevel>=.002&&performance.now()-live.inputMonitorStartedAt>1500){
+        switchToGeminiScriptProcessor(live);
+      }
+      live.inputMonitorFrame=requestAnimationFrame(monitor);
+    };
+    live.inputMonitorFrame=requestAnimationFrame(monitor);
+  }
+  function queueGeminiPcm(live,buffer,level){
+    if(!live||live.closing||!(buffer instanceof ArrayBuffer))return;
+    if(!Array.isArray(live.pendingPcm))live.pendingPcm=[];
+    if(!Number.isFinite(live.pendingPcmBytes))live.pendingPcmBytes=0;
+    const copy=buffer.slice(0);
+    live.pendingPcm.push({buffer:copy,level});
+    live.pendingPcmBytes+=copy.byteLength;
+    while(live.pendingPcmBytes>192000&&live.pendingPcm.length){
+      live.pendingPcmBytes-=live.pendingPcm.shift().buffer.byteLength;
+    }
+  }
+  function transmitGeminiPcm(live,buffer){
+    if(!isGeminiLiveOpen(live)||!buffer?.byteLength)return;
+    try{
+      sendGeminiLiveMessage(live,{realtimeInput:{audio:{data:arrayBufferToBase64(buffer),mimeType:'audio/pcm;rate=16000'}}});
+      live.sentAudioFrames=(live.sentAudioFrames||0)+1;
+      live.sentAudioBytes=(live.sentAudioBytes||0)+buffer.byteLength;
+      live.inputMimeType='audio/pcm;rate=16000';
+    }catch(error){
+      console.warn('Gemini Live audio send failed',error);
+    }
+  }
+  function flushGeminiPcm(live){
+    if(!isGeminiLiveOpen(live)||!Array.isArray(live.pendingPcm)||!live.pendingPcm.length)return;
+    const chunks=live.pendingPcm.splice(0);
+    live.pendingPcmBytes=0;
+    chunks.forEach(chunk=>transmitGeminiPcm(live,chunk.buffer));
+  }
+  function sendGeminiPcm(live,buffer,level=0){
+    if(live?.closing)return;
+    if(!(buffer instanceof ArrayBuffer)||!buffer.byteLength)return;
+    updateGeminiMicActivity(live,buffer.byteLength,level);
+    if(!isGeminiLiveOpen(live)){
+      queueGeminiPcm(live,buffer,level);
+      return;
+    }
+    transmitGeminiPcm(live,buffer);
+  }
+  async function startGeminiMicrophone(live){
+    if(live.micStream)return;
+    if(!window.isSecureContext)throw new Error('마이크는 HTTPS 또는 localhost 주소에서만 사용할 수 있어요.');
+    if(!navigator.mediaDevices?.getUserMedia)throw new Error('이 브라우저는 모바일 웹 마이크 권한을 지원하지 않아요.');
+    const requestedDeviceId=String(live.inputDeviceId||'');
+    const stream=await navigator.mediaDevices.getUserMedia({
+      audio:{deviceId:requestedDeviceId?{exact:requestedDeviceId}:undefined,channelCount:{ideal:1},echoCancellation:true,noiseSuppression:true,autoGainControl:true},
+      video:false
+    });
+    if(live.closing||geminiLive!==live){stream.getTracks().forEach(track=>track.stop());return;}
+    live.micStopExpected=false;
+    const context=await ensureGeminiAudioOutput(live);
+    const source=context.createMediaStreamSource(stream);
+    const silent=context.createGain();
+    silent.gain.value=0;
+    let processor;
+    let inputUsingWorklet=false;
+    try{
+      if(!context.audioWorklet||typeof AudioWorkletNode==='undefined')throw new Error('AudioWorklet unavailable');
+      await context.audioWorklet.addModule('/assets/gemini-live-audio-worklet.js');
+      processor=new AudioWorkletNode(context,'naembi-pcm-capture',{numberOfInputs:1,numberOfOutputs:1,channelCount:1,channelCountMode:'explicit'});
+      processor.port.onmessage=event=>{
+        const payload=event.data;
+        if(payload instanceof ArrayBuffer)sendGeminiPcm(live,payload,0);
+        else sendGeminiPcm(live,payload?.pcm,payload?.level);
+      };
+      inputUsingWorklet=true;
+    }catch(error){
+      processor=createGeminiScriptProcessor(live,context);
+    }
+    source.connect(processor);
+    processor.connect(silent);
+    silent.connect(context.destination);
+    live.micStream=stream;
+    live.inputSource=source;
+    live.inputProcessor=processor;
+    live.inputSilence=silent;
+    live.inputUsingWorklet=inputUsingWorklet;
+    vpMicMuted=false;
+    document.getElementById('vpanel')?.classList.remove('mic-muted');
+    void identifyGeminiInputDevice(live,stream);
+    setVpMicButton('listening');
+    setVpVoiceHint('마이크가 준비됐어요. Gemini Live 연결을 기다리고 있어요.');
+    setVpInputMeter(0,'마이크 입력을 확인하고 있어요.',false);
+    attachGeminiInputMonitor(live);
+  }
+  function releaseGeminiMicrophone(live,sendEnd){
+    if(!live)return;
+    live.micStopExpected=true;
+    clearGeminiMicWatchdog(live);
+    if(live.inputMonitorFrame&&typeof cancelAnimationFrame==='function')cancelAnimationFrame(live.inputMonitorFrame);
+    live.inputMonitorFrame=null;
+    if(sendEnd&&isGeminiLiveOpen(live)&&live.micStream){
+      try{sendGeminiLiveMessage(live,{realtimeInput:{audioStreamEnd:true}});}catch{}
+    }
+    if(live.inputProcessor){
+      try{live.inputProcessor.disconnect();}catch{}
+      live.inputProcessor.onaudioprocess=null;
+      if(live.inputProcessor.port)live.inputProcessor.port.onmessage=null;
+    }
+    try{live.inputSource?.disconnect();}catch{}
+    try{live.inputSilence?.disconnect();}catch{}
+    try{live.inputAnalyser?.disconnect();}catch{}
+    live.micStream?.getTracks().forEach(track=>track.stop());
+    live.micStream=null;
+    live.inputSource=null;
+    live.inputProcessor=null;
+    live.inputSilence=null;
+    live.inputAnalyser=null;
+    live.pendingPcm=[];
+    live.pendingPcmBytes=0;
+    live.inputLevel=0;
+    live.micMeterMode='waiting';
+    live.voiceWaveUntil=0;
+    document.getElementById('vpanel')?.classList.remove('mic-active');
+  }
+  function stopGeminiMicrophone(){
+    const live=geminiLive;
+    if(!live?.micStream)return;
+    releaseGeminiMicrophone(live,true);
+    vpMicMuted=true;
+    document.getElementById('vpanel')?.classList.add('mic-muted');
+    setVpMicButton('muted');
+    setVpLiveStatus('마이크를 껐어요. 다시 누르면 음성 대화를 이어갈 수 있어요.','');
+    setVpVoiceHint('마이크를 다시 누르면 음성 대화를 이어갈 수 있어요.');
+    setVpInputMeter(0,'마이크가 꺼져 있어요.',false);
+    setVpInputSource('입력 장치가 꺼져 있어요.');
+  }
+  function disposeGeminiAudio(live){
+    clearGeminiPlayback(live);
+    try{live.outputGain?.disconnect();}catch{}
+    if(live.audioContext&&live.audioContext.state!=='closed')live.audioContext.close().catch(()=>{});
+    live.outputGain=null;
+    live.audioContext=null;
+  }
+  function stopGeminiLiveSession(reason=''){
+    const live=geminiLive;
+    if(!live)return;
+    if(live.toolResponsePending){live.pendingStopReason=reason;return;}
+    geminiLive=null;
+    geminiLiveConnecting=null;
+    live.closing=true;
+    if(live.contextRestartTimer)clearTimeout(live.contextRestartTimer);
+    live.contextRestartTimer=null;
+    releaseGeminiMicrophone(live,false);
+    disposeGeminiAudio(live);
+    if(live.socket&&live.socket.readyState<WebSocket.CLOSING){
+      try{live.socket.close(1000,reason.slice(0,110)||'session closed');}catch{}
+    }
+    live.socket=null;
+    setVpMicButton('idle');
+  }
+  function scheduleGeminiPcm(live,inlineData){
+    if(!inlineData?.data||!live?.audioContext||live.closing)return;
+    let pcm;
+    try{pcm=base64ToPcm(inlineData.data);}catch{return;}
+    if(!pcm.length)return;
+    const rate=Number((inlineData.mimeType||'').match(/rate=(\d+)/)?.[1])||24000;
+    const samples=new Float32Array(pcm.length);
+    for(let index=0;index<pcm.length;index+=1)samples[index]=pcm[index]/0x8000;
+    const buffer=live.audioContext.createBuffer(1,samples.length,rate);
+    buffer.copyToChannel(samples,0);
+    const source=live.audioContext.createBufferSource();
+    source.buffer=buffer;
+    source.connect(live.outputGain);
+    const startAt=Math.max(live.audioContext.currentTime+.04,live.nextAudioTime||0);
+    source.onended=()=>{
+      live.playbackNodes.delete(source);
+      syncCookYoutubeDucking();
+    };
+    live.playbackNodes.add(source);
+    syncCookYoutubeDucking();
+    source.start(startAt);
+    live.nextAudioTime=startAt+buffer.duration;
+  }
+  function currentGeminiCookingState(){
+    const context=currentGeminiCookingContext();
+    return {
+      recipe:context.recipe,
+      stepIndex:context.stepIndex,
+      totalSteps:context.totalSteps,
+      stepTitle:context.stepTitle,
+      cookingStatus:context.status,
+      videoPlaying:cook3Playing,
+      videoSpeed:vsSpeed,
+      videoRepeat:vsLoopOn,
+      timerSeconds:timerLeft||0,
+      timerPaused:!!timerPaused
+    };
+  }
+  function runGeminiTool(live,name,args){
+    if(geminiLive!==live||!hf3On||!document.getElementById('cook3')?.classList.contains('active')){
+      return {ok:false,error:'조리 화면이 열려 있지 않아요.'};
+    }
+    const values=args&&typeof args==='object'?args:{};
+    switch(name){
+      case 'move_cooking_step':
+        if(values.direction==='next')cook3Car.next();
+        else if(values.direction==='previous')cook3Car.prev();
+        else return {ok:false,error:'direction 값이 올바르지 않아요.'};
+        return {ok:true,...currentGeminiCookingState()};
+      case 'go_to_cooking_step':{
+        const step=Number(values.step);
+        const max=currentRecipe?.steps?.length||0;
+        if(!Number.isInteger(step)||step<1||step>max)return {ok:false,error:'유효한 단계 번호가 아니에요.'};
+        cook3Car.goTo(step-1);
+        return {ok:true,...currentGeminiCookingState()};
+      }
+      case 'set_cooking_timer':{
+        const seconds=Number(values.seconds);
+        if(!Number.isInteger(seconds)||seconds<1||seconds>7200)return {ok:false,error:'타이머 시간은 1초에서 2시간 사이여야 해요.'};
+        startUnifiedTimer(seconds,false);
+        return {ok:true,seconds,...currentGeminiCookingState()};
+      }
+      case 'set_cooking_timer_state':
+        if(values.state==='cancel'){cancelStageTimer();return {ok:true,...currentGeminiCookingState()};}
+        if(!timerTotal||timerLeft<=0)return {ok:false,error:'실행 중인 타이머가 없어요.'};
+        if(values.state==='pause'&&!timerPaused)toggleStageTimerPause();
+        else if(values.state==='resume'&&timerPaused)toggleStageTimerPause();
+        else if(values.state!=='pause'&&values.state!=='resume')return {ok:false,error:'timer state 값이 올바르지 않아요.'};
+        return {ok:true,...currentGeminiCookingState()};
+      case 'set_video_playback':
+        if(values.state==='play'&&!cook3Playing)videoTogglePlay();
+        else if(values.state==='pause'&&cook3Playing)videoTogglePlay();
+        else if(values.state!=='play'&&values.state!=='pause')return {ok:false,error:'playback state 값이 올바르지 않아요.'};
+        return {ok:true,...currentGeminiCookingState()};
+      case 'seek_video':{
+        const seconds=Number(values.seconds);
+        if(!Number.isInteger(seconds)||seconds<1||seconds>60)return {ok:false,error:'이동 시간은 1초에서 60초 사이여야 해요.'};
+        if(values.direction==='backward')videoSeek(-seconds);
+        else if(values.direction==='forward')videoSeek(seconds);
+        else return {ok:false,error:'seek direction 값이 올바르지 않아요.'};
+        return {ok:true,videoTime:cook3Time,...currentGeminiCookingState()};
+      }
+      case 'set_video_speed':{
+        const speed=Number(values.speed);
+        if(!vsSpeedOptions.includes(speed))return {ok:false,error:'지원하지 않는 재생 속도예요.'};
+        setVsSpeed(speed);
+        return {ok:true,...currentGeminiCookingState()};
+      }
+      case 'set_video_repeat':
+        if(typeof values.enabled!=='boolean')return {ok:false,error:'repeat enabled 값이 올바르지 않아요.'};
+        if(values.enabled!==vsLoopOn)toggleVsLoop();
+        return {ok:true,...currentGeminiCookingState()};
+      case 'show_cooking_ingredients':
+        openIngredients();
+        return {ok:true,ingredientsVisible:true,...currentGeminiCookingState()};
+      default:
+        return {ok:false,error:'허용되지 않은 도구 요청이에요.'};
+    }
+  }
+  function handleGeminiToolCall(live,toolCall){
+    const calls=Array.isArray(toolCall?.functionCalls)?toolCall.functionCalls:[];
+    if(!calls.length||!isGeminiLiveOpen(live))return;
+    live.responseInFlight=true;
+    live.toolResponsePending=true;
+    const functionResponses=calls.map(call=>{
+      if(live.cancelledToolCalls?.has(call.id)){
+        return {id:call.id,name:call.name,response:{error:'취소된 도구 요청이에요.'}};
+      }
+      try{return {id:call.id,name:call.name,response:{result:runGeminiTool(live,call.name,call.args)}};}
+      catch(error){return {id:call.id,name:call.name,response:{error:error.message||'도구 실행에 실패했어요.'}};}
+    });
+    try{sendGeminiLiveMessage(live,{toolResponse:{functionResponses}});}
+    finally{
+      live.toolResponsePending=false;
+      if(live.pendingStopReason)stopGeminiLiveSession(live.pendingStopReason);
+    }
+  }
+  function handleGeminiServerContent(live,content){
+    if(!content)return;
     const panel=document.getElementById('vpanel');
-    vpClear();
+    if(content.interrupted){
+      clearGeminiPlayback(live);
+      beginVpTranscriptTurn(live);
+      live.responseInFlight=false;
+      panel?.classList.remove('thinking','answering');
+      panel?.classList.add('listening');
+      setVpLiveStatus('말씀을 듣고 있어요.','ok');
+      setVpVoiceHint('말하면 입력 막대와 전사가 표시돼요.');
+    }
+    if(content.inputTranscription?.text){
+      live.responseInFlight=true;
+      panel?.classList.remove('thinking','answering');
+      panel?.classList.add('listening');
+      updateVpTranscript(live,'user',content.inputTranscription.text);
+    }
+    for(const part of content.modelTurn?.parts||[]){
+      live.responseInFlight=true;
+      if(part.inlineData)scheduleGeminiPcm(live,part.inlineData);
+    }
+    if(content.outputTranscription?.text){
+      live.responseInFlight=true;
+      panel?.classList.remove('thinking','listening');
+      panel?.classList.remove('mic-active');
+      panel?.classList.add('answering');
+      setVpVoiceHint('냄비가 답하고 있어요.');
+      updateVpTranscript(live,'assistant',content.outputTranscription.text);
+    }
+    if(content.turnComplete){
+      const transcript=ensureVpTranscriptState(live);
+      if(transcript.hasUser)transcript.complete=true;
+      live.responseInFlight=false;
+      panel?.classList.remove('thinking','answering');
+      panel?.classList.remove('mic-active');
+      panel?.classList.add('listening');
+      setVpLiveStatus(live.micStream?'계속 말씀해 주세요.':'마이크를 눌러 음성 대화를 이어가세요.','ok');
+      setVpVoiceHint(live.micStream?'말하면 입력 막대와 전사가 표시돼요.':'마이크를 누르면 음성 대화를 이어갈 수 있어요.');
+      scheduleGeminiContextRestart(live);
+    }
+  }
+  function handleGeminiLiveMessage(live,message){
+    if(geminiLive!==live||live.closing)return;
+    if(message.serverContent)handleGeminiServerContent(live,message.serverContent);
+    if(message.toolCall)handleGeminiToolCall(live,message.toolCall);
+    if(message.toolCallCancellation?.ids){
+      message.toolCallCancellation.ids.forEach(id=>live.cancelledToolCalls.add(id));
+    }
+    if(message.goAway){setVpLiveStatus('Gemini Live 세션이 곧 종료돼요. 다음 질문에서 다시 연결할게요.','');}
+  }
+  async function decodeGeminiLiveMessage(data){
+    if(typeof data==='string')return data;
+    if(data instanceof Blob)return data.text();
+    if(data instanceof ArrayBuffer)return new TextDecoder().decode(data);
+    return String(data||'');
+  }
+  function openGeminiLiveSocket(live,data){
+    return new Promise((resolve,reject)=>{
+      const token=String(data?.token||'');
+      const setup=data?.liveSetup;
+      if(!token||!setup)throw new Error('Gemini Live 연결 정보를 받지 못했어요.');
+      const socket=new WebSocket(GEMINI_LIVE_WSS+'?access_token='+encodeURIComponent(token));
+      let settled=false;
+      const timer=setTimeout(()=>finish(reject,new Error('Gemini Live 연결 시간이 초과됐어요.')),15000);
+      function finish(callback,value){
+        if(settled)return;
+        settled=true;
+        clearTimeout(timer);
+        callback(value);
+      }
+      live.socket=socket;
+      socket.onopen=()=>{
+        if(live.socket!==socket||live.closing)return;
+        try{
+          setVpLiveStatus('Gemini Live 연결을 확인하고 있어요.','');
+          setVpVoiceHint('마이크 입력은 준비됐어요. 잠시만 기다려 주세요.');
+          socket.send(JSON.stringify({setup}));
+        }
+        catch(error){finish(reject,error);}
+      };
+      socket.onmessage=async event=>{
+        if(live.socket!==socket||live.closing)return;
+        let message;
+        try{message=JSON.parse(await decodeGeminiLiveMessage(event.data));}catch{return;}
+        if(live.socket!==socket||live.closing)return;
+        if(message.setupComplete){
+          live.ready=true;
+          flushGeminiPcm(live);
+          const panel=document.getElementById('vpanel');
+          panel?.classList.remove('connecting','thinking','answering');
+          panel?.classList.add('listening');
+          setVpLiveStatus(live.micStream?'Gemini Live가 듣고 있어요. 말씀해 주세요.':'Gemini Live가 연결됐어요. 마이크를 눌러 말씀해 주세요.','ok');
+          setVpVoiceHint(live.micStream?'말하면 입력 막대와 전사가 표시돼요.':'마이크를 누르면 음성 대화를 시작할 수 있어요.');
+          const inputActive=(live.inputLevel||0)>=.012;
+          live.micMeterMode=inputActive?'active':'waiting';
+          setVpInputMeter(live.inputLevel||0,live.micStream?(inputActive?'마이크 입력을 Gemini에 전송하고 있어요.':'마이크 입력을 기다리고 있어요.'):'마이크가 꺼져 있어요.',inputActive);
+          armGeminiMicWatchdog(live);
+          finish(resolve,live);
+          if(live.contextKey!==currentGeminiCookingContext().key){
+            live.pendingContextRestart=true;
+            scheduleGeminiContextRestart(live);
+          }
+          return;
+        }
+        handleGeminiLiveMessage(live,message);
+      };
+      socket.onerror=()=>{
+        if(live.socket===socket)finish(reject,new Error('Gemini Live WebSocket 연결에 실패했어요.'));
+      };
+      socket.onclose=()=>{
+        if(live.socket!==socket)return;
+        if(!live.ready)finish(reject,new Error('Gemini Live 세션이 시작되기 전에 종료됐어요.'));
+        if(live.closing)return;
+        releaseGeminiMicrophone(live,false);
+        disposeGeminiAudio(live);
+        if(geminiLive===live){
+          geminiLive=null;
+          setVpMicButton('idle');
+          setVpLiveStatus('Gemini Live 세션이 종료됐어요. 다음 질문에서 다시 연결할게요.','');
+          setVpVoiceHint('마이크 버튼을 눌러 다시 연결할 수 있어요.');
+          setVpInputMeter(0,'Gemini Live 연결이 종료됐어요.',false);
+        }
+      };
+    });
+  }
+  function withGeminiLiveTimeout(promise,timeoutMs,message){
+    return new Promise((resolve,reject)=>{
+      const timer=setTimeout(()=>reject(new Error(message)),timeoutMs);
+      Promise.resolve(promise).then(value=>{clearTimeout(timer);resolve(value);},error=>{clearTimeout(timer);reject(error);});
+    });
+  }
+  async function ensureGeminiLive({captureMicrophone=false}={}){
+    if(isGeminiLiveOpen()){
+      if(captureMicrophone)await startGeminiMicrophone(geminiLive);
+      return geminiLive;
+    }
+    if(geminiLive?.contextRestarting){
+      if(captureMicrophone)await startGeminiMicrophone(geminiLive);
+      return geminiLive;
+    }
+    if(geminiLiveConnecting){
+      const live=await geminiLiveConnecting;
+      if(captureMicrophone)await startGeminiMicrophone(live);
+      return live;
+    }
+    const live={
+      socket:null,ready:false,closing:false,micStream:null,inputSource:null,inputProcessor:null,inputSilence:null,
+      audioContext:null,outputGain:null,playbackNodes:new Set(),nextAudioTime:0,pendingPcm:[],pendingPcmBytes:0,
+      capturedAudioFrames:0,capturedAudioBytes:0,sentAudioFrames:0,sentAudioBytes:0,activeAudioFrames:0,lastAudioAt:0,lastNonSilentAt:0,inputLevel:0,micMeterMode:'waiting',micWatchdog:null,
+      transcript:null,cancelledToolCalls:new Set(),toolResponsePending:false,pendingStopReason:'',responseInFlight:false,
+      contextKey:'',pendingContextRestart:false,contextRestartTimer:null,contextRestarting:false
+    };
+    geminiLive=live;
+    setVpMicButton('busy');
+    setVpLiveStatus('Gemini Live 세션을 준비하고 있어요.','');
+    setVpVoiceHint('마이크와 Gemini Live 연결을 준비하고 있어요.');
+    setVpInputMeter(0,'마이크 입력을 기다리고 있어요.',false);
+    const outputReady=ensureGeminiAudioOutput(live);
+    const microphoneReady=captureMicrophone?startGeminiMicrophone(live):Promise.resolve();
+    const connecting=(async()=>{
+      const payload=geminiLivePayload();
+      live.contextKey=payload.contextKey;
+      const data=await withGeminiLiveTimeout(postJson('/api/gemini-live-token',payload),12000,'Gemini Live 인증 정보를 받지 못했어요. 네트워크와 API 키 설정을 확인해 주세요.');
+      await Promise.all([outputReady,microphoneReady]);
+      if(live.closing||geminiLive!==live)throw new Error('Gemini Live 연결이 취소됐어요.');
+      setVpLiveStatus('Gemini Live에 연결하고 있어요.','');
+      setVpVoiceHint('마이크 입력을 준비했어요. 연결이 끝나면 바로 전송할게요.');
+      await openGeminiLiveSocket(live,data);
+      if(captureMicrophone&&!live.micStream)await startGeminiMicrophone(live);
+      setVpMicButton(live.micStream?'listening':'idle');
+      return live;
+    })();
+    geminiLiveConnecting=connecting;
+    try{return await connecting;}
+    catch(error){
+      if(geminiLive===live)stopGeminiLiveSession('connection failed');
+      throw error;
+    }finally{
+      if(geminiLiveConnecting===connecting)geminiLiveConnecting=null;
+    }
+  }
+  function geminiVoiceErrorMessage(error){
+    const name=String(error?.name||'');
+    const message=String(error?.message||'');
+    if(name==='NotAllowedError'||/permission|denied|권한/i.test(message))return '마이크 권한이 필요해요. 브라우저에서 허용한 뒤 마이크를 다시 누르세요.';
+    if(name==='NotFoundError')return '사용할 수 있는 마이크를 찾지 못했어요.';
+    if(message.includes('HTTPS')||message.includes('localhost'))return message;
+    if(message.includes('GEMINI')||message.includes('API key'))return 'Gemini Live 설정을 확인해야 해요.';
+    return message||'마이크 또는 Gemini Live 연결에 실패했어요.';
+  }
+  async function activateGeminiLiveVoice(){
+    try{
+      const live=await ensureGeminiLive({captureMicrophone:true});
+      if(live.micStream&&live.ready&&hf3On&&geminiLive===live){
+        const panel=document.getElementById('vpanel');
+        panel?.classList.remove('connecting','mic-muted');
+        panel?.classList.add('listening');
+        setVpLiveStatus('Gemini Live가 듣고 있어요. 말씀해 주세요.','ok');
+        setVpVoiceHint('말하면 입력 막대와 전사가 표시돼요.');
+      }
+      return live;
+    }catch(error){
+      if(!hf3On)return null;
+      const panel=document.getElementById('vpanel');
+      panel?.classList.remove('connecting');
+      setVpLiveStatus(geminiVoiceErrorMessage(error),'bad');
+      setVpVoiceHint('마이크 버튼을 눌러 다시 시도하세요.');
+      setVpInputMeter(0,'마이크 또는 연결을 다시 확인해 주세요.',false);
+      setVpInputSource('입력 장치를 다시 확인해 주세요.');
+      setVpMicButton('error');
+      return null;
+    }
+  }
+  async function toggleVpMic(){
+    if(geminiLive?.micStream){stopGeminiMicrophone();return null;}
+    return activateGeminiLiveVoice();
+  }
+  function resetVpVoicePanel(){
+    const panel=document.getElementById('vpanel');
+    vpMicMuted=false;
+    panel.classList.remove('mic-muted','mic-active','idle','listening','thinking','answering','expanded');
+    panel.classList.add('open','connecting','compact');
+    setVpPanelExpanded(false);
+    clearVpTranscript();
+    setVpLiveStatus('마이크 권한을 요청하고 있어요. 허용하면 바로 음성 대화가 시작돼요.','');
+    setVpVoiceHint('권한을 허용하면 Gemini Live에 연결해요.');
+    setVpInputMeter(0,'마이크 입력을 기다리고 있어요.',false);
+    setVpInputSource('입력 장치 확인 중');
+    const inputDevice=document.getElementById('vpInputDevice');
+    if(inputDevice){inputDevice.hidden=true;inputDevice.replaceChildren();}
+    setVpMicButton('idle');
+  }
+  function toggleHf3(options={}){
+    const panel=document.getElementById('vpanel');
     hideCookHint();
     if(hf3On){
-      // 패널을 열 때는 대기 상태만 보여준다. 단계 이동은 사용자가 질문을 누르거나 입력했을 때만 실행한다.
-      resetVpPromptPanel();
-    }else{
-      panel.classList.remove('open','idle','listening','thinking','answering','expanded');
+      hf3On=false;
+      stopGeminiLiveSession('assistant panel closed');
+      panel.classList.remove('open','connecting','mic-active','idle','listening','thinking','answering','expanded','compact');
       setVpPanelExpanded(false);
+      return;
     }
+    hf3On=true;
+    resetVpVoicePanel();
+    // This starts getUserMedia within the original button click, preserving the
+    // browser user-activation requirement for microphone permission.
+    if(options.startLive!==false)void activateGeminiLiveVoice();
   }
   function hf3Reset(){
-    vpClear();
-    const panel=document.getElementById('vpanel');if(panel)panel.classList.remove('open','idle','listening','thinking','answering','expanded');
+    stopGeminiLiveSession('leaving cooking mode');
+    const panel=document.getElementById('vpanel');if(panel)panel.classList.remove('open','connecting','mic-active','idle','listening','thinking','answering','expanded','compact');
     setVpPanelExpanded(false);
     hf3On=false;
-    closeVideoSettings(); // 화면 이탈 시 영상 설정 모달 닫기
-    cook3StopTimeTracking();cook3Playing=false; // 재생 시간 추적 정리
+    closeVideoSettings();
+    cook3StopTimeTracking();cook3Playing=false;
   }
   function openIngredients(view='list'){ingSheetView=view==='check'?'check':'list';renderIngSheet();refreshIcons();document.getElementById('ingSheet').classList.add('show');}
   function closeIngredients(){document.getElementById('ingSheet').classList.remove('show');}
@@ -3595,6 +4390,7 @@
   }
   window.addEventListener('hashchange',applyHash);
   window.addEventListener('load',pinLandingTopSoon);
+  window.addEventListener('pagehide',()=>stopGeminiLiveSession('page hidden'));
   applyHash();
 
 </script>

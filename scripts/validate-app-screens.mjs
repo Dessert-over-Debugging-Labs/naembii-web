@@ -66,13 +66,18 @@ const states = [
   },
   {
     name: 'assistant-panel',
-    setup: `currentRecipe=recipeById('${recipeId}'); show('cook3'); hideCookHint(); toggleHf3();`,
-    required: ['#vpanel.open', '#vpSizeHandle', '#vpScroll', '#vpPromptInput', '#vpQuick button', '.vp-close']
+    setup: `currentRecipe=recipeById('${recipeId}'); show('cook3'); hideCookHint(); toggleHf3({startLive:false});`,
+    required: ['#vpanel.open', '#vpSizeHandle', '#vpScroll', '#vpIdleState', '.vp-mic', '.vp-close']
+  },
+  {
+    name: 'assistant-panel-transcript',
+    setup: `currentRecipe=recipeById('${recipeId}'); show('cook3'); hideCookHint(); toggleHf3({startLive:false}); document.getElementById('vpTranscript').innerHTML='<div class="vp-transcript-entry user"><b>나</b><span>양념이 타는 것 같아.</span></div><div class="vp-transcript-entry assistant"><b>냄비</b><span>불을 한 단계 낮춰 주세요.</span></div>'; document.getElementById('vpScroll').classList.add('has-transcript');`,
+    required: ['#vpanel.open.compact', '#vpTranscript .vp-transcript-entry', '.vp-mic', '.vp-close']
   },
   {
     name: 'assistant-panel-expanded',
-    setup: `currentRecipe=recipeById('${recipeId}'); show('cook3'); hideCookHint(); if(!hf3On){toggleHf3();}else{resetVpPromptPanel();} setVpPanelExpanded(true); document.getElementById('vpUser').textContent='질문이 길어져도 읽을 수 있어?'; document.getElementById('vpAi').textContent=Array(10).fill('양념이 타는 것 같으면 불을 한 단계 낮추고 팬 가장자리의 양념을 가운데로 모아주세요. 물이나 면수를 한 숟갈씩 넣어 농도를 풀고, 재료는 천천히 섞으면 좋아요.').join(' ');`,
-    required: ['#vpanel.open.expanded', '#cook3Ctrl.vpanel-expanded', '#vpScroll', '#vpPromptInput', '.vp-close']
+    setup: `currentRecipe=recipeById('${recipeId}'); show('cook3'); hideCookHint(); if(!hf3On){toggleHf3({startLive:false});}else{resetVpVoicePanel();} setVpPanelExpanded(true); document.getElementById('vpTranscript').innerHTML='<div class="vp-transcript-entry user"><b>나</b><span>양념이 타는 것 같아.</span></div><div class="vp-transcript-entry assistant"><b>냄비</b><span>불을 한 단계 낮추고 팬 가장자리의 양념을 가운데로 모아 주세요. 물이나 면수를 한 숟갈씩 넣어 농도를 풀고 천천히 섞으면 좋아요.</span></div>'; document.getElementById('vpScroll').classList.add('has-transcript');`,
+    required: ['#vpanel.open.expanded', '#cook3Ctrl.vpanel-expanded', '#vpScroll', '#vpTranscript .vp-transcript-entry', '.vp-mic', '.vp-close']
   },
   {
     name: 'complete',
@@ -192,7 +197,7 @@ try {
           try { closeVoice(); } catch {}
           try { closeVideoSettings(); } catch {}
           const vpanel = document.getElementById('vpanel');
-          if (vpanel) vpanel.classList.remove('open','idle','listening','thinking','answering','expanded');
+          if (vpanel) vpanel.classList.remove('open','idle','listening','thinking','answering','expanded','compact');
           const cookCtrl = document.getElementById('cook3Ctrl');
           if (cookCtrl) cookCtrl.classList.remove('vpanel-open','vpanel-expanded');
           try { hf3On = false; vpClear(); } catch {}
