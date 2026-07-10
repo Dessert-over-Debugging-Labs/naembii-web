@@ -125,6 +125,7 @@
   .nav{display:flex;align-items:center;justify-content:space-between;padding:8px 16px 12px;flex:none;}
   .nav-actions{display:flex;align-items:center;gap:10px;}
   .nav .ic-btn{width:32px;height:32px;display:flex;align-items:center;justify-content:center;color:var(--ink);cursor:pointer;}
+  .nav button.ic-btn{border:0;background:transparent;font:inherit;}
   .nav.dark .ic-btn{color:var(--text);}
   .nav .ic-btn svg{width:24px;height:24px;}
   .nav .title{font-size:16px;font-weight:700;}
@@ -133,7 +134,7 @@
   .logo{display:flex;align-items:center;gap:7px;font-family:"Apple SD Gothic Neo","Arial Rounded MT Bold",-apple-system,BlinkMacSystemFont,sans-serif;font-size:25px;font-weight:800;color:var(--green);}
   .logo svg{width:24px;height:24px;stroke-width:2.2;}
   .hd-right{display:flex;align-items:center;gap:10px;}
-  .noti{display:flex;align-items:center;gap:4px;background:var(--green-soft);color:var(--green);font-size:13px;font-weight:800;padding:6px 12px;border-radius:12px;}
+  .noti{display:flex;align-items:center;gap:4px;background:var(--green-soft);color:var(--green);font-family:inherit;font-size:13px;font-weight:800;padding:6px 12px;border:0;border-radius:12px;cursor:pointer;}
   .noti svg{width:15px;height:15px;}
 
   /* 검색 */
@@ -956,6 +957,21 @@
   .tip-actions{position:absolute;left:0;right:0;bottom:0;padding:12px 24px calc(18px + env(safe-area-inset-bottom));background:linear-gradient(180deg,rgba(245,245,247,0),var(--bg) 28%);}
   .tip-actions .btn{margin-top:0;}
   .tip-actions .btn.ghost{margin-top:8px;background:var(--surface);border:1px solid var(--border);color:var(--text);}
+  .plan-body{padding:14px 24px 100px;}
+  .plan-hero{padding:16px 0 18px;}
+  .plan-hero .plan-kicker{display:inline-flex;align-items:center;gap:6px;background:var(--brand-soft);color:var(--brand-deep);border-radius:999px;padding:6px 10px;font-size:12px;font-weight:950;margin-bottom:12px;}
+  .plan-hero .plan-kicker svg{width:14px;height:14px;}
+  .plan-hero h2{font-size:25px;font-weight:950;line-height:1.25;color:var(--text);margin-bottom:10px;}
+  .plan-hero p{font-size:14px;line-height:1.58;color:var(--text-sub);font-weight:700;}
+  .plan-list{display:flex;flex-direction:column;gap:10px;}
+  .plan-card{display:flex;gap:12px;align-items:flex-start;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:14px;}
+  .plan-card .pc-ic{width:36px;height:36px;border-radius:12px;background:var(--brand-soft);color:var(--brand);display:flex;align-items:center;justify-content:center;flex:none;}
+  .plan-card .pc-ic svg{width:18px;height:18px;}
+  .plan-card b{display:block;font-size:15px;font-weight:900;color:var(--text);margin-bottom:4px;}
+  .plan-card p{font-size:13px;line-height:1.5;color:var(--text-sub);font-weight:700;}
+  .plan-actions{position:absolute;left:0;right:0;bottom:0;padding:12px 24px calc(18px + env(safe-area-inset-bottom));background:linear-gradient(180deg,rgba(245,245,247,0),var(--bg) 28%);}
+  .plan-actions .btn{margin-top:0;}
+  .plan-actions .btn.ghost{margin-top:8px;background:var(--surface);border:1px solid var(--border);color:var(--text);}
   /* 상세 요약 글 */
   .dsummary{font-size:15px;line-height:1.65;color:var(--text);margin-bottom:20px;}
   /* 상세 조리 순서 */
@@ -1359,7 +1375,7 @@
     <!-- 1. 홈 -->
     <div class="view active" id="home">
       <div class="statusbar"><span>9:41</span><span class="icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
-      <div class="nav"><div class="logo"><i data-lucide="cooking-pot"></i>냄비</div><div class="hd-right"><div class="noti" onclick="toast('준비 중인 기능이에요','bell')"><i data-lucide="bell"></i>13</div><div class="ic-btn" onclick="toast('준비 중인 기능이에요','circle-user-round')"><i data-lucide="circle-user-round"></i></div></div></div>
+      <div class="nav"><div class="logo"><i data-lucide="cooking-pot"></i>냄비</div><div class="hd-right"><button class="noti" type="button" onclick="show('notificationPlan')" aria-label="알림 예정 보기"><i data-lucide="bell"></i><span id="notiCount">13</span></button><button class="ic-btn" type="button" onclick="show('accountPlan')" aria-label="게스트 계정 보기"><i data-lucide="circle-user-round"></i></button></div></div>
       <div class="body">
         <div class="search" onclick="openSearch()"><i data-lucide="search"></i>요리, 재료, 크리에이터 이름으로 찾아보세요</div>
         <div class="assistant-start">
@@ -1498,6 +1514,54 @@
             <button class="btn ghost" type="button" onclick="show('detail')">나중에 하기</button>
           </div>
         </form>
+      </div>
+    </div>
+
+    <!-- 3-D. 게스트 계정 안내 -->
+    <div class="view" id="accountPlan">
+      <div class="statusbar"><span>9:41</span><span class="icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
+      <div class="nav"><div class="ic-btn" onclick="show('home')"><i data-lucide="chevron-left"></i></div><div class="title">계정</div><div class="ic-btn" aria-hidden="true"></div></div>
+      <div class="body">
+        <div class="plan-body">
+          <div class="plan-hero">
+            <div class="plan-kicker"><i data-lucide="circle-user-round"></i>게스트 모드</div>
+            <h2>지금은 게스트로<br>저장하고 있어요</h2>
+            <p>저장한 후기와 팁은 이 브라우저에 남아요. 앱 출시 후에는 로그인해서 저장한 레시피, 알림, 후기를 이어서 볼 수 있게 준비할 예정입니다.</p>
+          </div>
+          <div class="plan-list">
+            <div class="plan-card"><div class="pc-ic"><i data-lucide="bookmark-check"></i></div><div><b>이 브라우저에 저장</b><p>요리 후기와 조리 팁은 localStorage에 저장돼요. 다른 기기에서는 아직 이어지지 않아요.</p></div></div>
+            <div class="plan-card"><div class="pc-ic"><i data-lucide="log-in"></i></div><div><b>출시 후 로그인 예정</b><p>소셜 로그인으로 저장한 레시피, 만든 기록, 레시피 요청 상태를 이어보는 흐름을 준비합니다.</p></div></div>
+            <div class="plan-card"><div class="pc-ic"><i data-lucide="bell-ring"></i></div><div><b>출시 알림 연결</b><p>정식 앱 준비가 되면 베타 초대와 출시 소식을 이메일로 받을 수 있게 연결합니다.</p></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="plan-actions">
+        <button class="btn" type="button" onclick="showLanding();setTimeout(scrollToBeta,120)"><i data-lucide="bell-ring"></i>출시 알림 받기</button>
+        <button class="btn ghost" type="button" onclick="show('home')">홈으로 가기</button>
+      </div>
+    </div>
+
+    <!-- 3-E. 알림 예정 안내 -->
+    <div class="view" id="notificationPlan">
+      <div class="statusbar"><span>9:41</span><span class="icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
+      <div class="nav"><div class="ic-btn" onclick="show('home')"><i data-lucide="chevron-left"></i></div><div class="title">알림</div><div class="ic-btn" aria-hidden="true"></div></div>
+      <div class="body">
+        <div class="plan-body">
+          <div class="plan-hero">
+            <div class="plan-kicker"><i data-lucide="bell"></i>준비 중인 알림</div>
+            <h2>영상 링크를 보내면<br>레시피 준비 소식을 알려드릴게요</h2>
+            <p>지금은 베타용 요청 수집 단계입니다. 나중에는 유튜브나 SNS 영상 링크를 넣으면 레시피가 만들어지고, 준비가 끝났을 때 알림으로 안내하는 흐름을 목표로 합니다.</p>
+          </div>
+          <div class="plan-list">
+            <div class="plan-card"><div class="pc-ic"><i data-lucide="send"></i></div><div><b>보고 싶은 영상 보내기</b><p>요리 이름이나 유튜브 링크를 남기면 다음에 추가할 레시피 후보로 모읍니다.</p></div></div>
+            <div class="plan-card"><div class="pc-ic"><i data-lucide="wand-sparkles"></i></div><div><b>레시피 변환 예정</b><p>영상 구간, 재료, 조리 순서를 주방에서 따라가기 쉬운 형태로 정리하는 기능을 준비합니다.</p></div></div>
+            <div class="plan-card"><div class="pc-ic"><i data-lucide="bell-ring"></i></div><div><b>준비되면 알림</b><p>요청한 레시피가 준비되거나 앱 출시가 가까워지면 이메일로 안내하는 흐름을 먼저 연결합니다.</p></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="plan-actions">
+        <button class="btn" type="button" onclick="openFeedback('notification-recipe-request')"><i data-lucide="send"></i>영상 링크 보내기</button>
+        <button class="btn ghost" type="button" onclick="show('home')">홈으로 가기</button>
       </div>
     </div>
 
@@ -3925,6 +3989,8 @@
       case 'detail': if(param)currentRecipe=recipeById(decodeURIComponent(param)); show('detail');break;
       case 'reviews': if(param)currentRecipe=recipeById(decodeURIComponent(param)); show('reviews');break;
       case 'tipWrite': if(param)currentRecipe=recipeById(decodeURIComponent(param)); show('tipWrite');break;
+      case 'account': show('accountPlan');break;
+      case 'notifications': show('notificationPlan');break;
       case 'ingredients': cook3Car.reset();show('cook3');openIngredients();break;
       case 'timer': cook3Car.reset();show('cook3');openTimer();break;
       case 'voice': cook3Car.reset();show('cook3');openVoice();break;
