@@ -373,6 +373,23 @@
   .tip-card .tip-h svg{width:16px;height:16px;}
   .tip-card p{font-size:14px;line-height:1.55;color:var(--text);font-weight:650;}
   .tip-card button{margin-top:12px;width:100%;height:42px;border:1px solid var(--border);border-radius:12px;background:#fff;color:var(--text);font:inherit;font-size:14px;font-weight:800;cursor:pointer;}
+  .local-notes{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:14px 16px;margin-bottom:16px;}
+  .local-notes .ln-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px;}
+  .local-notes .ln-head b{font-size:15px;font-weight:900;color:var(--text);}
+  .local-notes .ln-head span{font-size:12px;font-weight:800;color:var(--brand-deep);background:var(--brand-soft);border-radius:999px;padding:4px 8px;white-space:nowrap;}
+  .local-notes .ln-empty{font-size:13px;line-height:1.5;color:var(--text-sub);font-weight:700;margin-bottom:10px;}
+  .note-list{display:flex;flex-direction:column;gap:8px;margin-bottom:12px;}
+  .note-item{background:var(--bg);border:1px solid var(--border);border-radius:13px;padding:11px 12px;}
+  .note-item .note-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:5px;}
+  .note-item .note-top b{font-size:13px;font-weight:900;color:var(--text);}
+  .note-item .note-top span{font-size:11px;font-weight:800;color:var(--text-sub);}
+  .note-item p{font-size:13px;line-height:1.48;color:var(--text);font-weight:650;}
+  .note-item .note-stars{display:flex;gap:1px;color:#FFB400;margin-top:7px;}
+  .note-item .note-stars svg{width:12px;height:12px;fill:#FFB400;}
+  .note-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .note-actions button{height:40px;border:1px solid var(--border);border-radius:12px;background:var(--surface);color:var(--text);font:inherit;font-size:13px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;}
+  .note-actions button.primary{background:var(--brand);border-color:var(--brand);color:#fff;}
+  .note-actions button svg{width:15px;height:15px;}
   /* 하단 바 없이 버튼만 콘텐츠 위에 둥둥 띄움 */
   .cta-bar{position:absolute;left:0;right:0;bottom:0;padding:14px 16px;background:none;pointer-events:none;z-index:6;}
   .cta-bar .btn{pointer-events:auto;box-shadow:0 10px 28px rgba(0,0,0,.24);}
@@ -913,8 +930,9 @@
   .rv-label{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:8px;}
   .star-input{display:flex;gap:10px;justify-content:center;margin:6px 0 18px;}
   .star-input span{cursor:pointer;}
+  .star-input button{border:0;background:transparent;color:var(--gray2);padding:0;cursor:pointer;}
   .star-input svg{width:38px;height:38px;color:var(--gray2);transition:color .12s;}
-  .star-input span.on svg{color:#FFB400;fill:#FFB400;}
+  .star-input span.on svg,.star-input button.on svg{color:#FFB400;fill:#FFB400;}
   .rv-text{width:100%;min-height:88px;border:1px solid var(--line);border-radius:12px;padding:12px;font-size:15px;font-family:inherit;color:var(--ink);background:var(--bg);resize:none;line-height:1.5;}
   .rv-text:focus{outline:none;border-color:var(--green);}
   .rv-photo{margin-top:12px;display:flex;gap:10px;align-items:center;}
@@ -922,6 +940,20 @@
   .rv-photo label svg{width:22px;height:22px;}
   .rv-photo input{display:none;}
   .rv-photo .prev{width:64px;height:64px;border-radius:12px;object-fit:cover;}
+  .rv-form-sub{font-size:12px;line-height:1.45;color:var(--text-sub);font-weight:700;margin:-2px 0 12px;}
+  .tip-hero{padding:18px 24px 14px;}
+  .tip-hero h2{font-size:24px;font-weight:950;line-height:1.25;color:var(--text);margin-bottom:10px;}
+  .tip-hero p{font-size:14px;line-height:1.55;color:var(--text-sub);font-weight:700;}
+  .tip-form{padding:0 24px 120px;}
+  .tip-tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+  .tip-tags button{height:38px;border:1px solid var(--border);border-radius:999px;background:var(--surface);color:var(--text-sub);font:inherit;font-size:13px;font-weight:900;padding:0 13px;cursor:pointer;}
+  .tip-tags button.active{background:var(--brand-soft);border-color:rgba(var(--brand-rgb),.35);color:var(--brand-deep);}
+  .tip-box{width:100%;min-height:160px;border:1px solid var(--border);border-radius:16px;background:var(--surface);color:var(--text);font:inherit;font-size:15px;line-height:1.55;padding:14px;resize:none;outline:none;}
+  .tip-box:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(var(--brand-rgb),.12);}
+  .tip-form .form-status{margin-top:10px;}
+  .tip-actions{position:absolute;left:0;right:0;bottom:0;padding:12px 24px calc(18px + env(safe-area-inset-bottom));background:linear-gradient(180deg,rgba(245,245,247,0),var(--bg) 28%);}
+  .tip-actions .btn{margin-top:0;}
+  .tip-actions .btn.ghost{margin-top:8px;background:var(--surface);border:1px solid var(--border);color:var(--text);}
   /* 상세 요약 글 */
   .dsummary{font-size:15px;line-height:1.65;color:var(--text);margin-bottom:20px;}
   /* 상세 조리 순서 */
@@ -1409,6 +1441,7 @@
           <div class="detail-proof" id="detProof"></div>
           <p class="dsummary" id="detSummary"></p>
           <div id="detTipCard"></div>
+          <div id="detLocalNotes"></div>
           <div class="meta">
             <div class="chip"><i data-lucide="timer"></i><div class="v" id="detTime"></div><div class="k">조리시간</div></div>
             <div class="chip"><i data-lucide="users"></i><div class="v" id="detServings"></div><div class="k">분량</div></div>
@@ -1425,6 +1458,45 @@
         </div>
       </div>
       <div class="cta-bar"><button class="btn" onclick="startCook()"><i data-lucide="chef-hat"></i>요리 시작하기</button></div>
+    </div>
+
+    <!-- 3-B. 후기 -->
+    <div class="view" id="reviews">
+      <div class="statusbar"><span>9:41</span><span class="icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
+      <div class="nav"><div class="ic-btn" onclick="show('detail')"><i data-lucide="chevron-left"></i></div><div class="title">후기</div><div class="ic-btn" aria-hidden="true"></div></div>
+      <div class="body">
+        <div class="detail-body" style="padding-top:12px;">
+          <div id="reviewsSummary"></div>
+          <div id="reviewsList"></div>
+        </div>
+      </div>
+      <div class="cta-bar"><button class="btn" onclick="openRecipeReview()"><i data-lucide="pencil-line"></i>후기 쓰기</button></div>
+    </div>
+
+    <!-- 3-C. 팁 남기기 -->
+    <div class="view" id="tipWrite">
+      <div class="statusbar"><span>9:41</span><span class="icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
+      <div class="nav"><div class="ic-btn" onclick="show('detail')"><i data-lucide="chevron-left"></i></div><div class="title">팁 남기기</div><div class="ic-btn" aria-hidden="true"></div></div>
+      <div class="body">
+        <div class="tip-hero">
+          <h2>다음 사람에게<br>어떤 팁을 남길까요?</h2>
+          <p>직접 만들어보며 알게 된 재료 대체, 불 조절, 맛 조절 포인트를 이 브라우저에 저장해둘게요.</p>
+        </div>
+        <form class="tip-form" id="tipForm" onsubmit="submitRecipeTip(event)">
+          <div class="tip-tags" id="tipTags" aria-label="팁 유형">
+            <button type="button" class="active" onclick="selectTipTag('맛 조절',this)">맛 조절</button>
+            <button type="button" onclick="selectTipTag('재료 대체',this)">재료 대체</button>
+            <button type="button" onclick="selectTipTag('불 조절',this)">불 조절</button>
+            <button type="button" onclick="selectTipTag('보관',this)">보관</button>
+          </div>
+          <textarea class="tip-box" name="message" placeholder="예: 치즈는 약불에서 뚜껑 덮고 1분만 녹이면 딱 좋아요." required></textarea>
+          <p class="form-status" data-status></p>
+          <div class="tip-actions">
+            <button class="btn" type="submit"><i data-lucide="send"></i>팁 등록</button>
+            <button class="btn ghost" type="button" onclick="show('detail')">나중에 하기</button>
+          </div>
+        </form>
+      </div>
     </div>
 
     <!-- 4-A. 조리 모드 (기본 조리 모드 복제 스냅샷) -->
@@ -1552,6 +1624,30 @@
           <button onclick="tsSet(10)">10분</button>
         </div>
         <button class="btn" onclick="startCountdown()">시작</button>
+      </div>
+    </div>
+
+    <!-- 전역 요리 후기 시트 -->
+    <div class="ing-sheet" id="recipeReviewSheet">
+      <div class="ing-scrim" onclick="closeRecipeReview()"></div>
+      <div class="ing-panel">
+        <div class="ing-grab"></div>
+        <div class="ing-h"><b id="recipeReviewTitle">이 요리 후기</b><span onclick="closeRecipeReview()"><i data-lucide="x"></i></span></div>
+        <form id="recipeReviewForm" onsubmit="submitRecipeReview(event)">
+          <div class="rv-form-sub">제품 의견은 오른쪽 아래 의견 남기기에, 지금 만드는 요리 후기는 여기에 저장돼요.</div>
+          <div class="rv-label">별점</div>
+          <div class="star-input" id="recipeReviewStars" aria-label="별점 선택">
+            <button type="button" class="on" onclick="setRecipeReviewRating(1)" aria-label="1점"><i data-lucide="star"></i></button>
+            <button type="button" class="on" onclick="setRecipeReviewRating(2)" aria-label="2점"><i data-lucide="star"></i></button>
+            <button type="button" class="on" onclick="setRecipeReviewRating(3)" aria-label="3점"><i data-lucide="star"></i></button>
+            <button type="button" class="on" onclick="setRecipeReviewRating(4)" aria-label="4점"><i data-lucide="star"></i></button>
+            <button type="button" class="on" onclick="setRecipeReviewRating(5)" aria-label="5점"><i data-lucide="star"></i></button>
+          </div>
+          <div class="rv-label">후기</div>
+          <textarea class="rv-text" name="message" placeholder="예: 맵기는 좋았고, 치즈는 1분 더 녹이니 더 맛있었어요." required></textarea>
+          <button class="btn" type="submit"><i data-lucide="send"></i>후기 저장</button>
+          <p class="form-status" data-status></p>
+        </form>
       </div>
     </div>
 
@@ -1962,6 +2058,7 @@
     switch(key){
       case 'home': closeVoice();show('home');break;
       case 'detail': closeVoice();show('detail');break;
+      case 'reviews': closeVoice();show('reviews');break;
       case 'cook3': closeVoice();cook3Car.reset();show('cook3');break;
       case 'voice': cook3Car.reset();show('cook3');openVoice();break;
       case 'complete': closeVoice();show('complete');break;
@@ -2026,6 +2123,8 @@
     _v.classList.add('active');
     setActiveNav(id);
     if(id==='detail')renderDetail();
+    else if(id==='reviews')renderReviews();
+    else if(id==='tipWrite')renderTipWrite();
     else if(id==='cook3'){cook3Car.rebuild();initCookYoutube();showCookHint();} // 선택된 레시피로 단계·영상 재구성
     else if(id==='searchPage')runRecipeSearch(document.getElementById('recipeSearchInput')?.value||'');
     else{ if(id==='complete')renderComplete(); hideCookHint(); }
@@ -2342,14 +2441,127 @@
     '3oFCGKmzQX8':{made:102,likes:224,stars:4.8,tips:['양념이 타려 하면 양파를 먼저 넣어 수분을 내면 좋아요.','삼겹살로 하면 기름을 중간에 조금 덜어내는 게 깔끔해요.']},
     default:{made:52,likes:88,stars:4.6,tips:['영상보다 재료를 먼저 꺼내두면 중간에 덜 헤매요.','헷갈린 구간은 조리 모드에서 한 번 더 보고 넘어가면 좋아요.']}
   };
+  const LOCAL_RECIPE_NOTE_KEY='naembi.recipeNotes.v1';
+  const LOCAL_RECIPE_NOTE_LIMIT=80;
+  let recipeReviewRating=5;
+  let selectedTipTag='맛 조절';
   function reactionFor(r){return RECIPE_REACTIONS[r.id]||RECIPE_REACTIONS.default;}
   function starsHTML(score){
     const count=Math.round(score||4.6);
     return Array.from({length:5},(_,i)=>'<i data-lucide="star"'+(i<count?' class="on"':'')+'></i>').join('');
   }
+  function readLocalRecipeNotes(){
+    try{
+      const raw=localStorage.getItem(LOCAL_RECIPE_NOTE_KEY);
+      const parsed=raw?JSON.parse(raw):[];
+      return Array.isArray(parsed)?parsed.filter(note=>note&&note.recipeId):[];
+    }catch(e){return [];}
+  }
+  function writeLocalRecipeNotes(notes){
+    try{
+      localStorage.setItem(LOCAL_RECIPE_NOTE_KEY,JSON.stringify(notes.slice(0,LOCAL_RECIPE_NOTE_LIMIT)));
+      return true;
+    }catch(e){return false;}
+  }
+  function localNotesFor(recipeId,type){
+    return readLocalRecipeNotes()
+      .filter(note=>note.recipeId===recipeId&&(!type||note.type===type))
+      .sort((a,b)=>String(b.createdAt||'').localeCompare(String(a.createdAt||'')));
+  }
+  function addLocalRecipeNote(note){
+    const notes=readLocalRecipeNotes();
+    const saved={
+      id:'note_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),
+      recipeId:currentRecipe.id,
+      recipeName:currentRecipe.name,
+      author:'게스트',
+      createdAt:new Date().toISOString(),
+      ...note
+    };
+    const ok=writeLocalRecipeNotes([saved,...notes]);
+    return ok?saved:null;
+  }
+  function seededReviewsFor(r){
+    const data=reactionFor(r);
+    const authors=['먼저 만든 사람','자취러','초보 요리러'];
+    return (data.tips||[]).slice(0,3).map((tip,i)=>({
+      id:'seed_'+r.id+'_'+i,
+      recipeId:r.id,
+      recipeName:r.name,
+      type:'review',
+      author:authors[i]||'게스트',
+      rating:Math.max(4,Math.round((data.stars||4.6)-(i===1?0.4:0))),
+      message:tip,
+      createdAt:'',
+      seed:true
+    }));
+  }
+  function allReviewsFor(r){
+    return [...localNotesFor(r.id,'review'),...seededReviewsFor(r)];
+  }
+  function allTipsFor(r){
+    const local=localNotesFor(r.id,'tip');
+    const data=reactionFor(r);
+    return [
+      ...local,
+      ...(data.tips||[]).map((tip,i)=>({
+        id:'seed_tip_'+r.id+'_'+i,
+        recipeId:r.id,
+        recipeName:r.name,
+        type:'tip',
+        tag:'먼저 만든 팁',
+        author:i?'게스트':'먼저 만든 사람',
+        message:tip,
+        createdAt:'',
+        seed:true
+      }))
+    ];
+  }
+  function noteDateLabel(note){
+    if(note.seed||!note.createdAt)return '예시';
+    try{
+      return new Intl.DateTimeFormat('ko-KR',{month:'short',day:'numeric'}).format(new Date(note.createdAt));
+    }catch(e){return '저장됨';}
+  }
+  function noteStarsHTML(rating){
+    const count=Math.max(1,Math.min(5,Math.round(rating||5)));
+    return '<span class="note-stars">'+Array.from({length:5},(_,i)=>'<i data-lucide="star"'+(i<count?' class="on"':'')+'></i>').join('')+'</span>';
+  }
+  function noteItemHTML(note){
+    const tag=note.type==='tip'?(note.tag||'팁'):'후기';
+    return '<div class="note-item">'+
+      '<div class="note-top"><b>'+esc(note.author||'게스트')+' · '+esc(tag)+'</b><span>'+noteDateLabel(note)+'</span></div>'+
+      '<p>'+esc(note.message||'')+'</p>'+
+      (note.type==='review'?noteStarsHTML(note.rating):'')+
+    '</div>';
+  }
+  function localNotesHTML(r){
+    const local=localNotesFor(r.id);
+    const preview=local.slice(0,2);
+    return '<div class="local-notes">'+
+      '<div class="ln-head"><b>내가 남긴 요리 기록</b><span>이 브라우저에 저장</span></div>'+
+      (preview.length?'<div class="note-list">'+preview.map(noteItemHTML).join('')+'</div>':'<div class="ln-empty">아직 이 요리에 남긴 기록이 없어요. 앱 피드백과 별도로, 요리 후기와 조리 팁을 남겨둘 수 있어요.</div>')+
+      '<div class="note-actions">'+
+        '<button type="button" class="primary" onclick="openRecipeReview()"><i data-lucide="pencil-line"></i>후기 쓰기</button>'+
+        '<button type="button" onclick="showTipWrite()"><i data-lucide="message-square-heart"></i>팁 남기기</button>'+
+      '</div>'+
+    '</div>';
+  }
   function renderCommunityStrip(){
     const el=document.getElementById('communityStrip');
     if(!el)return;
+    const local=readLocalRecipeNotes().slice(0,3);
+    if(local.length){
+      el.innerHTML=local.map(note=>{
+        const r=recipeById(note.recipeId);
+        return '<div class="community-card" onclick="goDetail(\''+r.id+'\')">'+
+          '<div class="cc-head"><b>'+esc(r.name)+'</b><span class="cc-pill">내 '+(note.type==='tip'?'팁':'후기')+'</span></div>'+
+          '<p>'+esc(note.message||'')+'</p>'+
+          '<small><i data-lucide="'+(note.type==='tip'?'message-square-heart':'star')+'"></i>'+esc(noteDateLabel(note))+' · 게스트 저장</small>'+
+        '</div>';
+      }).join('');
+      return;
+    }
     const ids=['vlPqkuHIdCc','vHU4_QbslRA','Lf44Fk7H24s','3oFCGKmzQX8'];
     el.innerHTML=ids.map(id=>{
       const r=recipeById(id), data=reactionFor(r), tip=data.tips[0];
@@ -2560,6 +2772,7 @@
     document.getElementById('detProof').innerHTML=detailProofHTML(r);
     document.getElementById('detSummary').textContent=r.summary||'';
     document.getElementById('detTipCard').innerHTML=detailTipHTML(r);
+    document.getElementById('detLocalNotes').innerHTML=localNotesHTML(r);
     document.getElementById('detTime').textContent=r.time||'-';
     document.getElementById('detServings').textContent=r.servings||'-';
     document.getElementById('detDiff').textContent=r.difficulty||'-';
@@ -2567,6 +2780,31 @@
     document.getElementById('detIngs').innerHTML=ingGroupsHTML(r);
     renderSteps();
     initDetailYoutube();
+    refreshIcons();
+  }
+  function reviewsSummaryHTML(r,reviews){
+    const avg=reviews.length?reviews.reduce((sum,item)=>sum+(item.rating||5),0)/reviews.length:(reactionFor(r).stars||4.6);
+    const rounded=Math.round(avg*10)/10;
+    const dist=[5,4,3,2,1].map(score=>reviews.filter(item=>Math.round(item.rating||5)===score).length);
+    const max=Math.max(1,...dist);
+    return '<div class="rsum">'+
+      '<div class="avg"><div class="n">'+rounded.toFixed(1)+'</div><div class="st">'+starsHTML(rounded)+'</div><div class="cnt">'+reviews.length+'개 후기</div></div>'+
+      '<div class="dist">'+[5,4,3,2,1].map((score,i)=>'<div class="drow"><span class="lab">'+score+'점</span><span class="bar"><i style="width:'+(dist[i]/max*100)+'%"></i></span><span class="num">'+dist[i]+'</span></div>').join('')+'</div>'+
+    '</div>';
+  }
+  function reviewRowHTML(note){
+    return '<div class="r">'+
+      '<div class="av"><i data-lucide="'+(note.seed?'user-round':'circle-user-round')+'"></i></div>'+
+      '<div class="txt"><div class="rh"><b>'+esc(note.author||'게스트')+'</b><span class="stars">'+starsHTML(note.rating||5)+'</span><small>'+noteDateLabel(note)+'</small></div>'+esc(note.message||'')+'</div>'+
+    '</div>';
+  }
+  function renderReviews(){
+    const r=currentRecipe;
+    const reviews=allReviewsFor(r);
+    const summary=document.getElementById('reviewsSummary');
+    const list=document.getElementById('reviewsList');
+    if(summary)summary.innerHTML=reviewsSummaryHTML(r,reviews);
+    if(list)list.innerHTML='<div class="reviews">'+(reviews.length?reviews.map(reviewRowHTML).join(''):'<div class="rev-empty">아직 저장된 후기가 없어요.</div>')+'</div>';
     refreshIcons();
   }
   function renderSteps(){
@@ -2612,14 +2850,100 @@
   }
   function detailTipHTML(r){
     const data=reactionFor(r);
-    const tip=data.tips[0]||'먼저 만든 사람이 남긴 팁을 모으고 있어요.';
-    return '<div class="tip-card"><div class="tip-h"><i data-lucide="message-square-heart"></i>먼저 만든 사람의 팁 · '+data.made+'명 완주</div><p>'+esc(tip)+'</p><button type="button" onclick="openFeedback(\'detail-tip\')">내 팁 남기기</button></div>';
+    const tips=allTipsFor(r);
+    const tip=tips[0]?.message||'먼저 만든 사람이 남긴 팁을 모으고 있어요.';
+    return '<div class="tip-card"><div class="tip-h"><i data-lucide="message-square-heart"></i>먼저 만든 사람의 팁 · '+data.made+'명 완주</div><p>'+esc(tip)+'</p><button type="button" onclick="showTipWrite()">내 팁 남기기</button></div>';
   }
   function detailProofHTML(r){
     const data=reactionFor(r);
+    const local=localNotesFor(r.id);
     return '<span><i data-lucide="star"></i>'+data.stars+' 평점</span>'+
       '<span><i data-lucide="utensils"></i>'+data.made+'명 완주</span>'+
-      '<span><i data-lucide="message-square-heart"></i>팁 '+data.tips.length+'개</span>';
+      '<span><i data-lucide="message-square-heart"></i>팁 '+allTipsFor(r).length+'개</span>'+
+      (local.length?'<span><i data-lucide="bookmark-check"></i>내 기록 '+local.length+'개</span>':'');
+  }
+  function setRecipeReviewRating(value){
+    recipeReviewRating=Math.max(1,Math.min(5,parseInt(value,10)||5));
+    document.querySelectorAll('#recipeReviewStars button').forEach((button,index)=>button.classList.toggle('on',index<recipeReviewRating));
+    refreshIcons();
+  }
+  function openRecipeReview(){
+    const sheet=document.getElementById('recipeReviewSheet');
+    const form=document.getElementById('recipeReviewForm');
+    const title=document.getElementById('recipeReviewTitle');
+    if(title)title.textContent=currentRecipe.name+' 후기';
+    if(form){
+      form.reset();
+      setFormStatus(form,'','');
+    }
+    setRecipeReviewRating(5);
+    sheet?.classList.add('show');
+    refreshIcons();
+  }
+  function closeRecipeReview(){
+    document.getElementById('recipeReviewSheet')?.classList.remove('show');
+  }
+  function refreshRecipeNoteSurfaces(){
+    renderHomeSections();
+    const active=document.querySelector('.view.active')?.id;
+    if(active==='detail')renderDetail();
+    if(active==='reviews')renderReviews();
+    if(active==='complete')renderComplete();
+  }
+  function submitRecipeReview(event){
+    event.preventDefault();
+    const form=event.currentTarget;
+    const message=(form.elements.message?.value||'').trim();
+    if(!message){
+      setFormStatus(form,'후기 내용을 입력하면 저장할 수 있어요.','bad');
+      form.elements.message?.focus();
+      return;
+    }
+    const saved=addLocalRecipeNote({type:'review',rating:recipeReviewRating,message});
+    if(!saved){
+      setFormStatus(form,'이 브라우저에 저장하지 못했어요. 저장 공간 설정을 확인해주세요.','bad');
+      return;
+    }
+    setFormStatus(form,'후기가 이 브라우저에 저장됐어요.','ok');
+    toast('이 요리 후기가 저장됐어요','bookmark-check');
+    setTimeout(closeRecipeReview,700);
+    refreshRecipeNoteSurfaces();
+  }
+  function showTipWrite(){
+    show('tipWrite');
+  }
+  function renderTipWrite(){
+    selectedTipTag='맛 조절';
+    document.querySelectorAll('#tipTags button').forEach((button,index)=>button.classList.toggle('active',index===0));
+    const form=document.getElementById('tipForm');
+    if(form){
+      form.reset();
+      setFormStatus(form,'','');
+    }
+  }
+  function selectTipTag(tag,button){
+    selectedTipTag=tag;
+    document.querySelectorAll('#tipTags button').forEach(btn=>btn.classList.remove('active'));
+    if(button)button.classList.add('active');
+  }
+  function submitRecipeTip(event){
+    event.preventDefault();
+    const form=event.currentTarget;
+    const message=(form.elements.message?.value||'').trim();
+    if(!message){
+      setFormStatus(form,'팁 내용을 입력하면 저장할 수 있어요.','bad');
+      form.elements.message?.focus();
+      return;
+    }
+    const saved=addLocalRecipeNote({type:'tip',tag:selectedTipTag,message});
+    if(!saved){
+      setFormStatus(form,'이 브라우저에 저장하지 못했어요. 저장 공간 설정을 확인해주세요.','bad');
+      return;
+    }
+    setFormStatus(form,'팁이 이 브라우저에 저장됐어요.','ok');
+    toast('내 조리 팁이 저장됐어요','message-square-heart');
+    refreshRecipeNoteSurfaces();
+    setTimeout(()=>show('detail'),650);
   }
   const DET_SECS=['sec-ing','sec-steps'];
   let tabLock=0;
@@ -3593,6 +3917,8 @@
       case 'home': show('home');break;
       case 'search': show('searchPage'); setTimeout(()=>{const q=param?decodeURIComponent(param):'';const input=document.getElementById('recipeSearchInput');if(input)input.value=q;runRecipeSearch(q);},0); break;
       case 'detail': if(param)currentRecipe=recipeById(decodeURIComponent(param)); show('detail');break;
+      case 'reviews': if(param)currentRecipe=recipeById(decodeURIComponent(param)); show('reviews');break;
+      case 'tipWrite': if(param)currentRecipe=recipeById(decodeURIComponent(param)); show('tipWrite');break;
       case 'ingredients': cook3Car.reset();show('cook3');openIngredients();break;
       case 'timer': cook3Car.reset();show('cook3');openTimer();break;
       case 'voice': cook3Car.reset();show('cook3');openVoice();break;
