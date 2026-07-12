@@ -1964,6 +1964,160 @@
     if(!res.ok)throw new Error(data.error||'전송 설정을 확인해야 합니다.');
     return data;
   }
+  const NAEMBI_ANALYTICS={
+    ready:false,
+    enabled:false,
+    environment:'local',
+    queue:[],
+    once:new Set(),
+    openAppTracked:false
+  };
+  function naembiIsEmbedded(){
+    return window.self!==window.top;
+  }
+  function naembiIsMobile(){
+    return matchMedia('(max-width: 720px), (pointer: coarse)').matches;
+  }
+  function naembiUtmProps(){
+    const params=new URLSearchParams(location.search);
+    const props={};
+    ['utm_source','utm_medium','utm_campaign','utm_content','utm_term'].forEach(key=>{
+      const value=params.get(key);
+      if(value)props[key]=value.slice(0,120);
+    });
+    return props;
+  }
+  function naembiReferrerHost(){
+    try{return document.referrer?new URL(document.referrer).hostname:'';}catch{return '';}
+  }
+  function naembiSafeProps(props={}){
+    const blocked=new Set(['email','name','note','message','url','link','recipeUrl','recipe_url','raw_query','query','page']);
+    return Object.entries(props).reduce((acc,[key,value])=>{
+      if(blocked.has(key))return acc;
+      if(value===undefined||value===null||value==='')return acc;
+      if(typeof value==='string')acc[key]=value.slice(0,180);
+      else if(typeof value==='number'||typeof value==='boolean')acc[key]=value;
+      return acc;
+    },{});
+  }
+  function naembiCurrentSurface(){
+    if(document.body.classList.contains('marketing-open'))return 'landing';
+    const view=currentViewId();
+    if(view==='searchPage'||view==='searchResultsPage')return 'search';
+    if(view==='detail'||view==='reviews'||view==='tipWrite')return 'recipe_detail';
+    if(view==='cook3')return 'cook_mode';
+    if(view==='complete')return 'complete';
+    return view||'home';
+  }
+  function naembiRecipeProps(recipe=currentRecipe){
+    if(!recipe)return {};
+    return {
+      recipe_id:recipe.id,
+      recipe_name:recipe.name,
+      creator_name:recipe.channel||'',
+      total_steps:Array.isArray(recipe.steps)?recipe.steps.length:0
+    };
+  }
+  function naembiBaseProps(props={}){
+    return {
+      app:'naembi-web',
+      phase:'beta',
+      environment:NAEMBI_ANALYTICS.environment,
+      surface:naembiCurrentSurface(),
+      path:location.pathname,
+      hash:location.hash.slice(0,120),
+      viewport_width:window.innerWidth,
+      viewport_height:window.innerHeight,
+      is_mobile:naembiIsMobile(),
+      embedded:naembiIsEmbedded(),
+      ...naembiUtmProps(),
+      ...naembiSafeProps(props)
+    };
+  }
+  function naembiSendToMixpanel(event,props){
+    if(naembiIsEmbedded())return;
+    if(!NAEMBI_ANALYTICS.enabled||!window.mixpanel||typeof window.mixpanel.track!=='function')return;
+    try{window.mixpanel.track(event,props);}catch(error){console.warn('[naembi analytics]',error);}
+  }
+  function naembiTrack(event,props={}){
+    const payload=naembiBaseProps(props);
+    window.__naembiTrackedEvents=window.__naembiTrackedEvents||[];
+    window.__naembiTrackedEvents.push({event,props:payload});
+    if(typeof window.__naembiOnTrack==='function')window.__naembiOnTrack(event,payload);
+    if(!NAEMBI_ANALYTICS.ready){
+      NAEMBI_ANALYTICS.queue.push({event,props:payload});
+      return;
+    }
+    naembiSendToMixpanel(event,payload);
+  }
+  function naembiTrackOnce(event,props={}){
+    const key=event+':'+(props.once_key||props.surface||props.recipe_id||'default');
+    if(NAEMBI_ANALYTICS.once.has(key))return;
+    NAEMBI_ANALYTICS.once.add(key);
+    naembiTrack(event,props);
+  }
+  function loadNaembiMixpanel(){
+    if(window.mixpanel&&typeof window.mixpanel.init==='function')return Promise.resolve();
+    return new Promise((resolve,reject)=>{
+      const script=document.createElement('script');
+      script.src='https://cdn.mxpnl.com/libs/mixpanel-2-latest.min.js';
+      script.async=true;
+      script.onload=resolve;
+      script.onerror=()=>reject(new Error('Mixpanel SDK 로드 실패'));
+      document.head.appendChild(script);
+    });
+  }
+  async function initNaembiAnalytics(){
+    try{
+      const response=await fetch('/api/public-config',{cache:'no-store'});
+      const config=response.ok?await response.json():{};
+      NAEMBI_ANALYTICS.environment=config.environment||NAEMBI_ANALYTICS.environment;
+      const mp=config.mixpanel||{};
+      NAEMBI_ANALYTICS.enabled=Boolean(mp.enabled&&mp.token&&!naembiIsEmbedded());
+      if(NAEMBI_ANALYTICS.enabled){
+        await loadNaembiMixpanel();
+        window.mixpanel.init(mp.token,{
+          debug:Boolean(mp.debug),
+          track_pageview:false,
+          persistence:'localStorage'
+        });
+        window.mixpanel.register({
+          app:'naembi-web',
+          phase:'beta',
+          environment:NAEMBI_ANALYTICS.environment
+        });
+      }
+    }catch(error){
+      console.warn('[naembi analytics] disabled',error);
+      NAEMBI_ANALYTICS.enabled=false;
+    }finally{
+      NAEMBI_ANALYTICS.ready=true;
+      NAEMBI_ANALYTICS.queue.splice(0).forEach(item=>naembiSendToMixpanel(item.event,item.props));
+    }
+  }
+  function trackAppOpenIfNeeded(entrypoint='direct'){
+    if(naembiIsEmbedded()||NAEMBI_ANALYTICS.openAppTracked)return;
+    NAEMBI_ANALYTICS.openAppTracked=true;
+    naembiTrack('open_app',{entrypoint,referrer_host:naembiReferrerHost()});
+  }
+  function trackAppScreen(id,prevId){
+    if(naembiIsEmbedded()||document.body.classList.contains('marketing-open'))return;
+    trackAppOpenIfNeeded(prevId?'internal':'direct');
+    naembiTrack('app_screen_view',{screen:id,previous_screen:prevId||''});
+  }
+  function searchQueryType(value){
+    const q=String(value||'').trim();
+    if(/^https?:\/\//i.test(q)||/youtu\.?be|youtube/i.test(q))return 'youtube_url';
+    if(/[,/]/.test(q)||q.split(/\s+/).length>=2)return 'multi_term';
+    if(/재료|간단|적게|냉장고|파|계란|김치|명란|두부|고기|치즈|양파/.test(q))return 'ingredient_or_need';
+    return 'keyword';
+  }
+  function searchIngredientCount(value){
+    const q=String(value||'').replace(/[,/]+/g,' ').trim();
+    return q?q.split(/\s+/).filter(Boolean).length:0;
+  }
+  window.naembiTrack=naembiTrack;
+  window.naembiTrackOnce=naembiTrackOnce;
   const landingVariants={
     demo:{
       kicker:'요즘 뜨는 요리, 직접 해보고 싶다면',
@@ -2075,8 +2229,10 @@
       frame.dataset.currentDemo=target;
     }
     document.querySelectorAll('.demo-tab').forEach(btn=>btn.classList.toggle('active',btn.dataset.demo===target));
+    naembiTrack('landing_demo_select',{demo_screen:target});
   }
   function openApp(route){
+    naembiTrack('hero_cta_click',{cta:'experience',entrypoint:'app_landing',target_hash:route||'home'});
     document.body.classList.remove('marketing-open');
     const target=route||'home';
     if(target==='home')show('home');
@@ -2096,6 +2252,7 @@
     window.scrollTo({top:0,behavior:'smooth'});
   }
   function openFeedback(source){
+    naembiTrack('feedback_open',{entrypoint:source||currentViewId()});
     const modal=document.getElementById('feedbackModal');
     const form=document.getElementById('feedbackForm');
     const title=document.getElementById('feedbackTitle');
@@ -2135,8 +2292,10 @@
       await postJson('/api/beta-signup',payload);
       form.reset();
       setFormStatus(form,'신청이 접수됐습니다. 초대 준비가 되면 이메일로 안내할게요.','ok');
+      naembiTrack('beta_signup_submit',{success:true,entrypoint:'app_landing',profile:data.profile||'',note_length:(data.note||'').length});
     }catch(error){
       setFormStatus(form,error.message,'bad');
+      naembiTrack('beta_signup_submit',{success:false,entrypoint:'app_landing',profile:data.profile||''});
     }finally{
       setFormBusy(form,false);
     }
@@ -2166,8 +2325,21 @@
       await postJson('/api/feedback',payload);
       form.reset();
       setFormStatus(form,'요청이 접수됐습니다. 준비할 레시피 목록에 반영할게요.','ok');
+      naembiTrack('recipe_request_submit',{
+        success:true,
+        entrypoint:'app_landing',
+        has_youtube_url:Boolean(data.recipeUrl),
+        recipe_length:(data.recipeName||'').length,
+        request_length:(data.message||'').length
+      });
     }catch(error){
       setFormStatus(form,error.message,'bad');
+      naembiTrack('recipe_request_submit',{
+        success:false,
+        entrypoint:'app_landing',
+        has_youtube_url:Boolean(data.recipeUrl),
+        recipe_length:(data.recipeName||'').length
+      });
     }finally{
       setFormBusy(form,false);
     }
@@ -2193,10 +2365,24 @@
       await postJson('/api/feedback',payload);
       form.reset();
       setFormStatus(form,'의견이 접수됐습니다. 개선 목록에 반영할게요.','ok');
+      naembiTrack('feedback_submit',{
+        success:true,
+        entrypoint:data.source||currentViewId(),
+        feedback_type:data.type||'other',
+        message_length:message.length,
+        ...naembiRecipeProps()
+      });
       toast('의견이 접수됐어요','send');
       setTimeout(closeFeedback,1200);
     }catch(error){
       setFormStatus(form,error.message||'의견 저장에 실패했습니다. 잠시 뒤 다시 시도해주세요.','bad');
+      naembiTrack('feedback_submit',{
+        success:false,
+        entrypoint:data.source||currentViewId(),
+        feedback_type:data.type||'other',
+        message_length:message.length,
+        ...naembiRecipeProps()
+      });
     }finally{
       setFormBusy(form,false);
       if(submitButton)submitButton.innerHTML=originalLabel;
@@ -2257,6 +2443,7 @@
   function finishCook(){
     stopCook3Video(); // 완료 진입 시 조리 영상·소리 정지
     renderComplete(); // 현재 레시피 기준 완료 화면 렌더
+    naembiTrack('complete_recipe',{source:'cook_flow',...naembiRecipeProps()});
     const cp=document.getElementById('complete');
     cp.style.animation=''; // 이전에 걸어둔 none 해제
     cp.classList.add('active','rise-in'); // cook3 위로 완료 화면을 아래→위 슬라이드업
@@ -2285,6 +2472,7 @@
     else{ if(id==='complete')renderComplete(); hideCookHint(); }
     // 화면 진입 시 항상 맨 위부터 보이도록 스크롤 위치 초기화 (홈↔상세 왕복 시 스크롤 유지 방지)
     _v.querySelectorAll('.body,.cook-body,.hf-chat').forEach(el=>el.scrollTop=0);
+    trackAppScreen(id,prevId);
   }
   function esc(s){return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 
@@ -2952,6 +3140,7 @@
   function openSearch(query=''){
     const q=normalizeSearchQuery(query);
     if(q){executeRecipeSearch(q);return;}
+    naembiTrack('search_focus',{entrypoint:currentViewId()});
     show('searchPage');
     const input=document.getElementById('recipeSearchInput');
     if(input)input.value='';
@@ -2963,9 +3152,24 @@
   function executeRecipeSearch(query){
     const q=normalizeSearchQuery(query);
     if(!q)return;
+    const recipeCount=searchRecipes(q).length;
+    const creatorCount=searchCreators(q).length;
+    naembiTrack('search_submit',{
+      query_type:searchQueryType(q),
+      query_length:q.length,
+      ingredient_count:searchIngredientCount(q),
+      result_count:recipeCount+creatorCount
+    });
     saveRecentSearch(q);
     show('searchResultsPage');
     runRecipeSearch(q);
+    naembiTrack('search_result_view',{
+      query_type:searchQueryType(q),
+      query_length:q.length,
+      recipe_result_count:recipeCount,
+      creator_result_count:creatorCount,
+      result_count:recipeCount+creatorCount
+    });
     const hash='#searchResults='+encodeURIComponent(q);
     if(location.hash!==hash){
       const method=location.hash.startsWith('#searchResults=')?'replaceState':'pushState';
@@ -3011,7 +3215,12 @@
     refreshIcons();
     observeRecipeThumbs(document.getElementById('home'));
   }
-  function goDetail(id){currentRecipe=recipeById(id);show('detail');}
+  function goDetail(id){
+    const previous=currentViewId();
+    currentRecipe=recipeById(id);
+    naembiTrack('select_recipe',{source_list:previous,...naembiRecipeProps(currentRecipe)});
+    show('detail');
+  }
   // 상세 화면 렌더 (제목·요약·메타·재료·단계·영상) — 전부 currentRecipe 기준
   function renderDetail(){
     const r=currentRecipe;
@@ -3277,7 +3486,10 @@
     return {reset(){cur=0;layout();}, rebuild(){build();cur=0;layout();refreshIcons();}, layout, next, prev, advance(){cur=(cur+1)%stepsArr().length;layout();}, goTo(i){cur=Math.max(0,Math.min(maxIdx(),i));layout();}};
   }
   const cook3Car=makeCarousel('cook3','cookTrack3');
-  function startCook(){show('cook3');} // show('cook3')에서 현재 레시피로 캐러셀·영상 재구성
+  function startCook(){
+    naembiTrack('start_cook',{entrypoint:currentViewId(),...naembiRecipeProps()});
+    show('cook3');
+  } // show('cook3')에서 현재 레시피로 캐러셀·영상 재구성
   function postCookYoutube(func,args){
     const frame=document.getElementById('cook3YoutubePlayer');
     if(!frame||!frame.contentWindow)return false;
@@ -3719,6 +3931,7 @@
     updateStageTimer(0,timerTotal,true);
     const el=document.getElementById('stageTimer');if(el)el.classList.add('ringing'); // 사용자가 멈출 때까지 계속 울림(부르르 흔들림)
     playTimerAlarm();
+    naembiTrack('timer_complete',{seconds:timerTotal,auto_stop:true,...naembiRecipeProps()});
     toast('타이머 완료!','timer');
   }
   function timerTick(){
@@ -3726,7 +3939,7 @@
     if(timerLeft<=0){finishTimer();return;}
     updateStageTimer(timerLeft,timerTotal,false);
   }
-  function startUnifiedTimer(seconds,showToast){
+  function startUnifiedTimer(seconds,showToast,source='manual_input'){
     stopTimerAlarm(false);
     prepareTimerAlarm();
     timerTotal=seconds;timerLeft=seconds;
@@ -3737,6 +3950,7 @@
     setTimerButtons(true);
     updateStageTimer(timerLeft,timerTotal,false);
     timerId=setInterval(timerTick,1000);
+    naembiTrack('timer_start',{seconds,source,...naembiRecipeProps()});
     if(showToast)toast(fmtDurationKo(seconds)+' 타이머 시작','timer');
   }
   function toggleStageTimerPause(){
@@ -3765,7 +3979,7 @@
     tsInputChanged();
     syncTimerInput();
     closeTimer();
-    startUnifiedTimer(tsDraftSeconds,true);
+    startUnifiedTimer(tsDraftSeconds,true,'manual_input');
   }
   let handsfree=true;
   function toggleHandsfree(){
@@ -4037,6 +4251,7 @@
     const info=vpRecognitionErrorInfo(error);
     stopVpPermissionStream();
     vpRecognition=null;
+    naembiTrack('voice_permission_result',{result:info.kind==='permission'?'denied':info.kind,success:false,...naembiRecipeProps()});
     const panel=document.getElementById('vpanel');
     if(panel)panel.dataset.errorKind=info.kind;
     setVpVoiceState('error',info.status,'bad');
@@ -4064,6 +4279,7 @@
     setVpVoiceState('requesting','마이크 권한 요청 중','');
     try{
       await requestVpMicPermission();
+      naembiTrack('voice_permission_result',{result:'granted',success:true,...naembiRecipeProps()});
       setVpVoiceState('ready','마이크 준비됨','ok');
       const recognition=new Recognition();
       recognition.lang='ko-KR';
@@ -4079,6 +4295,7 @@
         if(u)u.textContent='말씀을 듣고 있어요';
         if(a)a.textContent='질문을 마칠 때까지 기다릴게요.';
         window.__vpRecognitionStarts=(window.__vpRecognitionStarts||0)+1;
+        naembiTrack('voice_listen_start',{browser:navigator.userAgent.includes('Safari')&&!navigator.userAgent.includes('Chrome')?'safari':'chrome',...naembiRecipeProps()});
       };
       recognition.onresult=(event)=>{
         let interim='',final='';
@@ -4104,11 +4321,18 @@
         if(!hf3On||vpVoiceState==='error')return;
         const finalText=(vpFinalTranscript||(vpUserStopped?vpInterimTranscript:'')).trim();
         if(finalText){
+          const answer=answerForVpPrompt(finalText);
           setVpTranscript(finalText,{hint:'인식 완료 · 이 내용으로 답변할게요.'});
           setVpVoiceState('recognized','인식 완료','ok');
+          naembiTrack('voice_transcript_result',{
+            success:true,
+            transcript_length:finalText.length,
+            matched:!answer.unmatched,
+            ...naembiRecipeProps()
+          });
           if(u)u.textContent='';
           if(a)a.textContent='';
-          vpTimers.push(setTimeout(()=>showVpAnswer(answerForVpPrompt(finalText),{source:'voice'}),320));
+          vpTimers.push(setTimeout(()=>showVpAnswer(answer,{source:'voice'}),320));
         }else if(vpUserStopped){
           setVpVoiceState('ready','듣기 중지됨','');
           setVpTranscript('');
@@ -4215,15 +4439,25 @@
         if(ex.prev)cook3Car.prev();
         endVpVideoDuck();
         setVpVoiceState('complete','응답 완료','ok');
+        naembiTrack('voice_response_view',{
+          source,
+          response_type:ex.timer?'timer':ex.next?'next_step':ex.prev?'previous_step':ex.unmatched?'fallback':'answer',
+          ...naembiRecipeProps()
+        });
       });
     },420));
   }
   function useVpPrompt(index){
     const ex=voiceScriptFor(currentRecipe)[index]||voiceScriptFor(currentRecipe)[0];
+    naembiTrack('voice_prompt_select',{
+      prompt_type:ex.timer?'timer':ex.next?'next_step':ex.prev?'previous_step':index===0?'substitute':index===1?'tip':'question',
+      prompt_index:index,
+      ...naembiRecipeProps()
+    });
     showVpAnswer(ex,{source:'quick'});
   }
   function startVpTimer(sec){
-    startUnifiedTimer(sec,false);
+    startUnifiedTimer(sec,false,'assistant');
   }
   function toggleHf3(){
     hf3On=!hf3On;
@@ -4233,6 +4467,7 @@
     if(hf3On){
       // 패널을 열 때는 대기 상태만 보여준다. 단계 이동은 사용자가 질문을 누르거나 입력했을 때만 실행한다.
       resetVpPromptPanel();
+      naembiTrack('voice_assistant_open',{entrypoint:'cook_mode',...naembiRecipeProps()});
     }else{
       destroyVpRecognition();
       panel.classList.remove('open','idle','ready','requesting','listening','recognized','thinking','answering','responding','complete','error','expanded');
@@ -4248,7 +4483,11 @@
     closeVideoSettings(); // 화면 이탈 시 영상 설정 모달 닫기
     cook3StopTimeTracking();cook3Playing=false; // 재생 시간 추적 정리
   }
-  function openIngredients(view='list'){ingSheetView=view==='check'?'check':'list';renderIngSheet();refreshIcons();document.getElementById('ingSheet').classList.add('show');}
+  function openIngredients(view='list'){
+    ingSheetView=view==='check'?'check':'list';
+    naembiTrack('open_ingredients',{view:ingSheetView,...naembiRecipeProps()});
+    renderIngSheet();refreshIcons();document.getElementById('ingSheet').classList.add('show');
+  }
   function closeIngredients(){document.getElementById('ingSheet').classList.remove('show');}
   function openVoice(){hideCookHint();document.getElementById('voiceModal').classList.add('show');document.getElementById('cook3').classList.add('voice-open');setActiveNav('voice');}
   function closeVoice(){
@@ -4290,6 +4529,7 @@
     // 배포 도메인에서 보면 그 origin을, 로컬/파일에서 보면 배포 URL을 사용
     const base=(location.protocol==='https:')?location.origin:SHARE_BASE;
     const url=base+'/app#detail='+encodeURIComponent(currentRecipe.id);
+    naembiTrack('share_click',{share_type:'recipe_detail',...naembiRecipeProps()});
     copyText(url).then(ok=>{
       toast(ok?'공유 링크가 복사되었어요':'복사 실패 — '+url,'share-2');
     });
@@ -4297,6 +4537,7 @@
   function shareCompletedRecipe(){
     const base=(location.protocol==='https:')?location.origin:SHARE_BASE;
     const url=base+'/?from=completed-share&recipe='+encodeURIComponent(currentRecipe.id)+'#assistant';
+    naembiTrack('share_click',{share_type:'complete_landing',...naembiRecipeProps()});
     copyText(url).then(ok=>{
       toast(ok?'친구에게 보낼 랜딩 링크가 복사됐어요':'복사 실패 — '+url,'share-2');
     });
@@ -4339,6 +4580,7 @@
     embedYoutube(document.querySelector('#detail .hero'),'detailYoutube','detailYoutubePlayer',currentRecipe.id,currentRecipe.title,params,false);
   }
 
+  const naembiAnalyticsReady=initNaembiAnalytics();
   refreshIcons();
   initLandingVariants();
   renderCookYoutubeSoundButton();
@@ -4423,6 +4665,13 @@
   window.addEventListener('hashchange',applyHash);
   window.addEventListener('load',pinLandingTopSoon);
   applyHash();
+  naembiAnalyticsReady.then(()=>{
+    if(document.body.classList.contains('marketing-open')){
+      naembiTrackOnce('landing_view',{once_key:'app-html',referrer_host:naembiReferrerHost()});
+    }else{
+      trackAppOpenIfNeeded(location.hash?'deep_link':'direct');
+    }
+  });
 
 </script>
 </body>
