@@ -239,7 +239,7 @@ try {
       setVpVoiceState('listening', '마이크 ON · 듣는 중', 'ok');
       setVpTranscript('듣고 있어요', { interim: true, hint: '말을 마치면 자동으로 인식 결과를 확정해요.' });
       document.getElementById('vpUser').textContent = '';
-      document.getElementById('vpAi').textContent = '질문을 마칠 때까지 기다릴게요.';
+      document.getElementById('vpAi').textContent = '질문을 편하게 말해보세요. 말이 끝나면 답변할게요.';
       window.__moveDemoFinger(315, 505, true);
       setTimeout(() => window.__hideDemoFinger(), 220);
       setTimeout(resolve, 360);

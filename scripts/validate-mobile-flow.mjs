@@ -735,7 +735,7 @@ try {
   if (!assistant.opened.panel.includes('open') || assistant.opened.queuedTimers !== 0 || assistant.opened.activeStep !== '0') {
     throw new Error('요리비서 패널이 열리자마자 자동 대화/단계 진행을 시작했습니다.');
   }
-  if (assistant.opened.user.trim() || !assistant.opened.answer.includes('말하기')) {
+  if (assistant.opened.user.trim() || assistant.opened.answer !== '직접 말로 물어보거나, 추천 질문을 선택해보세요!') {
     throw new Error('요리비서 대기 상태 안내가 표시되지 않았습니다.');
   }
   if (!assistant.opened.liveStatus.includes('마이크 OFF')) {
