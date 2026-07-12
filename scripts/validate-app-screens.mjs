@@ -95,6 +95,11 @@ const states = [
     required: ['#videoSettings.show .vset-card', '#vsMasterVolRange', '#vsVolRange', '#vsVoiceVolRange', '#vsTimerVolRange']
   },
   {
+    name: 'sound-settings-loop',
+    setup: `currentRecipe=recipeById('${recipeId}'); show('cook3'); hideCookHint(); openVideoSettings(); if(!vsLoopOn)toggleVsLoop();`,
+    required: ['#videoSettings.show .vset-card', '#vsLoopOptions:not(.collapsed)', '#vsLoopCount', '#vsLoopEnd', '#vsSpeed']
+  },
+  {
     name: 'ingredients-list',
     setup: `currentRecipe=recipeById('${recipeId}'); show('cook3'); hideCookHint(); openIngredients('list');`,
     required: ['#ingSheet.show .ing-panel', '#ingViewList.active', '#ingViewList .ing']

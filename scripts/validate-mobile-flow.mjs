@@ -434,13 +434,25 @@ try {
       videoVolume: effectiveOutputVolume(vsVol)
     };
     toggleVsMasterVol();
+    toggleVsLoop();
+    const loopCountRect = document.getElementById('vsLoopCount')?.getBoundingClientRect();
+    const loopEndRect = document.getElementById('vsLoopEnd')?.getBoundingClientRect();
+    const loop = {
+      visible: !document.getElementById('vsLoopOptions')?.classList.contains('collapsed'),
+      countHeight: Math.round(loopCountRect?.height || 0),
+      endHeight: Math.round(loopEndRect?.height || 0),
+      rowGap: Math.round((loopEndRect?.top || 0) - (loopCountRect?.bottom || 0))
+    };
+    toggleVsLoop();
     setVsSpeed(1);
     adjustVsSpeed(-1);
     const slower = {
       value: document.getElementById('vsSpeedVal')?.textContent || '',
-      active: document.querySelector('#vsSpeed .vchip.on')?.textContent.trim() || '',
       downDisabled: document.getElementById('vsSpeedDown')?.disabled || false,
-      upDisabled: document.getElementById('vsSpeedUp')?.disabled || false
+      upDisabled: document.getElementById('vsSpeedUp')?.disabled || false,
+      chipCount: document.querySelectorAll('#vsSpeed .vchip').length,
+      controlCount: document.querySelectorAll('#vsSpeed > *').length,
+      rowHeight: Math.round(document.querySelector('.vset-speed-row')?.getBoundingClientRect().height || 0)
     };
     adjustVsSpeed(-1);
     const slowest = {
@@ -449,7 +461,7 @@ try {
       downDisabled: document.getElementById('vsSpeedDown')?.disabled || false
     };
     closeVideoSettings();
-    return { master, videoVolume, videoRestored, voice, muted, restored, timerVolume, timerMuted, masterMuted, slower, slowest };
+    return { master, videoVolume, videoRestored, voice, muted, restored, timerVolume, timerMuted, masterMuted, loop, slower, slowest };
   })()`);
 
   const tutorial = await evaluate(`(async () => {
@@ -702,10 +714,13 @@ try {
   if (!settings.masterMuted.disabled || settings.masterMuted.value !== 'OFF' || settings.masterMuted.assistantGain !== 0 || settings.masterMuted.timerGain !== 0 || settings.masterMuted.videoVolume !== 0) {
     throw new Error('마스터 볼륨 음소거가 전체 출력에 반영되지 않았습니다.');
   }
-  if (settings.slower.value !== '0.75×' || settings.slower.active !== '0.75×' || settings.slower.downDisabled || settings.slower.upDisabled) {
+  if (!settings.loop.visible || Math.abs(settings.loop.countHeight - settings.loop.endHeight) > 1 || settings.loop.rowGap < 6 || settings.loop.rowGap > 8) {
+    throw new Error('구간 반복의 횟수와 반복 후 행 간격이 일정하지 않습니다.');
+  }
+  if (settings.slower.value !== '0.75×' || settings.slower.downDisabled || settings.slower.upDisabled || settings.slower.chipCount !== 0 || settings.slower.controlCount !== 3 || settings.slower.rowHeight > 52) {
     throw new Error('재생속도 - 조절이 0.75× 단계로 동작하지 않았습니다.');
   }
-  if (settings.slowest.value !== '0.5×' || settings.slowest.active !== '0.5×' || !settings.slowest.downDisabled) {
+  if (settings.slowest.value !== '0.5×' || !settings.slowest.downDisabled) {
     throw new Error('재생속도 최저 단계와 - 버튼 비활성화가 동작하지 않았습니다.');
   }
   if (!tutorial.visible || !tutorial.insideCookBody || tutorial.screenCoverage > 0.2 || tutorial.overlapRatio > 0.35) {

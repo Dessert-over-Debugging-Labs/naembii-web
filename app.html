@@ -877,6 +877,12 @@
   .vset-sub.collapsed{display:none;}
   .vset-row+.vset-sub{padding-bottom:12px;}
   .vset-mini{font-size:12px;font-weight:700;color:var(--text-sub);margin-right:4px;}
+  .vset-loop-options{display:flex;flex-direction:column;gap:7px;padding:4px 0 10px;}
+  .vset-loop-options.collapsed{display:none;}
+  .vset-option-row{display:grid;grid-template-columns:52px minmax(0,1fr);align-items:center;gap:8px;min-height:34px;}
+  .vset-option-row .vset-mini{margin:0;}
+  .vset-option-actions{display:flex;align-items:center;gap:5px;min-width:0;}
+  .vset-option-actions .vchip{flex:1;min-width:0;padding:7px 7px;white-space:nowrap;}
   .vset-volume-list{border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-top:8px;}
   .vset-volume-row{display:grid;grid-template-columns:minmax(92px,1fr) 38px minmax(62px,88px) 30px;align-items:center;gap:7px;min-height:48px;border-bottom:1px solid var(--border);}
   .vset-volume-row:last-child{border-bottom:0;}
@@ -902,11 +908,12 @@
   /* 볼륨 슬라이더 */
   .vset-sub input[type=range]{flex:1;min-width:120px;accent-color:var(--brand);height:4px;cursor:pointer;}
   .vset-sub em{font-style:normal;font-size:13px;font-weight:800;color:var(--text-sub);min-width:34px;text-align:right;}
-  .vset-stepper{display:flex;align-items:center;justify-content:space-between;width:100%;gap:10px;margin-bottom:2px;}
-  .vset-stepper button{width:36px;height:36px;border:none;border-radius:50%;background:var(--green-soft);color:var(--brand-deep);display:flex;align-items:center;justify-content:center;cursor:pointer;}
-  .vset-stepper button:disabled{opacity:.35;cursor:not-allowed;}
-  .vset-stepper button svg{width:17px;height:17px;}
-  .vset-speed-value{flex:1;text-align:center;font-size:18px;font-weight:900;color:var(--text);}
+  .vset-speed-row{padding:12px 0 0;}
+  .vset-compact-stepper{display:grid;grid-template-columns:32px 54px 32px;align-items:center;gap:5px;}
+  .vset-compact-stepper button{width:32px;height:32px;border:none;border-radius:10px;background:var(--green-soft);color:var(--brand-deep);display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .vset-compact-stepper button:disabled{opacity:.35;cursor:not-allowed;}
+  .vset-compact-stepper button svg{width:15px;height:15px;}
+  .vset-speed-value{text-align:center;font-size:16px;font-weight:900;color:var(--text);}
 
   /* ===== 완료 ===== */
   #complete{background:var(--bg);overflow-y:auto;}
@@ -1881,17 +1888,23 @@
           <div class="vset-label"><i data-lucide="repeat"></i>구간 반복</div>
           <button class="vset-switch" id="vsLoopSw" onclick="toggleVsLoop()"><span></span></button>
         </div>
-        <div class="vset-sub collapsed" id="vsLoopCount">
-          <span class="vset-mini">횟수</span>
-          <button class="vchip" onclick="setVsLoopCount(1,this)">1회</button>
-          <button class="vchip" onclick="setVsLoopCount(2,this)">2회</button>
-          <button class="vchip" onclick="setVsLoopCount(3,this)">3회</button>
-          <button class="vchip on" onclick="setVsLoopCount(0,this)">무한</button>
-        </div>
-        <div class="vset-sub collapsed" id="vsLoopEnd">
-          <span class="vset-mini">반복 후</span>
-          <button class="vchip on" onclick="setVsLoopEnd('stop',this)">멈춤</button>
-          <button class="vchip" onclick="setVsLoopEnd('next',this)">다음 단계로</button>
+        <div class="vset-loop-options collapsed" id="vsLoopOptions">
+          <div class="vset-option-row" id="vsLoopCount">
+            <span class="vset-mini">횟수</span>
+            <div class="vset-option-actions">
+              <button class="vchip" onclick="setVsLoopCount(1,this)">1회</button>
+              <button class="vchip" onclick="setVsLoopCount(2,this)">2회</button>
+              <button class="vchip" onclick="setVsLoopCount(3,this)">3회</button>
+              <button class="vchip on" onclick="setVsLoopCount(0,this)">무한</button>
+            </div>
+          </div>
+          <div class="vset-option-row" id="vsLoopEnd">
+            <span class="vset-mini">반복 후</span>
+            <div class="vset-option-actions">
+              <button class="vchip on" onclick="setVsLoopEnd('stop',this)">멈춤</button>
+              <button class="vchip" onclick="setVsLoopEnd('next',this)">다음 단계로</button>
+            </div>
+          </div>
         </div>
         <!-- 소리: 이름 · 토글 · 슬라이더 · 수치를 한 줄에서 조절 -->
         <div class="vset-volume-list" aria-label="볼륨 설정">
@@ -1921,21 +1934,13 @@
           </div>
         </div>
         <!-- 재생 속도 -->
-        <div class="vset-row">
+        <div class="vset-row vset-speed-row">
           <div class="vset-label"><i data-lucide="gauge"></i>재생 속도</div>
-        </div>
-        <div class="vset-sub" id="vsSpeed" style="border-bottom:none;">
-          <div class="vset-stepper">
+          <div class="vset-compact-stepper" id="vsSpeed">
             <button type="button" id="vsSpeedDown" onclick="adjustVsSpeed(-1)" aria-label="재생 속도 느리게"><i data-lucide="minus"></i></button>
             <strong class="vset-speed-value" id="vsSpeedVal">1×</strong>
             <button type="button" id="vsSpeedUp" onclick="adjustVsSpeed(1)" aria-label="재생 속도 빠르게"><i data-lucide="plus"></i></button>
           </div>
-          <button class="vchip" data-speed="0.5" onclick="setVsSpeed(0.5)">0.5×</button>
-          <button class="vchip" data-speed="0.75" onclick="setVsSpeed(0.75)">0.75×</button>
-          <button class="vchip on" data-speed="1" onclick="setVsSpeed(1)">1×</button>
-          <button class="vchip" data-speed="1.25" onclick="setVsSpeed(1.25)">1.25×</button>
-          <button class="vchip" data-speed="1.5" onclick="setVsSpeed(1.5)">1.5×</button>
-          <button class="vchip" data-speed="2" onclick="setVsSpeed(2)">2×</button>
         </div>
       </div>
     </div>
@@ -3781,8 +3786,7 @@
   function toggleVsLoop(){
     vsLoopOn=!vsLoopOn;
     document.getElementById('vsLoopSw').classList.toggle('on',vsLoopOn);
-    document.getElementById('vsLoopCount').classList.toggle('collapsed',!vsLoopOn);
-    document.getElementById('vsLoopEnd').classList.toggle('collapsed',!vsLoopOn);
+    document.getElementById('vsLoopOptions').classList.toggle('collapsed',!vsLoopOn);
     if(vsLoopOn){startCookYoutubeLoop(cook3CurrentStep);toast('구간 반복 켜짐','repeat');}
     else{stopCookYoutubeLoop();toast('구간 반복 꺼짐','repeat');}
   }
