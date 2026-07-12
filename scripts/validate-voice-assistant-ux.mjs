@@ -250,6 +250,7 @@ async function runProfile(profile) {
   const duckedCommands = await page.evaluate(() => [...(window.__qaVolumeCommands || [])]);
 
   await page.waitForFunction(() => document.getElementById('vpanel')?.dataset.voiceState === 'complete');
+  await page.waitForFunction(() => (window.__vpVideoDuckRestores || 0) >= 1);
   screenshots.complete = await capture(page, profile.id, '06-response-complete');
   const complete = await appState(page);
   const volumeCommands = await page.evaluate(() => [...(window.__qaVolumeCommands || [])]);
@@ -295,14 +296,14 @@ async function runProfile(profile) {
   const unsupported = await appState(page);
 
   const failures = [];
-  if (beforePermission.voiceState !== 'ready' || beforePermission.liveStatus !== '마이크 대기' || beforePermission.micButtonLabel !== '말하기 시작') failures.push('ready-state');
+  if (beforePermission.voiceState !== 'ready' || beforePermission.liveStatus !== '마이크 OFF' || beforePermission.micButtonLabel !== '말하기 시작') failures.push('ready-state');
   if (afterPermission.voiceState !== 'listening' || afterPermission.waveDisplay === 'none' || !afterPermission.hasStopMicButton || afterPermission.micTrackStops !== 1) failures.push('listening-state');
   if (!interimTranscript.transcriptVisible || !interimTranscript.transcriptInterim || !interimTranscript.transcriptText.includes('고추참치')) failures.push('interim-transcript');
   if (afterTranscriptWait.voiceState !== 'recognized' || afterTranscriptWait.transcriptInterim || !afterTranscriptWait.transcriptText.includes('어떻게 해')) failures.push('final-transcript');
   if (generating.voiceState !== 'responding' || !generating.hasVolumeDuckIndicator || !generating.transcriptText.includes('고추참치')) failures.push('responding-state');
   if (complete.voiceState !== 'complete' || complete.liveStatus !== '응답 완료' || !complete.assistantText.includes('일반 참치') || complete.speakButtonText !== '다시 말하기') failures.push('complete-state');
-  if (stopped.voiceState !== 'ready' || stopped.liveStatus !== '듣기 중지됨') failures.push('stop-listening-state');
-  if (!denied.liveStatus.includes('권한') || !denied.assistantText.includes('사이트 설정') || !denied.hasRetryButton) failures.push('permission-denied-state');
+  if (stopped.voiceState !== 'ready' || stopped.liveStatus !== '마이크 OFF') failures.push('stop-listening-state');
+  if (denied.liveStatus !== '마이크 OFF' || !denied.assistantText.includes('사이트 설정') || !denied.hasRetryButton) failures.push('permission-denied-state');
   if (!noSpeech.liveStatus.includes('알아듣지 못했어요') || !noSpeech.hasRetryButton) failures.push('no-speech-state');
   if (!unsupported.liveStatus.includes('지원하지 않아요') || unsupported.speakButtonText !== '음성 미지원' || unsupported.hasRetryButton) failures.push('unsupported-state');
   if (expanded.overlapsCurrentStep || expanded.overlapsVideo || expanded.overlapsTimer) failures.push('expanded-overlap');
@@ -368,8 +369,8 @@ function validateProfile(result) {
   }
 
   const s = result.states;
-  if (s.beforePermission.voiceState !== 'ready' || !s.beforePermission.liveStatus.includes('마이크 대기')) {
-    addFailure(failures, result, 'P1', '권한 요청 전 대기 상태', '마이크 대기 상태가 명확히 보이지 않습니다.');
+  if (s.beforePermission.voiceState !== 'ready' || s.beforePermission.liveStatus !== '마이크 OFF') {
+    addFailure(failures, result, 'P1', '권한 요청 전 대기 상태', '마이크 OFF 상태가 명확히 보이지 않습니다.');
   }
   if (s.beforePermission.promptInputExists || !s.beforePermission.inputModeText.includes('음성 또는 추천 질문')) {
     addFailure(failures, result, 'P1', '입력 방식 안내', '직접 입력처럼 보이거나 음성/추천 질문 제한 안내가 없습니다.');
@@ -402,7 +403,7 @@ function validateProfile(result) {
     addFailure(failures, result, 'P1', '음성 질문 기반 답변 연결', 'final transcript가 비서 응답으로 이어지지 않았습니다.');
   }
 
-  if (s.denied.voiceState !== 'error' || !s.denied.liveStatus.includes('마이크 권한') || !s.denied.hasRetryButton) {
+  if (s.denied.voiceState !== 'error' || s.denied.liveStatus !== '마이크 OFF' || !s.denied.assistantText.includes('사이트 설정') || !s.denied.hasRetryButton) {
     addFailure(failures, result, 'P1', '권한 거부 오류 안내', '권한 거부 상태가 재시도 가능한 한국어 오류로 보이지 않습니다.');
   }
   if (s.noSpeech.voiceState !== 'error' || !s.noSpeech.liveStatus.includes('알아듣지 못했어요') || !s.noSpeech.hasRetryButton) {

@@ -188,15 +188,16 @@ try {
   const recipeNotes = await evaluate(`(async () => {
     localStorage.removeItem(LOCAL_RECIPE_NOTE_KEY);
     currentRecipe = recipeById('vlPqkuHIdCc');
-    show('detail');
+    show('complete');
     await new Promise((resolve) => setTimeout(resolve, 220));
     openRecipeReview();
     await new Promise((resolve) => setTimeout(resolve, 120));
-    setRecipeReviewRating(4);
+    setRecipeReviewRating(4.5);
     document.querySelector('#recipeReviewForm textarea[name="message"]').value = '치즈는 1분 더 녹이니 더 좋았어요.';
     document.querySelector('#recipeReviewForm button[type="submit"]').click();
     await new Promise((resolve) => setTimeout(resolve, 880));
     const reviewSaved = localNotesFor(currentRecipe.id, 'review').length;
+    const reviewRating = localNotesFor(currentRecipe.id, 'review')[0]?.rating || 0;
     showTipWrite();
     await new Promise((resolve) => setTimeout(resolve, 160));
     document.querySelectorAll('#tipTags button')[1].click();
@@ -204,10 +205,18 @@ try {
     document.querySelector('#tipForm button[type="submit"]').click();
     await new Promise((resolve) => setTimeout(resolve, 900));
     const tipSaved = localNotesFor(currentRecipe.id, 'tip').length;
+    const activeAfterTip = document.querySelector('.view.active')?.id || '';
+    const doneSavedText = document.getElementById('doneSavedNotes')?.textContent || '';
     show('detail');
     await new Promise((resolve) => setTimeout(resolve, 180));
-    const detailText = document.getElementById('detLocalNotes').textContent;
+    const detailText = document.getElementById('detTipPreview').textContent + document.getElementById('detReviewPreview').textContent;
     const proofText = document.getElementById('detProof').textContent;
+    const tipPreviewText = document.getElementById('detTipPreview').textContent;
+    const reviewPreviewText = document.getElementById('detReviewPreview').textContent;
+    const reviewPreviewColumns = getComputedStyle(document.querySelector('.detail-review-list')).gridTemplateColumns.split(' ').filter(Boolean).length;
+    show('tips');
+    await new Promise((resolve) => setTimeout(resolve, 180));
+    const tipsText = document.getElementById('tipsList').textContent;
     show('reviews');
     await new Promise((resolve) => setTimeout(resolve, 180));
     const reviewsText = document.getElementById('reviewsList').textContent;
@@ -216,17 +225,26 @@ try {
     const communityText = document.getElementById('communityStrip').textContent;
     show('complete');
     await new Promise((resolve) => setTimeout(resolve, 120));
-    const doneButtons = [...document.querySelectorAll('#complete .done-actions button,#complete .done-next button')].map((button) => button.textContent.trim());
+    const doneButtons = [...document.querySelectorAll('#complete .done-record-actions button,#complete .done-actions button,#complete .done-next button')].map((button) => button.textContent.trim());
+    const donePrimaryIconCount = document.querySelectorAll('#complete .done-next:not(.secondary) button svg').length;
     document.querySelector('#complete .done-next button').click();
     await new Promise((resolve) => setTimeout(resolve, 120));
     return {
       reviewSaved,
+      reviewRating,
       tipSaved,
+      activeAfterTip,
+      doneSavedText,
       detailText,
       proofText,
+      tipPreviewText,
+      reviewPreviewText,
+      reviewPreviewColumns,
+      tipsText,
       reviewsText,
       communityText,
       doneButtons,
+      donePrimaryIconCount,
       activeAfterHome: document.querySelector('.view.active')?.id || ''
     };
   })()`);
@@ -416,6 +434,8 @@ try {
     const initialVisible = hint.classList.contains('show');
     hideCookHint();
     await new Promise((resolve) => setTimeout(resolve, 100));
+    const cardRectAfterHide = card.getBoundingClientRect();
+    const cardShiftAfterHide = Math.abs(cardRectAfterHide.top - cardRect.top);
     show('detail');
     show('cook3');
     await new Promise((resolve) => setTimeout(resolve, 180));
@@ -433,6 +453,7 @@ try {
       screenCoverage: Number((area / screenArea).toFixed(3)),
       overlapRatio: Number(overlapRatio.toFixed(3)),
       insideCookBody: rect.top >= bodyRect.top - 1 && rect.bottom <= bodyRect.bottom + 1,
+      cardShiftAfterHide: Number(cardShiftAfterHide.toFixed(2)),
       reopensAfterClose,
       hiddenAfterNever
     };
@@ -577,13 +598,19 @@ try {
   if (recipeNotes.reviewSaved < 1 || recipeNotes.tipSaved < 1) {
     throw new Error('요리 후기와 조리 팁이 로컬 저장소에 저장되지 않았습니다.');
   }
-  if (!recipeNotes.detailText.includes('치즈는 1분 더') || !recipeNotes.detailText.includes('체다') || !recipeNotes.proofText.includes('내 기록')) {
-    throw new Error('상세 화면에서 로컬 후기/팁 저장 결과가 보이지 않습니다.');
+  if (recipeNotes.reviewRating !== 4.5) {
+    throw new Error('요리 후기 별점이 0.5점 단위로 저장되지 않았습니다.');
   }
-  if (!recipeNotes.reviewsText.includes('치즈는 1분 더') || !recipeNotes.communityText.includes('게스트 저장')) {
-    throw new Error('후기 화면 또는 홈 커뮤니티 영역에서 로컬 기록이 보이지 않습니다.');
+  if (recipeNotes.activeAfterTip !== 'complete' || !recipeNotes.doneSavedText.includes('치즈는 1분 더') || !recipeNotes.doneSavedText.includes('체다')) {
+    throw new Error('완료 화면에서 후기·팁 저장 후 결과를 이어서 확인할 수 없습니다.');
   }
-  if (!recipeNotes.doneButtons.includes('홈으로 가기') || !recipeNotes.doneButtons.includes('이 요리 후기 남기기') || recipeNotes.activeAfterHome !== 'home') {
+  if (!recipeNotes.detailText.includes('조리 팁') || !recipeNotes.detailText.includes('최근 후기') || !recipeNotes.detailText.includes('완전 성공') || !recipeNotes.detailText.includes('체다') || !recipeNotes.proofText.includes('후기') || !recipeNotes.proofText.includes('팁')) {
+    throw new Error('상세의 분리된 후기·팁 영역에서 저장 결과가 보이지 않습니다.');
+  }
+  if (!recipeNotes.tipPreviewText.includes('전체보기') || !recipeNotes.tipsText.includes('체다') || !recipeNotes.reviewPreviewText.includes('전체보기') || recipeNotes.reviewPreviewColumns !== 2 || !recipeNotes.reviewsText.includes('치즈는 1분 더') || !recipeNotes.communityText.includes('게스트 저장')) {
+    throw new Error('팁·후기 전체보기 또는 최근 후기 2열 미리보기가 올바르게 동작하지 않습니다.');
+  }
+  if (!recipeNotes.doneButtons.includes('홈으로 가기') || !recipeNotes.doneButtons.includes('후기 남기기') || !recipeNotes.doneButtons.includes('팁 남기기') || recipeNotes.donePrimaryIconCount !== 2 || recipeNotes.activeAfterHome !== 'home') {
     throw new Error('완료 화면의 홈 이동과 요리 후기 액션이 동작하지 않았습니다.');
   }
   if (accountNotification.account.active !== 'accountPlan' || !accountNotification.account.text.includes('게스트로') || !accountNotification.account.text.includes('이 브라우저')) {
@@ -593,7 +620,7 @@ try {
     throw new Error('홈 알림 아이콘이 영상 링크/알림 예정 화면으로 연결되지 않았습니다.');
   }
   if (!accountNotification.modal.open || accountNotification.modal.source !== 'notification-recipe-request' || !accountNotification.modal.title.includes('영상')) {
-    throw new Error('알림 예정 화면의 영상 링크 보내기가 레시피 요청 모달로 이어지지 않았습니다.');
+    throw new Error('알림 예정 화면의 영상 제보하기가 레시피 요청 모달로 이어지지 않았습니다.');
   }
   if (timer.startedTotal !== 450) {
     throw new Error('타이머 직접 입력 7분 20초와 +10초 조정이 반영되지 않았습니다.');
@@ -640,17 +667,20 @@ try {
   if (!tutorial.visible || !tutorial.insideCookBody || tutorial.screenCoverage > 0.2 || tutorial.overlapRatio > 0.35) {
     throw new Error('조리 튜토리얼이 화면 내부 패널로 보이지 않거나 조리 카드를 과하게 가립니다.');
   }
+  if (tutorial.cardShiftAfterHide > 1) {
+    throw new Error('스와이프 안내를 닫을 때 현재 조리 단계 카드 위치가 움직입니다.');
+  }
   if (!tutorial.reopensAfterClose || !tutorial.hiddenAfterNever) {
     throw new Error('조리 튜토리얼 다시 보기/다시 보지 않기 흐름이 동작하지 않습니다.');
   }
   if (!assistant.opened.panel.includes('open') || assistant.opened.queuedTimers !== 0 || assistant.opened.activeStep !== '0') {
     throw new Error('요리비서 패널이 열리자마자 자동 대화/단계 진행을 시작했습니다.');
   }
-  if (!assistant.opened.user.includes('궁금') || !assistant.opened.answer.includes('말하기')) {
+  if (assistant.opened.user.trim() || !assistant.opened.answer.includes('말하기')) {
     throw new Error('요리비서 대기 상태 안내가 표시되지 않았습니다.');
   }
-  if (!assistant.opened.liveStatus.includes('마이크 대기')) {
-    throw new Error('요리비서 마이크 대기 상태가 표시되지 않았습니다.');
+  if (!assistant.opened.liveStatus.includes('마이크 OFF')) {
+    throw new Error('요리비서 마이크 OFF 상태가 표시되지 않았습니다.');
   }
   if (assistant.opened.promptInputExists || !assistant.opened.inputModeText.includes('음성 또는 추천 질문')) {
     throw new Error('요리비서 패널이 직접 입력 대신 음성/준비 질문 흐름으로 보이지 않습니다.');
@@ -667,7 +697,7 @@ try {
   if (assistant.quickCount < 3 || assistant.beforePromptStep !== '0' || assistant.activeStep !== '0' || !assistant.user.trim() || !assistant.answer.trim()) {
     throw new Error('요리비서 추천 질문 선택이 답변으로 이어지지 않았습니다.');
   }
-  if (!assistant.ducked.commands.some((value) => value > 0 && value < 80) || !assistant.restored.commands.includes(80) || assistant.restored.currentVolumeSetting !== 80 || assistant.restored.restores < assistant.ducked.restores + 1) {
+  if (new Set(assistant.ducked.commands).size < 4 || !assistant.ducked.commands.some((value) => value > 0 && value < 80) || new Set(assistant.restored.commands).size < 6 || !assistant.restored.commands.includes(80) || assistant.restored.currentVolumeSetting !== 80 || assistant.restored.restores < assistant.ducked.restores + 1) {
     throw new Error('요리비서 답변 중 영상 볼륨 낮춤과 복구가 확인되지 않았습니다.');
   }
 } finally {

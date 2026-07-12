@@ -50,6 +50,11 @@ const states = [
     required: ['#reviews .nav', '#reviewsSummary .rsum', '#reviewsList .reviews', '#reviews .cta-bar .btn']
   },
   {
+    name: 'tips',
+    setup: `currentRecipe=recipeById('${recipeId}'); show('tips');`,
+    required: ['#tips .nav', '#tipsList .tips-all-head', '#tipsList .tips-all-list', '#tips .cta-bar .btn']
+  },
+  {
     name: 'recipe-review-sheet',
     setup: `currentRecipe=recipeById('${recipeId}'); show('detail'); openRecipeReview();`,
     required: ['#recipeReviewSheet.show .ing-panel', '#recipeReviewStars', '#recipeReviewForm .rv-text', '#recipeReviewForm .btn']
