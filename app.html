@@ -1839,7 +1839,7 @@
         <div class="ing-grab"></div>
         <div class="ing-h"><b id="recipeReviewTitle">이 요리 후기</b><span onclick="closeRecipeReview()"><i data-lucide="x"></i></span></div>
         <form id="recipeReviewForm" onsubmit="submitRecipeReview(event)">
-          <div class="rv-form-sub">맛있었던 순간이나 “와, 이거 꿀맛!” 같은 가벼운 완주 소감을 남겨주세요. 조리 정보는 팁에 따로 저장할 수 있어요.</div>
+          <div class="rv-form-sub">요리를 완주한 후 느낀 가벼운 감상을 남겨보세요. 맛 조절이나 재료 대체 정보는 조리 팁에 따로 남길 수 있어요.</div>
           <div class="rv-label">별점 · 0.5점 단위</div>
           <div class="rating-control">
             <div class="rating-summary">
@@ -2967,7 +2967,7 @@
     const recent=reviews.slice(0,2);
     return '<section class="detail-reviews" aria-label="최근 후기">'+
       '<div class="detail-section-head"><b>최근 후기</b><button type="button" onclick="show(\'reviews\')">전체보기</button></div>'+
-      '<p class="detail-section-copy">“와, 이거 꿀맛!”처럼 가볍게 남긴 완주 소감이에요.</p>'+
+      '<p class="detail-section-copy">요리를 완주한 후 느낀 가벼운 감상을 남겨보세요.</p>'+
       '<div class="detail-review-list">'+(recent.length?recent.map(noteItemHTML).join(''):'<div class="detail-record-empty">아직 후기가 없어요. 요리를 완주하고 첫 후기를 남겨보세요.</div>')+'</div>'+
       '<div class="detail-record-actions"><button class="record-review-action" type="button" onclick="openRecipeReview()"><i data-lucide="pencil-line"></i>후기 남기기</button></div>'+
     '</section>';
