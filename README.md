@@ -34,6 +34,15 @@ npm run verify:dynamic
 npm run verify:visual
 ```
 
+음성비서의 권한 → 듣는 중 → transcript → 응답 → 오류 상태를 확인할 때:
+
+```bash
+PORT=4873 npm run dev
+npm run verify:voice-assistant -- http://127.0.0.1:4873 /tmp/naembi-voice-assistant-validation
+```
+
+구현 범위와 실기기 검증 게이트는 `docs/VOICE_ASSISTANT_WEB_IMPLEMENTATION_ko.md`를 확인합니다.
+
 ## Vercel 앱 등록 방법
 
 1. Vercel 대시보드에서 `Add New...` → `Project`를 선택합니다.

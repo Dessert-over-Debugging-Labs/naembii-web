@@ -97,7 +97,7 @@ const states = [
   {
     name: 'assistant-panel',
     setup: `currentRecipe=recipeById('${recipeId}'); show('cook3'); hideCookHint(); toggleHf3();`,
-    required: ['#vpanel.open', '#vpSizeHandle', '#vpScroll', '.vp-input-mode', '.vp-speak-btn', '#vpQuick button', '.vp-close']
+    required: ['#vpanel.open', '#vpSizeHandle', '#vpScroll', '#vpLiveStatus', '.vp-input-mode', '.vp-speak-btn', '#vpQuick button', '.vp-close']
   },
   {
     name: 'assistant-panel-expanded',
@@ -223,7 +223,7 @@ try {
           try { closeVoice(); } catch {}
           try { closeVideoSettings(); } catch {}
           const vpanel = document.getElementById('vpanel');
-          if (vpanel) vpanel.classList.remove('open','idle','listening','thinking','answering','expanded');
+          if (vpanel) vpanel.classList.remove('open','idle','ready','requesting','listening','recognized','thinking','answering','responding','complete','error','expanded');
           const cookCtrl = document.getElementById('cook3Ctrl');
           if (cookCtrl) cookCtrl.classList.remove('vpanel-open','vpanel-expanded');
           try { hf3On = false; vpClear(); } catch {}

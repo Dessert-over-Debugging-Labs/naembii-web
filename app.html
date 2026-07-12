@@ -631,8 +631,8 @@
   /* 대화 패널 열림: 둥근 상단 모서리 뒤가 흰색(surface)으로 비쳐 위 틴트 배경과 틈이 생기던 문제 →
      컨트롤바 배경을 카드영역과 같은 틴트(--dark)로 맞추고 상단 경계선도 감춰 이음새 제거 */
   #cook3 .cook-ctrl:has(.vpanel.open),#cook3 .cook-ctrl.vpanel-open{background:var(--dark);border-top-color:transparent;}
-  #cook3 .cook-ctrl:has(.vpanel.open),#cook3 .cook-ctrl.vpanel-open{height:var(--vp-panel-height,clamp(270px,38dvh,330px));transition:height .18s ease;}
-  #cook3 .cook-ctrl:has(.vpanel.open.expanded),#cook3 .cook-ctrl.vpanel-open.vpanel-expanded{height:var(--vp-panel-height,clamp(390px,62dvh,560px));}
+  #cook3 .cook-ctrl:has(.vpanel.open),#cook3 .cook-ctrl.vpanel-open{height:var(--vp-panel-height,clamp(250px,32dvh,290px));transition:height .18s ease;}
+  #cook3 .cook-ctrl:has(.vpanel.open.expanded),#cook3 .cook-ctrl.vpanel-open.vpanel-expanded{height:var(--vp-panel-height,clamp(320px,44dvh,460px));}
   #cook3 .cook-ctrl.vpanel-dragging{transition:none;}
   #cook3 .cook-ctrl:has(.vpanel.open) .ctrl-buttons,#cook3 .cook-ctrl.vpanel-open .ctrl-buttons{visibility:hidden;}
   .vpanel{position:absolute;top:0;bottom:0;left:-1px;right:-1px;z-index:3;box-sizing:border-box;padding:16px 19px 22px;
@@ -693,19 +693,45 @@
   .vp-scroll{position:relative;z-index:1;flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:24px 2px 8px 0;scrollbar-width:none;}
   .vp-scroll::-webkit-scrollbar{display:none;}
   .vp-beta-note{position:relative;z-index:1;align-self:flex-start;display:inline-flex;align-items:center;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.13);color:#fff;border-radius:999px;padding:5px 9px;margin-bottom:10px;font-size:12px;font-weight:900;letter-spacing:0;backdrop-filter:blur(8px);}
-  .vp-live-status{position:relative;z-index:1;margin:-4px 0 8px;color:rgba(255,255,255,.88);font-size:12px;font-weight:850;line-height:1.35;min-height:16px;}
-  .vp-live-status.ok{color:#DFFFEA;}
-  .vp-live-status.bad{color:#FFE1DC;}
+  .vp-status-row{position:relative;z-index:1;display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:-4px 0 8px;}
+  .vp-live-status{display:inline-flex;align-items:center;gap:6px;min-height:26px;border:1px solid rgba(255,255,255,.3);border-radius:999px;background:rgba(255,255,255,.14);color:#fff;padding:4px 9px;font-size:11px;font-weight:900;line-height:1.2;}
+  .vp-live-status::before{content:'';width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.72);box-shadow:0 0 0 3px rgba(255,255,255,.12);}
+  .vp-live-status.ok::before,.vpanel.recognized .vp-live-status::before,.vpanel.complete .vp-live-status::before{background:#BFF4CE;}
+  .vp-live-status.bad::before,.vpanel.error .vp-live-status::before{background:#FFD0C8;}
+  .vpanel.listening .vp-live-status::before{background:#fff;animation:vpStatusPulse 1s ease-in-out infinite;}
+  @keyframes vpStatusPulse{0%,100%{box-shadow:0 0 0 3px rgba(255,255,255,.15);}50%{box-shadow:0 0 0 7px rgba(255,255,255,.04);}}
+  .vp-volume-status{display:none;align-items:center;gap:5px;border-radius:999px;background:rgba(20,20,22,.26);color:#fff;padding:5px 8px;font-size:10px;font-weight:900;}
+  .vp-volume-status.show{display:inline-flex;}
+  .vp-volume-status svg{width:12px;height:12px;}
+  .vp-transcript{position:relative;z-index:1;display:none;margin:0 0 8px;border:1px solid rgba(255,255,255,.25);border-radius:12px;background:rgba(20,20,22,.2);padding:9px 10px;}
+  .vp-transcript.show{display:block;}
+  .vp-transcript-label{display:block;margin-bottom:3px;color:rgba(255,255,255,.72);font-size:10px;font-weight:900;}
+  .vp-transcript-text{margin:0;color:#fff;font-size:14px;font-weight:900;line-height:1.35;word-break:keep-all;}
+  .vp-transcript.interim .vp-transcript-text{color:rgba(255,255,255,.76);}
+  .vp-transcript.interim .vp-transcript-text::after{content:'…';}
+  .vp-transcript-hint{display:block;margin-top:4px;color:rgba(255,255,255,.67);font-size:10px;font-weight:750;line-height:1.35;}
   .vp-user{position:relative;z-index:1;flex:none;width:100%;font-size:16px;font-weight:800;color:#fff;margin-bottom:9px;min-height:21px;line-height:1.28;letter-spacing:0;text-shadow:0 1px 4px rgba(0,0,0,.3);}
+  .vp-user:empty{display:none;}
   .vp-ai{position:relative;z-index:1;flex:none;width:100%;font-size:16px;font-weight:750;color:#fff;line-height:1.42;min-height:44px;letter-spacing:0;text-shadow:0 1px 6px rgba(0,0,0,.4);}
-  .vp-quick{position:relative;z-index:1;display:flex;gap:7px;overflow-x:auto;margin:6px 0 9px;padding-bottom:2px;}
+  .vp-quick-label{position:relative;z-index:1;display:block;margin:7px 0 4px;color:rgba(255,255,255,.72);font-size:10px;font-weight:900;}
+  .vp-quick{position:relative;z-index:1;display:flex;gap:7px;overflow-x:auto;margin:0 0 9px;padding-bottom:2px;}
+  .vpanel.listening .vp-quick-label,.vpanel.listening .vp-quick,
+  .vpanel.recognized .vp-quick-label,.vpanel.recognized .vp-quick,
+  .vpanel.responding .vp-quick-label,.vpanel.responding .vp-quick{display:none;}
   .vp-quick::-webkit-scrollbar{display:none;}
   .vp-quick button{height:32px;border:1px solid rgba(255,255,255,.28);border-radius:999px;background:rgba(255,255,255,.16);color:#fff;font:inherit;font-size:12px;font-weight:900;white-space:nowrap;padding:0 10px;cursor:pointer;}
   .vp-input-mode{position:relative;z-index:1;flex:none;display:flex;align-items:center;gap:9px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.24);border-radius:14px;padding:7px 9px 7px 7px;color:#fff;}
   .vp-speak-btn{height:34px;border:0;border-radius:10px;background:#fff;color:var(--brand);display:inline-flex;align-items:center;gap:6px;padding:0 11px;font:inherit;font-size:12px;font-weight:950;white-space:nowrap;cursor:pointer;flex:none;}
+  .vp-speak-btn.is-stop{background:#2C2C2E;color:#fff;}
+  .vp-speak-btn:disabled{opacity:.58;cursor:wait;}
   .vp-speak-btn svg{width:15px;height:15px;}
   .vp-input-mode span{min-width:0;color:rgba(255,255,255,.82);font-size:12px;line-height:1.34;font-weight:850;}
   .vp-input-mode .vp-speak-btn span{color:var(--brand);font-size:12px;line-height:1;font-weight:950;}
+  .vp-input-mode .vp-speak-btn.is-stop span{color:#fff;}
+  .vp-error-actions{position:relative;z-index:1;display:none;gap:7px;margin:0 0 8px;}
+  .vp-error-actions.show{display:flex;}
+  .vp-error-actions button{min-height:32px;border:1px solid rgba(255,255,255,.3);border-radius:10px;background:rgba(255,255,255,.16);color:#fff;padding:0 10px;font:inherit;font-size:11px;font-weight:900;cursor:pointer;}
+  .vp-error-actions button:first-child{background:#fff;color:var(--brand);}
   .vp-thinking-wave{display:inline-flex;align-items:center;gap:5px;height:24px;padding-top:8px;}
   .vp-thinking-wave span{width:4px;height:4px;border-radius:50%;background:#fff;animation:vpDotWave 1.05s ease-in-out infinite;}
   .vp-thinking-wave span:nth-child(2){animation-delay:.1s;}
@@ -716,25 +742,24 @@
     0%,100%{opacity:.45;transform:translateY(2px) scale(.9);}
     45%{opacity:1;transform:translateY(-4px) scale(1);}
   }
-  /* 대기(듣는 중): 가운데 크게 */
-  .vpanel.idle{justify-content:center;align-items:center;}
-  .vpanel.idle .vp-scroll{display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;}
-  .vpanel.idle .vp-user{font-size:24px;font-weight:800;color:#fff;text-align:center;margin:0;min-height:0;line-height:1.25;letter-spacing:0;text-shadow:0 1px 8px rgba(0,0,0,.22);}
-  .vpanel.idle .vp-ai{display:none;}
   .vp-wave{display:none;position:relative;z-index:1;}
-  .vpanel.idle .vp-wave{display:flex;justify-content:center;margin-bottom:16px;transform:scale(1.2);}
+  .vpanel.listening .vp-wave{display:flex;justify-content:flex-start;margin:0 0 8px 4px;transform:scale(1.05);transform-origin:left center;}
   .vp-wave span{background:#fff;animation:wv 1s ease-in-out infinite;}
   @media (max-height:700px){
     .cook-video{height:118px;}
     #cook3 .cook-ctrl:has(.vpanel.open),#cook3 .cook-ctrl.vpanel-open{height:var(--vp-panel-height,clamp(210px,32dvh,232px));}
-    #cook3 .cook-ctrl:has(.vpanel.open.expanded),#cook3 .cook-ctrl.vpanel-open.vpanel-expanded{height:var(--vp-panel-height,clamp(320px,52dvh,390px));}
+    #cook3 .cook-ctrl:has(.vpanel.open.expanded),#cook3 .cook-ctrl.vpanel-open.vpanel-expanded{height:var(--vp-panel-height,clamp(290px,44dvh,340px));}
     .vpanel{padding:13px 18px 18px;}
     .vp-scroll{padding-top:20px;}
     .vp-beta-note{display:none;}
-    .vp-live-status{margin:0 0 5px;font-size:11px;min-height:14px;}
+    .vp-status-row{margin:0 0 5px;}
+    .vp-live-status{min-height:24px;font-size:10px;}
+    .vp-transcript{padding:7px 9px;margin-bottom:6px;}
+    .vp-transcript-text{font-size:13px;}
     .vp-user{font-size:15px;margin-bottom:5px;min-height:18px;}
     .vp-ai{font-size:14px;line-height:1.34;min-height:34px;}
-    .vp-quick{margin:4px 0 6px;}
+    .vp-quick-label{margin:5px 0 3px;}
+    .vp-quick{margin:0 0 6px;}
     .vp-quick button{height:29px;font-size:11px;padding:0 9px;}
     .vp-input-mode{padding:6px 8px 6px 6px;}
     .vp-speak-btn{height:32px;padding:0 10px;}
@@ -1653,19 +1678,32 @@
         <div class="vpanel" id="vpanel">
           <div class="vp-aurora"></div>
           <button class="vp-size-handle" id="vpSizeHandle" type="button" onpointerdown="startVpResizeDrag(event)" onclick="toggleVpPanelSize()" aria-label="요리비서 패널 크게 보기" aria-expanded="false"><span></span></button>
-          <button class="vp-mic" onclick="toggleVpMic()"><i data-lucide="mic"></i></button>
-          <button class="vp-close" onclick="toggleHf3()"><i data-lucide="x"></i></button>
+          <button class="vp-mic" type="button" onclick="toggleVpMic()" aria-label="말하기 시작" title="말하기 시작"><i data-lucide="mic"></i></button>
+          <button class="vp-close" type="button" onclick="toggleHf3()" aria-label="요리비서 닫기" title="요리비서 닫기"><i data-lucide="x"></i></button>
           <div class="vp-scroll" id="vpScroll">
             <div class="vp-beta-note">요리비서 베타</div>
-            <div class="vp-live-status" id="vpLiveStatus" role="status" aria-live="polite"></div>
+            <div class="vp-status-row">
+              <div class="vp-live-status" id="vpLiveStatus" role="status" aria-live="polite">마이크 대기</div>
+              <div class="vp-volume-status" id="vpVolumeStatus"><i data-lucide="volume-1"></i>영상 소리 자동 낮춤</div>
+            </div>
             <div class="wave vp-wave"><span></span><span></span><span></span><span></span><span></span></div>
+            <div class="vp-transcript" id="vpTranscript" aria-live="polite">
+              <span class="vp-transcript-label">내가 말한 내용</span>
+              <p class="vp-transcript-text" id="vpTranscriptText"></p>
+              <small class="vp-transcript-hint" id="vpTranscriptHint"></small>
+            </div>
             <div class="vp-user" id="vpUser">무엇이 궁금해요?</div>
-            <div class="vp-ai" id="vpAi">말하기 준비나 질문 선택으로 답변을 확인해요.</div>
+            <div class="vp-ai" id="vpAi">브라우저가 음성을 텍스트로 바꿔요. 말하기를 시작하거나 추천 질문을 선택해보세요.</div>
+            <div class="vp-error-actions" id="vpErrorActions">
+              <button type="button" onclick="startVpListening()">다시 시도</button>
+              <button type="button" onclick="focusVpQuickPrompts()">추천 질문 사용</button>
+            </div>
+            <span class="vp-quick-label">추천 질문</span>
             <div class="vp-quick" id="vpQuick"></div>
           </div>
           <div class="vp-input-mode" aria-label="요리비서 입력 방식">
-            <button class="vp-speak-btn" type="button" onclick="toggleVpMic()"><i data-lucide="mic"></i><span>말하기 준비</span></button>
-            <span>또는 준비된 질문을 선택하세요</span>
+            <button class="vp-speak-btn" type="button" onclick="toggleVpMic()" aria-label="말하기 시작"><i data-lucide="mic"></i><span>말하기 시작</span></button>
+            <span>현재는 음성 또는 추천 질문만 지원해요</span>
           </div>
         </div>
       </div>
@@ -2205,6 +2243,8 @@
   function stopCook3Video(){
     cook3StopTimeTracking();
     stopCookYoutubeLoop();
+    cookYoutubeReady=false;
+    cookYoutubeCommandQueue=[];
     cook3Playing=false;
     cookYoutubeAutoplayStarted=false;
     if(cookYoutubePlayTimer){clearInterval(cookYoutubePlayTimer);cookYoutubePlayTimer=null;}
@@ -3172,6 +3212,7 @@
   }
 
   let cook3CurrentStep=0, cookYoutubeLoopTimer=null, cookHintTimer=null, cookYoutubeAutoplayStarted=false, cookYoutubePlayTimer=null, cookYoutubeMuted=false; // 기본: 조리 영상 소리 켜짐
+  let cookYoutubeReady=false, cookYoutubeCommandQueue=[];
   let cookHintDismissed=false; // "다시 보지 않기" (세션 한정, 저장 안 함)
   // 영상 조작 상태 (제스처 · 설정 모달)
   let cook3Playing=false, cook3Time=0, cook3TimeTimer=null, vgTapTimer=null;
@@ -3240,8 +3281,20 @@
   function postCookYoutube(func,args){
     const frame=document.getElementById('cook3YoutubePlayer');
     if(!frame||!frame.contentWindow)return false;
+    if(!cookYoutubeReady){
+      cookYoutubeCommandQueue.push({func,args:args||[]});
+      cookYoutubeCommandQueue=cookYoutubeCommandQueue.slice(-12);
+      return true;
+    }
     frame.contentWindow.postMessage(JSON.stringify({event:'command',func:func,args:args||[]}), 'https://www.youtube.com');
     return true;
+  }
+  function flushCookYoutubeCommands(){
+    const frame=document.getElementById('cook3YoutubePlayer');
+    if(!frame||!frame.contentWindow)return;
+    cookYoutubeReady=true;
+    const queued=cookYoutubeCommandQueue.splice(0);
+    queued.forEach(command=>frame.contentWindow.postMessage(JSON.stringify({event:'command',func:command.func,args:command.args}), 'https://www.youtube.com'));
   }
   function vpDuckedVideoVolume(){
     const base=clampNumber(parseInt(vsVol,10)||0,0,100);
@@ -3258,6 +3311,7 @@
     if(cookYoutubeMuted||volume>=vsVol)return;
     if(postCookYoutube('setVolume',[volume])){
       vpAudioDuckState.active=true;
+      setVpVolumeStatus(true);
       window.__vpVideoDuckEvents=(window.__vpVideoDuckEvents||0)+1;
     }
   }
@@ -3265,6 +3319,7 @@
     const state=vpAudioDuckState;
     if(!state)return;
     vpAudioDuckState=null;
+    setVpVolumeStatus(false);
     if(state.active&&!cookYoutubeMuted){
       postCookYoutube('setVolume',[vsVol]);
       window.__vpVideoDuckRestores=(window.__vpVideoDuckRestores||0)+1;
@@ -3722,13 +3777,72 @@
     toast(handsfree?'핸즈프리 모드 켜짐 — 음성으로 진행해요':'핸즈프리 모드 꺼짐',handsfree?'mic':'mic-off');
   }
   /* 조리 모드(신) 실시간 음성 패널 */
-  let hf3On=false, vpi=0, vpTimers=[], vpMicMuted=false, geminiLiveReady=null, geminiLiveBusy=false, vpResizeDrag=null, vpSuppressResizeClick=false;
+  let hf3On=false, vpTimers=[], vpResizeDrag=null, vpSuppressResizeClick=false;
+  let vpRecognition=null, vpPermissionStream=null, vpVoiceState='ready', vpFinalTranscript='', vpInterimTranscript='', vpUserStopped=false;
   function setVpLiveStatus(message,type){
     const node=document.getElementById('vpLiveStatus');
     if(!node)return;
     node.textContent=message||'';
     node.classList.remove('ok','bad');
     if(type)node.classList.add(type);
+  }
+  function vpSpeechRecognitionCtor(){
+    return window.SpeechRecognition||window.webkitSpeechRecognition||null;
+  }
+  function updateVpMicControls(){
+    const panel=document.getElementById('vpanel');
+    const compact=panel?.querySelector('.vp-mic');
+    const primary=document.querySelector('.vp-speak-btn');
+    const active=vpVoiceState==='requesting'||vpVoiceState==='listening';
+    const busy=vpVoiceState==='responding';
+    const unsupported=panel?.dataset.errorKind==='unsupported';
+    const label=unsupported?'음성 미지원':(busy?'응답 중':(active?'듣기 중지':(['error','complete'].includes(vpVoiceState)?'다시 말하기':'말하기 시작')));
+    const icon=active?'square':(busy?'loader-circle':'mic');
+    if(compact){
+      compact.innerHTML='<i data-lucide="'+icon+'"></i>';
+      compact.setAttribute('aria-label',label);
+      compact.setAttribute('title',label);
+      compact.disabled=busy||unsupported;
+    }
+    if(primary){
+      primary.innerHTML='<i data-lucide="'+icon+'"></i><span>'+label+'</span>';
+      primary.classList.toggle('is-stop',active);
+      primary.setAttribute('aria-label',label);
+      primary.disabled=busy||unsupported;
+    }
+    refreshIcons();
+  }
+  function setVpVoiceState(state,message,type){
+    vpVoiceState=state;
+    const panel=document.getElementById('vpanel');
+    if(panel){
+      panel.classList.remove('ready','requesting','listening','recognized','thinking','answering','responding','complete','error');
+      panel.classList.add(state);
+      panel.dataset.voiceState=state;
+      if(state!=='error')delete panel.dataset.errorKind;
+    }
+    setVpLiveStatus(message,type);
+    updateVpMicControls();
+  }
+  function setVpTranscript(text,{interim=false,hint=''}={}){
+    const wrap=document.getElementById('vpTranscript');
+    const node=document.getElementById('vpTranscriptText');
+    const hintNode=document.getElementById('vpTranscriptHint');
+    if(!wrap||!node)return;
+    const clean=String(text||'').trim();
+    wrap.classList.toggle('show',Boolean(clean));
+    wrap.classList.toggle('interim',Boolean(clean&&interim));
+    node.textContent=clean;
+    if(hintNode)hintNode.textContent=hint;
+  }
+  function setVpErrorActions(show,{retry=true}={}){
+    const actions=document.getElementById('vpErrorActions');
+    actions?.classList.toggle('show',Boolean(show));
+    const retryButton=actions?.querySelector('button:first-child');
+    if(retryButton)retryButton.hidden=!retry;
+  }
+  function setVpVolumeStatus(show){
+    document.getElementById('vpVolumeStatus')?.classList.toggle('show',Boolean(show));
   }
   function clampNumber(value,min,max){
     return Math.max(min,Math.min(max,value));
@@ -3737,10 +3851,9 @@
     const vh=window.innerHeight||document.documentElement.clientHeight||720;
     const cssClamp=(min,ratio,max)=>clampNumber(Math.round(vh*ratio),min,max);
     const compact=vh<=700;
-    const min=compact?cssClamp(210,.32,232):cssClamp(270,.38,330);
-    let max=compact?cssClamp(320,.52,390):cssClamp(390,.62,560);
-    const topReserve=compact?clampNumber(Math.round(vh*.44),278,340):clampNumber(Math.round(vh*.36),230,320);
-    max=Math.min(max,Math.max(min+56,vh-topReserve));
+    const min=compact?cssClamp(210,.32,232):cssClamp(250,.32,290);
+    let max=compact?cssClamp(290,.44,340):cssClamp(320,.44,460);
+    max=Math.max(min+72,max);
     return {min,max,mid:Math.round(min+(max-min)*.55)};
   }
   function syncVpPanelHeightState(height){
@@ -3823,54 +3936,219 @@
     const steps=currentRecipe?.steps||[];
     return steps[cook3CurrentStep]||steps[0]||null;
   }
-  async function requestMicPermissionProbe(){
-    if(!window.isSecureContext)throw new Error('마이크는 HTTPS 배포 주소에서만 확인할 수 있어요.');
-    if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)throw new Error('이 브라우저는 모바일 웹 마이크 권한을 지원하지 않아요.');
-    const stream=await navigator.mediaDevices.getUserMedia({
+  function stopVpPermissionStream(){
+    if(!vpPermissionStream)return;
+    vpPermissionStream.getTracks().forEach(track=>track.stop());
+    vpPermissionStream=null;
+  }
+  async function requestVpMicPermission(){
+    if(!window.isSecureContext)throw new Error('secure-context');
+    if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)throw new Error('media-unsupported');
+    vpPermissionStream=await navigator.mediaDevices.getUserMedia({
       audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true},
       video:false
     });
-    stream.getTracks().forEach(track=>track.stop());
-    return true;
+    return vpPermissionStream;
   }
-  async function requestGeminiLiveSetup(){
-    if(geminiLiveBusy)return;
-    geminiLiveBusy=true;
+  function normalizeVpPrompt(text){
+    return String(text||'').toLowerCase().replace(/[^0-9a-z가-힣\s]/g,' ').replace(/\s+/g,' ').trim();
+  }
+  function vpPromptTokens(text){
+    return normalizeVpPrompt(text).split(' ').filter(token=>token.length>=2&&!['어떻게','어느','정도','해줘','알려줘','같아'].includes(token));
+  }
+  function parseVpTimerSeconds(prompt){
+    const clean=normalizeVpPrompt(prompt);
+    const min=Number((clean.match(/(\d+)\s*분/)||[])[1]||0);
+    const sec=Number((clean.match(/(\d+)\s*초/)||[])[1]||0);
+    const only=Number((clean.match(/타이머\s*(\d+)/)||[])[1]||0);
+    return min*60+sec+(min||sec?0:only*60);
+  }
+  function answerForVpPrompt(prompt){
+    const clean=normalizeVpPrompt(prompt);
+    const script=voiceScriptFor(currentRecipe);
+    if(/(이전|전 단계|뒤로)/.test(clean))return {u:prompt,a:'네, 이전 조리 단계로 돌아갈게요.',prev:true};
+    if(/(다음|넘어가|다음 단계)/.test(clean))return {...(script.find(item=>item.next)||{a:'네, 다음 단계로 넘어갈게요.',next:true}),u:prompt};
+    if(/타이머/.test(clean)){
+      const seconds=parseVpTimerSeconds(clean);
+      if(seconds>0)return {u:prompt,a:fmtDurationKo(seconds)+' 타이머를 시작했어요. 조리 상태도 중간에 함께 확인해주세요.',timer:seconds};
+      return {u:prompt,a:'몇 분 또는 몇 초인지 함께 말해주세요. 예: 타이머 3분 맞춰줘.'};
+    }
+    const tokens=vpPromptTokens(clean);
+    let best=null,bestScore=-1;
+    script.forEach((item,index)=>{
+      if(item.next||item.timer)return;
+      const itemClean=normalizeVpPrompt(item.u);
+      const itemTokens=vpPromptTokens(itemClean);
+      let score=tokens.reduce((sum,token)=>sum+(itemClean.includes(token)?3:0),0);
+      score+=itemTokens.reduce((sum,token)=>sum+(clean.includes(token)?2:0),0);
+      if(index===0&&/(없|대체|대신|빼도|바꿔)/.test(clean))score+=4;
+      if(index===1&&/(타|눌|불|익|묽|되직|짜|싱거|걱정|찢)/.test(clean))score+=4;
+      if(score>bestScore){bestScore=score;best=item;}
+    });
+    if(best&&bestScore>0)return {...best,u:prompt};
+    const step=currentCookStep();
+    return {
+      u:prompt,
+      a:'지금은 '+(step?.title||'현재 조리')+' 단계예요. 재료 대체, 불 조절, 타이머처럼 궁금한 점을 짧게 다시 말하거나 추천 질문을 선택해주세요.',
+      unmatched:true
+    };
+  }
+  function vpRecognitionErrorInfo(error){
+    const code=String(error?.error||error?.name||error?.message||'').toLowerCase();
+    if(/not-?allowed|service-not-allowed|permission|denied/.test(code))return {
+      kind:'permission',
+      status:'마이크 권한이 꺼져 있어요',
+      detail:'브라우저 주소창의 사이트 설정에서 마이크를 허용한 뒤 다시 시도해주세요.',
+      retry:true
+    };
+    if(/media-unsupported|speech-unsupported/.test(code))return {
+      kind:'unsupported',
+      status:'이 브라우저는 음성 인식을 지원하지 않아요',
+      detail:'현재 브라우저에서는 추천 질문을 선택해 요리비서를 사용할 수 있어요.',
+      retry:false
+    };
+    if(/secure-context/.test(code))return {
+      kind:'secure',
+      status:'HTTPS에서만 마이크를 사용할 수 있어요',
+      detail:'배포된 HTTPS 주소에서 다시 열거나 추천 질문을 사용해주세요.',
+      retry:false
+    };
+    if(/no-speech/.test(code))return {
+      kind:'no-speech',
+      status:'말을 알아듣지 못했어요',
+      detail:'마이크 가까이에서 질문을 조금 더 짧게 다시 말해보세요.',
+      retry:true
+    };
+    if(/audio-capture/.test(code))return {
+      kind:'audio',
+      status:'사용할 수 있는 마이크가 없어요',
+      detail:'기기의 마이크 연결을 확인한 뒤 다시 시도해주세요.',
+      retry:true
+    };
+    if(/network/.test(code))return {
+      kind:'network',
+      status:'음성 인식 연결이 불안정해요',
+      detail:'네트워크를 확인한 뒤 다시 말하거나 추천 질문을 사용해주세요.',
+      retry:true
+    };
+    return {kind:'unknown',status:'음성 인식에 실패했어요',detail:'잠시 후 다시 말하거나 추천 질문을 사용해주세요.',retry:true};
+  }
+  function showVpRecognitionError(error){
+    const info=vpRecognitionErrorInfo(error);
+    stopVpPermissionStream();
+    vpRecognition=null;
     const panel=document.getElementById('vpanel');
-    const btn=panel?.querySelector('.vp-mic');
-    const original=btn?btn.innerHTML:'';
+    if(panel)panel.dataset.errorKind=info.kind;
+    setVpVoiceState('error',info.status,'bad');
+    setVpErrorActions(true,{retry:info.retry});
+    const u=document.getElementById('vpUser'),a=document.getElementById('vpAi');
+    if(u)u.textContent='음성 입력을 시작할 수 없어요';
+    if(a)a.textContent=info.detail;
+    requestAnimationFrame(()=>document.getElementById('vpErrorActions')?.scrollIntoView({block:'nearest'}));
+  }
+  async function startVpListening(){
+    if(!hf3On||vpVoiceState==='responding')return;
+    if(vpVoiceState==='requesting'||vpVoiceState==='listening'){
+      stopVpListening();
+      return;
+    }
+    const Recognition=vpSpeechRecognitionCtor();
+    if(!Recognition){showVpRecognitionError({error:'speech-unsupported'});return;}
+    vpClear();
+    vpFinalTranscript='';vpInterimTranscript='';vpUserStopped=false;
+    setVpErrorActions(false);
+    setVpTranscript('');
+    const u=document.getElementById('vpUser'),a=document.getElementById('vpAi');
+    if(u)u.textContent='마이크 권한을 확인하고 있어요';
+    if(a)a.textContent='브라우저 음성 인식을 사용해요. 허용하면 바로 듣기 시작해요.';
+    setVpVoiceState('requesting','마이크 권한 요청 중','');
     try{
-      if(btn){btn.innerHTML='<i data-lucide="loader-circle"></i>';refreshIcons();}
-      setVpLiveStatus('마이크 권한을 확인하고 있어요.','');
-      await requestMicPermissionProbe();
-      setVpLiveStatus('음성 연결을 준비하고 있어요.','');
-      const step=currentCookStep();
-      const data=await postJson('/api/gemini-live-token',{
-        recipe:currentRecipe?.name||'',
-        step:step?.title||'',
-        page:location.href,
-        createdAt:new Date().toISOString()
-      });
-      geminiLiveReady=data;
-      setVpLiveStatus('마이크 권한 확인 · 음성 연결 준비됨','ok');
-      toast('음성 연결 준비 완료','mic');
+      await requestVpMicPermission();
+      setVpVoiceState('ready','마이크 준비됨','ok');
+      const recognition=new Recognition();
+      recognition.lang='ko-KR';
+      recognition.interimResults=true;
+      recognition.continuous=false;
+      recognition.maxAlternatives=1;
+      vpRecognition=recognition;
+      recognition.onstart=()=>{
+        if(vpRecognition!==recognition)return;
+        stopVpPermissionStream();
+        setVpVoiceState('listening','듣는 중 · 말씀하세요','ok');
+        setVpTranscript('듣고 있어요',{interim:true,hint:'말을 마치면 자동으로 인식 결과를 확정해요.'});
+        if(u)u.textContent='말씀을 듣고 있어요';
+        if(a)a.textContent='질문을 마칠 때까지 기다릴게요.';
+        window.__vpRecognitionStarts=(window.__vpRecognitionStarts||0)+1;
+      };
+      recognition.onresult=(event)=>{
+        let interim='',final='';
+        for(let i=event.resultIndex||0;i<event.results.length;i++){
+          const result=event.results[i];
+          const text=String(result[0]?.transcript||'').trim();
+          if(result.isFinal)final+=(final?' ':'')+text;
+          else interim+=(interim?' ':'')+text;
+        }
+        if(final)vpFinalTranscript=(vpFinalTranscript+' '+final).trim();
+        vpInterimTranscript=interim;
+        const visible=(vpFinalTranscript+' '+vpInterimTranscript).trim();
+        setVpTranscript(visible,{interim:Boolean(vpInterimTranscript),hint:vpInterimTranscript?'인식 중이에요.':'인식된 문장을 확인했어요.'});
+        if(visible&&u)u.textContent='';
+      };
+      recognition.onerror=(event)=>{
+        if(event.error==='aborted'&&vpUserStopped)return;
+        showVpRecognitionError(event);
+      };
+      recognition.onend=()=>{
+        if(vpRecognition===recognition)vpRecognition=null;
+        stopVpPermissionStream();
+        if(!hf3On||vpVoiceState==='error')return;
+        const finalText=(vpFinalTranscript||(vpUserStopped?vpInterimTranscript:'')).trim();
+        if(finalText){
+          setVpTranscript(finalText,{hint:'인식 완료 · 이 내용으로 답변할게요.'});
+          setVpVoiceState('recognized','인식 완료','ok');
+          if(u)u.textContent='';
+          if(a)a.textContent='';
+          vpTimers.push(setTimeout(()=>showVpAnswer(answerForVpPrompt(finalText),{source:'voice'}),320));
+        }else if(vpUserStopped){
+          setVpVoiceState('ready','듣기 중지됨','');
+          setVpTranscript('');
+          if(u)u.textContent='듣기를 멈췄어요';
+          if(a)a.textContent='다시 말하기를 누르거나 추천 질문을 선택하세요.';
+        }else{
+          showVpRecognitionError({error:'no-speech'});
+        }
+      };
+      recognition.start();
     }catch(error){
-      geminiLiveReady=null;
-      const friendly=String(error.message||'').includes('NAEMBI')
-        ? '음성 연결 설정이 아직 준비되지 않았어요.'
-        : (error.message||'음성 연결 준비에 실패했어요.');
-      setVpLiveStatus(friendly,'bad');
-      toast('준비된 질문으로 계속 쓸 수 있어요','message-circle');
-    }finally{
-      geminiLiveBusy=false;
-      if(btn){btn.innerHTML=original||'<i data-lucide="mic"></i>';refreshIcons();}
+      showVpRecognitionError(error);
     }
   }
-  // 실제 음성 입력은 연결 설정과 모바일 권한이 준비됐는지만 먼저 확인한다.
+  function stopVpListening({silent=false}={}){
+    vpUserStopped=true;
+    stopVpPermissionStream();
+    const recognition=vpRecognition;
+    if(recognition){
+      try{recognition.stop();}catch(error){try{recognition.abort();}catch(ignore){}}
+    }
+    if(!recognition&&!silent){
+      setVpVoiceState('ready','듣기 중지됨','');
+      setVpTranscript('');
+    }
+  }
+  function destroyVpRecognition(){
+    const recognition=vpRecognition;
+    vpRecognition=null;
+    vpUserStopped=true;
+    stopVpPermissionStream();
+    if(recognition){try{recognition.abort();}catch(error){}}
+  }
   function toggleVpMic(){
-    vpMicMuted=false;
-    document.getElementById('vpanel')?.classList.remove('mic-muted');
-    requestGeminiLiveSetup();
+    if(vpVoiceState==='requesting'||vpVoiceState==='listening')stopVpListening();
+    else startVpListening();
+  }
+  function focusVpQuickPrompts(){
+    document.getElementById('vpQuick')?.querySelector('button')?.focus();
+    document.getElementById('vpQuick')?.scrollIntoView({block:'nearest',behavior:'smooth'});
   }
   function vpClear(){vpTimers.forEach(t=>clearTimeout(t));vpTimers=[];endVpVideoDuck();}
   function vpType(el,text,speed,done){
@@ -3885,33 +4163,6 @@
   function vpThinking(el){
     el.innerHTML='<span class="vp-thinking-wave" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></span>';
   }
-  function runVp(){
-    if(!hf3On)return;
-    const script=voiceScriptFor(currentRecipe);
-    const ex=script[vpi%script.length];
-    const panel=document.getElementById('vpanel'), u=document.getElementById('vpUser'), a=document.getElementById('vpAi');
-    panel.classList.remove('idle','thinking','answering');panel.classList.add('listening');
-    a.textContent='';
-    vpType(u,ex.u,45,()=>{                       // ① 사용자 발화 타이핑
-      if(!hf3On)return;
-      panel.classList.remove('listening');panel.classList.add('thinking');
-      beginVpVideoDuck();
-      vpThinking(a);                               // ② 추론(생각 중)
-      vpTimers.push(setTimeout(()=>{
-        if(!hf3On)return;
-        panel.classList.remove('thinking');panel.classList.add('answering');
-        vpType(a,ex.a,28,()=>{                     // ③ 답변 스트리밍
-          if(!hf3On)return;
-          panel.classList.remove('answering');panel.classList.add('listening');
-          if(ex.timer)startVpTimer(ex.timer);        // 타이머 설정 발화면 타이머 패널 시작
-          if(ex.next)cook3Car.advance();             // "다음 단계" 발화면 실제 카드 전진
-          endVpVideoDuck();
-          vpi++;                                    // ④ 답변 유지 후 다음 발화로 (음소거면 이 응답까지만 출력하고 멈춤)
-          vpTimers.push(setTimeout(()=>{ if(hf3On&&!vpMicMuted){u.textContent='다음 예시를 보여줄게요…';runVp();} },1000)); // 발화 사이 텀 ~1초
-        });
-      },900));
-    });
-  }
   function renderVpQuickPrompts(){
     const wrap=document.getElementById('vpQuick');
     if(!wrap)return;
@@ -3921,39 +4172,55 @@
   }
   function resetVpPromptPanel(){
     const panel=document.getElementById('vpanel'), u=document.getElementById('vpUser'), a=document.getElementById('vpAi');
+    destroyVpRecognition();
     vpClear();
-    vpi=0;
-    vpMicMuted=false;
-    panel.classList.remove('mic-muted','idle','listening','thinking','answering','expanded');
+    vpFinalTranscript='';vpInterimTranscript='';vpUserStopped=false;
+    panel.classList.remove('mic-muted','idle','requesting','listening','recognized','thinking','answering','responding','complete','error','expanded');
     panel.classList.add('open');
     setVpPanelExpanded(false);
     if(u)u.textContent='무엇이 궁금해요?';
-    if(a)a.textContent='말하기 준비나 질문 선택으로 답변을 확인해요.';
-    setVpLiveStatus('마이크 버튼은 음성 연결 준비를 확인해요.','');
-    {const mb=panel.querySelector('.vp-mic');if(mb){mb.innerHTML='<i data-lucide="mic"></i>';refreshIcons();}}
+    if(a)a.textContent='브라우저가 음성을 텍스트로 바꿔요. 말하기를 시작하거나 추천 질문을 선택해보세요.';
+    setVpTranscript('');
+    setVpErrorActions(false);
+    setVpVolumeStatus(false);
     renderVpQuickPrompts();
+    if(vpSpeechRecognitionCtor())setVpVoiceState('ready','마이크 대기','');
+    else{
+      panel.dataset.errorKind='unsupported';
+      setVpVoiceState('error','이 브라우저는 음성 인식을 지원하지 않아요','bad');
+      panel.dataset.errorKind='unsupported';
+      updateVpMicControls();
+      setVpErrorActions(true,{retry:false});
+      if(u)u.textContent='추천 질문으로 이용할 수 있어요';
+      if(a)a.textContent='현재 브라우저에서는 아래 추천 질문을 선택해주세요.';
+    }
   }
-  function showVpAnswer(ex){
+  function showVpAnswer(ex,{source='quick'}={}){
     if(!hf3On)return;
-    const panel=document.getElementById('vpanel'), u=document.getElementById('vpUser'), a=document.getElementById('vpAi');
+    const u=document.getElementById('vpUser'), a=document.getElementById('vpAi');
+    destroyVpRecognition();
     vpClear();
-    panel.classList.remove('idle','listening','answering');panel.classList.add('thinking');
-    u.textContent=ex.u;
+    setVpErrorActions(false);
+    if(source!=='voice')setVpTranscript('');
+    u.textContent=source==='voice'?'':ex.u;
+    setVpVoiceState('responding','응답 생성 중','');
     beginVpVideoDuck();
     vpThinking(a);
     vpTimers.push(setTimeout(()=>{
       if(!hf3On)return;
-      panel.classList.remove('thinking');panel.classList.add('answering');
+      setVpVoiceState('responding','응답 중','');
       vpType(a,ex.a,24,()=>{
         if(ex.timer)startVpTimer(ex.timer);
         if(ex.next)cook3Car.advance();
+        if(ex.prev)cook3Car.prev();
         endVpVideoDuck();
+        setVpVoiceState('complete','응답 완료','ok');
       });
     },420));
   }
   function useVpPrompt(index){
     const ex=voiceScriptFor(currentRecipe)[index]||voiceScriptFor(currentRecipe)[0];
-    showVpAnswer(ex);
+    showVpAnswer(ex,{source:'quick'});
   }
   function startVpTimer(sec){
     startUnifiedTimer(sec,false);
@@ -3967,13 +4234,15 @@
       // 패널을 열 때는 대기 상태만 보여준다. 단계 이동은 사용자가 질문을 누르거나 입력했을 때만 실행한다.
       resetVpPromptPanel();
     }else{
-      panel.classList.remove('open','idle','listening','thinking','answering','expanded');
+      destroyVpRecognition();
+      panel.classList.remove('open','idle','ready','requesting','listening','recognized','thinking','answering','responding','complete','error','expanded');
       setVpPanelExpanded(false);
     }
   }
   function hf3Reset(){
+    destroyVpRecognition();
     vpClear();
-    const panel=document.getElementById('vpanel');if(panel)panel.classList.remove('open','idle','listening','thinking','answering','expanded');
+    const panel=document.getElementById('vpanel');if(panel)panel.classList.remove('open','idle','ready','requesting','listening','recognized','thinking','answering','responding','complete','error','expanded');
     setVpPanelExpanded(false);
     hf3On=false;
     closeVideoSettings(); // 화면 이탈 시 영상 설정 모달 닫기
@@ -4057,7 +4326,10 @@
   // 조리 모드 영상: 컨트롤 바 완전 제거(음성·단계로 제어)
   function initCookYoutube(){
     const params=new URLSearchParams({rel:'0',modestbranding:'1',controls:'0',disablekb:'1',fs:'0',iv_load_policy:'3',playsinline:'1',enablejsapi:'1',origin:location.origin});
+    cookYoutubeReady=false;
+    cookYoutubeCommandQueue=[];
     embedYoutube(document.querySelector('#cook3 .cook-video'),'cook3Youtube','cook3YoutubePlayer',currentRecipe.id,currentRecipe.title,params,true);
+    document.getElementById('cook3YoutubePlayer')?.addEventListener('load',flushCookYoutubeCommands,{once:true});
     applyCookYoutubeSound();
     postCookYoutube('setPlaybackRate',[vsSpeed]);
   }

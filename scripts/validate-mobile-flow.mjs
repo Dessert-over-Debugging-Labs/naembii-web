@@ -649,10 +649,10 @@ try {
   if (!assistant.opened.user.includes('궁금') || !assistant.opened.answer.includes('말하기')) {
     throw new Error('요리비서 대기 상태 안내가 표시되지 않았습니다.');
   }
-  if (!assistant.opened.liveStatus.includes('마이크 버튼')) {
-    throw new Error('Gemini Live 모바일 권한 확인 안내가 표시되지 않았습니다.');
+  if (!assistant.opened.liveStatus.includes('마이크 대기')) {
+    throw new Error('요리비서 마이크 대기 상태가 표시되지 않았습니다.');
   }
-  if (assistant.opened.promptInputExists || !assistant.opened.inputModeText.includes('준비된 질문')) {
+  if (assistant.opened.promptInputExists || !assistant.opened.inputModeText.includes('음성 또는 추천 질문')) {
     throw new Error('요리비서 패널이 직접 입력 대신 음성/준비 질문 흐름으로 보이지 않습니다.');
   }
   if (assistant.opened.handleExpanded !== 'false' || assistant.resized.handleExpanded !== 'true' || !assistant.resized.ctrlHasExpandedClass || assistant.resized.ctrlHeight < assistant.opened.ctrlHeight + 90) {
