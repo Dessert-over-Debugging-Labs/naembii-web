@@ -877,11 +877,23 @@
   .vset-sub.collapsed{display:none;}
   .vset-row+.vset-sub{padding-bottom:12px;}
   .vset-mini{font-size:12px;font-weight:700;color:var(--text-sub);margin-right:4px;}
+  .vset-volume-list{border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-top:8px;}
+  .vset-volume-row{display:grid;grid-template-columns:minmax(92px,1fr) 38px minmax(62px,88px) 30px;align-items:center;gap:7px;min-height:48px;border-bottom:1px solid var(--border);}
+  .vset-volume-row:last-child{border-bottom:0;}
+  .vset-volume-row .vset-label{gap:7px;font-size:13px;white-space:nowrap;}
+  .vset-volume-row .vset-label svg{width:16px;height:16px;}
+  .vset-volume-row input[type=range]{width:100%;min-width:0;accent-color:var(--brand);cursor:pointer;}
+  .vset-volume-row input[type=range]:disabled{opacity:.35;cursor:not-allowed;}
+  .vset-volume-row em{font-style:normal;font-size:12px;font-weight:800;color:var(--text-sub);text-align:right;}
+  .vset-volume-row.is-muted em{color:var(--gray);}
   /* 토글 스위치 */
   .vset-switch{width:44px;height:26px;border-radius:14px;border:none;background:var(--gray2);position:relative;cursor:pointer;padding:0;transition:background .2s;flex:none;}
   .vset-switch span{position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.3);}
   .vset-switch.on{background:var(--brand);}
   .vset-switch.on span{left:21px;}
+  .vset-volume-row .vset-switch{width:38px;height:22px;border-radius:12px;}
+  .vset-volume-row .vset-switch span{top:3px;left:3px;width:16px;height:16px;}
+  .vset-volume-row .vset-switch.on span{left:19px;}
   /* 선택 칩 */
   .vchip{background:var(--surface-2);color:var(--text-sub);border:1.5px solid transparent;border-radius:11px;
     font-family:inherit;font-size:13px;font-weight:700;padding:8px 14px;cursor:pointer;transition:all .15s;}
@@ -1881,24 +1893,32 @@
           <button class="vchip on" onclick="setVsLoopEnd('stop',this)">멈춤</button>
           <button class="vchip" onclick="setVsLoopEnd('next',this)">다음 단계로</button>
         </div>
-        <!-- 볼륨 -->
-        <div class="vset-row">
-          <div class="vset-label"><i data-lucide="volume-2"></i>볼륨</div>
-          <button class="vset-switch on" id="vsVolSw" onclick="toggleVsVol()"><span></span></button>
-        </div>
-        <div class="vset-sub" id="vsVolWrap">
-          <input type="range" min="0" max="100" value="100" id="vsVolRange" oninput="setVsVol(this.value)">
-          <em id="vsVolVal">100</em>
-        </div>
-        <!-- 요리비서 볼륨 -->
-        <div class="vset-row">
-          <div class="vset-label"><i data-lucide="bot"></i>요리비서 볼륨</div>
-          <button class="vset-switch on" id="vsVoiceVolSw" onclick="toggleVsVoiceVol()"><span></span></button>
-        </div>
-        <div class="vset-sub" id="vsVoiceVolWrap">
-          <span class="vset-mini">알림음 포함</span>
-          <input type="range" min="0" max="100" value="100" id="vsVoiceVolRange" oninput="setVsVoiceVol(this.value)">
-          <em id="vsVoiceVolVal">100</em>
+        <!-- 소리: 이름 · 토글 · 슬라이더 · 수치를 한 줄에서 조절 -->
+        <div class="vset-volume-list" aria-label="볼륨 설정">
+          <div class="vset-volume-row" id="vsMasterVolWrap">
+            <div class="vset-label"><i data-lucide="sliders-horizontal"></i>마스터</div>
+            <button class="vset-switch on" id="vsMasterVolSw" onclick="toggleVsMasterVol()" aria-label="마스터 볼륨 켜기 또는 끄기"><span></span></button>
+            <input type="range" min="0" max="100" value="100" id="vsMasterVolRange" oninput="setVsMasterVol(this.value)" aria-label="마스터 볼륨">
+            <em id="vsMasterVolVal">100</em>
+          </div>
+          <div class="vset-volume-row" id="vsVolWrap">
+            <div class="vset-label"><i data-lucide="play-square"></i>영상</div>
+            <button class="vset-switch on" id="vsVolSw" onclick="toggleVsVol()" aria-label="영상 소리 켜기 또는 끄기"><span></span></button>
+            <input type="range" min="0" max="100" value="100" id="vsVolRange" oninput="setVsVol(this.value)" aria-label="영상 볼륨">
+            <em id="vsVolVal">100</em>
+          </div>
+          <div class="vset-volume-row" id="vsVoiceVolWrap">
+            <div class="vset-label"><i data-lucide="bot"></i>요리비서</div>
+            <button class="vset-switch on" id="vsVoiceVolSw" onclick="toggleVsVoiceVol()" aria-label="요리비서 소리 켜기 또는 끄기"><span></span></button>
+            <input type="range" min="0" max="100" value="100" id="vsVoiceVolRange" oninput="setVsVoiceVol(this.value)" aria-label="요리비서 볼륨">
+            <em id="vsVoiceVolVal">100</em>
+          </div>
+          <div class="vset-volume-row" id="vsTimerVolWrap">
+            <div class="vset-label"><i data-lucide="timer"></i>타이머 알림</div>
+            <button class="vset-switch on" id="vsTimerVolSw" onclick="toggleVsTimerVol()" aria-label="타이머 알림음 켜기 또는 끄기"><span></span></button>
+            <input type="range" min="0" max="100" value="100" id="vsTimerVolRange" oninput="setVsTimerVol(this.value)" aria-label="타이머 알림음 볼륨">
+            <em id="vsTimerVolVal">100</em>
+          </div>
         </div>
         <!-- 재생 속도 -->
         <div class="vset-row">
@@ -3524,7 +3544,9 @@
   let cookHintDismissed=false; // "다시 보지 않기" (세션 한정, 저장 안 함)
   // 영상 조작 상태 (제스처 · 설정 모달)
   let cook3Playing=false, cook3Time=0, cook3TimeTimer=null, vgTapTimer=null;
-  let vsLoopOn=false, vsLoopCount=0, vsLoopEnd='stop', vsVol=100, vsSpeed=1, vsVoiceVol=100, vsVoiceMuted=false, vpAudioDuckState=null, vpAudioDuckFadeTimer=null; // 기본: 구간 반복 OFF (켜면 무한)
+  let vsLoopOn=false, vsLoopCount=0, vsLoopEnd='stop', vsVol=100, vsSpeed=1;
+  let vsMasterVol=100, vsMasterMuted=false, vsVoiceVol=100, vsVoiceMuted=false, vsTimerVol=100, vsTimerMuted=false;
+  let vpAudioDuckState=null, vpAudioDuckFadeTimer=null; // 기본: 구간 반복 OFF (켜면 무한)
   let cook3LoopPlayed=0, cook3SuppressSeek=false; // 구간 반복 완료 횟수 · 단계 자동 전환 시 seek 억제(off=영상 이어짐)
   function makeCarousel(viewId,trackId){
     const viewEl=document.getElementById(viewId), trackEl=document.getElementById(trackId);
@@ -3615,6 +3637,12 @@
   function currentCookVideoVolume(){
     return vpAudioDuckState?.active&&!cookYoutubeMuted?vpAudioDuckState.volume:vsVol;
   }
+  function masterVolumeGain(){
+    return vsMasterMuted?0:clampNumber((parseInt(vsMasterVol,10)||0)/100,0,1);
+  }
+  function effectiveOutputVolume(sourceVolume){
+    return clampNumber(Math.round((parseInt(sourceVolume,10)||0)*masterVolumeGain()),0,100);
+  }
   function stopVpVideoVolumeFade(){
     if(vpAudioDuckFadeTimer){clearTimeout(vpAudioDuckFadeTimer);vpAudioDuckFadeTimer=null;}
   }
@@ -3627,7 +3655,7 @@
       const eased=progress*progress*(3-2*progress);
       const volume=Math.round(start+(target-start)*eased);
       if(vpAudioDuckState)vpAudioDuckState.volume=volume;
-      if(!cookYoutubeMuted)postCookYoutube('setVolume',[volume]);
+      if(!cookYoutubeMuted)postCookYoutube('setVolume',[effectiveOutputVolume(volume)]);
       if(progress<1)vpAudioDuckFadeTimer=setTimeout(tick,60);
       else{
         vpAudioDuckFadeTimer=null;
@@ -3663,7 +3691,7 @@
       postCookYoutube('mute');
     }else{
       postCookYoutube('unMute');
-      postCookYoutube('setVolume',[currentCookVideoVolume()]);
+      postCookYoutube('setVolume',[effectiveOutputVolume(currentCookVideoVolume())]);
     }
   }
   function renderCookYoutubeSoundButton(){
@@ -3738,8 +3766,10 @@
 
   /* ===== 소리·재생 설정 모달 ===== */
   function openVideoSettings(){
+    syncVsMasterVolUI();
     syncVsVolUI();
     syncVsVoiceVolUI();
+    syncVsTimerVolUI();
     syncVsSpeedUI();
     document.getElementById('videoSettings').classList.add('show');
     refreshIcons();
@@ -3769,27 +3799,57 @@
     if(el)el.classList.add('on');
     toast(mode==='stop'?'반복 후 멈춤':'반복 후 다음 단계로',mode==='stop'?'pause':'chevrons-down');
   }
-  // 볼륨 on/off + 슬라이더 (좌측 "5번 영상 소리" 토글과 동기화)
+  function syncVolumeRow(prefix,value,muted){
+    const row=document.getElementById(prefix+'Wrap');
+    const sw=document.getElementById(prefix+'Sw');
+    const range=document.getElementById(prefix+'Range');
+    const val=document.getElementById(prefix+'Val');
+    if(row)row.classList.toggle('is-muted',muted);
+    if(sw){
+      sw.classList.toggle('on',!muted);
+      sw.setAttribute('aria-pressed',String(!muted));
+    }
+    if(range){range.value=value;range.disabled=muted;}
+    if(val)val.textContent=muted?'OFF':value;
+  }
+  function toggleVsMasterVol(){
+    vsMasterMuted=!vsMasterMuted;
+    if(!vsMasterMuted&&vsMasterVol===0)vsMasterVol=60;
+    syncVsMasterVolUI();
+    applyCookYoutubeSound();
+    toast(vsMasterMuted?'전체 소리 꺼짐':'전체 소리 켜짐',vsMasterMuted?'volume-x':'sliders-horizontal');
+  }
+  function setVsMasterVol(v){
+    vsMasterVol=clampNumber(parseInt(v,10)||0,0,100);
+    vsMasterMuted=vsMasterVol===0;
+    syncVsMasterVolUI();
+    applyCookYoutubeSound();
+  }
+  function syncVsMasterVolUI(){
+    syncVolumeRow('vsMasterVol',vsMasterVol,vsMasterMuted);
+  }
+  // 영상 볼륨 on/off + 슬라이더 (좌측 "5번 영상 소리" 토글과 동기화)
   function toggleVsVol(){
     cookYoutubeMuted=!cookYoutubeMuted;
+    if(!cookYoutubeMuted&&vsVol===0)vsVol=60;
     applyCookYoutubeSound();
     renderCookYoutubeSoundButton();
     syncVsVolUI();
     toast(cookYoutubeMuted?'볼륨 꺼짐':'볼륨 켜짐',cookYoutubeMuted?'volume-x':'volume-2');
   }
   function setVsVol(v){
-    vsVol=parseInt(v,10);
-    document.getElementById('vsVolVal').textContent=vsVol;
-    if(!cookYoutubeMuted)postCookYoutube('setVolume',[currentCookVideoVolume()]);
+    vsVol=clampNumber(parseInt(v,10)||0,0,100);
+    cookYoutubeMuted=vsVol===0;
+    syncVsVolUI();
+    renderCookYoutubeSoundButton();
+    applyCookYoutubeSound();
   }
   function syncVsVolUI(){ // cookYoutubeMuted → 모달 볼륨 스위치/슬라이더 반영
-    const sw=document.getElementById('vsVolSw');const wrap=document.getElementById('vsVolWrap');
-    if(!sw)return;
-    sw.classList.toggle('on',!cookYoutubeMuted);
-    if(wrap)wrap.classList.toggle('collapsed',cookYoutubeMuted);
+    syncVolumeRow('vsVol',vsVol,cookYoutubeMuted);
   }
   function assistantVolumeGain(){
-    return vsVoiceMuted?0:clampNumber((parseInt(vsVoiceVol,10)||0)/100,0,1);
+    const ownGain=vsVoiceMuted?0:clampNumber((parseInt(vsVoiceVol,10)||0)/100,0,1);
+    return ownGain*masterVolumeGain();
   }
   function toggleVsVoiceVol(){
     vsVoiceMuted=!vsVoiceMuted;
@@ -3803,14 +3863,25 @@
     syncVsVoiceVolUI();
   }
   function syncVsVoiceVolUI(){
-    const sw=document.getElementById('vsVoiceVolSw');
-    const wrap=document.getElementById('vsVoiceVolWrap');
-    const range=document.getElementById('vsVoiceVolRange');
-    const val=document.getElementById('vsVoiceVolVal');
-    if(sw)sw.classList.toggle('on',!vsVoiceMuted);
-    if(wrap)wrap.classList.toggle('collapsed',vsVoiceMuted);
-    if(range)range.value=vsVoiceVol;
-    if(val)val.textContent=vsVoiceVol;
+    syncVolumeRow('vsVoiceVol',vsVoiceVol,vsVoiceMuted);
+  }
+  function timerVolumeGain(){
+    const ownGain=vsTimerMuted?0:clampNumber((parseInt(vsTimerVol,10)||0)/100,0,1);
+    return ownGain*masterVolumeGain();
+  }
+  function toggleVsTimerVol(){
+    vsTimerMuted=!vsTimerMuted;
+    if(!vsTimerMuted&&vsTimerVol===0)vsTimerVol=60;
+    syncVsTimerVolUI();
+    toast(vsTimerMuted?'타이머 알림음 꺼짐':'타이머 알림음 켜짐',vsTimerMuted?'volume-x':'timer');
+  }
+  function setVsTimerVol(v){
+    vsTimerVol=clampNumber(parseInt(v,10)||0,0,100);
+    vsTimerMuted=vsTimerVol===0;
+    syncVsTimerVolUI();
+  }
+  function syncVsTimerVolUI(){
+    syncVolumeRow('vsTimerVol',vsTimerVol,vsTimerMuted);
   }
   // 재생 속도
   const vsSpeedOptions=[0.5,0.75,1,1.25,1.5,2];
@@ -3986,7 +4057,7 @@
   function playTimerAlarmBurst(){
     window.__timerAlarmPlayed=(window.__timerAlarmPlayed||0)+1;
     if(navigator.vibrate)navigator.vibrate([140,80,140,80,260]);
-    const peakGain=.2*assistantVolumeGain();
+    const peakGain=.2*timerVolumeGain();
     if(peakGain<=0)return;
     try{
       const ctx=getTimerAudioContext();

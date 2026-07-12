@@ -90,6 +90,11 @@ const states = [
     required: ['#timerSheet.show .ing-panel', '.ts-edit-hint', '#tsMin', '#tsSec', '.ts-sec-adjusts button', '#timerSheet .btn']
   },
   {
+    name: 'sound-settings',
+    setup: `currentRecipe=recipeById('${recipeId}'); show('cook3'); hideCookHint(); openVideoSettings();`,
+    required: ['#videoSettings.show .vset-card', '#vsMasterVolRange', '#vsVolRange', '#vsVoiceVolRange', '#vsTimerVolRange']
+  },
+  {
     name: 'ingredients-list',
     setup: `currentRecipe=recipeById('${recipeId}'); show('cook3'); hideCookHint(); openIngredients('list');`,
     required: ['#ingSheet.show .ing-panel', '#ingViewList.active', '#ingViewList .ing']

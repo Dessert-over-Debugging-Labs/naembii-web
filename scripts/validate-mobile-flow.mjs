@@ -366,11 +366,23 @@ try {
     hideCookHint();
     await new Promise((resolve) => setTimeout(resolve, 160));
     openVideoSettings();
+    setVsMasterVol(80);
+    const master = {
+      value: document.getElementById('vsMasterVolVal')?.textContent || '',
+      range: document.getElementById('vsMasterVolRange')?.value || '',
+      switchOn: document.getElementById('vsMasterVolSw')?.classList.contains('on') || false,
+      volumeRowCount: document.querySelectorAll('#videoSettings .vset-volume-row').length,
+      singleLineRows: [...document.querySelectorAll('#videoSettings .vset-volume-row')].every((row) => {
+        const children = [...row.children].map((child) => child.getBoundingClientRect());
+        return children.every((rect) => rect.top >= row.getBoundingClientRect().top && rect.bottom <= row.getBoundingClientRect().bottom);
+      })
+    };
     setVsVol(42);
     const videoVolume = {
       value: document.getElementById('vsVolVal')?.textContent || '',
       state: vsVol,
-      switchOn: document.getElementById('vsVolSw')?.classList.contains('on') || false
+      switchOn: document.getElementById('vsVolSw')?.classList.contains('on') || false,
+      effective: effectiveOutputVolume(vsVol)
     };
     toggleVsVol();
     toggleVsVol();
@@ -389,7 +401,8 @@ try {
     };
     toggleVsVoiceVol();
     const muted = {
-      collapsed: document.getElementById('vsVoiceVolWrap')?.classList.contains('collapsed') || false,
+      disabled: document.getElementById('vsVoiceVolRange')?.disabled || false,
+      value: document.getElementById('vsVoiceVolVal')?.textContent || '',
       switchOn: document.getElementById('vsVoiceVolSw')?.classList.contains('on') || false,
       gain: assistantVolumeGain()
     };
@@ -399,6 +412,28 @@ try {
       switchOn: document.getElementById('vsVoiceVolSw')?.classList.contains('on') || false,
       gain: Number(assistantVolumeGain().toFixed(2))
     };
+    setVsTimerVol(25);
+    const timerVolume = {
+      value: document.getElementById('vsTimerVolVal')?.textContent || '',
+      switchOn: document.getElementById('vsTimerVolSw')?.classList.contains('on') || false,
+      gain: Number(timerVolumeGain().toFixed(2))
+    };
+    toggleVsTimerVol();
+    const timerMuted = {
+      disabled: document.getElementById('vsTimerVolRange')?.disabled || false,
+      value: document.getElementById('vsTimerVolVal')?.textContent || '',
+      gain: timerVolumeGain()
+    };
+    toggleVsTimerVol();
+    toggleVsMasterVol();
+    const masterMuted = {
+      disabled: document.getElementById('vsMasterVolRange')?.disabled || false,
+      value: document.getElementById('vsMasterVolVal')?.textContent || '',
+      assistantGain: assistantVolumeGain(),
+      timerGain: timerVolumeGain(),
+      videoVolume: effectiveOutputVolume(vsVol)
+    };
+    toggleVsMasterVol();
     setVsSpeed(1);
     adjustVsSpeed(-1);
     const slower = {
@@ -414,7 +449,7 @@ try {
       downDisabled: document.getElementById('vsSpeedDown')?.disabled || false
     };
     closeVideoSettings();
-    return { videoVolume, videoRestored, voice, muted, restored, slower, slowest };
+    return { master, videoVolume, videoRestored, voice, muted, restored, timerVolume, timerMuted, masterMuted, slower, slowest };
   })()`);
 
   const tutorial = await evaluate(`(async () => {
@@ -649,14 +684,23 @@ try {
   if (ingredients.checkState.listActive || !ingredients.checkState.checkActive) {
     throw new Error('재료 체크리스트 추가 보기로 전환되지 않았습니다.');
   }
-  if (!settings.voice.title.includes('소리·재생') || settings.voice.value !== '35' || settings.voice.range !== '35' || settings.voice.gain !== 0.35) {
+  if (settings.master.value !== '80' || settings.master.range !== '80' || !settings.master.switchOn || settings.master.volumeRowCount !== 4 || !settings.master.singleLineRows) {
+    throw new Error('마스터·영상·요리비서·타이머 볼륨이 한 줄형 설정으로 표시되지 않았습니다.');
+  }
+  if (!settings.voice.title.includes('소리·재생') || settings.voice.value !== '35' || settings.voice.range !== '35' || settings.voice.gain !== 0.28) {
     throw new Error('소리·재생 설정의 요리비서 볼륨이 반영되지 않았습니다.');
   }
-  if (settings.videoVolume.value !== '42' || settings.videoVolume.state !== 42 || !settings.videoVolume.switchOn || settings.videoRestored.state !== 42 || !settings.videoRestored.switchOn) {
+  if (settings.videoVolume.value !== '42' || settings.videoVolume.state !== 42 || settings.videoVolume.effective !== 34 || !settings.videoVolume.switchOn || settings.videoRestored.state !== 42 || !settings.videoRestored.switchOn) {
     throw new Error('영상 볼륨 설정값이 음소거/복구 뒤에도 유지되지 않았습니다.');
   }
-  if (!settings.muted.collapsed || settings.muted.switchOn || settings.muted.gain !== 0 || !settings.restored.switchOn || settings.restored.gain !== 0.35) {
+  if (!settings.muted.disabled || settings.muted.value !== 'OFF' || settings.muted.switchOn || settings.muted.gain !== 0 || !settings.restored.switchOn || settings.restored.gain !== 0.28) {
     throw new Error('요리비서 볼륨 스위치가 음소거/복구 상태를 반영하지 못했습니다.');
+  }
+  if (settings.timerVolume.value !== '25' || !settings.timerVolume.switchOn || settings.timerVolume.gain !== 0.2 || !settings.timerMuted.disabled || settings.timerMuted.value !== 'OFF' || settings.timerMuted.gain !== 0) {
+    throw new Error('타이머 알림음 볼륨과 음소거 상태가 독립적으로 반영되지 않았습니다.');
+  }
+  if (!settings.masterMuted.disabled || settings.masterMuted.value !== 'OFF' || settings.masterMuted.assistantGain !== 0 || settings.masterMuted.timerGain !== 0 || settings.masterMuted.videoVolume !== 0) {
+    throw new Error('마스터 볼륨 음소거가 전체 출력에 반영되지 않았습니다.');
   }
   if (settings.slower.value !== '0.75×' || settings.slower.active !== '0.75×' || settings.slower.downDisabled || settings.slower.upDisabled) {
     throw new Error('재생속도 - 조절이 0.75× 단계로 동작하지 않았습니다.');
@@ -697,7 +741,8 @@ try {
   if (assistant.quickCount < 3 || assistant.beforePromptStep !== '0' || assistant.activeStep !== '0' || !assistant.user.trim() || !assistant.answer.trim()) {
     throw new Error('요리비서 추천 질문 선택이 답변으로 이어지지 않았습니다.');
   }
-  if (new Set(assistant.ducked.commands).size < 4 || !assistant.ducked.commands.some((value) => value > 0 && value < 80) || new Set(assistant.restored.commands).size < 6 || !assistant.restored.commands.includes(80) || assistant.restored.currentVolumeSetting !== 80 || assistant.restored.restores < assistant.ducked.restores + 1) {
+  const expectedRestoredVideoVolume = Math.round(assistant.restored.currentVolumeSetting * Number(settings.master.value) / 100);
+  if (new Set(assistant.ducked.commands).size < 4 || !assistant.ducked.commands.some((value) => value > 0 && value < expectedRestoredVideoVolume) || new Set(assistant.restored.commands).size < 6 || !assistant.restored.commands.includes(expectedRestoredVideoVolume) || assistant.restored.currentVolumeSetting !== 80 || assistant.restored.restores < assistant.ducked.restores + 1) {
     throw new Error('요리비서 답변 중 영상 볼륨 낮춤과 복구가 확인되지 않았습니다.');
   }
 } finally {
