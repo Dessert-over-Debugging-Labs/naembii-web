@@ -40,8 +40,20 @@ npm run verify:long-dynamic:smoke -- --base-url=http://127.0.0.1:4873
 - 실패가 한 번이라도 나오면 다음 cycle에서 `app-screens`와 `dynamic-scorecard`를 강제로 포함한다.
 - 랜딩은 매 cycle에서 mobile/tablet/desktop을 모두 캡처한다.
 - 앱 화면 검증은 기본 장시간 실행에서 포함하고, smoke에서는 빠른 확인을 위해 생략한다.
-- 결과는 `docs/verify/LONG_DYNAMIC_WORKFLOW_LAST_ko.md`, `.json`, `.html`에 누적 저장한다.
+- 최종 요약 결과는 `docs/verify/LONG_DYNAMIC_WORKFLOW_LAST_ko.md`, `.json`, `.html`에 누적 저장한다.
+- cycle별 원본 점수표는 기본적으로 `outDir/scorecards`에 저장하고 저장소에는 커밋하지 않는다.
 - 상세 stdout/stderr는 `/tmp/cook-wireframe-v3/long-dynamic-workflow/logs`에 남긴다.
+
+## 저장소 커밋 정책
+
+| 산출물 | 위치 | 커밋 여부 |
+| --- | --- | --- |
+| 최종 요약 리포트 | `docs/verify/LONG_DYNAMIC_WORKFLOW_LAST_ko.md` 또는 날짜형 최종 리포트 | 커밋 |
+| 실행기/검증 기준 문서 | `scripts/run-long-dynamic-workflow.mjs`, `docs/verify/LONG_DYNAMIC_WORKFLOW_ko.md` | 커밋 |
+| cycle별 점수표 원본 | `outDir/scorecards` | 커밋하지 않음 |
+| 브라우저 캡처/로그 원본 | `/tmp/cook-wireframe-v3-*` | 커밋하지 않음 |
+
+이 정책은 검증 재현성은 유지하되, 매 cycle마다 생성되는 대량의 HTML/JSON/MD 원본이 저장소 히스토리를 흐리지 않게 하기 위한 기준이다.
 
 ## 판정 기준
 

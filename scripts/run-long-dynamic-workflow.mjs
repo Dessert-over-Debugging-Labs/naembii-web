@@ -17,6 +17,7 @@ const reportMd = valueAfter('--report') || 'docs/verify/LONG_DYNAMIC_WORKFLOW_LA
 const reportJson = reportMd.replace(/\.md$/i, '.json');
 const reportHtml = reportMd.replace(/\.md$/i, '.html');
 const outDir = resolve(root, valueAfter('--out-dir') || '/tmp/cook-wireframe-v3/long-dynamic-workflow');
+const scorecardDir = resolve(root, valueAfter('--scorecard-dir') || join(outDir, 'scorecards'));
 const startedAt = new Date();
 
 function valueAfter(name) {
@@ -149,7 +150,7 @@ function tasksForCycle(cycle, previousFailed) {
     });
   }
 
-  if ((!smoke && (full || cycle % 2 === 1 || previousFailed)) || previousFailed) {
+  if ((smoke && full) || (!smoke && (full || cycle % 2 === 1 || previousFailed)) || previousFailed) {
     tasks.push({
       name: 'dynamic-scorecard',
       command: 'npm',
@@ -161,7 +162,7 @@ function tasksForCycle(cycle, previousFailed) {
         '--full',
         '--min-score=96',
         '--report',
-        join('docs/verify', `LONG_DYNAMIC_SCORECARD_CYCLE_${cycle}_ko.md`)
+        join(scorecardDir, `LONG_DYNAMIC_SCORECARD_CYCLE_${cycle}_ko.md`)
       ],
       timeoutMs: 360000
     });
@@ -269,6 +270,7 @@ function markdownReport(report) {
     `- 주기: ${report.intervalMinutes}분`,
     `- 계획 주기 수: ${report.plannedCycles}`,
     `- 산출물: \`${relative(outDir)}\``,
+    `- cycle별 점수표: \`${relative(scorecardDir)}\``,
     '',
     '## 전체 판정',
     '',
@@ -376,6 +378,7 @@ function saveReport(cycles, status) {
     intervalMinutes,
     plannedCycles: plannedCycleCount(),
     outDir,
+    scorecardDir,
     cycles,
     metrics: summarizeMetrics(cycles)
   };

@@ -13,3 +13,6 @@ scripts/ralph-figma/archive/
 scripts/ralph-figma/exports/*.png
 scripts/ralph-figma/.last-branch
 .env.local
+
+# 장시간 검증 cycle별 원본 점수표는 최종 요약 리포트만 커밋한다.
+docs/verify/LONG_DYNAMIC_SCORECARD_CYCLE_*
