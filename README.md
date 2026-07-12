@@ -41,6 +41,14 @@ PORT=4873 npm run dev
 npm run verify:voice-assistant -- http://127.0.0.1:4873 /tmp/naembi-voice-assistant-validation
 ```
 
+사용자 문구의 구현 설명, 내부 용어, 이전 말투 재등장을 확인할 때:
+
+```bash
+npm run verify:copy-tone
+```
+
+말투 검토 경고까지 실패로 처리하려면 `npm run verify:copy-tone -- --strict`를 사용합니다. 세부 기준은 `docs/COPY_TONE_GUIDE_ko.md`에서 확인할 수 있습니다.
+
 Mixpanel 이벤트명, 공개 설정, 개인정보 원문 누락 여부를 확인할 때:
 
 ```bash
