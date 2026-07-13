@@ -1,11 +1,11 @@
 # 동적 검증 워크플로우 실행 리포트
 
-- 일시: 2026-07-09T15:57:56.213Z
-- 판정: **PASS**
-- 점수: **127 / 130 (98%)**
-- 통과 기준: **96% 초과**
-- 모드: visual 포함
-- 기준 URL: `http://127.0.0.1:4873`
+- 일시: 2026-07-10T05:43:38.183Z
+- 판정: **FAIL**
+- 점수: **92 / 110 (84%)**
+- 통과 기준: **96% 초과** (시각 검증 미포함 빠른 기준)
+- 모드: static/API/deploy 중심
+- 기준 URL: `http://127.0.0.1:4190/`
 
 ## 왜 빠르게 끝났나
 
@@ -13,12 +13,16 @@
 
 ## 변경 파일
 
-- `docs/verify/DYNAMIC_WORKFLOW_LAST_ko.html`
-- `docs/verify/DYNAMIC_WORKFLOW_LAST_ko.json`
-- `docs/verify/DYNAMIC_WORKFLOW_LAST_ko.md`
-- `index.html`
-- `scripts/capture-landing.mjs`
-- `scripts/verify-dynamic.mjs`
+- `README.md`
+- `api/gemini-live-token.js`
+- `app.html`
+- `docs/GEMINI_LIVE_MOBILE_WEB_SETUP_ko.md`
+- `package.json`
+- `scripts/serve-static.mjs`
+- `scripts/validate-mobile-flow.mjs`
+- `assets/gemini-live-audio-worklet.js`
+- `scripts/verify-gemini-live-browser.mjs`
+- `scripts/verify-gemini-live.mjs`
 
 ## 선택된 워크플로우
 
@@ -26,9 +30,7 @@
 | --- | --- |
 | core | 항상 실행 |
 | api | api/app/landing 변경 감지 |
-| deploy | full 실행 |
-| docs | 검증 문서 변경 감지 |
-| visual | --visual 요청 |
+| deploy | 배포 설정 변경 감지 |
 
 ## 점수표
 
@@ -40,9 +42,7 @@
 | 후킹·상호작용 루프 | 10 | 10 | 100% | 7/7 신호 충족 | 랜딩 이탈 방지용 요리비서 추천, 앱 후기/팁, 완료 후 공유, 폰 내부 플로팅 피드백을 유지한다. |
 | 정적 앱 화면 소개 | 15 | 15 | 100% | 6/6 신호 충족 | 홈/검색/상세/조리/완료 화면 캡쳐가 랜딩에서 정적으로 제공되어야 한다. |
 | 브랜드·디자인 검증 | 10 | 10 | 100% | 6/6 신호 충족 | /design에서 캐릭터/로고 후보, 아이덴티티 점수표, 음성비서 중심 배치, 커뮤니티 현실성을 검토할 수 있어야 한다. |
-| 내부 정보 비노출 | 15 | 15 | 100% | 정적 0건, 시각 0건 | 사용자 화면에서 내부 문서명, 버전 태그, 저장소/배포 구현명을 제거한다. |
-| 앱 캡쳐 전체 노출 | 10 | 10 | 100% | 잘림 0건, 캡쳐 세트 3/3 | 정적 앱 화면 이미지는 원본 비율 그대로 전체가 보여야 하며 object-fit: cover를 쓰지 않는다. |
-| 반응형·시각 증거 | 10 | 10 | 100% | 8/8 신호 충족 | 모바일/태블릿/데스크톱 캡처와 /app 내부 화면에서 CTA, 핵심 GIF, 앱 미리보기, 카피 신호, 잘림 없음이 모두 확인되어야 한다. |
+| 내부 정보 비노출 | 15 | 0 | 0% | 정적 1건, 시각 검증 미실행 | 사용자 화면에서 내부 문서명, 버전 태그, 저장소/배포 구현명을 제거한다. |
 | 배포 준비도 | 10 | 10 | 100% | 4/4 신호 충족 | 루트 랜딩과 /app 웹앱 라우팅, 수집 환경변수, 배포 제외, 검증 스크립트를 유지한다. |
 | 검증 루프 재현성 | 5 | 5 | 100% | 8/8 신호 충족 | 다음 세션에서도 같은 검증자 역할, 점수표, 마지막 리포트를 재사용할 수 있어야 한다. |
 
@@ -55,7 +55,7 @@
 | landing structure | PASS | 사용자 후킹 카피, 정적 앱 캡쳐, 미리 써보기/요리 보내기 폼 확인 | - |
 | app structure | PASS | /app 기본 앱 홈, 조리 모드, 피드백 폼 확인 | - |
 | design review page | PASS | 브랜드 캐릭터, 점수표, 서비스 배치, 현실성 검토 확인 | - |
-| public copy static guard | PASS | 공개 HTML 내부 작업 용어 0건 | - |
+| public copy static guard | FAIL | 공개 HTML 원문 금지어: API | 사용자 공개 화면/HTML에서 내부 작업 용어를 제거한다. |
 | inline script syntax | PASS | app.html inline script 문법 통과 | - |
 | api syntax: api/_lib/collect.js | PASS | 문법 통과 | - |
 | api syntax: api/beta-signup.js | PASS | 문법 통과 | - |
@@ -66,11 +66,6 @@
 | deploy env contract | PASS | Google Form/webhook/GitHub 수집 환경변수 문서화 확인 | - |
 | vercel ignore hygiene | PASS | docs/scripts/.env 배포 제외 확인 | - |
 | workflow script hook | PASS | npm run verify:dynamic 가능 | - |
-| verification docs | PASS | 동적 워크플로우/랜딩 검증 문서 확인 | - |
-| visual capture: mobile | PASS | /tmp/cook-wireframe-v3/dynamic-mobile.png, forbiddenVisibleTerms=[], croppedScreenImages=[] | - |
-| visual capture: tablet | PASS | /tmp/cook-wireframe-v3/dynamic-tablet.png, forbiddenVisibleTerms=[], croppedScreenImages=[] | - |
-| visual capture: desktop | PASS | /tmp/cook-wireframe-v3/dynamic-desktop.png, forbiddenVisibleTerms=[], croppedScreenImages=[] | - |
-| app screen clipping | PASS | 84개 앱 내부 상태 잘림/overflow 검사 PASS | - |
 
 ## 루프 규칙
 

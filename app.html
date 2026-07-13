@@ -1687,8 +1687,8 @@
     if(!form)return;
     form.querySelectorAll('button[type="submit"]').forEach(btn=>{btn.disabled=!!busy;});
   }
-  async function postJson(url,payload){
-    const res=await fetch(url,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload)});
+  async function postJson(url,payload,options={}){
+    const res=await fetch(url,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload),signal:options.signal});
     const data=await res.json().catch(()=>({}));
     if(!res.ok)throw new Error(data.error||'전송 설정을 확인해야 합니다.');
     return data;
@@ -3206,7 +3206,7 @@
       const selected=devices?.find(device=>device.kind==='audioinput'&&device.deviceId===settings.deviceId);
       if(selected?.label)label=selected.label;
     }catch{}
-    if(geminiLive!==live||live.closing)return;
+    if(geminiLive!==live||live.closing||live.micStream?.getAudioTracks?.()[0]!==track)return;
     const selectedId=settings.deviceId||live.inputDeviceId||'';
     live.inputDeviceId=selectedId;
     live.inputDeviceLabel=label||'기본 마이크';
@@ -3215,7 +3215,7 @@
     const details=rate?' · '+Math.round(rate/1000)+' kHz':'';
     const sourceLabel='입력 장치: '+live.inputDeviceLabel+details;
     const updateState=state=>{
-      if(geminiLive!==live||live.closing)return;
+      if(geminiLive!==live||live.closing||live.micTrack!==track)return;
       setVpInputSource(sourceLabel+' · '+state);
     };
     const virtualInput=/blackhole|loopback|soundflower|zoomaudio|vb-cable/i.test(live.inputDeviceLabel);
@@ -3231,9 +3231,10 @@
     });
     track.addEventListener?.('unmute',()=>updateState('사용 중'));
     track.addEventListener?.('ended',()=>{
-      if(live.micStopExpected)return;
+      if(live.micStopExpected||live.micTrack!==track)return;
       updateState('입력 중단됨');
-      setVpLiveStatus('마이크 입력이 중단됐어요. 요리 비서를 다시 열어 주세요.','bad');
+      setVpLiveStatus('마이크 입력이 중단됐어요. 자동으로 복구하고 있어요.','bad');
+      void recoverGeminiMicrophone(live,'microphone track ended');
     });
   }
   async function changeGeminiInputDevice(deviceId){
@@ -3253,7 +3254,7 @@
         setVpLiveStatus('Gemini Live가 듣고 있어요. 말씀해 주세요.','ok');
         setVpVoiceHint('말하면 입력 막대와 전사가 표시돼요.');
         armGeminiMicWatchdog(live);
-      }
+      }else scheduleGeminiReconnect(live,{immediate:true});
     }catch(error){
       setVpLiveStatus(geminiVoiceErrorMessage(error),'bad');
       setVpVoiceHint('다른 마이크를 선택하거나 권한을 확인해 주세요.');
@@ -3292,18 +3293,55 @@
   function clearGeminiMicWatchdog(live){
     if(live?.micWatchdog){clearTimeout(live.micWatchdog);live.micWatchdog=null;}
   }
+  async function recoverGeminiMicrophone(live,reason='microphone stalled'){
+    if(!live||geminiLive!==live||live.closing||!hf3On||vpMicMuted||live.micRecovering||document.visibilityState==='hidden')return;
+    live.micRecovering=true;
+    setVpVoiceHint('마이크 입력을 자동으로 복구하고 있어요.');
+    try{
+      releaseGeminiMicrophone(live,true);
+      await startGeminiMicrophone(live);
+      if(!isGeminiLiveOpen(live))scheduleGeminiReconnect(live,{immediate:true});
+    }catch(error){
+      console.warn('Gemini Live microphone recovery failed',{reason,error:String(error?.message||error)});
+    }finally{
+      live.micRecovering=false;
+      if(geminiLive===live&&!live.closing&&hf3On&&!vpMicMuted){
+        clearGeminiMicWatchdog(live);
+        live.micWatchdog=setTimeout(()=>{
+          live.micWatchdog=null;
+          if(live.micStream)armGeminiMicWatchdog(live);
+          else void recoverGeminiMicrophone(live,'microphone retry');
+        },5000);
+      }
+    }
+  }
   function armGeminiMicWatchdog(live){
     clearGeminiMicWatchdog(live);
-    if(!live?.micStream||!live.ready)return;
+    if(!live?.micStream)return;
     live.micWatchdog=setTimeout(()=>{
       if(geminiLive!==live||live.closing||!live.micStream)return;
-      if(!live.sentAudioFrames){
+      if(document.visibilityState==='hidden'){
+        armGeminiMicWatchdog(live);
+        return;
+      }
+      const track=live.micStream.getAudioTracks?.()[0];
+      const stalled=Date.now()-(live.lastAudioAt||0)>6500;
+      const ended=!track||track.readyState==='ended';
+      if(live.audioContext&&live.audioContext.state!=='running'){
+        void live.audioContext.resume().catch(()=>{});
+      }
+      if((stalled||ended)&&!vpMicMuted){
+        void recoverGeminiMicrophone(live,ended?'microphone track ended':'audio frames stalled');
+        return;
+      }
+      if(!live.capturedAudioFrames){
         setVpLiveStatus('마이크 권한은 허용됐지만 입력 프레임을 받지 못했어요. 시스템 입력 장치를 확인해 주세요.','bad');
         setVpVoiceHint('말할 때 입력 막대가 움직여야 Gemini에 목소리가 전송돼요.');
         setVpInputMeter(0,'마이크 프레임을 받지 못했어요.',false);
       }else if(!live.activeAudioFrames){
         setVpVoiceHint('마이크 프레임은 전송 중이에요. 말할 때 입력 막대가 움직이는지 확인해 주세요.');
       }
+      armGeminiMicWatchdog(live);
     },5000);
   }
   function clampNumber(value,min,max){
@@ -3399,6 +3437,14 @@
     window.addEventListener('pointercancel',onUp,{once:true});
   }
   const GEMINI_LIVE_WSS='wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContentConstrained';
+  const GEMINI_VAD_START_LEVEL=.012;
+  const GEMINI_VAD_END_LEVEL=.006;
+  const GEMINI_VAD_START_FRAMES=2;
+  const GEMINI_VAD_END_MS=800;
+  const GEMINI_VAD_PREROLL_MS=320;
+  const GEMINI_PENDING_AUDIO_MAX_BYTES=640000;
+  const GEMINI_PENDING_EVENT_MAX=384;
+  const GEMINI_RECONNECT_DELAYS=[250,750,1500,3000,5000,10000,15000];
   let geminiLive=null, geminiLiveConnecting=null;
   function currentGeminiCookingContext(){
     const steps=currentRecipe?.steps||[];
@@ -3419,7 +3465,7 @@
       key:(currentRecipe?.id||'recipe')+':'+status+':'+stepIndex
     };
   }
-  function geminiLivePayload(){
+  function geminiLivePayload(live=geminiLive){
     const context=currentGeminiCookingContext();
     const ingredients=[...(currentRecipe?.ingredients?.main||[]),...(currentRecipe?.ingredients?.seasoning||[])]
       .map(item=>item.n+(item.q?' '+item.q:'')).join(', ');
@@ -3432,12 +3478,120 @@
       cookingStatus:context.status,
       contextKey:context.key,
       ingredients,
+      sessionResumptionHandle:live?.sessionResumptionHandle||'',
       page:location.href,
       createdAt:new Date().toISOString()
     };
   }
   function isGeminiLiveOpen(live=geminiLive){
     return !!(live&&live.ready&&live.socket&&live.socket.readyState===WebSocket.OPEN);
+  }
+  function clearGeminiReconnectTimer(live){
+    if(live?.reconnectTimer){clearTimeout(live.reconnectTimer);live.reconnectTimer=null;}
+  }
+  function clearGeminiGoAwayTimer(live){
+    if(live?.goAwayTimer){clearTimeout(live.goAwayTimer);live.goAwayTimer=null;}
+    if(live)live.goAwayDeadline=0;
+  }
+  async function requestGeminiWakeLock(live=geminiLive){
+    if(!live||geminiLive!==live||live.closing||!hf3On||document.visibilityState==='hidden'||live.wakeLock||live.wakeLockRequest||!navigator.wakeLock?.request)return;
+    let requesting=null;
+    try{
+      requesting=navigator.wakeLock.request('screen');
+      live.wakeLockRequest=requesting;
+      const sentinel=await requesting;
+      if(geminiLive!==live||live.closing||!hf3On||document.visibilityState==='hidden'){
+        await sentinel.release().catch(()=>{});
+        return;
+      }
+      live.wakeLock=sentinel;
+      sentinel.addEventListener?.('release',()=>{
+        if(live.wakeLock===sentinel)live.wakeLock=null;
+      });
+    }catch(error){
+      console.debug('Screen Wake Lock unavailable',String(error?.message||error));
+    }finally{
+      if(requesting&&live.wakeLockRequest===requesting)live.wakeLockRequest=null;
+    }
+  }
+  function releaseGeminiWakeLock(live){
+    const sentinel=live?.wakeLock;
+    if(!sentinel)return;
+    live.wakeLock=null;
+    void sentinel.release().catch(()=>{});
+  }
+  function scheduleGeminiReconnect(live=geminiLive,{immediate=false}={}){
+    if(!live||geminiLive!==live||live.closing||!hf3On||vpMicMuted||!live.micStream||isGeminiLiveOpen(live)||live.transportConnecting)return;
+    if(live.reconnectTimer&&!immediate)return;
+    clearGeminiReconnectTimer(live);
+    const attempt=Math.max(0,Number(live.reconnectAttempt)||0);
+    const delay=immediate?0:GEMINI_RECONNECT_DELAYS[Math.min(attempt,GEMINI_RECONNECT_DELAYS.length-1)];
+    live.reconnectTimer=setTimeout(()=>{
+      live.reconnectTimer=null;
+      if(!navigator.onLine){live.reconnectAttempt=attempt+1;scheduleGeminiReconnect(live);return;}
+      void ensureGeminiLiveTransport(live,{reason:'automatic reconnect'}).catch(()=>{
+        if(geminiLive===live&&!live.closing){live.reconnectAttempt=attempt+1;scheduleGeminiReconnect(live);}
+      });
+    },delay);
+  }
+  function closeGeminiTransport(live,reason='transport restart'){
+    if(!live)return;
+    live.tokenAbortController?.abort();
+    live.tokenAbortController=null;
+    if(!live.resumeCheckpointSafe&&live.resumeReplay?.length)stageGeminiResumeReplay(live);
+    clearGeminiGoAwayTimer(live);
+    live.ready=false;
+    live.responseInFlight=false;
+    const socket=live.socket;
+    live.socket=null;
+    if(socket&&socket.readyState<WebSocket.CLOSING){
+      try{socket.close(1000,reason.slice(0,110));}catch{}
+    }
+  }
+  async function ensureGeminiLiveTransport(live,{force=false,reason=''}={}){
+    if(!live||geminiLive!==live||live.closing||!hf3On)throw new Error('Gemini Live 연결이 취소됐어요.');
+    if(isGeminiLiveOpen(live)&&!force)return live;
+    if(live.transportConnecting)return live.transportConnecting;
+    clearGeminiReconnectTimer(live);
+    if(force)closeGeminiTransport(live,reason||'transport restart');
+    else if(live.socket)closeGeminiTransport(live,'replace stale transport');
+    const epoch=(live.connectionEpoch||0)+1;
+    live.connectionEpoch=epoch;
+    const resumeHandleAtAttempt=live.sessionResumptionHandle||'';
+    const tokenAbortController=new AbortController();
+    live.tokenAbortController=tokenAbortController;
+    const connecting=(async()=>{
+      const payload=geminiLivePayload(live);
+      const data=await withGeminiLiveTimeout(postJson('/api/gemini-live-token',payload,{signal:tokenAbortController.signal}),12000,'Gemini Live 인증 정보를 받지 못했어요. 네트워크와 API 키 설정을 확인해 주세요.',()=>tokenAbortController.abort());
+      if(geminiLive!==live||live.closing||live.connectionEpoch!==epoch)throw new Error('Gemini Live 연결이 취소됐어요.');
+      live.contextKey=payload.contextKey;
+      await openGeminiLiveSocket(live,data,epoch);
+      if(geminiLive!==live||live.closing||live.connectionEpoch!==epoch)throw new Error('Gemini Live 연결이 취소됐어요.');
+      live.reconnectAttempt=0;
+      live.resumeFailureCount=0;
+      return live;
+    })();
+    live.transportConnecting=connecting;
+    geminiLiveConnecting=connecting;
+    try{return await connecting;}
+    catch(error){
+      if(live.connectionEpoch===epoch)closeGeminiTransport(live,'connection failed');
+      if(resumeHandleAtAttempt&&live.sessionResumptionHandle===resumeHandleAtAttempt){
+        const closeCode=Number(error?.geminiCloseCode)||0;
+        const definitelyRejected=[1002,1003,1007,1008].includes(closeCode)||/resume|resumption|handle|invalid[_ ]argument|expired session|session.*not found/i.test(String(error?.message||''));
+        if(error?.geminiSetupFailed)live.resumeFailureCount=(live.resumeFailureCount||0)+1;
+        if(definitelyRejected||(error?.geminiSetupFailed&&live.resumeFailureCount>=3)){
+          live.sessionResumptionHandle='';
+          live.resumeCheckpointSafe=false;
+          live.resumeFailureCount=0;
+        }
+      }
+      throw error;
+    }finally{
+      if(live.transportConnecting===connecting)live.transportConnecting=null;
+      if(geminiLiveConnecting===connecting)geminiLiveConnecting=null;
+      if(live.tokenAbortController===tokenAbortController)live.tokenAbortController=null;
+    }
   }
   function scheduleGeminiContextRestart(live=geminiLive){
     if(!live||geminiLive!==live||live.closing||!hf3On)return;
@@ -3447,7 +3601,7 @@
       return;
     }
     live.pendingContextRestart=true;
-    if(!live.ready||live.toolResponsePending||live.responseInFlight||live.contextRestarting)return;
+    if(!live.ready||!live.sessionResumptionHandle||!live.resumeCheckpointSafe||live.toolResponsePending||live.responseInFlight||live.contextRestarting||live.vadSpeaking||live.playbackNodes?.size)return;
     if(live.contextRestartTimer)clearTimeout(live.contextRestartTimer);
     live.contextRestartTimer=setTimeout(()=>{
       live.contextRestartTimer=null;
@@ -3461,35 +3615,24 @@
       live.pendingContextRestart=false;
       return;
     }
-    if(!live.ready||live.toolResponsePending||live.responseInFlight||live.contextRestarting){
+    if(!live.ready||!live.sessionResumptionHandle||!live.resumeCheckpointSafe||live.toolResponsePending||live.responseInFlight||live.contextRestarting||live.vadSpeaking||live.playbackNodes?.size){
       live.pendingContextRestart=true;
       return;
     }
     live.pendingContextRestart=false;
     live.contextRestarting=true;
-    live.ready=false;
-    clearGeminiPlayback(live);
-    const previousSocket=live.socket;
-    live.socket=null;
-    if(previousSocket&&previousSocket.readyState<WebSocket.CLOSING){
-      try{previousSocket.close(1000,'cooking stage changed');}catch{}
-    }
     setVpMicButton('busy');
     setVpLiveStatus('현재 조리 단계로 Gemini Live를 다시 연결하고 있어요.','');
     setVpVoiceHint('현재 단계 정보를 최신화하고 있어요.');
     try{
-      const payload=geminiLivePayload();
-      live.contextKey=payload.contextKey;
-      const data=await withGeminiLiveTimeout(postJson('/api/gemini-live-token',payload),12000,'현재 조리 단계의 Gemini Live 인증 정보를 받지 못했어요.');
-      if(live.closing||geminiLive!==live||!hf3On)return;
-      await openGeminiLiveSocket(live,data);
+      await ensureGeminiLiveTransport(live,{force:true,reason:'cooking stage changed'});
       setVpMicButton(live.micStream?'listening':'idle');
     }catch(error){
       if(geminiLive===live&&!live.closing){
-        stopGeminiLiveSession('context refresh failed');
         setVpLiveStatus(geminiVoiceErrorMessage(error),'bad');
-        setVpVoiceHint('마이크 버튼을 눌러 다시 연결해 주세요.');
+        setVpVoiceHint('마이크는 계속 대기하며 연결을 자동으로 복구해요.');
         setVpInputMeter(0,'Gemini Live 연결을 다시 확인해 주세요.',false);
+        scheduleGeminiReconnect(live,{immediate:true});
       }
     }finally{
       live.contextRestarting=false;
@@ -3567,8 +3710,7 @@
     if(!value)return '';
     let state=ensureVpTranscriptState(live);
     if(role==='user'){
-      if(state.complete)state=beginVpTranscriptTurn(live);
-      else if(!state.epoch)state.epoch=1;
+      if(!state.epoch)state.epoch=1;
       state.hasUser=true;
       state.userText=mergeVpTranscript(state.userText,value);
       if(state.pendingAssistantText){
@@ -3609,12 +3751,23 @@
   async function ensureGeminiAudioOutput(live){
     const AudioCtor=window.AudioContext||window.webkitAudioContext;
     if(!AudioCtor)throw new Error('이 브라우저는 Gemini Live 오디오 재생을 지원하지 않아요.');
+    if(live.audioContext?.state==='closed'){
+      try{live.outputGain?.disconnect();}catch{}
+      live.audioContext=null;
+      live.outputGain=null;
+    }
     if(!live.audioContext){
       live.audioContext=new AudioCtor();
       live.outputGain=live.audioContext.createGain();
       live.outputGain.gain.value=assistantVolumeGain();
       live.outputGain.connect(live.audioContext.destination);
       live.nextAudioTime=live.audioContext.currentTime;
+      live.audioContext.onstatechange=()=>{
+        if(geminiLive!==live||live.closing||!hf3On||document.visibilityState==='hidden')return;
+        if(live.audioContext?.state==='suspended'||live.audioContext?.state==='interrupted'){
+          void live.audioContext.resume().catch(()=>{});
+        }
+      };
     }
     if(live.audioContext.state==='suspended')await live.audioContext.resume();
     return live.audioContext;
@@ -3636,11 +3789,18 @@
   function sendGeminiLiveMessage(live,message){
     if(!isGeminiLiveOpen(live))throw new Error('Gemini Live 세션이 연결되어 있지 않아요.');
     const text=String(message?.realtimeInput?.text||'').trim();
+    if(text||message?.toolResponse)live.resumeCheckpointSafe=false;
     if(text){
+      live.commandEpoch=(live.commandEpoch||0)+1;
       beginVpTranscriptTurn(live);
       updateVpTranscript(live,'user',text);
     }
-    live.socket.send(JSON.stringify(message));
+    try{live.socket.send(JSON.stringify(message));}
+    catch(error){
+      closeGeminiTransport(live,'message send failed');
+      setTimeout(()=>scheduleGeminiReconnect(live,{immediate:true}),0);
+      throw error;
+    }
   }
   function createGeminiPcmResampler(sourceRate,targetRate=16000){
     let phase=0,sum=0,count=0;
@@ -3712,98 +3872,261 @@
     };
     live.inputMonitorFrame=requestAnimationFrame(monitor);
   }
+  function trimGeminiPendingPcm(live){
+    if(!Array.isArray(live?.pendingPcm))return;
+    while((live.pendingPcmBytes>GEMINI_PENDING_AUDIO_MAX_BYTES||live.pendingPcm.length>GEMINI_PENDING_EVENT_MAX)&&live.pendingPcm.length){
+      const removed=live.pendingPcm.shift();
+      if(removed?.type==='audio')live.pendingPcmBytes=Math.max(0,live.pendingPcmBytes-(removed.buffer?.byteLength||0));
+    }
+  }
   function queueGeminiPcm(live,buffer,level){
     if(!live||live.closing||!(buffer instanceof ArrayBuffer))return;
     if(!Array.isArray(live.pendingPcm))live.pendingPcm=[];
     if(!Number.isFinite(live.pendingPcmBytes))live.pendingPcmBytes=0;
     const copy=buffer.slice(0);
-    live.pendingPcm.push({buffer:copy,level});
+    live.pendingPcm.push({type:'audio',buffer:copy,level});
     live.pendingPcmBytes+=copy.byteLength;
-    while(live.pendingPcmBytes>192000&&live.pendingPcm.length){
-      live.pendingPcmBytes-=live.pendingPcm.shift().buffer.byteLength;
+    trimGeminiPendingPcm(live);
+  }
+  function queueGeminiAudioStreamEnd(live){
+    if(!live||live.closing)return;
+    if(!Array.isArray(live.pendingPcm))live.pendingPcm=[];
+    if(live.pendingPcm[live.pendingPcm.length-1]?.type!=='end')live.pendingPcm.push({type:'end'});
+    trimGeminiPendingPcm(live);
+  }
+  function trimGeminiResumeReplay(live){
+    if(!Array.isArray(live?.resumeReplay))return;
+    while((live.resumeReplayBytes>GEMINI_PENDING_AUDIO_MAX_BYTES||live.resumeReplay.length>GEMINI_PENDING_EVENT_MAX)&&live.resumeReplay.length){
+      const removed=live.resumeReplay.shift();
+      if(removed?.type==='audio')live.resumeReplayBytes=Math.max(0,live.resumeReplayBytes-(removed.buffer?.byteLength||0));
     }
   }
+  function appendGeminiResumeReplayAudio(live,buffer,level){
+    if(!live||!(buffer instanceof ArrayBuffer))return;
+    if(!Array.isArray(live.resumeReplay))live.resumeReplay=[];
+    const copy=buffer.slice(0);
+    live.resumeReplay.push({type:'audio',buffer:copy,level});
+    live.resumeReplayBytes=(live.resumeReplayBytes||0)+copy.byteLength;
+    trimGeminiResumeReplay(live);
+  }
+  function appendGeminiResumeReplayEnd(live){
+    if(!live)return;
+    if(!Array.isArray(live.resumeReplay))live.resumeReplay=[];
+    if(live.resumeReplay[live.resumeReplay.length-1]?.type!=='end')live.resumeReplay.push({type:'end'});
+    trimGeminiResumeReplay(live);
+  }
+  function clearGeminiResumeReplay(live){
+    if(!live)return;
+    live.resumeReplay=[];
+    live.resumeReplayBytes=0;
+  }
+  function stageGeminiResumeReplay(live){
+    if(!live?.resumeReplay?.length)return;
+    live.pendingPcm=live.resumeReplay.map(event=>event.type==='audio'?{type:'audio',buffer:event.buffer.slice(0),level:event.level}:{type:'end'});
+    live.pendingPcmBytes=live.pendingPcm.reduce((total,event)=>total+(event.type==='audio'?(event.buffer?.byteLength||0):0),0);
+    trimGeminiPendingPcm(live);
+  }
   function transmitGeminiPcm(live,buffer){
-    if(!isGeminiLiveOpen(live)||!buffer?.byteLength)return;
+    if(!isGeminiLiveOpen(live)||!buffer?.byteLength)return false;
     try{
       sendGeminiLiveMessage(live,{realtimeInput:{audio:{data:arrayBufferToBase64(buffer),mimeType:'audio/pcm;rate=16000'}}});
       live.sentAudioFrames=(live.sentAudioFrames||0)+1;
       live.sentAudioBytes=(live.sentAudioBytes||0)+buffer.byteLength;
       live.inputMimeType='audio/pcm;rate=16000';
+      return true;
     }catch(error){
       console.warn('Gemini Live audio send failed',error);
+      return false;
+    }
+  }
+  function transmitGeminiAudioStreamEnd(live){
+    if(!isGeminiLiveOpen(live))return false;
+    try{
+      sendGeminiLiveMessage(live,{realtimeInput:{audioStreamEnd:true}});
+      return true;
+    }catch(error){
+      console.warn('Gemini Live audio stream end failed',error);
+      return false;
     }
   }
   function flushGeminiPcm(live){
-    if(!isGeminiLiveOpen(live)||!Array.isArray(live.pendingPcm)||!live.pendingPcm.length)return;
-    const chunks=live.pendingPcm.splice(0);
-    live.pendingPcmBytes=0;
-    chunks.forEach(chunk=>transmitGeminiPcm(live,chunk.buffer));
+    if(!isGeminiLiveOpen(live)||!Array.isArray(live.pendingPcm)||!live.pendingPcm.length)return false;
+    while(live.pendingPcm.length&&isGeminiLiveOpen(live)){
+      const event=live.pendingPcm[0];
+      const sent=event.type==='end'?transmitGeminiAudioStreamEnd(live):transmitGeminiPcm(live,event.buffer);
+      if(!sent)return false;
+      live.pendingPcm.shift();
+      if(event.type==='audio')live.pendingPcmBytes=Math.max(0,live.pendingPcmBytes-(event.buffer?.byteLength||0));
+    }
+    return live.pendingPcm.length===0;
+  }
+  function geminiPcmDurationMs(buffer){
+    return buffer instanceof ArrayBuffer?buffer.byteLength/2/16000*1000:0;
+  }
+  function geminiPcmLevel(buffer,level){
+    const provided=Number(level);
+    if(Number.isFinite(provided)&&provided>0)return Math.max(0,Math.min(1,provided));
+    if(!(buffer instanceof ArrayBuffer)||buffer.byteLength<2)return 0;
+    const pcm=new Int16Array(buffer,0,Math.floor(buffer.byteLength/2));
+    let energy=0;
+    for(let index=0;index<pcm.length;index+=1){
+      const sample=pcm[index]/0x8000;
+      energy+=sample*sample;
+    }
+    return Math.sqrt(energy/Math.max(1,pcm.length));
+  }
+  function pushGeminiVadPreRoll(live,buffer,level,durationMs){
+    if(!Array.isArray(live.vadPreRoll))live.vadPreRoll=[];
+    live.vadPreRoll.push({buffer:buffer.slice(0),level,durationMs});
+    live.vadPreRollMs=(live.vadPreRollMs||0)+durationMs;
+    while(live.vadPreRollMs>GEMINI_VAD_PREROLL_MS&&live.vadPreRoll.length>1){
+      live.vadPreRollMs-=live.vadPreRoll.shift().durationMs||0;
+    }
+  }
+  function sendOrQueueGeminiPcm(live,buffer,level){
+    if(isGeminiLiveOpen(live)){
+      if(transmitGeminiPcm(live,buffer))return;
+      stageGeminiResumeReplay(live);
+    }else queueGeminiPcm(live,buffer,level);
+    void ensureGeminiLiveTransport(live,{reason:'voice activity'}).catch(()=>scheduleGeminiReconnect(live));
+  }
+  function finishGeminiVadSpeech(live){
+    if(!live?.vadSpeaking)return;
+    live.vadSpeaking=false;
+    live.vadStartFrames=0;
+    live.vadSilenceMs=0;
+    appendGeminiResumeReplayEnd(live);
+    if(!transmitGeminiAudioStreamEnd(live))queueGeminiAudioStreamEnd(live);
+  }
+  function resetGeminiLocalVad(live){
+    if(!live)return;
+    live.vadSpeaking=false;
+    live.vadStartFrames=0;
+    live.vadSilenceMs=0;
+    live.vadPreRoll=[];
+    live.vadPreRollMs=0;
   }
   function sendGeminiPcm(live,buffer,level=0){
     if(live?.closing)return;
     if(!(buffer instanceof ArrayBuffer)||!buffer.byteLength)return;
-    updateGeminiMicActivity(live,buffer.byteLength,level);
-    if(!isGeminiLiveOpen(live)){
-      queueGeminiPcm(live,buffer,level);
+    const rawLevel=geminiPcmLevel(buffer,level);
+    const durationMs=geminiPcmDurationMs(buffer);
+    updateGeminiMicActivity(live,buffer.byteLength,rawLevel);
+    if(!live.vadSpeaking){
+      pushGeminiVadPreRoll(live,buffer,rawLevel,durationMs);
+      live.vadStartFrames=rawLevel>=GEMINI_VAD_START_LEVEL?(live.vadStartFrames||0)+1:0;
+      if(live.vadStartFrames<GEMINI_VAD_START_FRAMES)return;
+      const transcript=ensureVpTranscriptState(live);
+      if(transcript.complete||transcript.hasUser)beginVpTranscriptTurn(live);
+      live.commandEpoch=(live.commandEpoch||0)+1;
+      live.vadSpeaking=true;
+      live.resumeCheckpointSafe=false;
+      live.vadSilenceMs=0;
+      const preRoll=live.vadPreRoll.splice(0);
+      live.vadPreRollMs=0;
+      preRoll.forEach(frame=>{
+        appendGeminiResumeReplayAudio(live,frame.buffer,frame.level);
+        sendOrQueueGeminiPcm(live,frame.buffer,frame.level);
+      });
       return;
     }
-    transmitGeminiPcm(live,buffer);
+    appendGeminiResumeReplayAudio(live,buffer,rawLevel);
+    sendOrQueueGeminiPcm(live,buffer,rawLevel);
+    live.vadSilenceMs=rawLevel>=GEMINI_VAD_END_LEVEL?0:(live.vadSilenceMs||0)+durationMs;
+    if(live.vadSilenceMs>=GEMINI_VAD_END_MS)finishGeminiVadSpeech(live);
   }
   async function startGeminiMicrophone(live){
-    if(live.micStream)return;
+    const currentTrack=live?.micStream?.getAudioTracks?.()[0];
+    if(live?.micStream&&currentTrack?.readyState==='live')return live.micStream;
+    if(live?.micStartPromise)return live.micStartPromise;
+    if(live?.micStream)releaseGeminiMicrophone(live,true);
     if(!window.isSecureContext)throw new Error('마이크는 HTTPS 또는 localhost 주소에서만 사용할 수 있어요.');
     if(!navigator.mediaDevices?.getUserMedia)throw new Error('이 브라우저는 모바일 웹 마이크 권한을 지원하지 않아요.');
-    const requestedDeviceId=String(live.inputDeviceId||'');
-    const stream=await navigator.mediaDevices.getUserMedia({
-      audio:{deviceId:requestedDeviceId?{exact:requestedDeviceId}:undefined,channelCount:{ideal:1},echoCancellation:true,noiseSuppression:true,autoGainControl:true},
-      video:false
-    });
-    if(live.closing||geminiLive!==live){stream.getTracks().forEach(track=>track.stop());return;}
-    live.micStopExpected=false;
-    const context=await ensureGeminiAudioOutput(live);
-    const source=context.createMediaStreamSource(stream);
-    const silent=context.createGain();
-    silent.gain.value=0;
-    let processor;
-    let inputUsingWorklet=false;
-    try{
-      if(!context.audioWorklet||typeof AudioWorkletNode==='undefined')throw new Error('AudioWorklet unavailable');
-      await context.audioWorklet.addModule('/assets/gemini-live-audio-worklet.js');
-      processor=new AudioWorkletNode(context,'naembi-pcm-capture',{numberOfInputs:1,numberOfOutputs:1,channelCount:1,channelCountMode:'explicit'});
-      processor.port.onmessage=event=>{
-        const payload=event.data;
-        if(payload instanceof ArrayBuffer)sendGeminiPcm(live,payload,0);
-        else sendGeminiPcm(live,payload?.pcm,payload?.level);
-      };
-      inputUsingWorklet=true;
-    }catch(error){
-      processor=createGeminiScriptProcessor(live,context);
-    }
-    source.connect(processor);
-    processor.connect(silent);
-    silent.connect(context.destination);
-    live.micStream=stream;
-    live.inputSource=source;
-    live.inputProcessor=processor;
-    live.inputSilence=silent;
-    live.inputUsingWorklet=inputUsingWorklet;
-    vpMicMuted=false;
-    document.getElementById('vpanel')?.classList.remove('mic-muted');
-    void identifyGeminiInputDevice(live,stream);
-    setVpMicButton('listening');
-    setVpVoiceHint('마이크가 준비됐어요. Gemini Live 연결을 기다리고 있어요.');
-    setVpInputMeter(0,'마이크 입력을 확인하고 있어요.',false);
-    attachGeminiInputMonitor(live);
+    const micEpoch=(live.micEpoch||0)+1;
+    live.micEpoch=micEpoch;
+    const starting=(async()=>{
+      const requestedDeviceId=String(live.inputDeviceId||'');
+      const stream=await navigator.mediaDevices.getUserMedia({
+        audio:{deviceId:requestedDeviceId?{exact:requestedDeviceId}:undefined,channelCount:{ideal:1},echoCancellation:true,noiseSuppression:true,autoGainControl:true},
+        video:false
+      });
+      let source=null,silent=null,processor=null,adopted=false;
+      try{
+        if(live.closing||geminiLive!==live||live.micEpoch!==micEpoch)return null;
+        live.micStopExpected=false;
+        const context=await ensureGeminiAudioOutput(live);
+        source=context.createMediaStreamSource(stream);
+        silent=context.createGain();
+        silent.gain.value=0;
+        let inputUsingWorklet=false;
+        try{
+          if(!context.audioWorklet||typeof AudioWorkletNode==='undefined')throw new Error('AudioWorklet unavailable');
+          await context.audioWorklet.addModule('/assets/gemini-live-audio-worklet.js');
+          if(live.closing||geminiLive!==live||live.micEpoch!==micEpoch)throw new Error('Microphone start cancelled');
+          processor=new AudioWorkletNode(context,'naembi-pcm-capture',{numberOfInputs:1,numberOfOutputs:1,channelCount:1,channelCountMode:'explicit'});
+          processor.port.onmessage=event=>{
+            const payload=event.data;
+            if(payload instanceof ArrayBuffer)sendGeminiPcm(live,payload,0);
+            else sendGeminiPcm(live,payload?.pcm,payload?.level);
+          };
+          inputUsingWorklet=true;
+        }catch(error){
+          if(live.closing||geminiLive!==live||live.micEpoch!==micEpoch)return null;
+          processor=createGeminiScriptProcessor(live,context);
+        }
+        source.connect(processor);
+        processor.connect(silent);
+        silent.connect(context.destination);
+        live.micStream=stream;
+        live.inputSource=source;
+        live.inputProcessor=processor;
+        live.inputSilence=silent;
+        live.inputUsingWorklet=inputUsingWorklet;
+        live.lastAudioAt=Date.now();
+        resetGeminiLocalVad(live);
+        vpMicMuted=false;
+        document.getElementById('vpanel')?.classList.remove('mic-muted');
+        void identifyGeminiInputDevice(live,stream);
+        setVpMicButton('listening');
+        setVpVoiceHint('마이크가 준비됐어요. Gemini Live 연결을 기다리고 있어요.');
+        setVpInputMeter(0,'마이크 입력을 확인하고 있어요.',false);
+        attachGeminiInputMonitor(live);
+        armGeminiMicWatchdog(live);
+        adopted=true;
+        return stream;
+      }finally{
+        if(!adopted){
+          if(processor?.port)processor.port.onmessage=null;
+          if(processor)processor.onaudioprocess=null;
+          try{processor?.disconnect();}catch{}
+          try{source?.disconnect();}catch{}
+          try{silent?.disconnect();}catch{}
+          stream.getTracks().forEach(track=>track.stop());
+          if(live.micStream===stream){
+            live.micStream=null;
+            live.micTrack=null;
+            live.inputSource=null;
+            live.inputProcessor=null;
+            live.inputSilence=null;
+          }
+        }
+      }
+    })();
+    live.micStartPromise=starting;
+    try{return await starting;}
+    finally{if(live.micStartPromise===starting)live.micStartPromise=null;}
   }
   function releaseGeminiMicrophone(live,sendEnd){
     if(!live)return;
     live.micStopExpected=true;
+    live.micEpoch=(live.micEpoch||0)+1;
+    live.micStartPromise=null;
     clearGeminiMicWatchdog(live);
     if(live.inputMonitorFrame&&typeof cancelAnimationFrame==='function')cancelAnimationFrame(live.inputMonitorFrame);
     live.inputMonitorFrame=null;
-    if(sendEnd&&isGeminiLiveOpen(live)&&live.micStream){
-      try{sendGeminiLiveMessage(live,{realtimeInput:{audioStreamEnd:true}});}catch{}
+    if(sendEnd&&live.micStream){
+      if(live.vadSpeaking)finishGeminiVadSpeech(live);
+      else if(isGeminiLiveOpen(live))transmitGeminiAudioStreamEnd(live);
     }
     if(live.inputProcessor){
       try{live.inputProcessor.disconnect();}catch{}
@@ -3815,12 +4138,12 @@
     try{live.inputAnalyser?.disconnect();}catch{}
     live.micStream?.getTracks().forEach(track=>track.stop());
     live.micStream=null;
+    live.micTrack=null;
     live.inputSource=null;
     live.inputProcessor=null;
     live.inputSilence=null;
     live.inputAnalyser=null;
-    live.pendingPcm=[];
-    live.pendingPcmBytes=0;
+    resetGeminiLocalVad(live);
     live.inputLevel=0;
     live.micMeterMode='waiting';
     live.voiceWaveUntil=0;
@@ -3841,9 +4164,32 @@
   function disposeGeminiAudio(live){
     clearGeminiPlayback(live);
     try{live.outputGain?.disconnect();}catch{}
-    if(live.audioContext&&live.audioContext.state!=='closed')live.audioContext.close().catch(()=>{});
+    if(live.audioContext){
+      live.audioContext.onstatechange=null;
+      if(live.audioContext.state!=='closed')live.audioContext.close().catch(()=>{});
+    }
     live.outputGain=null;
     live.audioContext=null;
+  }
+  function suspendGeminiLiveSession(reason='page hidden'){
+    const live=geminiLive;
+    if(!live||live.closing)return;
+    live.connectionEpoch=(live.connectionEpoch||0)+1;
+    live.pageSuspended=true;
+    clearGeminiReconnectTimer(live);
+    clearGeminiGoAwayTimer(live);
+    clearGeminiMicWatchdog(live);
+    live.tokenAbortController?.abort();
+    live.tokenAbortController=null;
+    releaseGeminiWakeLock(live);
+    if(live.contextRestartTimer)clearTimeout(live.contextRestartTimer);
+    live.contextRestartTimer=null;
+    releaseGeminiMicrophone(live,true);
+    clearGeminiPlayback(live);
+    closeGeminiTransport(live,reason);
+    live.transportConnecting=null;
+    geminiLiveConnecting=null;
+    live.responseInFlight=false;
   }
   function stopGeminiLiveSession(reason=''){
     const live=geminiLive;
@@ -3852,6 +4198,14 @@
     geminiLive=null;
     geminiLiveConnecting=null;
     live.closing=true;
+    live.connectionEpoch=(live.connectionEpoch||0)+1;
+    live.micEpoch=(live.micEpoch||0)+1;
+    clearGeminiReconnectTimer(live);
+    clearGeminiGoAwayTimer(live);
+    clearGeminiMicWatchdog(live);
+    live.tokenAbortController?.abort();
+    live.tokenAbortController=null;
+    releaseGeminiWakeLock(live);
     if(live.contextRestartTimer)clearTimeout(live.contextRestartTimer);
     live.contextRestartTimer=null;
     releaseGeminiMicrophone(live,false);
@@ -3860,6 +4214,8 @@
       try{live.socket.close(1000,reason.slice(0,110)||'session closed');}catch{}
     }
     live.socket=null;
+    live.transportConnecting=null;
+    live.sessionResumptionHandle='';
     setVpMicButton('idle');
   }
   function scheduleGeminiPcm(live,inlineData){
@@ -3879,6 +4235,7 @@
     source.onended=()=>{
       live.playbackNodes.delete(source);
       syncCookYoutubeDucking();
+      if(!live.playbackNodes.size&&live.pendingContextRestart)scheduleGeminiContextRestart(live);
     };
     live.playbackNodes.add(source);
     syncCookYoutubeDucking();
@@ -3961,6 +4318,11 @@
         return {ok:false,error:'허용되지 않은 도구 요청이에요.'};
     }
   }
+  function stableGeminiToolArgs(value){
+    if(Array.isArray(value))return value.map(stableGeminiToolArgs);
+    if(value&&typeof value==='object')return Object.keys(value).sort().reduce((result,key)=>{result[key]=stableGeminiToolArgs(value[key]);return result;},{});
+    return value;
+  }
   function handleGeminiToolCall(live,toolCall){
     const calls=Array.isArray(toolCall?.functionCalls)?toolCall.functionCalls:[];
     if(!calls.length||!isGeminiLiveOpen(live))return;
@@ -3970,8 +4332,23 @@
       if(live.cancelledToolCalls?.has(call.id)){
         return {id:call.id,name:call.name,response:{error:'취소된 도구 요청이에요.'}};
       }
-      try{return {id:call.id,name:call.name,response:{result:runGeminiTool(live,call.name,call.args)}};}
-      catch(error){return {id:call.id,name:call.name,response:{error:error.message||'도구 실행에 실패했어요.'}};}
+      if(live.toolCallResults?.has(call.id))return live.toolCallResults.get(call.id);
+      const commandKey=(live.commandEpoch||0)+':'+call.name+':'+JSON.stringify(stableGeminiToolArgs(call.args||{}));
+      const priorCommand=live.toolCommandResults?.get(commandKey);
+      if(priorCommand){
+        const repeated={id:call.id,name:call.name,response:priorCommand.response};
+        live.toolCallResults?.set(call.id,repeated);
+        if(live.toolCallResults?.size>256)live.toolCallResults.delete(live.toolCallResults.keys().next().value);
+        return repeated;
+      }
+      let response;
+      try{response={id:call.id,name:call.name,response:{result:runGeminiTool(live,call.name,call.args)}};}
+      catch(error){response={id:call.id,name:call.name,response:{error:error.message||'도구 실행에 실패했어요.'}};}
+      live.toolCallResults?.set(call.id,response);
+      if(live.toolCallResults?.size>256)live.toolCallResults.delete(live.toolCallResults.keys().next().value);
+      live.toolCommandResults?.set(commandKey,{response:response.response});
+      if(live.toolCommandResults?.size>256)live.toolCommandResults.delete(live.toolCommandResults.keys().next().value);
+      return response;
     });
     try{sendGeminiLiveMessage(live,{toolResponse:{functionResponses}});}
     finally{
@@ -3992,9 +4369,11 @@
       setVpVoiceHint('말하면 입력 막대와 전사가 표시돼요.');
     }
     if(content.inputTranscription?.text){
-      live.responseInFlight=true;
-      panel?.classList.remove('thinking','answering');
-      panel?.classList.add('listening');
+      const completed=ensureVpTranscriptState(live).complete;
+      if(!completed){
+        panel?.classList.remove('thinking','answering');
+        panel?.classList.add('listening');
+      }
       updateVpTranscript(live,'user',content.inputTranscription.text);
     }
     for(const part of content.modelTurn?.parts||[]){
@@ -4002,11 +4381,13 @@
       if(part.inlineData)scheduleGeminiPcm(live,part.inlineData);
     }
     if(content.outputTranscription?.text){
-      live.responseInFlight=true;
-      panel?.classList.remove('thinking','listening');
-      panel?.classList.remove('mic-active');
-      panel?.classList.add('answering');
-      setVpVoiceHint('냄비가 답하고 있어요.');
+      const completed=ensureVpTranscriptState(live).complete;
+      if(!completed){
+        panel?.classList.remove('thinking','listening');
+        panel?.classList.remove('mic-active');
+        panel?.classList.add('answering');
+        setVpVoiceHint('냄비가 답하고 있어요.');
+      }
       updateVpTranscript(live,'assistant',content.outputTranscription.text);
     }
     if(content.turnComplete){
@@ -4023,12 +4404,42 @@
   }
   function handleGeminiLiveMessage(live,message){
     if(geminiLive!==live||live.closing)return;
+    const resumption=message.sessionResumptionUpdate;
+    if(resumption?.resumable&&typeof resumption.newHandle==='string'&&resumption.newHandle){
+      live.sessionResumptionHandle=resumption.newHandle;
+      live.resumeCheckpointSafe=true;
+      clearGeminiResumeReplay(live);
+      live.resumeFailureCount=0;
+      if(live.pendingContextRestart)scheduleGeminiContextRestart(live);
+    }
     if(message.serverContent)handleGeminiServerContent(live,message.serverContent);
     if(message.toolCall)handleGeminiToolCall(live,message.toolCall);
     if(message.toolCallCancellation?.ids){
-      message.toolCallCancellation.ids.forEach(id=>live.cancelledToolCalls.add(id));
+      message.toolCallCancellation.ids.forEach(id=>{
+        live.cancelledToolCalls.add(id);
+        if(live.cancelledToolCalls.size>256)live.cancelledToolCalls.delete(live.cancelledToolCalls.values().next().value);
+      });
     }
-    if(message.goAway){setVpLiveStatus('Gemini Live 세션이 곧 종료돼요. 다음 질문에서 다시 연결할게요.','');}
+    if(message.goAway){
+      setVpLiveStatus('Gemini Live 세션이 곧 종료돼요. 다음 질문에서 다시 연결할게요.','');
+      clearGeminiGoAwayTimer(live);
+      const raw=message.goAway.timeLeft;
+      const seconds=typeof raw==='number'?raw:Number(String(raw||'').replace(/s$/,''));
+      const deadline=Date.now()+(Number.isFinite(seconds)?Math.max(0,seconds*1000):0);
+      live.goAwayDeadline=deadline;
+      const handoff=()=>{
+        live.goAwayTimer=null;
+        if(geminiLive!==live||live.closing||!hf3On)return;
+        const busy=live.vadSpeaking||live.responseInFlight||live.toolResponsePending||live.playbackNodes?.size;
+        const remaining=deadline-Date.now();
+        if(busy&&remaining>1200){
+          live.goAwayTimer=setTimeout(handoff,Math.min(250,Math.max(40,remaining-1200)));
+          return;
+        }
+        void ensureGeminiLiveTransport(live,{force:true,reason:'server goAway'}).catch(()=>scheduleGeminiReconnect(live,{immediate:true}));
+      };
+      live.goAwayTimer=setTimeout(handoff,0);
+    }
   }
   async function decodeGeminiLiveMessage(data){
     if(typeof data==='string')return data;
@@ -4036,14 +4447,19 @@
     if(data instanceof ArrayBuffer)return new TextDecoder().decode(data);
     return String(data||'');
   }
-  function openGeminiLiveSocket(live,data){
+  function openGeminiLiveSocket(live,data,connectionEpoch=live?.connectionEpoch){
     return new Promise((resolve,reject)=>{
       const token=String(data?.token||'');
       const setup=data?.liveSetup;
       if(!token||!setup)throw new Error('Gemini Live 연결 정보를 받지 못했어요.');
       const socket=new WebSocket(GEMINI_LIVE_WSS+'?access_token='+encodeURIComponent(token));
       let settled=false;
-      const timer=setTimeout(()=>finish(reject,new Error('Gemini Live 연결 시간이 초과됐어요.')),15000);
+      const timer=setTimeout(()=>{
+        try{socket.close(4000,'setup timeout');}catch{}
+        const error=new Error('Gemini Live 연결 시간이 초과됐어요.');
+        error.geminiSetupFailed=true;
+        finish(reject,error);
+      },15000);
       function finish(callback,value){
         if(settled)return;
         settled=true;
@@ -4052,19 +4468,19 @@
       }
       live.socket=socket;
       socket.onopen=()=>{
-        if(live.socket!==socket||live.closing)return;
+        if(live.socket!==socket||live.closing||live.connectionEpoch!==connectionEpoch)return;
         try{
           setVpLiveStatus('Gemini Live 연결을 확인하고 있어요.','');
           setVpVoiceHint('마이크 입력은 준비됐어요. 잠시만 기다려 주세요.');
           socket.send(JSON.stringify({setup}));
         }
-        catch(error){finish(reject,error);}
+        catch(error){error.geminiSetupFailed=true;finish(reject,error);}
       };
       socket.onmessage=async event=>{
-        if(live.socket!==socket||live.closing)return;
+        if(live.socket!==socket||live.closing||live.connectionEpoch!==connectionEpoch)return;
         let message;
         try{message=JSON.parse(await decodeGeminiLiveMessage(event.data));}catch{return;}
-        if(live.socket!==socket||live.closing)return;
+        if(live.socket!==socket||live.closing||live.connectionEpoch!==connectionEpoch)return;
         if(message.setupComplete){
           live.ready=true;
           flushGeminiPcm(live);
@@ -4086,79 +4502,75 @@
         }
         handleGeminiLiveMessage(live,message);
       };
-      socket.onerror=()=>{
-        if(live.socket===socket)finish(reject,new Error('Gemini Live WebSocket 연결에 실패했어요.'));
-      };
-      socket.onclose=()=>{
+      socket.onerror=()=>{};
+      socket.onclose=event=>{
         if(live.socket!==socket)return;
-        if(!live.ready)finish(reject,new Error('Gemini Live 세션이 시작되기 전에 종료됐어요.'));
+        const wasReady=live.ready;
+        const closeDetail=[event?.code,event?.reason].filter(Boolean).join(' ');
+        if(!wasReady){
+          const error=new Error('Gemini Live 세션이 시작되기 전에 종료됐어요.'+(closeDetail?' ('+closeDetail+')':''));
+          error.geminiSetupFailed=true;
+          error.geminiCloseCode=Number(event?.code)||0;
+          finish(reject,error);
+        }
         if(live.closing)return;
-        releaseGeminiMicrophone(live,false);
-        disposeGeminiAudio(live);
+        if(!live.resumeCheckpointSafe&&live.resumeReplay?.length)stageGeminiResumeReplay(live);
+        live.ready=false;
+        live.responseInFlight=false;
+        live.socket=null;
+        clearGeminiGoAwayTimer(live);
+        clearGeminiPlayback(live);
+        console.warn('Gemini Live socket closed',{code:event?.code,reason:event?.reason||'',wasClean:!!event?.wasClean});
         if(geminiLive===live){
-          geminiLive=null;
-          setVpMicButton('idle');
+          setVpMicButton(live.micStream?'listening':'idle');
           setVpLiveStatus('Gemini Live 세션이 종료됐어요. 다음 질문에서 다시 연결할게요.','');
-          setVpVoiceHint('마이크 버튼을 눌러 다시 연결할 수 있어요.');
-          setVpInputMeter(0,'Gemini Live 연결이 종료됐어요.',false);
+          setVpVoiceHint(live.micStream?'마이크는 계속 대기하며 연결을 자동으로 복구해요.':'마이크를 누르면 음성 대화를 이어갈 수 있어요.');
+          if(live.micStream)scheduleGeminiReconnect(live,{immediate:true});
         }
       };
     });
   }
-  function withGeminiLiveTimeout(promise,timeoutMs,message){
+  function withGeminiLiveTimeout(promise,timeoutMs,message,onTimeout){
     return new Promise((resolve,reject)=>{
-      const timer=setTimeout(()=>reject(new Error(message)),timeoutMs);
+      const timer=setTimeout(()=>{try{onTimeout?.();}catch{}reject(new Error(message));},timeoutMs);
       Promise.resolve(promise).then(value=>{clearTimeout(timer);resolve(value);},error=>{clearTimeout(timer);reject(error);});
     });
   }
   async function ensureGeminiLive({captureMicrophone=false}={}){
-    if(isGeminiLiveOpen()){
-      if(captureMicrophone)await startGeminiMicrophone(geminiLive);
-      return geminiLive;
+    let live=geminiLive;
+    if(!live||live.closing){
+      live={
+        socket:null,ready:false,closing:false,pageSuspended:false,connectionEpoch:0,transportConnecting:null,tokenAbortController:null,reconnectTimer:null,reconnectAttempt:0,goAwayTimer:null,wakeLock:null,wakeLockRequest:null,
+        sessionResumptionHandle:'',resumeCheckpointSafe:false,resumeFailureCount:0,
+        micStream:null,micTrack:null,micStartPromise:null,micRecovering:false,inputSource:null,inputProcessor:null,inputSilence:null,inputAnalyser:null,
+        audioContext:null,outputGain:null,playbackNodes:new Set(),nextAudioTime:0,pendingPcm:[],pendingPcmBytes:0,resumeReplay:[],resumeReplayBytes:0,
+        vadSpeaking:false,vadStartFrames:0,vadSilenceMs:0,vadPreRoll:[],vadPreRollMs:0,
+        capturedAudioFrames:0,capturedAudioBytes:0,sentAudioFrames:0,sentAudioBytes:0,activeAudioFrames:0,lastAudioAt:0,lastNonSilentAt:0,inputLevel:0,micMeterMode:'waiting',micWatchdog:null,
+        transcript:null,commandEpoch:0,cancelledToolCalls:new Set(),toolCallResults:new Map(),toolCommandResults:new Map(),toolResponsePending:false,pendingStopReason:'',responseInFlight:false,
+        contextKey:'',pendingContextRestart:false,contextRestartTimer:null,contextRestarting:false
+      };
+      geminiLive=live;
+      setVpMicButton('busy');
+      setVpLiveStatus('Gemini Live 세션을 준비하고 있어요.','');
+      setVpVoiceHint('마이크와 Gemini Live 연결을 준비하고 있어요.');
+      setVpInputMeter(0,'마이크 입력을 기다리고 있어요.',false);
     }
-    if(geminiLive?.contextRestarting){
-      if(captureMicrophone)await startGeminiMicrophone(geminiLive);
-      return geminiLive;
-    }
-    if(geminiLiveConnecting){
-      const live=await geminiLiveConnecting;
-      if(captureMicrophone)await startGeminiMicrophone(live);
-      return live;
-    }
-    const live={
-      socket:null,ready:false,closing:false,micStream:null,inputSource:null,inputProcessor:null,inputSilence:null,
-      audioContext:null,outputGain:null,playbackNodes:new Set(),nextAudioTime:0,pendingPcm:[],pendingPcmBytes:0,
-      capturedAudioFrames:0,capturedAudioBytes:0,sentAudioFrames:0,sentAudioBytes:0,activeAudioFrames:0,lastAudioAt:0,lastNonSilentAt:0,inputLevel:0,micMeterMode:'waiting',micWatchdog:null,
-      transcript:null,cancelledToolCalls:new Set(),toolResponsePending:false,pendingStopReason:'',responseInFlight:false,
-      contextKey:'',pendingContextRestart:false,contextRestartTimer:null,contextRestarting:false
-    };
-    geminiLive=live;
-    setVpMicButton('busy');
-    setVpLiveStatus('Gemini Live 세션을 준비하고 있어요.','');
-    setVpVoiceHint('마이크와 Gemini Live 연결을 준비하고 있어요.');
-    setVpInputMeter(0,'마이크 입력을 기다리고 있어요.',false);
+    void requestGeminiWakeLock(live);
     const outputReady=ensureGeminiAudioOutput(live);
     const microphoneReady=captureMicrophone?startGeminiMicrophone(live):Promise.resolve();
-    const connecting=(async()=>{
-      const payload=geminiLivePayload();
-      live.contextKey=payload.contextKey;
-      const data=await withGeminiLiveTimeout(postJson('/api/gemini-live-token',payload),12000,'Gemini Live 인증 정보를 받지 못했어요. 네트워크와 API 키 설정을 확인해 주세요.');
+    try{
       await Promise.all([outputReady,microphoneReady]);
       if(live.closing||geminiLive!==live)throw new Error('Gemini Live 연결이 취소됐어요.');
-      setVpLiveStatus('Gemini Live에 연결하고 있어요.','');
-      setVpVoiceHint('마이크 입력을 준비했어요. 연결이 끝나면 바로 전송할게요.');
-      await openGeminiLiveSocket(live,data);
-      if(captureMicrophone&&!live.micStream)await startGeminiMicrophone(live);
+      if(!isGeminiLiveOpen(live)){
+        setVpLiveStatus('Gemini Live에 연결하고 있어요.','');
+        setVpVoiceHint('마이크 입력을 준비했어요. 연결이 끝나면 바로 전송할게요.');
+        await ensureGeminiLiveTransport(live,{reason:'voice activation'});
+      }
       setVpMicButton(live.micStream?'listening':'idle');
       return live;
-    })();
-    geminiLiveConnecting=connecting;
-    try{return await connecting;}
-    catch(error){
-      if(geminiLive===live)stopGeminiLiveSession('connection failed');
+    }catch(error){
+      if(geminiLive===live&&!live.closing&&live.micStream)scheduleGeminiReconnect(live);
       throw error;
-    }finally{
-      if(geminiLiveConnecting===connecting)geminiLiveConnecting=null;
     }
   }
   function geminiVoiceErrorMessage(error){
@@ -4186,10 +4598,10 @@
       const panel=document.getElementById('vpanel');
       panel?.classList.remove('connecting');
       setVpLiveStatus(geminiVoiceErrorMessage(error),'bad');
-      setVpVoiceHint('마이크 버튼을 눌러 다시 시도하세요.');
+      setVpVoiceHint(geminiLive?.micStream?'마이크는 계속 대기하며 연결을 자동으로 복구해요.':'마이크 버튼을 눌러 다시 시도하세요.');
       setVpInputMeter(0,'마이크 또는 연결을 다시 확인해 주세요.',false);
       setVpInputSource('입력 장치를 다시 확인해 주세요.');
-      setVpMicButton('error');
+      setVpMicButton(geminiLive?.micStream?'listening':'error');
       return null;
     }
   }
@@ -4388,9 +4800,37 @@
       case 'complete': show('complete');break;
     }
   }
+  function restoreGeminiLiveAfterInterruption(){
+    if(!hf3On||!document.getElementById('cook3')?.classList.contains('active')||document.visibilityState==='hidden')return;
+    const live=geminiLive;
+    if(!live){void activateGeminiLiveVoice();return;}
+    live.pageSuspended=false;
+    void requestGeminiWakeLock(live);
+    if(live.audioContext&&live.audioContext.state!=='running')void live.audioContext.resume().catch(()=>{});
+    const track=live.micStream?.getAudioTracks?.()[0];
+    if(!track||track.readyState!=='live')void recoverGeminiMicrophone(live,'page resumed');
+    else armGeminiMicWatchdog(live);
+    if(!isGeminiLiveOpen(live))scheduleGeminiReconnect(live,{immediate:true});
+  }
+  function markGeminiTransportOffline(){
+    const live=geminiLive;
+    if(!live||live.closing||!hf3On)return;
+    live.connectionEpoch=(live.connectionEpoch||0)+1;
+    closeGeminiTransport(live,'network offline');
+    live.transportConnecting=null;
+    geminiLiveConnecting=null;
+    setVpLiveStatus('네트워크 연결을 기다리고 있어요.','');
+    setVpVoiceHint('마이크는 계속 대기하며 온라인이 되면 자동으로 이어져요.');
+  }
   window.addEventListener('hashchange',applyHash);
   window.addEventListener('load',pinLandingTopSoon);
-  window.addEventListener('pagehide',()=>stopGeminiLiveSession('page hidden'));
+  window.addEventListener('online',restoreGeminiLiveAfterInterruption);
+  window.addEventListener('offline',markGeminiTransportOffline);
+  window.addEventListener('pageshow',restoreGeminiLiveAfterInterruption);
+  document.addEventListener('visibilitychange',()=>{
+    if(document.visibilityState==='visible')restoreGeminiLiveAfterInterruption();
+  });
+  window.addEventListener('pagehide',()=>suspendGeminiLiveSession('page hidden'));
   applyHash();
 
 </script>

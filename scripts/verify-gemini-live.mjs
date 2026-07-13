@@ -38,12 +38,20 @@ const systemInstruction = tokenData.liveSetup?.systemInstruction?.parts?.[0]?.te
 if (!systemInstruction.includes('후속 제안은 하지 않는다.') || !systemInstruction.includes('기본적으로 한 문장으로 답한다.')) {
   fail('Gemini Live의 간결 응답 시스템 프롬프트가 토큰 설정에 포함되지 않았습니다.');
 }
+const activityDetection = tokenData.liveSetup?.realtimeInputConfig?.automaticActivityDetection;
+if (!activityDetection || activityDetection.disabled === true || Number(activityDetection.silenceDurationMs) < 500) {
+  fail('Gemini Live 서버 자동 VAD 설정이 장시간 음성 대화용 setup에 포함되지 않았습니다.');
+}
+if (!tokenData.liveSetup?.sessionResumption || !tokenData.liveSetup?.contextWindowCompression?.slidingWindow) {
+  fail('Gemini Live session resumption/context window compression 설정이 누락됐습니다.');
+}
 debug('token issued');
 
 const summary = {
   setupComplete: false,
   outputTranscript: false,
   audioChunk: false,
+  sessionResumptionHandle: false,
   toolCall: false,
   toolResponseSent: false
 };
@@ -89,6 +97,9 @@ await new Promise((resolve, reject) => {
     }
 
     const content = message.serverContent;
+    if (message.sessionResumptionUpdate?.resumable && message.sessionResumptionUpdate.newHandle) {
+      summary.sessionResumptionHandle = true;
+    }
     if (content) {
       if (content.outputTranscription?.text) summary.outputTranscript = true;
       for (const part of content.modelTurn?.parts || []) {
@@ -135,7 +146,7 @@ await new Promise((resolve, reject) => {
   });
 });
 
-if (!summary.setupComplete || !summary.outputTranscript || !summary.audioChunk || !summary.toolCall || !summary.toolResponseSent) {
+if (!summary.setupComplete || !summary.outputTranscript || !summary.audioChunk || !summary.sessionResumptionHandle || !summary.toolCall || !summary.toolResponseSent) {
   fail(`Gemini Live 검증이 불완전합니다: ${JSON.stringify(summary)}`);
 }
 

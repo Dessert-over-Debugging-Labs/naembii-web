@@ -114,6 +114,15 @@ function clampNumber(value, fallback, min, max) {
   return Math.max(min, Math.min(max, parsed));
 }
 
+function resumeHandle(payload) {
+  const value = payload?.sessionResumptionHandle;
+  if (value === undefined || value === null || value === '') return '';
+  if (typeof value !== 'string' || value.length > 16384) {
+    throw new Error('세션 재개 정보가 올바르지 않습니다.');
+  }
+  return value;
+}
+
 function liveSystemInstruction(payload) {
   const recipe = clean(payload.recipe, 120) || '현재 레시피';
   const step = clean(payload.step, 160) || '현재 단계';
@@ -139,12 +148,22 @@ function liveSystemInstruction(payload) {
 }
 
 function liveConfig(payload) {
+  const sessionResumptionHandle = resumeHandle(payload);
   return {
     responseModalities: ['AUDIO'],
     temperature: 0.6,
     systemInstruction: liveSystemInstruction(payload),
     inputAudioTranscription: {},
     outputAudioTranscription: {},
+    realtimeInputConfig: {
+      automaticActivityDetection: {
+        disabled: false,
+        prefixPaddingMs: 100,
+        silenceDurationMs: 700
+      }
+    },
+    sessionResumption: sessionResumptionHandle ? { handle: sessionResumptionHandle } : {},
+    contextWindowCompression: { slidingWindow: {} },
     tools: LIVE_TOOLS
   };
 }
@@ -161,6 +180,9 @@ function liveSetup(model, config) {
     },
     inputAudioTranscription: config.inputAudioTranscription,
     outputAudioTranscription: config.outputAudioTranscription,
+    realtimeInputConfig: config.realtimeInputConfig,
+    sessionResumption: config.sessionResumption,
+    contextWindowCompression: config.contextWindowCompression,
     tools: config.tools
   };
 }

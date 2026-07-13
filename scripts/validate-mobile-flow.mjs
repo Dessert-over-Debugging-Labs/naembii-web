@@ -389,6 +389,11 @@ try {
         const respond = (data) => setTimeout(() => this.onmessage?.({ data: JSON.stringify(data) }), 16);
         if (message.setup) {
           respond({ setupComplete: {} });
+          respond({ sessionResumptionUpdate: { resumable: true, newHandle: 'mobile-test-resume-handle' } });
+          return;
+        }
+        if (message.realtimeInput?.audioStreamEnd === true) {
+          respond({ sessionResumptionUpdate: { resumable: true, newHandle: 'mobile-test-resume-handle' } });
           return;
         }
         const text = message.realtimeInput?.text || '';
@@ -421,6 +426,7 @@ try {
             outputTranscription: { text: name + ' 요청을 반영했어요.' },
             turnComplete: true
           } });
+          respond({ sessionResumptionUpdate: { resumable: true, newHandle: 'mobile-test-resume-handle' } });
           return;
         }
         respond({ serverContent: {
@@ -435,7 +441,8 @@ try {
     }
     window.fetch = (url, options) => {
       if (String(url).endsWith('/api/gemini-live-token')) {
-        tokenPayloads.push(JSON.parse(options?.body || '{}'));
+        const payload = JSON.parse(options?.body || '{}');
+        tokenPayloads.push(payload);
         return Promise.resolve(new Response(JSON.stringify({
           ok: true,
           token: 'auth_tokens/test-token',
@@ -445,6 +452,9 @@ try {
             generationConfig: { responseModalities: ['AUDIO'] },
             inputAudioTranscription: {},
             outputAudioTranscription: {},
+            realtimeInputConfig: { automaticActivityDetection: { disabled: false, silenceDurationMs: 700 } },
+            sessionResumption: payload.sessionResumptionHandle ? { handle: payload.sessionResumptionHandle } : {},
+            contextWindowCompression: { slidingWindow: {} },
             tools: [{ functionDeclarations: [] }]
           }
         }), { status: 200, headers: { 'content-type': 'application/json' } }));
@@ -497,19 +507,28 @@ try {
       };
       const signal = new Float32Array(2048);
       for (let index = 0; index < signal.length; index += 1) signal[index] = Math.sin(index / 9) * 0.14;
+      const streamEndsBeforeVad = window.__geminiMessages.filter((message) => message.realtimeInput?.audioStreamEnd === true).length;
+      const sentBeforeSilence = geminiLive.sentAudioFrames;
+      geminiLive.inputProcessor.onaudioprocess?.({ inputBuffer: { getChannelData: () => new Float32Array(2048) } });
+      const silentFramesBeforeSpeech = geminiLive.sentAudioFrames - sentBeforeSilence;
+      geminiLive.inputProcessor.onaudioprocess?.({ inputBuffer: { getChannelData: () => signal } });
       geminiLive.inputProcessor.onaudioprocess?.({ inputBuffer: { getChannelData: () => signal } });
       const voiceActivity = {
         panelMicActive: document.getElementById('vpanel').classList.contains('mic-active'),
         waveVisible: getComputedStyle(document.querySelector('.vp-input-wave')).display !== 'none'
       };
       await new Promise((resolve) => setTimeout(resolve, 260));
-      geminiLive.inputProcessor.onaudioprocess?.({ inputBuffer: { getChannelData: () => new Float32Array(2048) } });
+      for (let index = 0; index < 10; index += 1) {
+        geminiLive.inputProcessor.onaudioprocess?.({ inputBuffer: { getChannelData: () => new Float32Array(2048) } });
+      }
       voiceActivity.waveHidesWhenSilent = !document.getElementById('vpanel').classList.contains('mic-active') && getComputedStyle(document.querySelector('.vp-input-wave')).display === 'none';
       await new Promise((resolve) => setTimeout(resolve, 80));
       const audioTransport = {
         capturedFrames: geminiLive.capturedAudioFrames,
         sentFrames: geminiLive.sentAudioFrames,
         sentBytes: geminiLive.sentAudioBytes,
+        silentFramesBeforeSpeech,
+        vadStreamEnds: window.__geminiMessages.filter((message) => message.realtimeInput?.audioStreamEnd === true).length - streamEndsBeforeVad,
         inputTranscript: [...document.querySelectorAll('#vpTranscript .vp-transcript-entry')].map((entry) => entry.textContent.trim()),
         keepsCompact: document.getElementById('vpanel').classList.contains('compact'),
         ctrlHeight: Math.round(document.getElementById('cook3Ctrl').getBoundingClientRect().height)
@@ -570,6 +589,7 @@ try {
         initialStep: initialContextPayload.step || '',
         refreshedStep: tokenPayloads.at(-1)?.step || '',
         refreshedNotes: tokenPayloads.at(-1)?.stepNotes || '',
+        sessionResumptionHandle: tokenPayloads.at(-1)?.sessionResumptionHandle || '',
         activeStep: document.querySelector('#cookTrack3 .scard.active')?.dataset.i || '',
         contextKey: geminiLive?.contextKey || '',
         micLive: !!geminiLive?.micStream && geminiLive.micStream.getAudioTracks().every((track) => track.readyState === 'live'),
@@ -726,7 +746,7 @@ try {
   if (assistant.deviceSwitch.inputDeviceId !== 'mic-usb' || !assistant.deviceSwitch.inputDeviceLabel.includes('USB Studio Microphone') || assistant.deviceSwitch.microphoneRequests < 2 || !assistant.deviceSwitch.requestedDeviceIds.includes('mic-usb') || !assistant.deviceSwitch.micLive || !assistant.deviceSwitch.sessionReady) {
     throw new Error('입력 장치 전환과 Live 세션 유지를 확인하지 못했습니다.');
   }
-  if (assistant.audioTransport.capturedFrames < 1 || assistant.audioTransport.sentFrames < 1 || assistant.audioTransport.sentBytes < 100 || !assistant.audioTransport.inputTranscript.some((line) => line.includes('음성 입력')) || !assistant.audioTransport.keepsCompact || assistant.audioTransport.ctrlHeight > assistant.opened.ctrlHeight + 2) {
+  if (assistant.audioTransport.capturedFrames < 3 || assistant.audioTransport.sentFrames < 2 || assistant.audioTransport.sentBytes < 100 || assistant.audioTransport.silentFramesBeforeSpeech !== 0 || assistant.audioTransport.vadStreamEnds < 1 || !assistant.audioTransport.inputTranscript.some((line) => line.includes('음성 입력')) || !assistant.audioTransport.keepsCompact || assistant.audioTransport.ctrlHeight > assistant.opened.ctrlHeight + 2) {
     throw new Error('마이크 PCM 입력과 Gemini 전사 표시가 함께 동작하지 않습니다.');
   }
   if (!assistant.compactTranscript.keepsCompact || assistant.compactTranscript.ctrlHeight > assistant.opened.ctrlHeight + 2 || !/auto|scroll/.test(assistant.compactTranscript.scrollOverflowY) || assistant.compactTranscript.scrollHeight <= assistant.compactTranscript.scrollClientHeight || !assistant.compactTranscript.scrollMoved) {
@@ -744,7 +764,7 @@ try {
   if (!/auto|scroll/.test(assistant.resized.scrollOverflowY) || assistant.resized.scrollHeight <= assistant.resized.scrollClientHeight || !assistant.resized.scrollMoved) {
     throw new Error('요리비서 긴 답변이 패널 내부에서 스크롤되지 않습니다.');
   }
-  if (assistant.contextRefresh.tokenRequests < 2 || !assistant.contextRefresh.initialStep.includes('1/5') || !assistant.contextRefresh.refreshedStep.includes('3/5') || !assistant.contextRefresh.refreshedNotes.includes('양파') || assistant.contextRefresh.activeStep !== '2' || !assistant.contextRefresh.contextKey.includes(':cooking:3') || !assistant.contextRefresh.micLive || assistant.contextRefresh.microphoneRequests !== assistant.deviceSwitch.microphoneRequests) {
+  if (assistant.contextRefresh.tokenRequests < 2 || !assistant.contextRefresh.initialStep.includes('1/5') || !assistant.contextRefresh.refreshedStep.includes('3/5') || !assistant.contextRefresh.refreshedNotes.includes('양파') || assistant.contextRefresh.sessionResumptionHandle !== 'mobile-test-resume-handle' || assistant.contextRefresh.activeStep !== '2' || !assistant.contextRefresh.contextKey.includes(':cooking:3') || !assistant.contextRefresh.micLive || assistant.contextRefresh.microphoneRequests !== assistant.deviceSwitch.microphoneRequests) {
     throw new Error('조리 단계 이동 뒤 Gemini Live 프롬프트를 현재 단계로 재연결하지 못했습니다.');
   }
   if (assistant.afterTimerStep !== '2' || assistant.timerTotalAfterTool !== 60 || assistant.afterNextStep !== '3') {
