@@ -147,41 +147,81 @@
         .phone-showcase{width:min(48vw,270px);}
         .phone-frame{border-radius:30px;padding:8px;}
         .phone-frame img{border-radius:23px;}
+        .mobile-condense-hide{display:none;}
+        .section{padding:48px 24px;}
+        .section-head{margin-bottom:20px;}
+        .screens{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;overscroll-behavior-x:contain;margin-right:-24px;padding:0 24px 8px 0;}
+        .screens::-webkit-scrollbar{display:none;}
+        .screen-card{flex:0 0 210px;scroll-snap-align:start;}
+        .assistant-examples{display:none;}
+        .forms{grid-template-columns:1fr 1fr;}
+        .form-panel{padding:20px;border-radius:18px;}
+        .form-panel h3{font-size:22px;}
+        .beta-form input,.beta-form select,.beta-form textarea{padding:11px 12px;font-size:14px;}
+        .beta-form textarea{min-height:82px;}
       }
       @media (max-width:620px){
         .nav-inner{padding:13px 16px;}
         .brand{font-size:28px;}
         .nav-cta{padding:10px 13px;font-size:13px;}
-        .hero{padding:22px 16px 34px;gap:18px;align-items:start;}
+        .hero{padding:18px 16px 28px;gap:14px;align-items:start;}
         .eyebrow{font-size:12px;padding:7px 10px;}
-        h1{margin-top:12px;font-size:36px;line-height:1.04;word-break:keep-all;}
-        .hero-copy{margin-top:12px;font-size:14px;line-height:1.45;word-break:keep-all;}
+        h1{margin-top:10px;font-size:34px;line-height:1.04;word-break:keep-all;}
+        .hero-copy{margin-top:10px;font-size:13px;line-height:1.43;word-break:keep-all;}
         .copy-desktop{display:none;}
         .copy-mobile{display:inline;}
         .hero-helper{margin-top:10px;padding:10px 12px;border-radius:14px;}
         .hero-helper i{width:30px;height:30px;border-radius:10px;}
         .hero-helper b{font-size:15px;}
         .hero-helper span{display:none;}
-        .hero-actions{display:grid;grid-template-columns:1fr;gap:8px;margin-top:14px;}
+        .hero-actions{display:grid;grid-template-columns:1fr;gap:8px;margin-top:12px;}
         .hero-actions .primary{grid-column:auto;}
         .hero-actions .btn.light svg{display:none;}
         .btn{width:100%;min-height:46px;border-radius:14px;padding:0 10px;font-size:14px;}
-        .phone-showcase{width:min(54vw,174px);margin:0 auto;}
+        .phone-showcase{width:min(50vw,160px);margin:0 auto;}
         .phone-frame{border-radius:26px;padding:6px;}
         .phone-frame img{border-radius:20px;}
         .hero-proof{display:none;}
-        .section{padding:48px 16px;}
+        .section{padding:34px 16px;}
+        .mobile-condense-hide{display:none;}
+        .section-head{gap:8px;margin-bottom:16px;}
+        .section-kicker{font-size:11px;margin-bottom:9px;}
+        h2{font-size:27px;line-height:1.12;}
+        .section-head p{font-size:13px;line-height:1.45;}
+        #screens .section{padding:30px 16px 26px;}
         .screens{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;overscroll-behavior-x:contain;margin-right:-16px;padding:0 16px 8px 0;}
         .screens::-webkit-scrollbar{display:none;}
-        .screen-card{display:block;flex:0 0 min(78vw,280px);scroll-snap-align:start;}
-        .screen-shot{width:100%;margin:0 auto 14px;border-radius:18px;padding:5px;}
-        .screen-shot img{border-radius:13px;}
+        .screen-card{display:block;flex:0 0 142px;scroll-snap-align:start;padding:10px;}
+        .screen-shot{width:100%;margin:0 auto 9px;border-radius:14px;padding:4px;}
+        .screen-shot img{border-radius:10px;}
+        .screen-card b{font-size:13px;margin-bottom:0;}
+        .screen-card span{display:none;}
         .roadmap{grid-template-columns:1fr;}
+        #assistant .section{padding:34px 16px;}
+        .assistant-grid{gap:14px;}
+        .assistant-copy p{margin-top:10px;font-size:14px;line-height:1.45;}
+        .assistant-copy .hero-actions{display:none;}
         .assistant-demo{padding:18px;}
-        .assistant-choice{padding:18px;}
-        .assistant-choice h3{font-size:23px;}
+        .assistant-examples{display:none;}
+        .assistant-choice{padding:14px;}
+        .assistant-choice h3{font-size:20px;}
+        .assistant-choice>p{display:none;}
+        .choice-group{gap:7px;margin-bottom:10px;}
         .choice-row{display:grid;grid-template-columns:1fr 1fr;}
-        .choice-chip{width:100%;padding:0 8px;font-size:12px;}
+        .choice-chip{width:100%;min-height:34px;padding:0 8px;font-size:12px;}
+        .assistant-result{padding:12px;}
+        .assistant-result b{font-size:18px;}
+        .assistant-result span{font-size:13px;line-height:1.42;margin-bottom:10px;}
+        .assistant-result a{min-height:38px;font-size:13px;}
+        #beta .section{padding:32px 16px 34px;}
+        .forms{gap:12px;}
+        .form-panel{border-radius:16px;padding:16px;}
+        .form-panel h3{font-size:21px;}
+        .form-panel p{font-size:13px;line-height:1.45;margin-bottom:12px;}
+        .beta-form{gap:9px;}
+        .beta-form label.mobile-optional{display:none;}
+        .beta-form input,.beta-form select,.beta-form textarea{border-radius:12px;padding:11px 12px;font-size:14px;}
+        .beta-form button{height:46px;border-radius:14px;font-size:14px;}
         .bubble.user{margin-left:18px;}
         .bubble.answer{margin-right:18px;}
         .footer{padding:26px 16px 38px;display:grid;}
@@ -223,7 +263,7 @@
         </div>
         <div class="phone-showcase">
           <div class="phone-frame">
-            <img src="/assets/screens/naembi-core-flow.gif" alt="콘치즈 불닭볶음면을 고르고 따라하는 냄비 핵심 기능 흐름" width="390" height="844">
+            <img src="/assets/screens/naembi-core-flow.gif" alt="콘치즈 불닭볶음면을 고르고 음성비서로 질문하며 따라하는 냄비 핵심 기능 흐름" width="390" height="844">
           </div>
         </div>
       </section>
@@ -262,7 +302,7 @@
         </div>
       </section>
 
-      <section class="section" aria-label="서비스 사용 흐름">
+      <section class="section mobile-condense-hide" aria-label="서비스 사용 흐름">
         <div class="section-head">
           <div>
             <span class="section-kicker">이럴 때 필요해요</span>
@@ -317,7 +357,7 @@
               </div>
             </div>
           </div>
-          <div class="assistant-grid" style="margin-top:24px;">
+          <div class="assistant-grid assistant-examples" style="margin-top:24px;">
             <div class="assistant-demo" aria-label="요리비서 답변 예시">
               <div class="assistant-head">
                 <i data-lucide="bot"></i>
@@ -346,7 +386,7 @@
         </div>
       </section>
 
-      <section class="section" aria-label="출시 기대 기능">
+      <section class="section mobile-condense-hide" aria-label="출시 기대 기능">
         <div class="section-head">
           <div>
             <span class="section-kicker">앞으로 더 하고 싶은 것</span>
@@ -377,8 +417,8 @@
               <p>준비되면 안내를 받을 이메일을 남겨주세요.</p>
               <form class="beta-form" id="betaForm" onsubmit="submitBeta(event)">
                 <label>이메일<input name="email" type="email" autocomplete="email" placeholder="you@example.com" required></label>
-                <label>이름 또는 닉네임<input name="name" type="text" autocomplete="name" placeholder="예: 민지"></label>
-                <label>요리 스타일
+                <label class="mobile-optional">이름 또는 닉네임<input name="name" type="text" autocomplete="name" placeholder="예: 민지"></label>
+                <label class="mobile-optional">요리 스타일
                   <select name="profile">
                     <option value="beginner">요리 초보</option>
                     <option value="busy">빠른 한 끼가 필요한 사람</option>
@@ -386,19 +426,19 @@
                     <option value="guardian">가족 식사를 챙기는 사람</option>
                   </select>
                 </label>
-                <label>요리할 때 자주 막히는 상황<textarea name="note" placeholder="예: 영상 보면서 타이밍을 놓쳐요, 재료 대체가 늘 헷갈려요, 퇴근 후 빨리 따라 하고 싶어요"></textarea></label>
+                <label class="mobile-optional">요리할 때 자주 막히는 상황<textarea name="note" placeholder="예: 영상 보면서 타이밍을 놓쳐요, 재료 대체가 늘 헷갈려요, 퇴근 후 빨리 따라 하고 싶어요"></textarea></label>
                 <button type="submit"><i data-lucide="mail-check"></i>신청 보내기</button>
                 <p class="form-status" data-status></p>
               </form>
             </div>
             <div class="form-panel" id="recipe">
-              <h3>따라 하고 싶은 영상 보내기</h3>
-              <p>따라 하고 싶은 요리나 자주 보는 영상 링크를 남겨주세요.</p>
+              <h3>영상 제보하기</h3>
+              <p>따라 하고 싶은 요리나 자주 보는 영상 링크를 제보해주세요.</p>
               <form class="beta-form" id="recipeRequestForm" onsubmit="submitRecipeRequest(event)">
                 <label>요리 이름<input name="recipeName" type="text" placeholder="예: 류수영 어남선생 제육볶음" required></label>
                 <label>유튜브 링크 (선택)<input name="recipeUrl" type="url" placeholder="https://youtube.com/watch?v=..."></label>
-                <label>이메일 (선택)<input name="email" type="email" autocomplete="email" placeholder="반영 소식을 받아도 되는 이메일"></label>
-                <label>왜 보고 싶은가요?<textarea name="message" placeholder="예: 영상은 쉬워 보이는데 불 조절이 어려워요, 재료가 많아서 헷갈려요"></textarea></label>
+                <label class="mobile-optional">이메일 (선택)<input name="email" type="email" autocomplete="email" placeholder="반영 소식을 받아도 되는 이메일"></label>
+                <label class="mobile-optional">왜 보고 싶은가요?<textarea name="message" placeholder="예: 영상은 쉬워 보이는데 불 조절이 어려워요, 재료가 많아서 헷갈려요"></textarea></label>
                 <button type="submit"><i data-lucide="send"></i>요리 보내기</button>
                 <p class="form-status" data-status></p>
               </form>
@@ -431,6 +471,115 @@
         if(!res.ok)throw new Error(data.error||'전송 설정을 확인해야 합니다.');
         return data;
       }
+      const NAEMBI_ANALYTICS={
+        ready:false,
+        enabled:false,
+        environment:'local',
+        queue:[],
+        once:new Set()
+      };
+      function naembiIsMobile(){
+        return matchMedia('(max-width: 720px), (pointer: coarse)').matches;
+      }
+      function naembiUtmProps(){
+        const params=new URLSearchParams(location.search);
+        const props={};
+        ['utm_source','utm_medium','utm_campaign','utm_content','utm_term'].forEach(key=>{
+          const value=params.get(key);
+          if(value)props[key]=value.slice(0,120);
+        });
+        return props;
+      }
+      function naembiReferrerHost(){
+        try{return document.referrer?new URL(document.referrer).hostname:'';}catch{return '';}
+      }
+      function naembiSafeProps(props={}){
+        const blocked=new Set(['email','name','note','message','url','link','recipeUrl','recipe_url','raw_query','query','page']);
+        return Object.entries(props).reduce((acc,[key,value])=>{
+          if(blocked.has(key))return acc;
+          if(value===undefined||value===null||value==='')return acc;
+          if(typeof value==='string')acc[key]=value.slice(0,160);
+          else if(typeof value==='number'||typeof value==='boolean')acc[key]=value;
+          return acc;
+        },{});
+      }
+      function naembiBaseProps(props={}){
+        return {
+          app:'naembi-web',
+          phase:'beta',
+          environment:NAEMBI_ANALYTICS.environment,
+          surface:'landing',
+          path:location.pathname,
+          hash:location.hash.slice(0,120),
+          viewport_width:window.innerWidth,
+          viewport_height:window.innerHeight,
+          is_mobile:naembiIsMobile(),
+          ...naembiUtmProps(),
+          ...naembiSafeProps(props)
+        };
+      }
+      function naembiSendToMixpanel(event,props){
+        if(!NAEMBI_ANALYTICS.enabled||!window.mixpanel||typeof window.mixpanel.track!=='function')return;
+        try{window.mixpanel.track(event,props);}catch(error){console.warn('[naembi analytics]',error);}
+      }
+      function naembiTrack(event,props={}){
+        const payload=naembiBaseProps(props);
+        window.__naembiTrackedEvents=window.__naembiTrackedEvents||[];
+        window.__naembiTrackedEvents.push({event,props:payload});
+        if(typeof window.__naembiOnTrack==='function')window.__naembiOnTrack(event,payload);
+        if(!NAEMBI_ANALYTICS.ready){
+          NAEMBI_ANALYTICS.queue.push({event,props:payload});
+          return;
+        }
+        naembiSendToMixpanel(event,payload);
+      }
+      function naembiTrackOnce(event,props={}){
+        const key=event+':'+(props.once_key||props.surface||'landing');
+        if(NAEMBI_ANALYTICS.once.has(key))return;
+        NAEMBI_ANALYTICS.once.add(key);
+        naembiTrack(event,props);
+      }
+      function loadNaembiMixpanel(){
+        if(window.mixpanel&&typeof window.mixpanel.init==='function')return Promise.resolve();
+        return new Promise((resolve,reject)=>{
+          const script=document.createElement('script');
+          script.src='https://cdn.mxpnl.com/libs/mixpanel-2-latest.min.js';
+          script.async=true;
+          script.onload=resolve;
+          script.onerror=()=>reject(new Error('Mixpanel SDK 로드 실패'));
+          document.head.appendChild(script);
+        });
+      }
+      async function initNaembiAnalytics(){
+        try{
+          const response=await fetch('/api/public-config',{cache:'no-store'});
+          const config=response.ok?await response.json():{};
+          NAEMBI_ANALYTICS.environment=config.environment||NAEMBI_ANALYTICS.environment;
+          const mp=config.mixpanel||{};
+          NAEMBI_ANALYTICS.enabled=Boolean(mp.enabled&&mp.token);
+          if(NAEMBI_ANALYTICS.enabled){
+            await loadNaembiMixpanel();
+            window.mixpanel.init(mp.token,{
+              debug:Boolean(mp.debug),
+              track_pageview:false,
+              persistence:'localStorage'
+            });
+            window.mixpanel.register({
+              app:'naembi-web',
+              phase:'beta',
+              environment:NAEMBI_ANALYTICS.environment
+            });
+          }
+        }catch(error){
+          console.warn('[naembi analytics] disabled',error);
+          NAEMBI_ANALYTICS.enabled=false;
+        }finally{
+          NAEMBI_ANALYTICS.ready=true;
+          NAEMBI_ANALYTICS.queue.splice(0).forEach(item=>naembiSendToMixpanel(item.event,item.props));
+        }
+      }
+      window.naembiTrack=naembiTrack;
+      window.naembiTrackOnce=naembiTrackOnce;
       const assistantSurveyRecipes={
         trend:{title:'콘치즈 불닭볶음면',id:'vlPqkuHIdCc',text:'SNS에서 자주 보이는 메뉴라 영상으로 본 맛을 바로 따라 해보기 좋고, 치즈를 녹이는 타이밍만 잡으면 실패가 적어요.'},
         quick:{title:'명란 버터 파스타',id:'vHU4_QbslRA',text:'면수만 남겨두면 10분대에 끝낼 수 있어요. 짠맛이 걱정될 때는 냄비가 간 조절 포인트를 먼저 보여줍니다.'},
@@ -456,8 +605,24 @@
         btn.addEventListener('click',()=>{
           const group=btn.closest('[data-choice-group]');
           group?.querySelectorAll('.choice-chip').forEach(item=>item.classList.toggle('active',item===btn));
+          naembiTrack('assistant_survey_select',{
+            choice_group:group?.dataset.choiceGroup||'',
+            choice_value:btn.dataset.value||''
+          });
           updateAssistantSurvey();
         });
+      });
+      document.addEventListener('click',(event)=>{
+        const appLink=event.target.closest('a[href^="/app"]');
+        if(appLink){
+          naembiTrack('hero_cta_click',{
+            cta:'experience',
+            entrypoint:appLink.closest('.assistant-result')?'assistant_recommend':'landing',
+            target_hash:(appLink.getAttribute('href')||'').split('#')[1]||'home'
+          });
+        }
+        const betaLink=event.target.closest('a[href="#beta"]');
+        if(betaLink)naembiTrack('hero_cta_click',{cta:'beta_signup',entrypoint:'landing'});
       });
       async function submitBeta(event){
         event.preventDefault();
@@ -470,8 +635,10 @@
           await postJson('/api/beta-signup',payload);
           form.reset();
           setFormStatus(form,'신청이 접수됐습니다. 베타 안내를 이메일로 보내드릴게요.','ok');
+          naembiTrack('beta_signup_submit',{success:true,entrypoint:'landing',note_length:(data.note||'').length,profile:data.profile||''});
         }catch(error){
           setFormStatus(form,error.message||'전송에 실패했습니다. 잠시 후 다시 시도해주세요.','bad');
+          naembiTrack('beta_signup_submit',{success:false,entrypoint:'landing',profile:data.profile||''});
         }finally{
           setFormBusy(form,false);
         }
@@ -497,12 +664,31 @@
           await postJson('/api/feedback',payload);
           form.reset();
           setFormStatus(form,'레시피 요청이 접수됐습니다. 요청 목록에 반영하겠습니다.','ok');
+          naembiTrack('recipe_request_submit',{
+            success:true,
+            entrypoint:'landing',
+            has_youtube_url:Boolean(data.recipeUrl),
+            recipe_length:(data.recipeName||'').length,
+            request_length:(data.message||'').length
+          });
         }catch(error){
           setFormStatus(form,error.message||'전송에 실패했습니다. 잠시 후 다시 시도해주세요.','bad');
+          naembiTrack('recipe_request_submit',{
+            success:false,
+            entrypoint:'landing',
+            has_youtube_url:Boolean(data.recipeUrl),
+            recipe_length:(data.recipeName||'').length
+          });
         }finally{
           setFormBusy(form,false);
         }
       }
+      initNaembiAnalytics().then(()=>{
+        naembiTrackOnce('landing_view',{
+          once_key:'root',
+          referrer_host:naembiReferrerHost()
+        });
+      });
       if(window.lucide)lucide.createIcons();
     </script>
   </body>

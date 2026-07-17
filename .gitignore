@@ -13,3 +13,9 @@ scripts/ralph-figma/archive/
 scripts/ralph-figma/exports/*.png
 scripts/ralph-figma/.last-branch
 .env.local
+
+# 장시간 검증 cycle별 원본 점수표는 최종 요약 리포트만 커밋한다.
+docs/verify/LONG_DYNAMIC_SCORECARD_CYCLE_*
+
+# 로컬 브라우저 검증 산출물은 /tmp 기본 경로를 사용하고, 실수로 repo에 생성해도 커밋하지 않는다.
+reports/

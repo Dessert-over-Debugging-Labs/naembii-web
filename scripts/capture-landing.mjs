@@ -122,12 +122,29 @@ try {
     returnByValue: true,
     expression: `({
       width: window.innerWidth,
+      viewportHeight: window.innerHeight,
+      documentHeight: document.documentElement.scrollHeight,
       scrollY: window.scrollY,
       mobileMedia: matchMedia('(max-width:900px)').matches,
       path: location.pathname,
       headline: document.querySelector('h1')?.innerText || '',
       heroTop: Math.round(document.querySelector('.hero')?.getBoundingClientRect().top || 0),
       heroHeight: Math.round(document.querySelector('.hero')?.getBoundingClientRect().height || 0),
+      betaTop: Math.round((document.querySelector('#beta')?.getBoundingClientRect().top || 0) + window.scrollY),
+      landingSections: [...document.querySelectorAll('nav,.hero,main>section,.footer')].map((node, index) => {
+        const rect = node.getBoundingClientRect();
+        return {
+          index,
+          tag: node.tagName.toLowerCase(),
+          id: node.id || '',
+          className: String(node.className || ''),
+          label: node.getAttribute('aria-label') || node.querySelector('.section-kicker')?.textContent || '',
+          top: Math.round(rect.top + window.scrollY),
+          height: Math.round(rect.height),
+          bottom: Math.round(rect.bottom + window.scrollY)
+        };
+      }),
+      mobileScrollScreens: Math.round((document.documentElement.scrollHeight / window.innerHeight) * 100) / 100,
       hasCookingPromise: document.body.innerText.includes('SNS 요리 영상') && document.body.innerText.includes('따라 하다 막혔죠'),
       hasBetaCTA: document.body.innerText.includes('미리 써보기 신청') || document.body.innerText.includes('먼저 써보기 신청') || document.body.innerText.includes('출시 소식 받기'),
       hasMascotCopy: document.body.innerText.includes('작은 냄비가') || document.body.innerText.includes('옆에서 챙겨요'),

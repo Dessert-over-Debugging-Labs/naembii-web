@@ -53,6 +53,30 @@ npm run verify:dynamic
 npm run verify:visual
 ```
 
+음성비서의 권한 → 듣는 중 → transcript → 응답 → 오류 상태를 확인할 때:
+
+```bash
+PORT=4873 npm run dev
+npm run verify:voice-assistant -- http://127.0.0.1:4873 /tmp/naembi-voice-assistant-validation
+```
+
+사용자 문구의 구현 설명, 내부 용어, 이전 말투 재등장을 확인할 때:
+
+```bash
+npm run verify:copy-tone
+```
+
+말투 검토 경고까지 실패로 처리하려면 `npm run verify:copy-tone -- --strict`를 사용합니다. 세부 기준은 `docs/COPY_TONE_GUIDE_ko.md`에서 확인할 수 있습니다.
+
+Mixpanel 이벤트명, 공개 설정, 개인정보 원문 누락 여부를 확인할 때:
+
+```bash
+PORT=4873 npm run dev
+npm run verify:mixpanel -- http://127.0.0.1:4873
+```
+
+구현 범위와 실기기 검증 게이트는 `docs/VOICE_ASSISTANT_WEB_IMPLEMENTATION_ko.md`를 확인합니다.
+
 ## Vercel 앱 등록 방법
 
 1. Vercel 대시보드에서 `Add New...` → `Project`를 선택합니다.
@@ -115,5 +139,17 @@ NAEMBI_BETA_GITHUB_REPO=owner/repo
 NAEMBI_BETA_GITHUB_TOKEN=GITHUB_TOKEN_VALUE
 NAEMBI_BETA_GITHUB_LABELS=naembi-beta
 ```
+
+### Mixpanel 행동 분석
+
+Vercel `Environment Variables`에 아래 값을 넣고 재배포합니다. 브라우저에는 Project Token만 공개 설정으로 내려갑니다. API Secret, Service Account Secret, Slack/Gemini/Google 관련 비밀키는 `/api/public-config`에 포함하지 않습니다.
+
+```bash
+NAEMBI_MIXPANEL_TOKEN=MIXPANEL_PROJECT_TOKEN
+NAEMBI_MIXPANEL_ENABLED=true
+NAEMBI_MIXPANEL_DEBUG=false
+```
+
+현재 1차 이벤트는 랜딩 진입, 앱 열기, 검색, 레시피 선택, 조리 시작, 재료 보기, 타이머, 음성비서, 완료, 공유, 피드백/신청/레시피 요청입니다. 이메일, 피드백 본문, 레시피 요청 본문, 유튜브 URL 원문은 Mixpanel 이벤트 프로퍼티로 보내지 않습니다.
 
 전체 예시는 `.env.example`을 확인합니다.

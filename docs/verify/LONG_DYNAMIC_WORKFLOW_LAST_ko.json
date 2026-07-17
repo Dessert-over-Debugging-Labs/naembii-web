@@ -1,0 +1,1017 @@
+{
+  "startedAt": "2026-07-10T18:26:36.028Z",
+  "endedAt": "2026-07-10T18:27:10.088Z",
+  "status": "PASS",
+  "smoke": true,
+  "full": false,
+  "baseURL": "http://127.0.0.1:4873",
+  "durationMinutes": 0,
+  "intervalMinutes": 0,
+  "plannedCycles": 1,
+  "outDir": "/tmp/cook-wireframe-v3/long-dynamic-workflow",
+  "cycles": [
+    {
+      "cycle": 1,
+      "status": "PASS",
+      "startedAt": "2026-07-10T18:26:36.029Z",
+      "endedAt": "2026-07-10T18:27:10.087Z",
+      "durationMs": 34058,
+      "results": [
+        {
+          "cycle": 1,
+          "name": "check",
+          "command": "npm run check",
+          "status": "PASS",
+          "exitCode": 0,
+          "signal": "",
+          "startedAt": "2026-07-10T18:26:36.030Z",
+          "endedAt": "2026-07-10T18:26:36.199Z",
+          "durationMs": 169,
+          "timeoutMs": 90000,
+          "logPath": "/tmp/cook-wireframe-v3/long-dynamic-workflow/logs/cycle-1-check.log",
+          "stdoutTail": "> naembi-web@0.1.0 check\n> node scripts/check-app-script.mjs",
+          "stderrTail": "",
+          "parsed": null
+        },
+        {
+          "cycle": 1,
+          "name": "landing-mobile",
+          "command": "/opt/homebrew/Cellar/node/26.0.0/bin/node scripts/capture-landing.mjs http://127.0.0.1:4873/ /tmp/cook-wireframe-v3/long-dynamic-workflow/cycle-1/landing-mobile.png mobile 9711",
+          "status": "PASS",
+          "exitCode": 0,
+          "signal": "",
+          "startedAt": "2026-07-10T18:26:36.200Z",
+          "endedAt": "2026-07-10T18:26:40.448Z",
+          "durationMs": 4248,
+          "timeoutMs": 90000,
+          "logPath": "/tmp/cook-wireframe-v3/long-dynamic-workflow/logs/cycle-1-landing-mobile.log",
+          "stdoutTail": "ScreensUseHorizontalScroll\": true,\n  \"heroProofHiddenOnMobile\": true,\n  \"hasVisibleAppPreview\": true,\n  \"screenImages\": [\n    {\n      \"src\": \"/assets/screens/naembi-core-flow.gif\",\n      \"objectFit\": \"contain\",\n      \"width\": 148,\n      \"height\": 320,\n      \"naturalRatio\": 0.462,\n      \"renderedRatio\": 0.462,\n      \"ratioDelta\": 0,\n      \"visible\": true\n    },\n    {\n      \"src\": \"/assets/screens/app-home.png\",\n      \"objectFit\": \"contain\",\n      \"width\": 112,\n      \"height\": 242,\n      \"naturalRatio\": 0.462,\n      \"renderedRatio\": 0.462,\n      \"ratioDelta\": 0,\n      \"visible\": true\n    },\n    {\n      \"src\": \"/assets/screens/app-search.png\",\n      \"objectFit\": \"contain\",\n      \"width\": 112,\n      \"height\": 242,\n      \"naturalRatio\": 0.462,\n      \"renderedRatio\": 0.462,\n      \"ratioDelta\": 0,\n      \"visible\": true\n    },\n    {\n      \"src\": \"/assets/screens/app-detail.png\",\n      \"objectFit\": \"contain\",\n      \"width\": 112,\n      \"height\": 242,\n      \"naturalRatio\": 0.462,\n      \"renderedRatio\": 0.462,\n      \"ratioDelta\": 0,\n      \"visible\": true\n    },\n    {\n      \"src\": \"/assets/screens/app-cook.png\",\n      \"objectFit\": \"contain\",\n      \"width\": 112,\n      \"height\": 242,\n      \"naturalRatio\": 0.462,\n      \"renderedRatio\": 0.462,\n      \"ratioDelta\": 0,\n      \"visible\": true\n    },\n    {\n      \"src\": \"/assets/screens/app-complete.png\",\n      \"objectFit\": \"contain\",\n      \"width\": 112,\n      \"height\": 242,\n      \"naturalRatio\": 0.462,\n      \"renderedRatio\": 0.462,\n      \"ratioDelta\": 0,\n      \"visible\": true\n    }\n  ],\n  \"croppedScreenImages\": [],\n  \"forbiddenVisibleTerms\": []\n}",
+          "stderrTail": "",
+          "parsed": {
+            "out": "/tmp/cook-wireframe-v3/long-dynamic-workflow/cycle-1/landing-mobile.png",
+            "mode": "mobile",
+            "width": 390,
+            "viewportHeight": 844,
+            "documentHeight": 2957,
+            "scrollY": 0,
+            "mobileMedia": true,
+            "path": "/",
+            "headline": "SNS 요리 영상,\n따라 하다 막혔죠?",
+            "heroTop": 67,
+            "heroHeight": 724,
+            "betaTop": 2005,
+            "landingSections": [
+              {
+                "index": 0,
+                "tag": "nav",
+                "id": "",
+                "className": "nav",
+                "label": "냄비 랜딩 내비게이션",
+                "top": 0,
+                "height": 67,
+                "bottom": 67
+              },
+              {
+                "index": 1,
+                "tag": "section",
+                "id": "",
+                "className": "hero",
+                "label": "냄비 소개",
+                "top": 67,
+                "height": 724,
+                "bottom": 791
+              },
+              {
+                "index": 2,
+                "tag": "section",
+                "id": "screens",
+                "className": "band",
+                "label": "화면 미리보기",
+                "top": 791,
+                "height": 524,
+                "bottom": 1315
+              },
+              {
+                "index": 3,
+                "tag": "section",
+                "id": "",
+                "className": "section mobile-condense-hide",
+                "label": "서비스 사용 흐름",
+                "top": 0,
+                "height": 0,
+                "bottom": 0
+              },
+              {
+                "index": 4,
+                "tag": "section",
+                "id": "assistant",
+                "className": "band",
+                "label": "요리비서와 시작하기",
+                "top": 1315,
+                "height": 691,
+                "bottom": 2005
+              },
+              {
+                "index": 5,
+                "tag": "section",
+                "id": "",
+                "className": "section mobile-condense-hide",
+                "label": "출시 기대 기능",
+                "top": 0,
+                "height": 0,
+                "bottom": 0
+              },
+              {
+                "index": 6,
+                "tag": "section",
+                "id": "beta",
+                "className": "band",
+                "label": "참여하기",
+                "top": 2005,
+                "height": 837,
+                "bottom": 2843
+              },
+              {
+                "index": 7,
+                "tag": "footer",
+                "id": "",
+                "className": "footer",
+                "label": "",
+                "top": 2843,
+                "height": 114,
+                "bottom": 2957
+              }
+            ],
+            "mobileScrollScreens": 3.5,
+            "hasCookingPromise": true,
+            "hasBetaCTA": true,
+            "hasMascotCopy": true,
+            "hasRecipeRequest": true,
+            "hasLaunchInput": true,
+            "hasMobileAppCTA": true,
+            "hasAppPreview": true,
+            "hasAssistantSurvey": true,
+            "hasInteractiveGif": true,
+            "heroPrimaryCtaVisible": true,
+            "heroPhoneStartsInFirstViewport": true,
+            "heroPhoneFullyVisibleInFirstViewport": true,
+            "heroScrollPressureLow": true,
+            "mobileScreensUseHorizontalScroll": true,
+            "heroProofHiddenOnMobile": true,
+            "hasVisibleAppPreview": true,
+            "screenImages": [
+              {
+                "src": "/assets/screens/naembi-core-flow.gif",
+                "objectFit": "contain",
+                "width": 148,
+                "height": 320,
+                "naturalRatio": 0.462,
+                "renderedRatio": 0.462,
+                "ratioDelta": 0,
+                "visible": true
+              },
+              {
+                "src": "/assets/screens/app-home.png",
+                "objectFit": "contain",
+                "width": 112,
+                "height": 242,
+                "naturalRatio": 0.462,
+                "renderedRatio": 0.462,
+                "ratioDelta": 0,
+                "visible": true
+              },
+              {
+                "src": "/assets/screens/app-search.png",
+                "objectFit": "contain",
+                "width": 112,
+                "height": 242,
+                "naturalRatio": 0.462,
+                "renderedRatio": 0.462,
+                "ratioDelta": 0,
+                "visible": true
+              },
+              {
+                "src": "/assets/screens/app-detail.png",
+                "objectFit": "contain",
+                "width": 112,
+                "height": 242,
+                "naturalRatio": 0.462,
+                "renderedRatio": 0.462,
+                "ratioDelta": 0,
+                "visible": true
+              },
+              {
+                "src": "/assets/screens/app-cook.png",
+                "objectFit": "contain",
+                "width": 112,
+                "height": 242,
+                "naturalRatio": 0.462,
+                "renderedRatio": 0.462,
+                "ratioDelta": 0,
+                "visible": true
+              },
+              {
+                "src": "/assets/screens/app-complete.png",
+                "objectFit": "contain",
+                "width": 112,
+                "height": 242,
+                "naturalRatio": 0.462,
+                "renderedRatio": 0.462,
+                "ratioDelta": 0,
+                "visible": true
+              }
+            ],
+            "croppedScreenImages": [],
+            "forbiddenVisibleTerms": []
+          }
+        },
+        {
+          "cycle": 1,
+          "name": "landing-tablet",
+          "command": "/opt/homebrew/Cellar/node/26.0.0/bin/node scripts/capture-landing.mjs http://127.0.0.1:4873/ /tmp/cook-wireframe-v3/long-dynamic-workflow/cycle-1/landing-tablet.png tablet 9712",
+          "status": "PASS",
+          "exitCode": 0,
+          "signal": "",
+          "startedAt": "2026-07-10T18:26:40.448Z",
+          "endedAt": "2026-07-10T18:26:44.580Z",
+          "durationMs": 4132,
+          "timeoutMs": 90000,
+          "logPath": "/tmp/cook-wireframe-v3/long-dynamic-workflow/logs/cycle-1-landing-tablet.log",
+          "stdoutTail": "ScreensUseHorizontalScroll\": true,\n  \"heroProofHiddenOnMobile\": true,\n  \"hasVisibleAppPreview\": true,\n  \"screenImages\": [\n    {\n      \"src\": \"/assets/screens/naembi-core-flow.gif\",\n      \"objectFit\": \"contain\",\n      \"width\": 254,\n      \"height\": 550,\n      \"naturalRatio\": 0.462,\n      \"renderedRatio\": 0.462,\n      \"ratioDelta\": 0,\n      \"visible\": true\n    },\n    {\n      \"src\": \"/assets/screens/app-home.png\",\n      \"objectFit\": \"contain\",\n      \"width\": 166,\n      \"height\": 359,\n      \"naturalRatio\": 0.462,\n      \"renderedRatio\": 0.462,\n      \"ratioDelta\": 0,\n      \"visible\": true\n    },\n    {\n      \"src\": \"/assets/screens/app-search.png\",\n      \"objectFit\": \"contain\",\n      \"width\": 166,\n      \"height\": 359,\n      \"naturalRatio\": 0.462,\n      \"renderedRatio\": 0.462,\n      \"ratioDelta\": 0,\n      \"visible\": true\n    },\n    {\n      \"src\": \"/assets/screens/app-detail.png\",\n      \"objectFit\": \"contain\",\n      \"width\": 166,\n      \"height\": 359,\n      \"naturalRatio\": 0.462,\n      \"renderedRatio\": 0.462,\n      \"ratioDelta\": 0,\n      \"visible\": true\n    },\n    {\n      \"src\": \"/assets/screens/app-cook.png\",\n      \"objectFit\": \"contain\",\n      \"width\": 166,\n      \"height\": 359,\n      \"naturalRatio\": 0.462,\n      \"renderedRatio\": 0.462,\n      \"ratioDelta\": 0,\n      \"visible\": true\n    },\n    {\n      \"src\": \"/assets/screens/app-complete.png\",\n      \"objectFit\": \"contain\",\n      \"width\": 166,\n      \"height\": 359,\n      \"naturalRatio\": 0.462,\n      \"renderedRatio\": 0.462,\n      \"ratioDelta\": 0,\n      \"visible\": true\n    }\n  ],\n  \"croppedScreenImages\": [],\n  \"forbiddenVisibleTerms\": []\n}",
+          "stderrTail": "",
+          "parsed": {
+            "out": "/tmp/cook-wireframe-v3/long-dynamic-workflow/cycle-1/landing-tablet.png",
+            "mode": "tablet",
+            "width": 768,
+            "viewportHeight": 1100,
+            "documentHeight": 3827,
+            "scrollY": 0,
+            "mobileMedia": true,
+            "path": "/",
+            "headline": "SNS 요리 영상,\n따라 하다 막혔죠?",
+            "heroTop": 75,
+            "heroHeight": 1061,
+            "betaTop": 2834,
+            "landingSections": [
+              {
+                "index": 0,
+                "tag": "nav",
+                "id": "",
+                "className": "nav",
+                "label": "냄비 랜딩 내비게이션",
+                "top": 0,
+                "height": 75,
+                "bottom": 75
+              },
+              {
+                "index": 1,
+                "tag": "section",
+                "id": "",
+                "className": "hero",
+                "label": "냄비 소개",
+                "top": 75,
+                "height": 1061,
+                "bottom": 1136
+              },
+              {
+                "index": 2,
+                "tag": "section",
+                "id": "screens",
+                "className": "band",
+                "label": "화면 미리보기",
+                "top": 1136,
+                "height": 814,
+                "bottom": 1950
+              },
+              {
+                "index": 3,
+                "tag": "section",
+                "id": "",
+                "className": "section mobile-condense-hide",
+                "label": "서비스 사용 흐름",
+                "top": 0,
+                "height": 0,
+                "bottom": 0
+              },
+              {
+                "index": 4,
+                "tag": "section",
+                "id": "assistant",
+                "className": "band",
+                "label": "요리비서와 시작하기",
+                "top": 1950,
+                "height": 884,
+                "bottom": 2834
+              },
+              {
+                "index": 5,
+                "tag": "section",
+                "id": "",
+                "className": "section mobile-condense-hide",
+                "label": "출시 기대 기능",
+                "top": 0,
+                "height": 0,
+                "bottom": 0
+              },
+              {
+                "index": 6,
+                "tag": "section",
+                "id": "beta",
+                "className": "band",
+                "label": "참여하기",
+                "top": 2834,
+                "height": 902,
+                "bottom": 3736
+              },
+              {
+                "index": 7,
+                "tag": "footer",
+                "id": "",
+                "className": "footer",
+                "label": "",
+                "top": 3736,
+                "height": 91,
+                "bottom": 3827
+              }
+            ],
+            "mobileScrollScreens": 3.48,
+            "hasCookingPromise": true,
+            "hasBetaCTA": true,
+            "hasMascotCopy": true,
+            "hasRecipeRequest": true,
+            "hasLaunchInput": true,
+            "hasMobileAppCTA": true,
+            "hasAppPreview": true,
+            "hasAssistantSurvey": true,
+            "hasInteractiveGif": true,
+            "heroPrimaryCtaVisible": true,
+            "heroPhoneStartsInFirstViewport": true,
+            "heroPhoneFullyVisibleInFirstViewport": true,
+            "heroScrollPressureLow": true,
+            "mobileScreensUseHorizontalScroll": true,
+            "heroProofHiddenOnMobile": true,
+            "hasVisibleAppPreview": true,
+            "screenImages": [
+              {
+                "src": "/assets/screens/naembi-core-flow.gif",
+                "objectFit": "contain",
+                "width": 254,
+                "height": 550,
+                "naturalRatio": 0.462,
+                "renderedRatio": 0.462,
+                "ratioDelta": 0,
+                "visible": true
+              },
+              {
+                "src": "/assets/screens/app-home.png",
+                "objectFit": "contain",
+                "width": 166,
+                "height": 359,
+                "naturalRatio": 0.462,
+                "renderedRatio": 0.462,
+                "ratioDelta": 0,
+                "visible": true
+              },
+              {
+                "src": "/assets/screens/app-search.png",
+                "objectFit": "contain",
+                "width": 166,
+                "height": 359,
+                "naturalRatio": 0.462,
+                "renderedRatio": 0.462,
+                "ratioDelta": 0,
+                "visible": true
+              },
+              {
+                "src": "/assets/screens/app-detail.png",
+                "objectFit": "contain",
+                "width": 166,
+                "height": 359,
+                "naturalRatio": 0.462,
+                "renderedRatio": 0.462,
+                "ratioDelta": 0,
+                "visible": true
+              },
+              {
+                "src": "/assets/screens/app-cook.png",
+                "objectFit": "contain",
+                "width": 166,
+                "height": 359,
+                "naturalRatio": 0.462,
+                "renderedRatio": 0.462,
+                "ratioDelta": 0,
+                "visible": true
+              },
+              {
+                "src": "/assets/screens/app-complete.png",
+                "objectFit": "contain",
+                "width": 166,
+                "height": 359,
+                "naturalRatio": 0.462,
+                "renderedRatio": 0.462,
+                "ratioDelta": 0,
+                "visible": true
+              }
+            ],
+            "croppedScreenImages": [],
+            "forbiddenVisibleTerms": []
+          }
+        },
+        {
+          "cycle": 1,
+          "name": "landing-desktop",
+          "command": "/opt/homebrew/Cellar/node/26.0.0/bin/node scripts/capture-landing.mjs http://127.0.0.1:4873/ /tmp/cook-wireframe-v3/long-dynamic-workflow/cycle-1/landing-desktop.png desktop 9713",
+          "status": "PASS",
+          "exitCode": 0,
+          "signal": "",
+          "startedAt": "2026-07-10T18:26:44.580Z",
+          "endedAt": "2026-07-10T18:26:48.733Z",
+          "durationMs": 4153,
+          "timeoutMs": 90000,
+          "logPath": "/tmp/cook-wireframe-v3/long-dynamic-workflow/logs/cycle-1-landing-desktop.log",
+          "stdoutTail": "ScreensUseHorizontalScroll\": true,\n  \"heroProofHiddenOnMobile\": true,\n  \"hasVisibleAppPreview\": true,\n  \"screenImages\": [\n    {\n      \"src\": \"/assets/screens/naembi-core-flow.gif\",\n      \"objectFit\": \"contain\",\n      \"width\": 390,\n      \"height\": 844,\n      \"naturalRatio\": 0.462,\n      \"renderedRatio\": 0.462,\n      \"ratioDelta\": 0,\n      \"visible\": true\n    },\n    {\n      \"src\": \"/assets/screens/app-home.png\",\n      \"objectFit\": \"contain\",\n      \"width\": 171,\n      \"height\": 370,\n      \"naturalRatio\": 0.462,\n      \"renderedRatio\": 0.462,\n      \"ratioDelta\": 0,\n      \"visible\": true\n    },\n    {\n      \"src\": \"/assets/screens/app-search.png\",\n      \"objectFit\": \"contain\",\n      \"width\": 171,\n      \"height\": 371,\n      \"naturalRatio\": 0.462,\n      \"renderedRatio\": 0.462,\n      \"ratioDelta\": 0,\n      \"visible\": true\n    },\n    {\n      \"src\": \"/assets/screens/app-detail.png\",\n      \"objectFit\": \"contain\",\n      \"width\": 171,\n      \"height\": 371,\n      \"naturalRatio\": 0.462,\n      \"renderedRatio\": 0.462,\n      \"ratioDelta\": 0,\n      \"visible\": true\n    },\n    {\n      \"src\": \"/assets/screens/app-cook.png\",\n      \"objectFit\": \"contain\",\n      \"width\": 171,\n      \"height\": 371,\n      \"naturalRatio\": 0.462,\n      \"renderedRatio\": 0.462,\n      \"ratioDelta\": 0,\n      \"visible\": true\n    },\n    {\n      \"src\": \"/assets/screens/app-complete.png\",\n      \"objectFit\": \"contain\",\n      \"width\": 171,\n      \"height\": 370,\n      \"naturalRatio\": 0.462,\n      \"renderedRatio\": 0.462,\n      \"ratioDelta\": 0,\n      \"visible\": true\n    }\n  ],\n  \"croppedScreenImages\": [],\n  \"forbiddenVisibleTerms\": []\n}",
+          "stderrTail": "",
+          "parsed": {
+            "out": "/tmp/cook-wireframe-v3/long-dynamic-workflow/cycle-1/landing-desktop.png",
+            "mode": "desktop",
+            "width": 1440,
+            "viewportHeight": 1100,
+            "documentHeight": 5071,
+            "scrollY": 0,
+            "mobileMedia": false,
+            "path": "/",
+            "headline": "SNS 요리 영상,\n따라 하다 막혔죠?",
+            "heroTop": 75,
+            "heroHeight": 996,
+            "betaTop": 4024,
+            "landingSections": [
+              {
+                "index": 0,
+                "tag": "nav",
+                "id": "",
+                "className": "nav",
+                "label": "냄비 랜딩 내비게이션",
+                "top": 0,
+                "height": 75,
+                "bottom": 75
+              },
+              {
+                "index": 1,
+                "tag": "section",
+                "id": "",
+                "className": "hero",
+                "label": "냄비 소개",
+                "top": 75,
+                "height": 996,
+                "bottom": 1071
+              },
+              {
+                "index": 2,
+                "tag": "section",
+                "id": "screens",
+                "className": "band",
+                "label": "화면 미리보기",
+                "top": 1071,
+                "height": 843,
+                "bottom": 1914
+              },
+              {
+                "index": 3,
+                "tag": "section",
+                "id": "",
+                "className": "section mobile-condense-hide",
+                "label": "서비스 사용 흐름",
+                "top": 1914,
+                "height": 538,
+                "bottom": 2453
+              },
+              {
+                "index": 4,
+                "tag": "section",
+                "id": "assistant",
+                "className": "band",
+                "label": "요리비서와 시작하기",
+                "top": 2453,
+                "height": 1089,
+                "bottom": 3542
+              },
+              {
+                "index": 5,
+                "tag": "section",
+                "id": "",
+                "className": "section mobile-condense-hide",
+                "label": "출시 기대 기능",
+                "top": 3542,
+                "height": 482,
+                "bottom": 4024
+              },
+              {
+                "index": 6,
+                "tag": "section",
+                "id": "beta",
+                "className": "band",
+                "label": "참여하기",
+                "top": 4024,
+                "height": 956,
+                "bottom": 4980
+              },
+              {
+                "index": 7,
+                "tag": "footer",
+                "id": "",
+                "className": "footer",
+                "label": "",
+                "top": 4980,
+                "height": 91,
+                "bottom": 5071
+              }
+            ],
+            "mobileScrollScreens": 4.61,
+            "hasCookingPromise": true,
+            "hasBetaCTA": true,
+            "hasMascotCopy": true,
+            "hasRecipeRequest": true,
+            "hasLaunchInput": true,
+            "hasMobileAppCTA": true,
+            "hasAppPreview": true,
+            "hasAssistantSurvey": true,
+            "hasInteractiveGif": true,
+            "heroPrimaryCtaVisible": true,
+            "heroPhoneStartsInFirstViewport": true,
+            "heroPhoneFullyVisibleInFirstViewport": true,
+            "heroScrollPressureLow": true,
+            "mobileScreensUseHorizontalScroll": true,
+            "heroProofHiddenOnMobile": true,
+            "hasVisibleAppPreview": true,
+            "screenImages": [
+              {
+                "src": "/assets/screens/naembi-core-flow.gif",
+                "objectFit": "contain",
+                "width": 390,
+                "height": 844,
+                "naturalRatio": 0.462,
+                "renderedRatio": 0.462,
+                "ratioDelta": 0,
+                "visible": true
+              },
+              {
+                "src": "/assets/screens/app-home.png",
+                "objectFit": "contain",
+                "width": 171,
+                "height": 370,
+                "naturalRatio": 0.462,
+                "renderedRatio": 0.462,
+                "ratioDelta": 0,
+                "visible": true
+              },
+              {
+                "src": "/assets/screens/app-search.png",
+                "objectFit": "contain",
+                "width": 171,
+                "height": 371,
+                "naturalRatio": 0.462,
+                "renderedRatio": 0.462,
+                "ratioDelta": 0,
+                "visible": true
+              },
+              {
+                "src": "/assets/screens/app-detail.png",
+                "objectFit": "contain",
+                "width": 171,
+                "height": 371,
+                "naturalRatio": 0.462,
+                "renderedRatio": 0.462,
+                "ratioDelta": 0,
+                "visible": true
+              },
+              {
+                "src": "/assets/screens/app-cook.png",
+                "objectFit": "contain",
+                "width": 171,
+                "height": 371,
+                "naturalRatio": 0.462,
+                "renderedRatio": 0.462,
+                "ratioDelta": 0,
+                "visible": true
+              },
+              {
+                "src": "/assets/screens/app-complete.png",
+                "objectFit": "contain",
+                "width": 171,
+                "height": 370,
+                "naturalRatio": 0.462,
+                "renderedRatio": 0.462,
+                "ratioDelta": 0,
+                "visible": true
+              }
+            ],
+            "croppedScreenImages": [],
+            "forbiddenVisibleTerms": []
+          }
+        },
+        {
+          "cycle": 1,
+          "name": "load-performance",
+          "command": "npm run verify:load-performance -- http://127.0.0.1:4873 9801",
+          "status": "PASS",
+          "exitCode": 0,
+          "signal": "",
+          "startedAt": "2026-07-10T18:26:48.733Z",
+          "endedAt": "2026-07-10T18:26:52.370Z",
+          "durationMs": 3637,
+          "timeoutMs": 150000,
+          "logPath": "/tmp/cook-wireframe-v3/long-dynamic-workflow/logs/cycle-1-load-performance.log",
+          "stdoutTail": "> naembi-web@0.1.0 verify:load-performance\n> node scripts/validate-load-performance.mjs http://127.0.0.1:4873 9801\n\n{\n  \"active\": \"home\",\n  \"homeReady\": true,\n  \"domContentLoadedMs\": 48,\n  \"loadEventMs\": 671,\n  \"responseEndMs\": 3,\n  \"resourceCount\": 6,\n  \"scriptCount\": 1,\n  \"imageCount\": 5,\n  \"iframeCount\": 1,\n  \"youtubeFrameCount\": 0,\n  \"youtubePlayerRequestCount\": 0,\n  \"ytimgRequestCount\": 5,\n  \"appBytes\": 0,\n  \"iframeSources\": [\n    \"\"\n  ],\n  \"slowestResources\": [\n    {\n      \"name\": \"https://i.ytimg.com/vi/vHU4_QbslRA/mqdefault.jpg\",\n      \"duration\": 704,\n      \"transferSize\": 11338\n    },\n    {\n      \"name\": \"https://i.ytimg.com/vi/3oFCGKmzQX8/mqdefault.jpg\",\n      \"duration\": 696,\n      \"transferSize\": 19648\n    },\n    {\n      \"name\": \"https://i.ytimg.com/vi/kN89ewZjOR8/mqdefault.jpg\",\n      \"duration\": 689,\n      \"transferSize\": 14677\n    },\n    {\n      \"name\": \"https://i.ytimg.com/vi/Lf44Fk7H24s/mqdefault.jpg\",\n      \"duration\": 674,\n      \"transferSize\": 16848\n    },\n    {\n      \"name\": \"https://i.ytimg.com/vi/vlPqkuHIdCc/mqdefault.jpg\",\n      \"duration\": 648,\n      \"transferSize\": 23454\n    },\n    {\n      \"name\": \"https://unpkg.com/lucide@latest\",\n      \"duration\": 637,\n      \"transferSize\": 0\n    }\n  ]\n}",
+          "stderrTail": "",
+          "parsed": {
+            "active": "home",
+            "homeReady": true,
+            "domContentLoadedMs": 48,
+            "loadEventMs": 671,
+            "responseEndMs": 3,
+            "resourceCount": 6,
+            "scriptCount": 1,
+            "imageCount": 5,
+            "iframeCount": 1,
+            "youtubeFrameCount": 0,
+            "youtubePlayerRequestCount": 0,
+            "ytimgRequestCount": 5,
+            "appBytes": 0,
+            "iframeSources": [
+              ""
+            ],
+            "slowestResources": [
+              {
+                "name": "https://i.ytimg.com/vi/vHU4_QbslRA/mqdefault.jpg",
+                "duration": 704,
+                "transferSize": 11338
+              },
+              {
+                "name": "https://i.ytimg.com/vi/3oFCGKmzQX8/mqdefault.jpg",
+                "duration": 696,
+                "transferSize": 19648
+              },
+              {
+                "name": "https://i.ytimg.com/vi/kN89ewZjOR8/mqdefault.jpg",
+                "duration": 689,
+                "transferSize": 14677
+              },
+              {
+                "name": "https://i.ytimg.com/vi/Lf44Fk7H24s/mqdefault.jpg",
+                "duration": 674,
+                "transferSize": 16848
+              },
+              {
+                "name": "https://i.ytimg.com/vi/vlPqkuHIdCc/mqdefault.jpg",
+                "duration": 648,
+                "transferSize": 23454
+              },
+              {
+                "name": "https://unpkg.com/lucide@latest",
+                "duration": 637,
+                "transferSize": 0
+              }
+            ]
+          }
+        },
+        {
+          "cycle": 1,
+          "name": "mobile-flow",
+          "command": "npm run verify:mobile-flow -- http://127.0.0.1:4873 9901",
+          "status": "PASS",
+          "exitCode": 0,
+          "signal": "",
+          "startedAt": "2026-07-10T18:26:52.370Z",
+          "endedAt": "2026-07-10T18:27:10.086Z",
+          "durationMs": 17716,
+          "timeoutMs": 300000,
+          "logPath": "/tmp/cook-wireframe-v3/long-dynamic-workflow/logs/cycle-1-mobile-flow.log",
+          "stdoutTail": "Coverage\": 0.106,\n    \"overlapRatio\": 0,\n    \"insideCookBody\": true,\n    \"reopensAfterClose\": true,\n    \"hiddenAfterNever\": true\n  },\n  \"assistant\": {\n    \"opened\": {\n      \"panel\": \"vpanel open\",\n      \"user\": \"무엇이 궁금해요?\",\n      \"answer\": \"말하기 준비나 질문 선택으로 답변을 확인해요.\",\n      \"liveStatus\": \"마이크 버튼은 음성 연결 준비를 확인해요.\",\n      \"promptInputExists\": false,\n      \"inputModeText\": \"말하기 준비 또는 준비된 질문을 선택하세요\",\n      \"handleExpanded\": \"false\",\n      \"ctrlHeight\": 321,\n      \"queuedTimers\": 0,\n      \"activeStep\": \"0\"\n    },\n    \"resized\": {\n      \"panel\": \"vpanel open expanded\",\n      \"handleExpanded\": \"true\",\n      \"handleValue\": \"523\",\n      \"ctrlHeight\": 523,\n      \"ctrlHasExpandedClass\": true,\n      \"scrollClientHeight\": 434,\n      \"scrollHeight\": 942,\n      \"scrollTopAfter\": 508,\n      \"scrollOverflowY\": \"auto\",\n      \"scrollMoved\": true\n    },\n    \"intermediate\": {\n      \"ctrlHeight\": 443,\n      \"handleValue\": \"443\"\n    },\n    \"panel\": \"vpanel open expanded answering\",\n    \"user\": \"모짜렐라 없으면 어떻게 해?\",\n    \"answer\": \"체다치즈나 슬라이스 치즈도 가능해요. 대신 짠맛이 강하니 설탕이나 마요네즈는 조금 줄여도 좋아요.\",\n    \"quickCount\": 4,\n    \"beforePromptStep\": \"0\",\n    \"ducked\": {\n      \"commands\": [\n        80,\n        22\n      ],\n      \"duckEvents\": 1,\n      \"restores\": 0,\n      \"answerClass\": \"vpanel open expanded answering\"\n    },\n    \"restored\": {\n      \"commands\": [\n        80,\n        22,\n        80\n      ],\n      \"duckEvents\": 1,\n      \"restores\": 1,\n      \"currentVolumeSetting\": 80,\n      \"user\": \"모짜렐라 없으면 어떻게 해?\",\n      \"answer\": \"체다치즈나 슬라이스 치즈도 가능해요. 대신 짠맛이 강하니 설탕이나 마요네즈는 조금 줄여도 좋아요.\"\n    },\n    \"activeStep\": \"0\"\n  }\n}",
+          "stderrTail": "",
+          "parsed": {
+            "home": {
+              "path": "/app",
+              "marketing": false,
+              "active": "home",
+              "feedbackVisible": "flex",
+              "recipeCardMeta": [
+                "자취요리신 simple cooking",
+                "Maangchi",
+                "Maangchi",
+                "맘스레시피",
+                "뚜비두밥 맛있는밥",
+                "Maangchi",
+                "맘스레시피",
+                "Maangchi",
+                "자취요리신 simple cooking",
+                "Chef Sunny",
+                "뚜비두밥 맛있는밥",
+                "자취요리신 simple cooking",
+                "요리시간 Cooking Time",
+                "세토리 setory",
+                "맘스레시피",
+                "성시경"
+              ]
+            },
+            "search": {
+              "initial": {
+                "active": "searchPage",
+                "recipeCards": 0,
+                "fixedSuggestions": 0,
+                "emptyText": "아직 검색한 요리가 없어요먹고 싶은 요리나 집에 있는 재료를 검색해보세요."
+              },
+              "submitted": {
+                "active": "searchResultsPage",
+                "query": "‘명란 파스타’",
+                "recipeCount": 1,
+                "nativeCancelRulePresent": true,
+                "visibleCustomClearCount": 1
+              },
+              "recentAfterSubmit": [
+                "명란 파스타"
+              ],
+              "resultActive": "searchResultsPage",
+              "creatorHeadVisible": true,
+              "creatorRows": [
+                "Maangchi크리에이터 · 레시피 4개 · 김치볶음밥 · 계란말이 · 된장찌개"
+              ],
+              "recipeCards": [
+                {
+                  "title": "잘 익은 김치로 만드는 매콤 김치볶음밥",
+                  "meta": "Maangchi · 2인분"
+                },
+                {
+                  "title": "도시락 반찬 기본 계란말이",
+                  "meta": "Maangchi · 2인분"
+                },
+                {
+                  "title": "15분 완성 매콤 제육볶음",
+                  "meta": "Maangchi · 3~4인분"
+                },
+                {
+                  "title": "감자와 두부를 넣은 구수한 된장찌개",
+                  "meta": "Maangchi · 3인분"
+                }
+              ],
+              "recentBeforeDelete": [
+                "Maangchi",
+                "명란 파스타"
+              ],
+              "recentAfterDelete": [
+                "명란 파스타"
+              ],
+              "recentAfterClear": []
+            },
+            "feedback": {
+              "modalOpen": true,
+              "requests": [
+                {
+                  "url": "/api/feedback",
+                  "body": "{\"source\":\"app-floating\",\"type\":\"bug\",\"email\":\"\",\"message\":\"모바일 내부 피드백 제출 검증\",\"screen\":\"searchPage\",\"recipe\":\"순두부찌개\",\"page\":\"http://127.0.0.1:4873/app#search\",\"createdAt\":\"2026-07-10T18:26:56.537Z\"}"
+                }
+              ],
+              "status": "의견이 접수됐습니다. 개선 목록에 반영할게요.",
+              "button": "의견 보내기"
+            },
+            "recipeNotes": {
+              "reviewSaved": 1,
+              "tipSaved": 1,
+              "detailText": "내가 남긴 요리 기록이 브라우저에 저장게스트 · 재료 대체7월 11일모짜렐라 대신 체다를 쓰면 설탕을 조금 줄이는 게 좋아요.게스트 · 후기7월 11일치즈는 1분 더 녹이니 더 좋았어요.후기 쓰기팁 남기기",
+              "proofText": "4.8 평점128명 완주팁 3개내 기록 2개",
+              "reviewsText": "게스트7월 11일치즈는 1분 더 녹이니 더 좋았어요.먼저 만든 사람예시치즈는 약불에서 뚜껑 덮고 1분만 녹이면 딱 좋아요.자취러예시맵찔이는 액상스프를 반 숟갈 남기면 먹기 편했어요.",
+              "communityText": "콘치즈 불닭볶음면내 팁모짜렐라 대신 체다를 쓰면 설탕을 조금 줄이는 게 좋아요.7월 11일 · 게스트 저장콘치즈 불닭볶음면내 후기치즈는 1분 더 녹이니 더 좋았어요.7월 11일 · 게스트 저장",
+              "doneButtons": [
+                "친구에게 공유하기",
+                "이 요리 후기 남기기",
+                "내 조리 팁 남기기",
+                "홈으로 가기",
+                "다시 요리하기",
+                "출시 알림 신청",
+                "따라 하고 싶은 영상 보내기"
+              ],
+              "activeAfterHome": "home"
+            },
+            "accountNotification": {
+              "account": {
+                "active": "accountPlan",
+                "text": "\n      9:41\n      계정\n      \n        \n          \n            게스트 모드\n            지금은 게스트로저장하고 있어요\n            저장한 후기와 팁은 이 브라우저에 남아요. 앱 출시 후에는 로그인해서 저장한 레시피, 알림, 후기를 이어서 볼 수 있게 준비할 예정입니다.\n          \n          \n            이 브라우저에 저장요리 후기와 조리 팁은 localStorage에 저장돼요. 다른 기기에서는 아직 이어지지 않아요.\n            출시 후 로그인 예정소셜 로그인으로 저장한 레시피, 만든 기록, 레시피 요청 상태를 이어보는 흐름을 준비합니다.\n            출시 알림 연결정식 앱 준비가 되면 베타 초대와 출시 소식을 이메일로 받을 수 있게 연결합니다.\n          \n        \n      \n      \n        출시 알림 받기\n        홈으로 가기\n      \n    "
+              },
+              "notification": {
+                "active": "notificationPlan",
+                "text": "\n      9:41\n      알림\n      \n        \n          \n            준비 중인 알림\n            영상 링크를 보내면레시피 준비 소식을 알려드릴게요\n            지금은 베타용 요청 수집 단계입니다. 나중에는 유튜브나 SNS 영상 링크를 넣으면 레시피가 만들어지고, 준비가 끝났을 때 알림으로 안내하는 흐름을 목표로 합니다.\n          \n          \n            보고 싶은 영상 보내기요리 이름이나 유튜브 링크를 남기면 다음에 추가할 레시피 후보로 모읍니다.\n            레시피 변환 예정영상 구간, 재료, 조리 순서를 주방에서 따라가기 쉬운 형태로 정리하는 기능을 준비합니다.\n            준비되면 알림요청한 레시피가 준비되거나 앱 출시가 가까워지면 이메일로 안내하는 흐름을 먼저 연결합니다.\n          \n        \n      \n      \n        영상 링크 보내기\n        홈으로 가기\n      \n    "
+              },
+              "modal": {
+                "open": true,
+                "title": "따라 하고 싶은 영상 보내기",
+                "source": "notification-recipe-request"
+              }
+            },
+            "timer": {
+              "timerText": "완료",
+              "startedTotal": 450,
+              "presetPlusThirty": 630,
+              "minUnderline": "3px",
+              "secUnderline": "3px",
+              "alarmPlayed": 2,
+              "alarmToneStarts": 8,
+              "ringingAfterFinish": true,
+              "alarmAutoStopped": true,
+              "timerBelowVideo": true,
+              "timerAboveProgress": true
+            },
+            "ingredients": {
+              "defaultState": {
+                "sheetOpen": true,
+                "listActive": true,
+                "checkActive": false,
+                "cardCount": 8,
+                "checkboxCount": 8
+              },
+              "checkState": {
+                "listActive": false,
+                "checkActive": true,
+                "checkboxCount": 8
+              }
+            },
+            "settings": {
+              "videoVolume": {
+                "value": "42",
+                "state": 42,
+                "switchOn": true
+              },
+              "videoRestored": {
+                "value": "42",
+                "state": 42,
+                "switchOn": true
+              },
+              "voice": {
+                "title": "소리·재생 설정",
+                "value": "35",
+                "range": "35",
+                "switchOn": true,
+                "gain": 0.35
+              },
+              "muted": {
+                "collapsed": true,
+                "switchOn": false,
+                "gain": 0
+              },
+              "restored": {
+                "value": "35",
+                "switchOn": true,
+                "gain": 0.35
+              },
+              "slower": {
+                "value": "0.75×",
+                "active": "0.75×",
+                "downDisabled": false,
+                "upDisabled": false
+              },
+              "slowest": {
+                "value": "0.5×",
+                "active": "0.5×",
+                "downDisabled": true
+              }
+            },
+            "tutorial": {
+              "visible": true,
+              "rect": {
+                "width": 358,
+                "height": 97,
+                "top": 585,
+                "bottom": 682
+              },
+              "bodyRect": {
+                "top": 244,
+                "bottom": 692
+              },
+              "screenCoverage": 0.106,
+              "overlapRatio": 0,
+              "insideCookBody": true,
+              "reopensAfterClose": true,
+              "hiddenAfterNever": true
+            },
+            "assistant": {
+              "opened": {
+                "panel": "vpanel open",
+                "user": "무엇이 궁금해요?",
+                "answer": "말하기 준비나 질문 선택으로 답변을 확인해요.",
+                "liveStatus": "마이크 버튼은 음성 연결 준비를 확인해요.",
+                "promptInputExists": false,
+                "inputModeText": "말하기 준비 또는 준비된 질문을 선택하세요",
+                "handleExpanded": "false",
+                "ctrlHeight": 321,
+                "queuedTimers": 0,
+                "activeStep": "0"
+              },
+              "resized": {
+                "panel": "vpanel open expanded",
+                "handleExpanded": "true",
+                "handleValue": "523",
+                "ctrlHeight": 523,
+                "ctrlHasExpandedClass": true,
+                "scrollClientHeight": 434,
+                "scrollHeight": 942,
+                "scrollTopAfter": 508,
+                "scrollOverflowY": "auto",
+                "scrollMoved": true
+              },
+              "intermediate": {
+                "ctrlHeight": 443,
+                "handleValue": "443"
+              },
+              "panel": "vpanel open expanded answering",
+              "user": "모짜렐라 없으면 어떻게 해?",
+              "answer": "체다치즈나 슬라이스 치즈도 가능해요. 대신 짠맛이 강하니 설탕이나 마요네즈는 조금 줄여도 좋아요.",
+              "quickCount": 4,
+              "beforePromptStep": "0",
+              "ducked": {
+                "commands": [
+                  80,
+                  22
+                ],
+                "duckEvents": 1,
+                "restores": 0,
+                "answerClass": "vpanel open expanded answering"
+              },
+              "restored": {
+                "commands": [
+                  80,
+                  22,
+                  80
+                ],
+                "duckEvents": 1,
+                "restores": 1,
+                "currentVolumeSetting": 80,
+                "user": "모짜렐라 없으면 어떻게 해?",
+                "answer": "체다치즈나 슬라이스 치즈도 가능해요. 대신 짠맛이 강하니 설탕이나 마요네즈는 조금 줄여도 좋아요."
+              },
+              "activeStep": "0"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "metrics": {
+    "landing": [
+      {
+        "cycle": 1,
+        "mode": "mobile",
+        "documentHeight": 2957,
+        "viewportHeight": 844,
+        "scrollScreens": 3.5,
+        "cropped": [],
+        "forbiddenTerms": [],
+        "out": "/tmp/cook-wireframe-v3/long-dynamic-workflow/cycle-1/landing-mobile.png"
+      },
+      {
+        "cycle": 1,
+        "mode": "tablet",
+        "documentHeight": 3827,
+        "viewportHeight": 1100,
+        "scrollScreens": 3.48,
+        "cropped": [],
+        "forbiddenTerms": [],
+        "out": "/tmp/cook-wireframe-v3/long-dynamic-workflow/cycle-1/landing-tablet.png"
+      },
+      {
+        "cycle": 1,
+        "mode": "desktop",
+        "documentHeight": 5071,
+        "viewportHeight": 1100,
+        "scrollScreens": 4.61,
+        "cropped": [],
+        "forbiddenTerms": [],
+        "out": "/tmp/cook-wireframe-v3/long-dynamic-workflow/cycle-1/landing-desktop.png"
+      }
+    ],
+    "load": [
+      {
+        "cycle": 1,
+        "domContentLoadedMs": 48,
+        "loadEventMs": 671,
+        "youtubeFrameCount": 0,
+        "youtubePlayerRequestCount": 0,
+        "ytimgRequestCount": 5
+      }
+    ],
+    "appScreens": [],
+    "mobileFlow": [
+      {
+        "cycle": 1,
+        "homeActive": "home",
+        "promptInputExists": false,
+        "duckedCommands": [
+          80,
+          22
+        ],
+        "restoredCommands": [
+          80,
+          22,
+          80
+        ]
+      }
+    ]
+  }
+}
