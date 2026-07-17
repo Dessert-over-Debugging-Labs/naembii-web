@@ -653,20 +653,23 @@
   .vp-scroll{position:relative;z-index:1;flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:46px 6px 10px 0;scrollbar-width:none;display:flex;flex-direction:column;}
   .vp-scroll::-webkit-scrollbar{display:none;}
   .vp-idle-state{position:relative;z-index:1;display:flex;flex:1;flex-direction:column;align-items:center;justify-content:center;min-height:0;color:#fff;text-align:center;}
+  .vp-scroll:not(.has-transcript) .vp-idle-state{position:absolute;left:0;right:0;top:40%;min-height:0;transform:translateY(-50%);}
   .vp-idle-state p{margin:0;font-size:18px;font-weight:850;line-height:1.35;text-shadow:0 1px 6px rgba(0,0,0,.2);}
   .vp-scroll.has-transcript .vp-idle-state{display:none;}
   .vp-transcript{position:relative;z-index:1;display:grid;gap:14px;margin:auto 0 6px;padding:0;border:0;}
+  .vp-scroll.awaiting-input.has-transcript .vp-transcript{margin:0 0 auto;}
   .vp-transcript:empty{display:none;}
   .vp-transcript-entry{display:flex;gap:8px;align-items:flex-start;font-size:15px;font-weight:750;line-height:1.45;color:rgba(255,255,255,.94);}
   .vp-transcript-entry b{flex:none;color:rgba(255,255,255,.66);font-size:11px;font-weight:900;}
   .vp-transcript-entry.assistant b{color:#FFF2C5;}
   .vpanel.compact .vp-transcript{gap:5px;margin:0 0 3px;}
   .vpanel.compact .vp-transcript-entry{font-size:13px;line-height:1.3;}
-  .vpanel.compact .vp-input-wave{height:20px;margin-bottom:0;}
+  .vpanel.compact .vp-input-wave{height:20px;width:54px;margin:0;}
   .vpanel.compact .vp-input-wave .wave{height:20px;}
   .vpanel.compact .vp-input-wave .wave span:nth-child(1){height:6px;}.vpanel.compact .vp-input-wave .wave span:nth-child(2){height:14px;}
   .vpanel.compact .vp-input-wave .wave span:nth-child(3){height:20px;}.vpanel.compact .vp-input-wave .wave span:nth-child(4){height:11px;}.vpanel.compact .vp-input-wave .wave span:nth-child(5){height:16px;}
-  .vp-input-wave{position:relative;z-index:1;display:none;align-items:center;height:28px;margin:0 0 3px;}
+  .vp-input-wave{position:absolute;left:50%;top:50%;z-index:2;display:none;align-items:center;justify-content:center;width:68px;height:34px;margin:0;transform:translate(-50%,-50%);pointer-events:none;}
+  .vp-scroll:not(.has-transcript) .vp-input-wave{top:calc(40% + 44px);}
   .vpanel.mic-active .vp-input-wave{display:flex;}
   .vp-input-wave .wave{height:28px;gap:4px;}
   .vp-input-wave .wave span{width:3px;background:#fff;border-radius:3px;}
@@ -4058,7 +4061,7 @@
   function clearVpTranscript(){
     const transcript=document.getElementById('vpTranscript');
     if(transcript)transcript.replaceChildren();
-    document.getElementById('vpScroll')?.classList.remove('has-transcript');
+    document.getElementById('vpScroll')?.classList.remove('has-transcript','awaiting-input');
   }
   function createVpTranscriptEntry(role,value){
     const entry=document.createElement('div');
@@ -4079,30 +4082,55 @@
   }
   function ensureVpTranscriptState(live){
     if(!live.transcript){
-      live.transcript={epoch:0,userText:'',assistantText:'',pendingAssistantText:'',hasUser:false,complete:false,lastAssistantText:''};
+      live.transcript={epoch:0,history:[],userText:'',assistantText:'',pendingAssistantText:'',hasUser:false,complete:false,lastAssistantText:'',awaitingInput:false};
+    }else if(!Array.isArray(live.transcript.history)){
+      live.transcript.history=[];
     }
     return live.transcript;
   }
-  function renderVpTranscript(live){
-    const transcript=document.getElementById('vpTranscript');
-    if(!transcript||!live)return;
-    const state=ensureVpTranscriptState(live);
-    const entries=[];
-    if(state.userText)entries.push(createVpTranscriptEntry('user',state.userText));
-    if(state.assistantText)entries.push(createVpTranscriptEntry('assistant',state.assistantText));
-    transcript.replaceChildren(...entries);
-    document.getElementById('vpScroll')?.classList.toggle('has-transcript',entries.length>0);
-    scrollVpTranscript();
+  function pushVpTranscriptHistory(state,role,value){
+    const text=String(value||'').trim();
+    if(!text)return;
+    state.history.push({role,text});
+    while(state.history.length>8)state.history.shift();
   }
-  function beginVpTranscriptTurn(live){
-    const state=ensureVpTranscriptState(live);
-    if(state.assistantText)state.lastAssistantText=state.assistantText;
-    state.epoch+=1;
+  function commitVpTranscriptTurn(state){
+    if(state.userText)pushVpTranscriptHistory(state,'user',state.userText);
+    if(state.assistantText)pushVpTranscriptHistory(state,'assistant',state.assistantText);
     state.userText='';
     state.assistantText='';
     state.pendingAssistantText='';
     state.hasUser=false;
     state.complete=false;
+  }
+  function ensureVpTranscriptRoom(entryCount){
+    const panel=document.getElementById('vpanel');
+    if(!entryCount||!panel?.classList.contains('open')||!panel.classList.contains('compact'))return;
+    panel.classList.remove('compact');
+    syncVpPanelHeightState(vpPanelBounds().min);
+  }
+  function renderVpTranscript(live){
+    const transcript=document.getElementById('vpTranscript');
+    if(!transcript||!live)return;
+    const state=ensureVpTranscriptState(live);
+    const entries=(state.history||[]).map(item=>createVpTranscriptEntry(item.role,item.text));
+    if(state.userText)entries.push(createVpTranscriptEntry('user',state.userText));
+    if(state.assistantText)entries.push(createVpTranscriptEntry('assistant',state.assistantText));
+    ensureVpTranscriptRoom(entries.length);
+    transcript.replaceChildren(...entries);
+    const scroll=document.getElementById('vpScroll');
+    if(scroll){
+      scroll.classList.toggle('has-transcript',entries.length>0);
+      scroll.classList.toggle('awaiting-input',!!(state.awaitingInput&&!state.userText));
+    }
+    scrollVpTranscript();
+  }
+  function beginVpTranscriptTurn(live,options={}){
+    const state=ensureVpTranscriptState(live);
+    if(state.assistantText)state.lastAssistantText=state.assistantText;
+    commitVpTranscriptTurn(state);
+    state.epoch+=1;
+    state.awaitingInput=!!options.awaitingInput;
     renderVpTranscript(live);
     return state;
   }
@@ -4112,6 +4140,7 @@
     let state=ensureVpTranscriptState(live);
     if(role==='user'){
       if(!state.epoch)state.epoch=1;
+      state.awaitingInput=false;
       state.hasUser=true;
       state.userText=mergeVpTranscript(state.userText,value);
       if(state.pendingAssistantText){
@@ -4418,7 +4447,7 @@
       live.vadStartFrames=rawLevel>=GEMINI_VAD_START_LEVEL?(live.vadStartFrames||0)+1:0;
       if(live.vadStartFrames<GEMINI_VAD_START_FRAMES)return;
       const transcript=ensureVpTranscriptState(live);
-      if(transcript.complete||transcript.hasUser)beginVpTranscriptTurn(live);
+      if(transcript.complete||transcript.hasUser)beginVpTranscriptTurn(live,{awaitingInput:true});
       live.commandEpoch=(live.commandEpoch||0)+1;
       live.vadSpeaking=true;
       live.resumeCheckpointSafe=false;
