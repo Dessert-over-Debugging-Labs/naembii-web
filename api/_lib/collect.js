@@ -313,5 +313,6 @@ module.exports = {
   json,
   notify,
   persist,
-  readBody
+  readBody,
+  sendWebhook
 };

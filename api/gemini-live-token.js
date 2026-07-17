@@ -125,6 +125,8 @@ function resumeHandle(payload) {
 
 function liveSystemInstruction(payload) {
   const recipe = clean(payload.recipe, 120) || '현재 레시피';
+  const servings = clean(payload.servings, 40);
+  const totalTime = clean(payload.totalTime, 40);
   const step = clean(payload.step, 160) || '현재 단계';
   const stepNotes = clean(payload.stepNotes, 520);
   const ingredients = clean(payload.ingredients, 720);
@@ -141,6 +143,8 @@ function liveSystemInstruction(payload) {
     '도구로 처리할 수 없는 조리 질문은 현재 레시피와 단계 정보를 기준으로 직접 답한다.',
     '현재 단계와 무관한 이전 또는 다음 단계를 임의로 언급하지 않는다.',
     `현재 레시피: ${recipe}`,
+    servings ? `기준 인분: ${servings} (인분 조절 질문은 이 기준의 배수로 계산해 답한다)` : '',
+    totalTime ? `총 조리 시간: ${totalTime}` : '',
     `현재 단계: ${step}`,
     stepNotes ? `현재 단계 세부: ${stepNotes}` : '',
     ingredients ? `현재 재료: ${ingredients}` : ''

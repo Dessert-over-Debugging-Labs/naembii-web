@@ -1982,6 +1982,7 @@
     const fr=document.getElementById('detailYoutubePlayer'); if(fr)fr.remove();
   }
   function finishCook(){
+    guCookFinished(); // 사용량 계측: 요리 완료 시점 기록 후 최종 업로드
     stopCook3Video(); // 완료 진입 시 조리 영상·소리 정지
     renderComplete(); // 현재 레시피 기준 완료 화면 렌더
     const cp=document.getElementById('complete');
@@ -1998,6 +1999,7 @@
   function show(id){
     document.body.classList.remove('marketing-open');
     const prevId=(document.querySelector('.view.active')||{}).id;
+    guScreen(prevId,id); // 사용량 계측: 조리 화면 진입/이탈 추적
     if(prevId==='cook3' && id!=='cook3')stopCook3Video(); // 조리 모드 이탈 시 영상·소리 정지
     if(prevId==='detail' && id!=='detail')stopDetailVideo(); // 상세 이탈 시 영상·소리 정지
     document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
@@ -2012,6 +2014,142 @@
     _v.querySelectorAll('.body,.cook-body,.hf-chat').forEach(el=>el.scrollTop=0);
   }
   function esc(s){return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+  // ===== Gemini Live 사용량 계측 (UI 없음) — usageMetadata·연결시간·전송 오디오량을 모아 /api/usage로 업로드 =====
+  // usageMetadata가 턴 단위 값인지 세션 누적 값인지 문서가 모호해 Sum과 Last/Max를 모두 기록한다.
+  // 분석할 때는 usageId별로 seq가 가장 큰 행만 사용한다(중간 플러시는 같은 usageId의 누적 스냅샷).
+  let guSession=null, guLastFlushAt=0, guLastFlushMark='';
+  function guUid(){
+    try{
+      let id=localStorage.getItem('naembiUid');
+      if(!id){id='u'+Date.now().toString(36)+Math.random().toString(36).slice(2,10);localStorage.setItem('naembiUid',id);}
+      return id;
+    }catch{return 'u-anon';}
+  }
+  function guEnsure(){
+    if(guSession)return guSession;
+    guSession={
+      usageId:'gu'+Date.now().toString(36)+Math.random().toString(36).slice(2,8),
+      uid:guUid(),seq:0,model:'',recipe:'',recipeId:'',
+      sessionStartedAt:new Date().toISOString(),cookStartedAt:'',cookEndedAt:'',cookCompleted:false,
+      connectCount:0,goAwayCount:0,totalOpenMs:0,openedAt:0,
+      closedSentAudioBytes:0,sentAudioBase:0,sentAudioBaseLive:null,
+      turns:0,promptTokensLast:0,promptTokensMax:0,promptTokensSum:0,
+      responseTokensLast:0,responseTokensMax:0,responseTokensSum:0,
+      totalTokensLast:0,totalTokensMax:0,
+      promptAudioTokensSum:0,promptTextTokensSum:0,responseAudioTokensSum:0,responseTextTokensSum:0
+    };
+    // 진행 중인 연결이 있는 상태에서 새 계측 세션이 시작되면(직전 세션 final 이후) 이미 보낸 바이트는 제외한다.
+    if(geminiLive&&!geminiLive.closing){
+      guSession.sentAudioBase=Number(geminiLive.sentAudioBytes)||0;
+      guSession.sentAudioBaseLive=geminiLive;
+    }
+    return guSession;
+  }
+  function guCaptureRecipe(usage){
+    const context=currentGeminiCookingContext();
+    if(context.recipe){usage.recipe=context.recipe;usage.recipeId=context.recipeId||'';}
+  }
+  function guModalityTokens(details,modality){
+    return (details||[]).reduce((sum,item)=>sum+((item?.modality===modality&&Number(item.tokenCount))||0),0);
+  }
+  function guRecordUsage(meta){
+    if(!meta)return;
+    const usage=guEnsure();
+    const prompt=Number(meta.promptTokenCount)||0,response=Number(meta.responseTokenCount)||0,total=Number(meta.totalTokenCount)||0;
+    usage.turns+=1;
+    usage.promptTokensLast=prompt;usage.promptTokensMax=Math.max(usage.promptTokensMax,prompt);usage.promptTokensSum+=prompt;
+    usage.responseTokensLast=response;usage.responseTokensMax=Math.max(usage.responseTokensMax,response);usage.responseTokensSum+=response;
+    usage.totalTokensLast=total;usage.totalTokensMax=Math.max(usage.totalTokensMax,total);
+    usage.promptAudioTokensSum+=guModalityTokens(meta.promptTokensDetails,'AUDIO');
+    usage.promptTextTokensSum+=guModalityTokens(meta.promptTokensDetails,'TEXT');
+    usage.responseAudioTokensSum+=guModalityTokens(meta.responseTokensDetails,'AUDIO');
+    usage.responseTextTokensSum+=guModalityTokens(meta.responseTokensDetails,'TEXT');
+  }
+  function guConnectionOpen(model){
+    const usage=guEnsure();
+    if(usage.openedAt)guConnectionClosed(); // onclose 없이 교체된 이전 연결 구간을 먼저 마감
+    usage.connectCount+=1;
+    usage.openedAt=Date.now();
+    if(model)usage.model=model;
+    guCaptureRecipe(usage);
+  }
+  function guConnectionClosed(){
+    if(!guSession||!guSession.openedAt)return;
+    guSession.totalOpenMs+=Math.max(0,Date.now()-guSession.openedAt);
+    guSession.openedAt=0;
+  }
+  function guGoAway(){if(guSession)guSession.goAwayCount+=1;}
+  function guCurrentLiveAudioBytes(){
+    const live=geminiLive;
+    if(!guSession||!live||live.closing)return 0;
+    const base=guSession.sentAudioBaseLive===live?guSession.sentAudioBase:0;
+    return Math.max(0,(Number(live.sentAudioBytes)||0)-base);
+  }
+  function guSentAudioBytes(){
+    return (guSession?.closedSentAudioBytes||0)+guCurrentLiveAudioBytes();
+  }
+  function guLiveStopped(live){
+    guConnectionClosed();
+    if(guSession&&live){
+      const base=guSession.sentAudioBaseLive===live?guSession.sentAudioBase:0;
+      guSession.closedSentAudioBytes+=Math.max(0,(Number(live.sentAudioBytes)||0)-base);
+      guSession.sentAudioBase=0;guSession.sentAudioBaseLive=null;
+    }
+    guFlush({final:(document.querySelector('.view.active')||{}).id!=='cook3',reason:'voice-stop'});
+  }
+  function guScreen(prevId,id){
+    if(id==='cook3'&&prevId!=='cook3'){
+      const usage=guEnsure();
+      if(!usage.cookStartedAt)usage.cookStartedAt=new Date().toISOString();
+      guCaptureRecipe(usage);
+    }else if(prevId==='cook3'&&id!=='cook3'&&id!=='complete'&&guSession&&guSession.cookStartedAt&&!guSession.cookEndedAt){
+      guSession.cookEndedAt=new Date().toISOString();
+      guFlush({final:true,reason:'cook-exit'});
+    }
+  }
+  function guCookFinished(){
+    const usage=guEnsure();
+    if(!usage.cookStartedAt)usage.cookStartedAt=usage.sessionStartedAt;
+    usage.cookEndedAt=new Date().toISOString();
+    usage.cookCompleted=true;
+    guFlush({final:true,reason:'cook-complete'});
+  }
+  function guFlush({final=false,reason=''}={}){
+    const usage=guSession;
+    if(!usage)return;
+    const mark=[usage.connectCount,usage.turns,usage.goAwayCount,usage.cookEndedAt,guSentAudioBytes()].join('|');
+    if(!final&&(mark===guLastFlushMark||Date.now()-guLastFlushAt<60000))return;
+    guLastFlushAt=Date.now();
+    guLastFlushMark=mark;
+    usage.seq+=1;
+    const sentAudioSeconds=Math.round(guSentAudioBytes()/32000*10)/10; // 16kHz 16bit 모노 PCM = 초당 32,000바이트
+    const payload={
+      requestId:usage.usageId+'-'+usage.seq,
+      usageId:usage.usageId,uid:usage.uid,seq:usage.seq,final,reason,
+      model:usage.model,recipe:usage.recipe,recipeId:usage.recipeId,
+      sessionStartedAt:usage.sessionStartedAt,cookStartedAt:usage.cookStartedAt,cookEndedAt:usage.cookEndedAt,cookCompleted:usage.cookCompleted,
+      connectCount:usage.connectCount,goAwayCount:usage.goAwayCount,
+      totalOpenMs:usage.totalOpenMs+(usage.openedAt?Date.now()-usage.openedAt:0),
+      sentAudioSeconds,
+      estInputAudioTokens:Math.round(sentAudioSeconds*32), // Gemini 문서 기준 오디오 입력 ≈ 초당 32토큰 어림값
+      turns:usage.turns,
+      promptTokensLast:usage.promptTokensLast,promptTokensMax:usage.promptTokensMax,promptTokensSum:usage.promptTokensSum,
+      responseTokensLast:usage.responseTokensLast,responseTokensMax:usage.responseTokensMax,responseTokensSum:usage.responseTokensSum,
+      totalTokensLast:usage.totalTokensLast,totalTokensMax:usage.totalTokensMax,
+      promptAudioTokensSum:usage.promptAudioTokensSum,promptTextTokensSum:usage.promptTextTokensSum,
+      responseAudioTokensSum:usage.responseAudioTokensSum,responseTextTokensSum:usage.responseTextTokensSum,
+      page:location.pathname,createdAt:new Date().toISOString()
+    };
+    const body=JSON.stringify(payload);
+    let sent=false;
+    try{sent=!!navigator.sendBeacon&&navigator.sendBeacon('/api/usage',new Blob([body],{type:'application/json'}));}catch{}
+    if(!sent)fetch('/api/usage',{method:'POST',headers:{'content-type':'application/json'},body,keepalive:true}).catch(()=>{});
+    if(final){guSession=null;guLastFlushMark='';}
+  }
+  window.addEventListener('pagehide',event=>guFlush({final:!event.persisted,reason:'pagehide'}));
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')guFlush({reason:'hidden'});});
+  setInterval(()=>{if(guSession&&(guSession.openedAt||isGeminiLiveOpen()))guFlush({reason:'interval'});},300000);
 
   // ===== 레시피 데이터 (단일 소스) — 홈·상세·조리·완료가 모두 이 배열을 바라봄 =====
   // 필드: id(유튜브 영상 id) · name(짧은 이름) · title(카드/상세 제목) · channel · servings · time · difficulty
@@ -3471,6 +3609,8 @@
       .map(item=>item.n+(item.q?' '+item.q:'')).join(', ');
     return {
       recipe:context.recipe,
+      servings:currentRecipe?.servings||'',
+      totalTime:currentRecipe?.time||'',
       step:context.status==='completed'?'요리 완료':context.stepIndex+'/'+context.totalSteps+' · '+context.stepTitle,
       stepNotes:context.stepNotes,
       stepIndex:context.stepIndex,
@@ -3540,6 +3680,7 @@
     live.tokenAbortController=null;
     if(!live.resumeCheckpointSafe&&live.resumeReplay?.length)stageGeminiResumeReplay(live);
     clearGeminiGoAwayTimer(live);
+    guConnectionClosed();
     live.ready=false;
     live.responseInFlight=false;
     const socket=live.socket;
@@ -3565,6 +3706,7 @@
       const data=await withGeminiLiveTimeout(postJson('/api/gemini-live-token',payload,{signal:tokenAbortController.signal}),12000,'Gemini Live 인증 정보를 받지 못했어요. 네트워크와 API 키 설정을 확인해 주세요.',()=>tokenAbortController.abort());
       if(geminiLive!==live||live.closing||live.connectionEpoch!==epoch)throw new Error('Gemini Live 연결이 취소됐어요.');
       live.contextKey=payload.contextKey;
+      live.model=data?.model||live.model||'';
       await openGeminiLiveSocket(live,data,epoch);
       if(geminiLive!==live||live.closing||live.connectionEpoch!==epoch)throw new Error('Gemini Live 연결이 취소됐어요.');
       live.reconnectAttempt=0;
@@ -4216,6 +4358,7 @@
     live.socket=null;
     live.transportConnecting=null;
     live.sessionResumptionHandle='';
+    guLiveStopped(live); // 사용량 계측: 전송 오디오량 확정 + 스냅샷 업로드
     setVpMicButton('idle');
   }
   function scheduleGeminiPcm(live,inlineData){
@@ -4412,6 +4555,7 @@
       live.resumeFailureCount=0;
       if(live.pendingContextRestart)scheduleGeminiContextRestart(live);
     }
+    if(message.usageMetadata)guRecordUsage(message.usageMetadata);
     if(message.serverContent)handleGeminiServerContent(live,message.serverContent);
     if(message.toolCall)handleGeminiToolCall(live,message.toolCall);
     if(message.toolCallCancellation?.ids){
@@ -4421,6 +4565,7 @@
       });
     }
     if(message.goAway){
+      guGoAway();
       setVpLiveStatus('Gemini Live 세션이 곧 종료돼요. 다음 질문에서 다시 연결할게요.','');
       clearGeminiGoAwayTimer(live);
       const raw=message.goAway.timeLeft;
@@ -4483,6 +4628,7 @@
         if(live.socket!==socket||live.closing||live.connectionEpoch!==connectionEpoch)return;
         if(message.setupComplete){
           live.ready=true;
+          guConnectionOpen(live.model||'');
           flushGeminiPcm(live);
           const panel=document.getElementById('vpanel');
           panel?.classList.remove('connecting','thinking','answering');
@@ -4515,6 +4661,7 @@
         }
         if(live.closing)return;
         if(!live.resumeCheckpointSafe&&live.resumeReplay?.length)stageGeminiResumeReplay(live);
+        guConnectionClosed();
         live.ready=false;
         live.responseInFlight=false;
         live.socket=null;
