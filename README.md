@@ -18,8 +18,27 @@ npm run dev
 기본 URL:
 
 ```text
-http://127.0.0.1:4190/
+http://127.0.0.1:4876/
 ```
+
+## Gemini Live 로컬 테스트
+
+`.env`에 아래 중 하나로 키를 둡니다. 현재 로컬 개발 서버는 `.env`를 자동으로 읽습니다.
+
+```text
+GEMINI_API_KEY=...
+# 또는 NAEMBI_GEMINI_API_KEY=...
+```
+
+`/app`의 조리 모드에서 `요리 비서`를 누르면 즉시 마이크 권한을 요청하고 Gemini Live 음성 세션을 시작합니다. 로컬 기본 포트는 Fetch가 차단하는 `4190` 대신 `4876`입니다.
+
+```bash
+npm run dev
+npm run verify:gemini-live
+npm run verify:gemini-live-browser
+```
+
+데스크톱의 `localhost`는 마이크 권한 테스트가 가능하지만, 휴대폰에서 로컬 서버를 열려면 HTTPS 터널 또는 배포 주소가 필요합니다.
 
 ## 검증
 

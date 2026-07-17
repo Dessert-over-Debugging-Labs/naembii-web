@@ -21,6 +21,9 @@
     "verify:voice-assistant": "node scripts/validate-voice-assistant-ux.mjs",
     "verify:copy-tone": "node scripts/validate-copy-tone.mjs",
     "verify:mixpanel": "node scripts/validate-mixpanel-analytics.mjs",
+    "verify:gemini-live": "node scripts/verify-gemini-live.mjs",
+    "verify:gemini-live-browser": "node scripts/verify-gemini-live-browser.mjs",
+    "verify:gemini-live-reconnect-browser": "node scripts/verify-gemini-live-reconnect-browser.mjs",
     "verify:ralph-loop": "node scripts/run-naembi-ralph-loop.mjs --visual --full --min-score=96",
     "verify:long-dynamic": "node scripts/run-long-dynamic-workflow.mjs",
     "verify:long-dynamic:smoke": "node scripts/run-long-dynamic-workflow.mjs --smoke"

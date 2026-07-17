@@ -151,6 +151,7 @@ try {
 
   await evaluate(`window.__moveDemoFinger(42, 74, true);`);
   await delay(420);
+  await capture('tap-search', 220);
 
   await evaluate(`
     new Promise(resolve => {
@@ -164,32 +165,21 @@ try {
   `);
   await capture('search-empty', 260);
 
-  for (const query of ['콘치즈']) {
+  for (const query of ['콘', '콘치', '콘치즈']) {
     await evaluate(`
       new Promise(resolve => {
         const input = document.getElementById('recipeSearchInput');
         if (input) input.value = '${query}';
-        syncRecipeSearchInput(input, 'searchClearBtn');
+        runRecipeSearch('${query}');
         setTimeout(resolve, 180);
       });
     `);
     await capture(`typing-${query}`, 220);
   }
 
-  await evaluate(`
-    new Promise(resolve => {
-      executeRecipeSearch('콘치즈');
-      setTimeout(() => {
-        ${installDemoLayer}
-        window.__moveDemoFinger(82, 310, false);
-        resolve(true);
-      }, 360);
-    });
-  `);
-  await capture('search-results', 320);
-
-  await evaluate(`window.__moveDemoFinger(82, 310, true);`);
+  await evaluate(`window.__moveDemoFinger(82, 292, true);`);
   await delay(380);
+  await capture('tap-result', 220);
 
   await evaluate(`
     new Promise(resolve => {
@@ -205,6 +195,7 @@ try {
 
   await evaluate(`window.__moveDemoFinger(318, 780, true);`);
   await delay(380);
+  await capture('tap-start', 220);
 
   await evaluate(`
     new Promise(resolve => {
@@ -225,68 +216,11 @@ try {
 
   await evaluate(`
     new Promise(resolve => {
-      window.SpeechRecognition = function DemoSpeechRecognition() {};
-      toggleHf3();
-      setVpPanelExpanded(true);
-      window.__moveDemoFinger(315, 505, false);
-      setTimeout(resolve, 420);
+      toggleHf3({startLive:false});
+      setTimeout(resolve, 2300);
     });
   `);
-  await capture('voice-ready-mic-off', 700);
-
-  await evaluate(`
-    new Promise(resolve => {
-      setVpVoiceState('listening', '마이크 ON · 듣는 중', 'ok');
-      setVpTranscript('듣고 있어요', { interim: true, hint: '말을 마치면 자동으로 인식 결과를 확정해요.' });
-      document.getElementById('vpUser').textContent = '';
-      document.getElementById('vpAi').textContent = '질문을 편하게 말해보세요. 말이 끝나면 답변할게요.';
-      window.__moveDemoFinger(315, 505, true);
-      setTimeout(() => window.__hideDemoFinger(), 220);
-      setTimeout(resolve, 360);
-    });
-  `);
-  await capture('voice-mic-on-listening', 680);
-
-  await evaluate(`
-    new Promise(resolve => {
-      setVpTranscript('모짜렐라 없으면', { interim: true, hint: '인식 중이에요.' });
-      document.getElementById('vpUser').textContent = '';
-      setTimeout(resolve, 260);
-    });
-  `);
-  await capture('voice-interim-transcript', 620);
-
-  await evaluate(`
-    new Promise(resolve => {
-      setVpTranscript('모짜렐라 없으면 어떻게 해?', { hint: '인식 완료 · 이 내용으로 답변할게요.' });
-      setVpVoiceState('recognized', '인식 완료', 'ok');
-      document.getElementById('vpAi').textContent = '';
-      setTimeout(resolve, 260);
-    });
-  `);
-  await capture('voice-final-transcript', 520);
-
-  await evaluate(`
-    new Promise(resolve => {
-      setVpVoiceState('responding', '응답 생성 중', '');
-      setVpVolumeStatus(true);
-      document.getElementById('vpAi').textContent = '답변을 준비하고 있어요…';
-      setTimeout(resolve, 320);
-    });
-  `);
-  await capture('voice-response-generating', 680);
-
-  await evaluate(`
-    new Promise(resolve => {
-      setVpVoiceState('complete', '응답 완료', 'ok');
-      setVpVolumeStatus(false);
-      document.getElementById('vpAi').textContent = '체다치즈로 바꿔도 괜찮아요. 짠맛이 강하니 설탕은 조금 줄여주세요.';
-      document.getElementById('vpScroll').scrollTop = 0;
-      window.__hideDemoFinger();
-      setTimeout(resolve, 320);
-    });
-  `);
-  await capture('voice-response-complete', 1250);
+  await capture('voice-answer', 720);
 
   await evaluate(`
     new Promise(resolve => {
@@ -299,7 +233,7 @@ try {
       }, 800);
     });
   `);
-  await capture('complete-share', 560);
+  await capture('complete-share', 680);
 
   const py = `
 import sys
@@ -311,16 +245,11 @@ durations = []
 for i in range(0, len(pairs), 2):
     path = pairs[i]
     duration = int(pairs[i + 1])
-    img = Image.open(path).convert('RGB')
+    img = Image.open(path).convert('RGBA')
     img = img.resize((390, 844), Image.Resampling.LANCZOS)
-    imgs.append(img)
+    imgs.append(img.convert('P', palette=Image.ADAPTIVE, colors=128))
     durations.append(duration)
-palette_source = Image.new('RGB', (390, 844 * len(imgs)))
-for index, img in enumerate(imgs):
-    palette_source.paste(img, (0, 844 * index))
-palette = palette_source.quantize(colors=128, method=Image.Quantize.MEDIANCUT)
-indexed = [img.quantize(palette=palette, dither=Image.Dither.FLOYDSTEINBERG) for img in imgs]
-indexed[0].save(out, save_all=True, append_images=indexed[1:], duration=durations, loop=0, optimize=False, disposal=1)
+imgs[0].save(out, save_all=True, append_images=imgs[1:], duration=durations, loop=0, optimize=True)
 `;
   const args = [py, out, ...frames.flatMap(frame => [frame.file, String(frame.duration)])];
   const gif = spawnSync('python3', ['-c', ...args], { encoding: 'utf8', maxBuffer: 1024 * 1024 * 4 });

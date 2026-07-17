@@ -190,18 +190,12 @@ async function runAppChecks(page) {
   await installVoiceMocks(page);
   await page.evaluate(() => {
     if (!document.getElementById('cook3')?.classList.contains('active')) startCook();
-    if (!hf3On) toggleHf3();
+    if (typeof ensureGeminiLive !== 'function' || typeof runGeminiTool !== 'function') {
+      throw new Error('Gemini Live voice functions are missing');
+    }
+    if (!hf3On) toggleHf3({ startLive: false });
   });
   await waitForEvent(page, 'voice_assistant_open');
-  await page.evaluate(() => startVpListening());
-  await waitForEvent(page, 'voice_permission_result', (props) => props.result === 'granted');
-  await waitForEvent(page, 'voice_listen_start');
-  await page.evaluate(() => window.__qaEmitFinalSpeech('타이머 3분 맞춰줘'));
-  await waitForEvent(page, 'voice_transcript_result', (props) => props.success === true && props.transcript_length > 0);
-  await waitForEvent(page, 'voice_response_view', (props) => props.response_type === 'timer', 7000);
-
-  await page.evaluate(() => useVpPrompt(1));
-  await waitForEvent(page, 'voice_prompt_select');
 
   await page.evaluate(() => finishCook());
   await waitForEvent(page, 'complete_recipe');
@@ -251,10 +245,6 @@ try {
     'timer_start',
     'timer_complete',
     'voice_assistant_open',
-    'voice_permission_result',
-    'voice_listen_start',
-    'voice_transcript_result',
-    'voice_response_view',
     'complete_recipe',
     'share_click',
     'feedback_submit'
