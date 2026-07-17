@@ -3030,6 +3030,7 @@
   }
 
   let cook3CurrentStep=0, cookYoutubeLoopTimer=null, cookHintTimer=null, cookYoutubeAutoplayStarted=false, cookYoutubePlayTimer=null, cookYoutubeMuted=false, cookYoutubeDucked=false; // 기본: 조리 영상 소리 켜짐
+  let cookYoutubeEnded=false, cookYoutubeLastReportedTime=0, cookYoutubeResetGuardAt=0;
   let cookHintDismissed=false; // "다시 보지 않기" (세션 한정, 저장 안 함)
   // 영상 조작 상태 (제스처 · 설정 모달)
   let cook3Playing=false, cook3Time=0, cook3TimeTimer=null, vgTapTimer=null;
@@ -3105,6 +3106,81 @@
     if(!frame||!frame.contentWindow)return false;
     frame.contentWindow.postMessage(JSON.stringify({event:'command',func:func,args:args||[]}), 'https://www.youtube.com');
     return true;
+  }
+  function resetCookFlowForYoutubeRestart(reason=''){
+    const cook=document.getElementById('cook3');
+    if(!cook?.classList.contains('active'))return;
+    const now=Date.now();
+    if(now-cookYoutubeResetGuardAt<900)return;
+    cookYoutubeResetGuardAt=now;
+    cookYoutubeEnded=false;
+    cookYoutubeLastReportedTime=0;
+    cook3Time=0;
+    cook3LoopPlayed=0;
+    cook3Car.reset();
+    console.debug('[cook-youtube] reset cooking steps after player restart',reason);
+  }
+  function syncCookYoutubePlayerState(state){
+    if(state===0){
+      cookYoutubeEnded=true;
+      cook3Playing=false;
+      cook3StopTimeTracking();
+      return;
+    }
+    if(state===1){
+      if(cookYoutubeEnded)resetCookFlowForYoutubeRestart('ended-to-playing');
+      cookYoutubeEnded=false;
+      cook3Playing=true;
+      cook3StartTimeTracking();
+      return;
+    }
+    if(state===2||state===5){
+      cook3Playing=false;
+      cook3StopTimeTracking();
+    }
+  }
+  function syncCookYoutubePlayerTime(time){
+    const next=Number(time);
+    if(!Number.isFinite(next)||next<0)return;
+    const previous=Number(cookYoutubeLastReportedTime)||0;
+    const restarted=(cookYoutubeEnded||previous>3)&&next<=1.2&&previous-next>3;
+    cookYoutubeLastReportedTime=next;
+    cook3Time=Math.max(0,Math.floor(next));
+    if(restarted)resetCookFlowForYoutubeRestart('time-reset');
+  }
+  function parseCookYoutubeMessageData(data){
+    if(!data)return null;
+    if(typeof data==='object')return data;
+    if(typeof data!=='string'||data[0]!=='{')return null;
+    try{return JSON.parse(data);}catch{return null;}
+  }
+  function handleCookYoutubeMessage(event){
+    const frame=document.getElementById('cook3YoutubePlayer');
+    if(!frame?.contentWindow||event.source!==frame.contentWindow)return;
+    const origin=String(event.origin||'');
+    if(origin&&!/^https:\/\/(?:www\.)?youtube(?:-nocookie)?\.com$/.test(origin))return;
+    const data=parseCookYoutubeMessageData(event.data);
+    if(!data)return;
+    if(data.event==='onStateChange')syncCookYoutubePlayerState(Number(data.info));
+    const info=data.info&&typeof data.info==='object'?data.info:null;
+    if(info){
+      if(Object.prototype.hasOwnProperty.call(info,'playerState'))syncCookYoutubePlayerState(Number(info.playerState));
+      if(Object.prototype.hasOwnProperty.call(info,'currentTime'))syncCookYoutubePlayerTime(info.currentTime);
+    }
+  }
+  window.addEventListener('message',handleCookYoutubeMessage);
+  function bindCookYoutubePlayerEvents(){
+    cookYoutubeEnded=false;
+    cookYoutubeLastReportedTime=0;
+    const frame=document.getElementById('cook3YoutubePlayer');
+    if(!frame)return;
+    const subscribe=()=>{
+      postCookYoutube('addEventListener',['onStateChange']);
+      postCookYoutube('getPlayerState');
+      postCookYoutube('getCurrentTime');
+    };
+    frame.addEventListener('load',()=>setTimeout(subscribe,160),{once:true});
+    setTimeout(subscribe,360);
   }
   function effectiveCookYoutubeVolume(){
     return cookYoutubeDucked?Math.min(vsVol,25):vsVol;
@@ -4161,19 +4237,28 @@
     state.hasUser=false;
     state.complete=false;
   }
+  function latestVpTranscriptHistoryTurn(history=[]){
+    if(!history.length)return [];
+    const last=history[history.length-1];
+    if(last.role==='assistant'){
+      for(let index=history.length-2;index>=0;index-=1){
+        if(history[index].role==='user')return [history[index],last];
+        if(history[index].role==='assistant')break;
+      }
+    }
+    return [last];
+  }
   function renderVpTranscript(live){
     const transcript=document.getElementById('vpTranscript');
     if(!transcript||!live)return;
     const state=ensureVpTranscriptState(live);
     const history=state.history||[];
-    const latest=state.assistantText
-      ?{role:'assistant',text:state.assistantText}
-      :state.userText
-        ?{role:'user',text:state.userText}
-        :state.pendingAssistantText
-          ?{role:'assistant',text:state.pendingAssistantText}
-          :history[history.length-1]||null;
-    const entries=latest?[createVpTranscriptEntry(latest.role,latest.text)]:[];
+    const visibleTurn=[];
+    if(state.userText)visibleTurn.push({role:'user',text:state.userText});
+    if(state.assistantText)visibleTurn.push({role:'assistant',text:state.assistantText});
+    else if(!state.userText&&state.pendingAssistantText)visibleTurn.push({role:'assistant',text:state.pendingAssistantText});
+    const entries=(visibleTurn.length?visibleTurn:latestVpTranscriptHistoryTurn(history))
+      .map(item=>createVpTranscriptEntry(item.role,item.text));
     transcript.replaceChildren(...entries);
     const scroll=document.getElementById('vpScroll');
     if(scroll){
@@ -5240,6 +5325,7 @@
   function initCookYoutube(){
     const params=new URLSearchParams({rel:'0',modestbranding:'1',controls:'0',disablekb:'1',fs:'0',iv_load_policy:'3',playsinline:'1',enablejsapi:'1',origin:location.origin});
     embedYoutube(document.querySelector('#cook3 .cook-video'),'cook3Youtube','cook3YoutubePlayer',currentRecipe.id,currentRecipe.title,params,true);
+    bindCookYoutubePlayerEvents();
     applyCookYoutubeSound();
     postCookYoutube('setPlaybackRate',[vsSpeed]);
   }
