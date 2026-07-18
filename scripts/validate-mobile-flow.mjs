@@ -449,9 +449,9 @@ try {
           model: 'gemini-3.1-flash-live-preview',
           liveSetup: {
             model: 'models/gemini-3.1-flash-live-preview',
-            generationConfig: { responseModalities: ['AUDIO'] },
-            inputAudioTranscription: {},
-            outputAudioTranscription: {},
+            generationConfig: { responseModalities: ['AUDIO'], speechConfig: { languageCode: 'ko-KR' } },
+            inputAudioTranscription: { languageHints: { languageCodes: ['ko-KR', 'en-US'] } },
+            outputAudioTranscription: { languageHints: { languageCodes: ['ko-KR'] } },
             realtimeInputConfig: { automaticActivityDetection: { disabled: false, silenceDurationMs: 700 } },
             sessionResumption: payload.sessionResumptionHandle ? { handle: payload.sessionResumptionHandle } : {},
             contextWindowCompression: { slidingWindow: {} },

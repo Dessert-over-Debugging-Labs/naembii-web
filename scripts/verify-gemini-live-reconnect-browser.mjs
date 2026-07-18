@@ -89,10 +89,10 @@ const browserHarness = String.raw`(() => {
       model: 'test-live-model',
       liveSetup: {
         model: 'models/test-live-model',
-        generationConfig: { responseModalities: ['AUDIO'] },
+        generationConfig: { responseModalities: ['AUDIO'], speechConfig: { languageCode: 'ko-KR' } },
         systemInstruction: { parts: [{ text: 'Deterministic browser reconnect test.' }] },
-        inputAudioTranscription: {},
-        outputAudioTranscription: {},
+        inputAudioTranscription: { languageHints: { languageCodes: ['ko-KR', 'en-US'] } },
+        outputAudioTranscription: { languageHints: { languageCodes: ['ko-KR'] } },
         sessionResumption: body.sessionResumptionHandle ? { handle: body.sessionResumptionHandle } : {},
         contextWindowCompression: { slidingWindow: {} }
       }
@@ -268,6 +268,73 @@ try {
       const stream = live.micStream;
       const track = stream.getAudioTracks()[0];
       const firstSocket = harness.sockets[0];
+      const transcriptLines = () => [...document.querySelectorAll('#vpTranscript .vp-transcript-entry')]
+        .map((entry) => entry.textContent.trim());
+      const activeCookStep = () => document.querySelector('#cookTrack3 .scard.active')?.dataset.i || '';
+
+      handleGeminiServerContent(live, {
+        inputTranscription: {
+          text: 'Aí é que tá o calcanhar de Aquiles. A receita é o jeito.',
+          languageCode: 'pt-BR'
+        }
+      });
+      await new Promise((resolve) => setTimeout(resolve, 80));
+      const afterForeignTranscript = {
+        lines: transcriptLines(),
+        notice: document.getElementById('vpNotice')?.textContent || '',
+        unsupportedCount: live.unsupportedTranscriptCount || 0
+      };
+      handleGeminiServerContent(live, {
+        inputTranscription: {
+          text: '옥수수 콘 4큰술',
+          languageCode: 'ko-KR'
+        }
+      });
+      await new Promise((resolve) => setTimeout(resolve, 80));
+      const afterKoreanTranscript = transcriptLines();
+      const transcriptLanguageGuard = {
+        rejectedForeign: !afterForeignTranscript.lines.some((line) => /Aquiles|Aí|receita/.test(line)),
+        noticeShown: /한국어/.test(afterForeignTranscript.notice),
+        acceptedKorean: afterKoreanTranscript.some((line) => line.includes('옥수수 콘 4큰술')),
+        unsupportedCount: afterForeignTranscript.unsupportedCount
+      };
+      live.transcript = null;
+      clearVpTranscript();
+      clearVpNotice();
+
+      cook3Car.goTo(0);
+      document.getElementById('vpanel')?.classList.add('open', 'compact', 'mic-active');
+      const vpScroll = document.getElementById('vpScroll');
+      const vpTranscript = document.getElementById('vpTranscript');
+      const longReply = '냄비가 불을 한 단계 낮추고 팬 가장자리의 양념을 가운데로 모아 달라고 안내해요. '.repeat(12);
+      vpScroll.classList.add('has-transcript');
+      vpTranscript.classList.add('turn-pair');
+      vpTranscript.replaceChildren(
+        createVpTranscriptEntry('user', '양념이 타는 것 같아.'),
+        createVpTranscriptEntry('assistant', longReply)
+      );
+      await new Promise((resolve) => setTimeout(resolve, 80));
+      const assistantSpan = document.querySelector('#vpTranscript .vp-transcript-entry.assistant span');
+      const stepBeforePanelGesture = activeCookStep();
+      assistantSpan.dispatchEvent(new WheelEvent('wheel', { bubbles: true, cancelable: true, deltaY: 180 }));
+      await new Promise((resolve) => setTimeout(resolve, 80));
+      const stepAfterPanelWheel = activeCookStep();
+      assistantSpan.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, pointerId: 11, clientY: 340 }));
+      assistantSpan.dispatchEvent(new PointerEvent('pointermove', { bubbles: true, pointerId: 11, clientY: 230 }));
+      assistantSpan.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, pointerId: 11, clientY: 230 }));
+      await new Promise((resolve) => setTimeout(resolve, 80));
+      const stepAfterPanelDrag = activeCookStep();
+      const transcriptScrollIsolation = {
+        assistantScrollable: assistantSpan.scrollHeight > assistantSpan.clientHeight,
+        stepBeforePanelGesture,
+        stepAfterPanelWheel,
+        stepAfterPanelDrag,
+        stageUnchanged: stepBeforePanelGesture === stepAfterPanelWheel && stepBeforePanelGesture === stepAfterPanelDrag
+      };
+      vpTranscript.replaceChildren();
+      vpTranscript.classList.remove('turn-pair', 'assistant-only');
+      vpScroll.classList.remove('has-transcript');
+      document.getElementById('vpanel')?.classList.remove('mic-active');
 
       // Make PCM input deterministic while leaving the real fake-media track live.
       if (live.inputProcessor?.port) live.inputProcessor.port.onmessage = null;
@@ -443,6 +510,8 @@ try {
         invalidResumeFallback,
         midSpeechReplay,
         replayToolDedupe,
+        transcriptLanguageGuard,
+        transcriptScrollIsolation,
         sentAudioFrames: live.sentAudioFrames || 0,
         sentAudioBytes: live.sentAudioBytes || 0
       };
@@ -489,6 +558,12 @@ try {
   }
   if (result.replayToolDedupe.firstDelta !== 10 || result.replayToolDedupe.secondDelta !== 0) {
     throw new Error(`replay 후 새 call id로 반복된 도구가 중복 실행됐습니다: ${JSON.stringify(result)}`);
+  }
+  if (!result.transcriptLanguageGuard.rejectedForeign || !result.transcriptLanguageGuard.noticeShown || !result.transcriptLanguageGuard.acceptedKorean) {
+    throw new Error(`전사 언어 품질 게이트가 동작하지 않았습니다: ${JSON.stringify(result)}`);
+  }
+  if (!result.transcriptScrollIsolation.assistantScrollable || !result.transcriptScrollIsolation.stageUnchanged) {
+    throw new Error(`요리비서 답변 스크롤이 조리 단계 제스처와 격리되지 않았습니다: ${JSON.stringify(result)}`);
   }
   console.log(JSON.stringify({ ok: true, ...result }));
 } finally {

@@ -673,7 +673,7 @@
   .vp-transcript-entry span{flex:1 1 auto;min-width:0;overflow:hidden;}
   .vp-transcript-entry.user span{display:block;white-space:nowrap;text-overflow:ellipsis;}
   .vp-transcript-entry.assistant b{color:#FFF2C5;}
-  .vp-transcript-entry.assistant span{display:block;max-height:100%;overflow-y:auto;scrollbar-width:none;font-size:17px;line-height:1.38;font-weight:850;}
+  .vp-transcript-entry.assistant span{display:block;max-height:100%;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;scrollbar-width:none;font-size:17px;line-height:1.38;font-weight:850;}
   .vp-transcript-entry.assistant span::-webkit-scrollbar{display:none;}
   .vpanel.compact .vp-transcript{gap:5px;margin:0;width:100%;}
   .vpanel.compact.mic-active .vp-scroll.has-transcript .vp-transcript{margin:0 52px 0 0;width:calc(100% - 52px);}
@@ -3047,6 +3047,10 @@
   let cook3LoopPlayed=0, cook3SuppressSeek=false; // 구간 반복 완료 횟수 · 단계 자동 전환 시 seek 억제(off=영상 이어짐)
   // Gemini Live 초기화 전에도 캐러셀이 layout()을 호출하므로 기본 핸들러를 둔다.
   let onCookingStageContextChanged=()=>{};
+  function isVoicePanelGestureTarget(event){
+    const target=event?.target;
+    return !!(target instanceof Element&&target.closest('#vpanel'));
+  }
   function makeCarousel(viewId,trackId){
     const viewEl=document.getElementById(viewId), trackEl=document.getElementById(trackId);
     const isCook3=viewId==='cook3';
@@ -3096,10 +3100,10 @@
     function next(){ hideCookHint(); if(cur<maxIdx()){cur++;layout(); if(isCook3&&cur===maxIdx())finishCook(); else toast('"다음 단계" 인식됨','check'); } else { if(isCook3)finishCook(); else show('complete'); } }
     function prev(){ hideCookHint(); if(cur>0){cur--;layout();toast('이전 단계','arrow-left');} }
     trackEl.addEventListener('click',e=>{ if(dragMoved)return; const c=e.target.closest('.scard'); if(!c)return; hideCookHint(); if(c.dataset.finish){ if(cur!==maxIdx()){cur=maxIdx();layout();} finishCook(); return; } const i=+c.dataset.i; if(i!==cur){cur=i;layout();} });
-    viewEl.addEventListener('wheel',e=>{ if(!viewEl.classList.contains('active')||scrollLock)return; if(e.deltaY>12){scrollLock=true;next();setTimeout(()=>scrollLock=false,650);} else if(e.deltaY<-12){scrollLock=true;prev();setTimeout(()=>scrollLock=false,650);} },{passive:true});
-    viewEl.addEventListener('pointerdown',e=>{dragY=e.clientY;dragMoved=false;});
+    viewEl.addEventListener('wheel',e=>{ if(isVoicePanelGestureTarget(e)||!viewEl.classList.contains('active')||scrollLock)return; if(e.deltaY>12){scrollLock=true;next();setTimeout(()=>scrollLock=false,650);} else if(e.deltaY<-12){scrollLock=true;prev();setTimeout(()=>scrollLock=false,650);} },{passive:true});
+    viewEl.addEventListener('pointerdown',e=>{if(isVoicePanelGestureTarget(e)){dragY=null;return;}dragY=e.clientY;dragMoved=false;});
     viewEl.addEventListener('pointermove',e=>{if(dragY!==null&&Math.abs(e.clientY-dragY)>8)dragMoved=true;});
-    viewEl.addEventListener('pointerup',e=>{ if(dragY===null)return; const dy=e.clientY-dragY; dragY=null; if(Math.abs(dy)>=40){hideCookHint(); if(dy<0)next(); else prev(); } });
+    viewEl.addEventListener('pointerup',e=>{ if(isVoicePanelGestureTarget(e)){dragY=null;return;} if(dragY===null)return; const dy=e.clientY-dragY; dragY=null; if(Math.abs(dy)>=40){hideCookHint(); if(dy<0)next(); else prev(); } });
     viewEl.addEventListener('pointercancel',()=>{dragY=null;});
     document.addEventListener('keydown',e=>{ if(!viewEl.classList.contains('active'))return; if(e.code==='Space'||e.code==='ArrowRight'||e.code==='ArrowDown'){e.preventDefault();next();} else if(e.code==='ArrowUp'||e.code==='ArrowLeft'){e.preventDefault();prev();} });
     build();layout();
@@ -3699,6 +3703,42 @@
   }
   function showGeminiPermissionNotice(){
     showVpNotice('마이크 권한이 없어졌어요. 브라우저에서 다시 허용해 주세요.','bad',{duration:2600});
+  }
+  const GEMINI_TRANSCRIPT_ALLOWED_LANGUAGE_PREFIXES=['ko','en'];
+  function geminiTranscriptText(transcription){
+    return String(typeof transcription==='string'?transcription:transcription?.text||'').trim();
+  }
+  function geminiTranscriptLanguageCode(transcription){
+    return String(transcription?.languageCode||transcription?.language_code||'').trim().toLowerCase();
+  }
+  function isAllowedGeminiTranscriptLanguage(languageCode){
+    if(!languageCode)return true;
+    return GEMINI_TRANSCRIPT_ALLOWED_LANGUAGE_PREFIXES.some(prefix=>languageCode===prefix||languageCode.startsWith(prefix+'-')||languageCode.startsWith(prefix+'_'));
+  }
+  function looksLikeSupportedUserTranscript(text){
+    const value=String(text||'').trim();
+    if(!value)return false;
+    if(/[가-힣]/.test(value))return true;
+    if(!/^[\t\n\r -~]+$/.test(value))return false;
+    const words=value.match(/[A-Za-z]+(?:[-'][A-Za-z]+)*/g)||[];
+    if(!words.length)return /[0-9]/.test(value);
+    return words.length<=4&&value.length<=42;
+  }
+  function shouldDisplayGeminiInputTranscript(transcription){
+    const text=geminiTranscriptText(transcription);
+    if(!text)return false;
+    if(!isAllowedGeminiTranscriptLanguage(geminiTranscriptLanguageCode(transcription)))return false;
+    return looksLikeSupportedUserTranscript(text);
+  }
+  function handleUnsupportedGeminiInputTranscript(live,transcription){
+    if(live){
+      live.unsupportedTranscriptCount=(live.unsupportedTranscriptCount||0)+1;
+      const now=Date.now();
+      if(now-(live.lastUnsupportedTranscriptNoticeAt||0)<1400)return;
+      live.lastUnsupportedTranscriptNoticeAt=now;
+    }
+    showVpNotice('한국어 중심으로 다시 말해 주세요. 영어 단어는 괜찮아요.','bad',{duration:2200});
+    setVpVoiceHint('냄비는 한국어로 듣고 답하도록 맞춰져 있어요.');
   }
   function setVpInputMeter(level=0,label='',active=false){
     const meter=document.getElementById('vpInputMeter');
@@ -4963,7 +5003,8 @@
         panel?.classList.remove('thinking','answering');
         panel?.classList.add('listening');
       }
-      updateVpTranscript(live,'user',content.inputTranscription.text);
+      if(shouldDisplayGeminiInputTranscript(content.inputTranscription))updateVpTranscript(live,'user',geminiTranscriptText(content.inputTranscription));
+      else handleUnsupportedGeminiInputTranscript(live,content.inputTranscription);
     }
     for(const part of content.modelTurn?.parts||[]){
       live.responseInFlight=true;

@@ -3,6 +3,22 @@ const { allowCors, clean, json, readBody } = require('./_lib/collect');
 const DEFAULT_MODEL = 'gemini-3.1-flash-live-preview';
 const DEFAULT_TTL_MINUTES = 30;
 const DEFAULT_NEW_SESSION_SECONDS = 60;
+const LIVE_INPUT_LANGUAGE_CODES = ['ko-KR', 'en-US'];
+const LIVE_OUTPUT_LANGUAGE_CODES = ['ko-KR'];
+const LIVE_BASE_ADAPTATION_PHRASES = [
+  '냄비',
+  '요리 비서',
+  '옥수수',
+  '인분',
+  '큰술',
+  '작은술',
+  '타이머',
+  '다음 단계',
+  '이전 단계',
+  '재료 보기',
+  '유튜브',
+  'YouTube'
+];
 
 // These tools are locked into the ephemeral token so a browser cannot expand
 // the actions Gemini may request after receiving a token.
@@ -133,7 +149,9 @@ function liveSystemInstruction(payload) {
   return [
     '너는 냄비의 조리 중 음성 비서다.',
     '사용자는 모바일 웹으로 주방에서 요리 중이다.',
-    '사용자가 물은 내용 또는 요청한 조작에 필요한 답만 한국어로 말한다. 인사, 공감, 반복, 요약, 부연 설명, 선택지, 후속 제안은 하지 않는다.',
+    '반드시 한국어로 답한다. 조리 도구, 브랜드명, YouTube 같은 짧은 영어 고유명사만 그대로 말할 수 있다.',
+    '사용자가 한국어 또는 짧은 영어 단어가 아닌 언어로 말한 것처럼 인식되면 그 언어를 따라 하지 말고, 한국어로 다시 말해 달라는 짧은 확인 질문만 한다.',
+    '사용자가 물은 내용 또는 요청한 조작에 필요한 답만 말한다. 인사, 공감, 반복, 요약, 부연 설명, 선택지, 후속 제안은 하지 않는다.',
     '기본적으로 한 문장으로 답한다. 정확한 수치, 안전 경고 또는 의도 확인이 꼭 필요할 때만 짧은 두 문장으로 답한다.',
     '묻지 않은 다음 단계, 재료, 대안, 팁을 덧붙이지 않는다.',
     '정보가 부족하거나 의도가 불명확하면 추측하지 말고 짧은 확인 질문 하나만 한다.',
@@ -151,14 +169,41 @@ function liveSystemInstruction(payload) {
   ].filter(Boolean).join('\n');
 }
 
+function liveTranscriptionAdaptationPhrases(payload) {
+  const values = [
+    ...LIVE_BASE_ADAPTATION_PHRASES,
+    clean(payload.recipe, 120),
+    clean(payload.step, 160),
+    clean(payload.stepNotes, 520),
+    clean(payload.ingredients, 720)
+  ];
+  const phrases = new Set();
+  for (const value of values) {
+    for (const phrase of String(value || '').split(/[,\n·/()]+/)) {
+      const trimmed = phrase.trim();
+      if (trimmed.length >= 2 && trimmed.length <= 40) phrases.add(trimmed);
+    }
+  }
+  return [...phrases].slice(0, 64);
+}
+
 function liveConfig(payload) {
   const sessionResumptionHandle = resumeHandle(payload);
+  const adaptationPhrases = liveTranscriptionAdaptationPhrases(payload);
   return {
     responseModalities: ['AUDIO'],
     temperature: 0.6,
     systemInstruction: liveSystemInstruction(payload),
-    inputAudioTranscription: {},
-    outputAudioTranscription: {},
+    speechConfig: {
+      languageCode: 'ko-KR'
+    },
+    inputAudioTranscription: {
+      languageHints: { languageCodes: LIVE_INPUT_LANGUAGE_CODES },
+      adaptationPhrases
+    },
+    outputAudioTranscription: {
+      languageHints: { languageCodes: LIVE_OUTPUT_LANGUAGE_CODES }
+    },
     realtimeInputConfig: {
       automaticActivityDetection: {
         disabled: false,
@@ -177,7 +222,8 @@ function liveSetup(model, config) {
     model: `models/${model}`,
     generationConfig: {
       responseModalities: config.responseModalities,
-      temperature: config.temperature
+      temperature: config.temperature,
+      speechConfig: config.speechConfig
     },
     systemInstruction: {
       parts: [{ text: config.systemInstruction }]
@@ -279,4 +325,11 @@ module.exports = async function handler(req, res) {
       error: error.message || 'Gemini Live 토큰 발급에 실패했습니다.'
     });
   }
+};
+
+module.exports._test = {
+  liveConfig,
+  liveSetup,
+  liveSystemInstruction,
+  liveTranscriptionAdaptationPhrases
 };
