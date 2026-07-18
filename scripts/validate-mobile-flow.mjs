@@ -272,6 +272,54 @@ try {
     return { videoVolume, videoRestored, voice, muted, restored, slower, slowest };
   })()`);
 
+  const cookRestart = await evaluate(`(async () => {
+    show('cook3');
+    hideCookHint();
+    await new Promise((resolve) => setTimeout(resolve, 160));
+    cook3Car.goTo(2);
+    cook3Time = 87;
+    cookYoutubeEnded = true;
+    cookYoutubeLastReportedTime = 86;
+    cookYoutubeAutoplayStarted = true;
+    cook3Playing = true;
+    startUnifiedTimer(90, false);
+    openIngredients('check');
+    openTimer();
+    openVideoSettings();
+    toggleHf3({ startLive: false });
+    if (!vsLoopOn) toggleVsLoop();
+    setVsLoopCount(2, document.querySelector('#vsLoopCount .vchip[data-loop="2"]'));
+    setVsLoopEnd('next', document.querySelector('#vsLoopEnd .vchip[data-loop-end="next"]'));
+    setVsSpeed(1.5);
+    await new Promise((resolve) => setTimeout(resolve, 160));
+    show('detail');
+    await new Promise((resolve) => setTimeout(resolve, 140));
+    startCook();
+    await new Promise((resolve) => setTimeout(resolve, 260));
+    return {
+      active: document.querySelector('.view.active')?.id || '',
+      activeStep: document.querySelector('#cookTrack3 .scard.active')?.dataset.i || '',
+      currentStep: cook3CurrentStep,
+      cookTime: cook3Time,
+      playing: cook3Playing,
+      ended: cookYoutubeEnded,
+      autoplayStarted: cookYoutubeAutoplayStarted,
+      timerTotal,
+      timerLeft,
+      timerVisible: document.getElementById('stageTimer').classList.contains('show'),
+      ingredientsOpen: document.getElementById('ingSheet').classList.contains('show'),
+      timerSheetOpen: document.getElementById('timerSheet').classList.contains('show'),
+      settingsOpen: document.getElementById('videoSettings').classList.contains('show'),
+      voicePanelOpen: document.getElementById('vpanel').classList.contains('open'),
+      voiceModalOpen: document.getElementById('voiceModal').classList.contains('show'),
+      loopOn: vsLoopOn,
+      loopCount: vsLoopCount,
+      loopEnd: vsLoopEnd,
+      speed: vsSpeed,
+      hintVisible: document.getElementById('cookHint').classList.contains('show')
+    };
+  })()`);
+
   const tutorial = await evaluate(`(async () => {
     show('cook3');
     await new Promise((resolve) => setTimeout(resolve, 260));
@@ -483,10 +531,11 @@ try {
     try {
       toggleHf3();
       await new Promise((resolve) => setTimeout(resolve, 250));
+      const openingWaveStyle = getComputedStyle(document.querySelector('.vp-input-wave'));
       const opened = {
         panel: document.getElementById('vpanel').className,
         compact: document.getElementById('vpanel').classList.contains('compact'),
-        conversationUi: !document.querySelector('#vpVoiceTitle,#vpLiveStatus,#vpVoiceHint,#vpInputMeter,#vpInputSource,#vpInputDevice,.vp-listening,.vp-voice-kicker,.vp-idle-wave') && document.getElementById('vpIdleState')?.textContent.includes('무엇이 궁금해요?') && getComputedStyle(document.querySelector('.vp-input-wave')).display === 'none',
+        conversationUi: !document.querySelector('#vpVoiceTitle,#vpLiveStatus,#vpVoiceHint,#vpInputMeter,#vpInputSource,#vpInputDevice,.vp-listening,.vp-voice-kicker,.vp-idle-wave') && document.getElementById('vpIdleState')?.textContent.includes('무엇이 궁금해요?') && openingWaveStyle.visibility === 'hidden' && Number(openingWaveStyle.opacity) === 0,
         microphoneRequests,
         micLive: !!geminiLive?.micStream && geminiLive.micStream.getAudioTracks().every((track) => track.readyState === 'live'),
         micLabel: document.querySelector('.vp-mic')?.getAttribute('aria-label') || '',
@@ -515,13 +564,14 @@ try {
       geminiLive.inputProcessor.onaudioprocess?.({ inputBuffer: { getChannelData: () => signal } });
       const voiceActivity = {
         panelMicActive: document.getElementById('vpanel').classList.contains('mic-active'),
-        waveVisible: getComputedStyle(document.querySelector('.vp-input-wave')).display !== 'none'
+        waveVisible: document.getElementById('vpanel').classList.contains('mic-active') && getComputedStyle(document.querySelector('.vp-input-wave')).display !== 'none'
       };
       await new Promise((resolve) => setTimeout(resolve, 260));
       for (let index = 0; index < 10; index += 1) {
         geminiLive.inputProcessor.onaudioprocess?.({ inputBuffer: { getChannelData: () => new Float32Array(2048) } });
       }
-      voiceActivity.waveHidesWhenSilent = !document.getElementById('vpanel').classList.contains('mic-active') && getComputedStyle(document.querySelector('.vp-input-wave')).display === 'none';
+      const silentWaveStyle = getComputedStyle(document.querySelector('.vp-input-wave'));
+      voiceActivity.waveHidesWhenSilent = !document.getElementById('vpanel').classList.contains('mic-active') && silentWaveStyle.visibility === 'hidden' && Number(silentWaveStyle.opacity) === 0;
       await new Promise((resolve) => setTimeout(resolve, 80));
       const audioTransport = {
         capturedFrames: geminiLive.capturedAudioFrames,
@@ -535,29 +585,33 @@ try {
       };
       const compactScroll = document.getElementById('vpScroll');
       const compactReply = '불을 한 단계 낮추고 팬 가장자리의 양념을 가운데로 모아 주세요. 물이나 면수를 한 숟갈씩 넣어 농도를 풀고 천천히 섞으면 좋아요. '.repeat(8);
+      document.getElementById('vpTranscript').classList.add('turn-pair');
       document.getElementById('vpTranscript').innerHTML = '<div class="vp-transcript-entry user"><b>나</b><span>양념이 타는 것 같아.</span></div><div class="vp-transcript-entry assistant"><b>냄비</b><span>' + compactReply + '</span></div>';
       compactScroll.classList.add('has-transcript');
       await new Promise((resolve) => setTimeout(resolve, 80));
-      const compactScrollBefore = compactScroll.scrollTop;
-      compactScroll.scrollTop = compactScroll.scrollHeight;
+      const compactAssistantText = document.querySelector('#vpTranscript .vp-transcript-entry.assistant span');
+      const compactScrollBefore = compactAssistantText.scrollTop;
+      compactAssistantText.scrollTop = compactAssistantText.scrollHeight;
       await new Promise((resolve) => setTimeout(resolve, 40));
       const compactTranscript = {
         keepsCompact: document.getElementById('vpanel').classList.contains('compact'),
         ctrlHeight: Math.round(document.getElementById('cook3Ctrl').getBoundingClientRect().height),
-        scrollClientHeight: compactScroll.clientHeight,
-        scrollHeight: compactScroll.scrollHeight,
-        scrollOverflowY: getComputedStyle(compactScroll).overflowY,
-        scrollMoved: compactScroll.scrollTop > compactScrollBefore
+        scrollClientHeight: compactAssistantText.clientHeight,
+        scrollHeight: compactAssistantText.scrollHeight,
+        scrollOverflowY: getComputedStyle(compactAssistantText).overflowY,
+        scrollMoved: compactAssistantText.scrollTop > compactScrollBefore
       };
       document.getElementById('vpSizeHandle').click();
       await new Promise((resolve) => setTimeout(resolve, 160));
       const longAssistantReply = '불을 한 단계 낮추고 팬 가장자리의 양념을 가운데로 모아 주세요. 물이나 면수를 한 숟갈씩 넣어 농도를 풀고 천천히 섞으면 좋아요. '.repeat(12);
+      document.getElementById('vpTranscript').classList.add('turn-pair');
       document.getElementById('vpTranscript').innerHTML = '<div class="vp-transcript-entry user"><b>나</b><span>양념이 타는 것 같아.</span></div><div class="vp-transcript-entry assistant"><b>냄비</b><span>' + longAssistantReply + '</span></div>';
       document.getElementById('vpScroll').classList.add('has-transcript');
       await new Promise((resolve) => setTimeout(resolve, 240));
       const vpScroll = document.getElementById('vpScroll');
-      const scrollBefore = vpScroll.scrollTop;
-      vpScroll.scrollTop = vpScroll.scrollHeight;
+      const expandedAssistantText = document.querySelector('#vpTranscript .vp-transcript-entry.assistant span');
+      const scrollBefore = expandedAssistantText.scrollTop;
+      expandedAssistantText.scrollTop = expandedAssistantText.scrollHeight;
       await new Promise((resolve) => setTimeout(resolve, 60));
       const resized = {
         panel: document.getElementById('vpanel').className,
@@ -565,11 +619,11 @@ try {
         handleValue: document.getElementById('vpSizeHandle').getAttribute('aria-valuenow'),
         ctrlHeight: Math.round(document.getElementById('cook3Ctrl').getBoundingClientRect().height),
         ctrlHasExpandedClass: document.getElementById('cook3Ctrl').classList.contains('vpanel-expanded'),
-        scrollClientHeight: vpScroll.clientHeight,
-        scrollHeight: vpScroll.scrollHeight,
-        scrollTopAfter: vpScroll.scrollTop,
-        scrollOverflowY: getComputedStyle(vpScroll).overflowY,
-        scrollMoved: vpScroll.scrollTop > scrollBefore
+        scrollClientHeight: expandedAssistantText.clientHeight,
+        scrollHeight: expandedAssistantText.scrollHeight,
+        scrollTopAfter: expandedAssistantText.scrollTop,
+        scrollOverflowY: getComputedStyle(expandedAssistantText).overflowY,
+        scrollMoved: expandedAssistantText.scrollTop > scrollBefore
       };
       const handle = document.getElementById('vpSizeHandle');
       const rect = handle.getBoundingClientRect();
@@ -668,7 +722,7 @@ try {
     }
   })()`);
 
-  const result = { home, search, feedback, timer, ingredients, settings, tutorial, assistant };
+  const result = { home, search, feedback, timer, ingredients, settings, cookRestart, tutorial, assistant };
   console.log(JSON.stringify(result, null, 2));
 
   if (home.marketing || home.active !== 'home') {
@@ -730,6 +784,15 @@ try {
   }
   if (settings.slowest.value !== '0.5×' || settings.slowest.active !== '0.5×' || !settings.slowest.downDisabled) {
     throw new Error('재생속도 최저 단계와 - 버튼 비활성화가 동작하지 않았습니다.');
+  }
+  if (cookRestart.active !== 'cook3' || cookRestart.activeStep !== '0' || cookRestart.currentStep !== 0 || cookRestart.cookTime !== 0) {
+    throw new Error(`상세에서 다시 요리 시작 시 첫 단계 초기 화면으로 돌아가지 않습니다: ${JSON.stringify(cookRestart)}`);
+  }
+  if (cookRestart.timerTotal !== 0 || cookRestart.timerLeft !== 0 || cookRestart.timerVisible || cookRestart.ingredientsOpen || cookRestart.timerSheetOpen || cookRestart.settingsOpen || cookRestart.voicePanelOpen || cookRestart.voiceModalOpen) {
+    throw new Error(`상세에서 다시 요리 시작 시 이전 조리 오버레이가 남아 있습니다: ${JSON.stringify(cookRestart)}`);
+  }
+  if (cookRestart.loopOn || cookRestart.loopCount !== 0 || cookRestart.loopEnd !== 'stop' || cookRestart.speed !== 1 || cookRestart.playing || cookRestart.ended || cookRestart.autoplayStarted || !cookRestart.hintVisible) {
+    throw new Error(`상세에서 다시 요리 시작 시 영상/반복 상태가 초기화되지 않았습니다: ${JSON.stringify(cookRestart)}`);
   }
   if (!tutorial.visible || !tutorial.insideCookBody || tutorial.screenCoverage > 0.2 || tutorial.overlapRatio > 0.35) {
     throw new Error('조리 튜토리얼이 화면 내부 패널로 보이지 않거나 조리 카드를 과하게 가립니다.');

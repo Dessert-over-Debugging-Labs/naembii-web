@@ -1568,15 +1568,15 @@
         </div>
         <div class="vset-sub collapsed" id="vsLoopCount">
           <span class="vset-mini">횟수</span>
-          <button class="vchip" onclick="setVsLoopCount(1,this)">1회</button>
-          <button class="vchip" onclick="setVsLoopCount(2,this)">2회</button>
-          <button class="vchip" onclick="setVsLoopCount(3,this)">3회</button>
-          <button class="vchip on" onclick="setVsLoopCount(0,this)">무한</button>
+          <button class="vchip" data-loop="1" onclick="setVsLoopCount(1,this)">1회</button>
+          <button class="vchip" data-loop="2" onclick="setVsLoopCount(2,this)">2회</button>
+          <button class="vchip" data-loop="3" onclick="setVsLoopCount(3,this)">3회</button>
+          <button class="vchip on" data-loop="0" onclick="setVsLoopCount(0,this)">무한</button>
         </div>
         <div class="vset-sub collapsed" id="vsLoopEnd">
           <span class="vset-mini">반복 후</span>
-          <button class="vchip on" onclick="setVsLoopEnd('stop',this)">멈춤</button>
-          <button class="vchip" onclick="setVsLoopEnd('next',this)">다음 단계로</button>
+          <button class="vchip on" data-loop-end="stop" onclick="setVsLoopEnd('stop',this)">멈춤</button>
+          <button class="vchip" data-loop-end="next" onclick="setVsLoopEnd('next',this)">다음 단계로</button>
         </div>
         <!-- 볼륨 -->
         <div class="vset-row">
@@ -3110,7 +3110,47 @@
     return {reset(){cur=0;layout();}, rebuild(){build();cur=0;layout();refreshIcons();}, layout, next, prev, advance(){cur=(cur+1)%stepsArr().length;layout();}, goTo(i){cur=Math.max(0,Math.min(maxIdx(),i));layout();}};
   }
   const cook3Car=makeCarousel('cook3','cookTrack3');
+  function resetCookSessionPlaybackState(){
+    cook3StopTimeTracking();
+    stopCookYoutubeLoop();
+    if(cookYoutubePlayTimer){clearInterval(cookYoutubePlayTimer);cookYoutubePlayTimer=null;}
+    if(vgTapTimer){clearTimeout(vgTapTimer);vgTapTimer=null;}
+    cookYoutubeAutoplayStarted=false;
+    cookYoutubeEnded=false;
+    cookYoutubeLastReportedTime=0;
+    cookYoutubeResetGuardAt=0;
+    cook3Playing=false;
+    cook3Time=0;
+    cook3LoopPlayed=0;
+    cook3SuppressSeek=false;
+    vsLoopOn=false;
+    vsLoopCount=0;
+    vsLoopEnd='stop';
+    vsSpeed=1;
+    document.getElementById('vsLoopSw')?.classList.remove('on');
+    document.getElementById('vsLoopCount')?.classList.add('collapsed');
+    document.getElementById('vsLoopEnd')?.classList.add('collapsed');
+    document.querySelectorAll('#vsLoopCount .vchip,#vsLoopEnd .vchip').forEach(button=>button.classList.remove('on'));
+    document.querySelector('#vsLoopCount .vchip[data-loop="0"]')?.classList.add('on');
+    document.querySelector('#vsLoopEnd .vchip[data-loop-end="stop"]')?.classList.add('on');
+    syncVsSpeedUI();
+  }
+  function resetCookSessionOverlays(){
+    hf3Reset();
+    closeVoice();
+    closeIngredients();
+    closeTimer();
+    closeVideoSettings();
+    clearVpNotice();
+    cancelStageTimer({silent:true});
+  }
+  function beginNewCookSession(){
+    resetCookSessionOverlays();
+    resetCookSessionPlaybackState();
+    cook3Car.reset();
+  }
   function startCook(){
+    beginNewCookSession();
     naembiTrack('start_cook',{entrypoint:currentViewId(),...naembiRecipeProps()});
     show('cook3');
   } // show('cook3')에서 현재 레시피로 캐러셀·영상 재구성
@@ -3629,14 +3669,14 @@
       toast('타이머 재개','play');
     }
   }
-  function cancelStageTimer(){
+  function cancelStageTimer(options={}){
     if(timerId){clearInterval(timerId);timerId=null;}
     if(stageTimerHideId){clearTimeout(stageTimerHideId);stageTimerHideId=null;}
     stopTimerAlarm(false);
     timerLeft=0;timerTotal=0;timerPaused=false;
     setTimerButtons(false);
     hideStageTimer();
-    toast('타이머 취소','x');
+    if(!options.silent)toast('타이머 취소','x');
   }
   function startCountdown(){
     tsInputChanged();
