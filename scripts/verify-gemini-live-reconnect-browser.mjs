@@ -69,6 +69,7 @@ const browserHarness = String.raw`(() => {
   const nativeFetch = window.fetch.bind(window);
   const harness = window.__geminiReconnectHarness = {
     tokenRequests: [],
+    traceRequests: [],
     sockets: [],
     tokenCount: 0,
     handle: 'test-resume-handle-1',
@@ -77,6 +78,10 @@ const browserHarness = String.raw`(() => {
 
   window.fetch = async (input, init = {}) => {
     const url = new URL(typeof input === 'string' ? input : input.url, location.href);
+    if (url.pathname === '/api/ai-trace') {
+      try { harness.traceRequests.push(JSON.parse(String(init.body || '{}'))); } catch {}
+      return new Response(JSON.stringify({ ok: true }), { status: 202, headers: { 'content-type': 'application/json' } });
+    }
     if (url.pathname !== '/api/gemini-live-token') return nativeFetch(input, init);
     let body = {};
     try { body = JSON.parse(String(init.body || '{}')); } catch {}
@@ -286,6 +291,14 @@ try {
       };
       handleGeminiServerContent(live, {
         inputTranscription: {
+          text: '안녕.',
+          languageCode: 'pt-BR'
+        }
+      });
+      await new Promise((resolve) => setTimeout(resolve, 80));
+      const afterMisclassifiedKoreanTranscript = transcriptLines();
+      handleGeminiServerContent(live, {
+        inputTranscription: {
           text: '옥수수 콘 4큰술',
           languageCode: 'ko-KR'
         }
@@ -294,7 +307,8 @@ try {
       const afterKoreanTranscript = transcriptLines();
       const transcriptLanguageGuard = {
         rejectedForeign: !afterForeignTranscript.lines.some((line) => /Aquiles|Aí|receita/.test(line)),
-        noticeShown: /한국어/.test(afterForeignTranscript.notice),
+        noticeShown: /잘 못 들었어요/.test(afterForeignTranscript.notice),
+        acceptedMisclassifiedKorean: afterMisclassifiedKoreanTranscript.some((line) => line.includes('안녕')),
         acceptedKorean: afterKoreanTranscript.some((line) => line.includes('옥수수 콘 4큰술')),
         unsupportedCount: afterForeignTranscript.unsupportedCount
       };
@@ -415,7 +429,13 @@ try {
 
       // A BFCache-style page suspension releases hardware, but it must retain
       // the logical session handle and reconnect without another button press.
-      window.dispatchEvent(new Event('pagehide'));
+      const boundaryCommand = live.activeCommand || createGeminiActiveCommand(live, 'audio');
+      boundaryCommand.awaitingInterruptionBoundary = true;
+      boundaryCommand.completed = false;
+      const bfcacheHide = typeof PageTransitionEvent === 'function'
+        ? new PageTransitionEvent('pagehide', { persisted: true })
+        : Object.assign(new Event('pagehide'), { persisted: true });
+      window.dispatchEvent(bfcacheHide);
       await waitFor(
         () => geminiLive === live && !live.micStream && !live.ready,
         1500,
@@ -424,7 +444,9 @@ try {
       const pageSuspend = {
         sameLive: geminiLive === live,
         handle: live.sessionResumptionHandle,
-        micReleased: !live.micStream
+        micReleased: !live.micStream,
+        boundaryCleared: !boundaryCommand.awaitingInterruptionBoundary,
+        commandInvalidated: !!boundaryCommand.completed
       };
       window.dispatchEvent(new Event('pageshow'));
       await waitFor(
@@ -464,6 +486,8 @@ try {
       if (typeof resetGeminiLocalVad === 'function') resetGeminiLocalVad(live);
       await feed(live, 555, 0.0001, 4);
       await feed(live, 5555, 0.08, 6);
+      const replayedCommand = live.activeCommand;
+      const replayedCommandEpoch = replayedCommand?.epoch || 0;
       fallbackSocket.serverClose(1006, 'mid-utterance drop');
       await waitFor(
         () => harness.sockets.length >= 6 && geminiLive === live && live.ready,
@@ -476,20 +500,82 @@ try {
         1500,
         '발화 도중 유실된 PCM이 새 연결로 replay되지 않았습니다.'
       );
-      await finishUtterance(live, 700);
+      // Headless fake-mic silence can finish local VAD during reconnect; keep
+      // this synthetic utterance open so its end boundary is deterministic.
+      live.vadSpeaking = true;
+      live.vadSilenceMs = 0;
+      finishGeminiVadSpeech(live);
+      await waitFor(() => audioStreamEnds(replaySocket).length > 0, 1000, 'replay 발화의 audioStreamEnd가 전송되지 않았습니다.');
       const replaySamples = audioMessages(replaySocket).map(firstPcmSample);
       const midSpeechReplay = {
         preRollIndex: replaySamples.indexOf(555),
         speechIndex: replaySamples.indexOf(5555),
-        streamEnds: audioStreamEnds(replaySocket).length
+        streamEnds: audioStreamEnds(replaySocket).length,
+        commandPreserved: live.activeCommand === replayedCommand && !replayedCommand?.completed,
+        commandEpoch: live.activeCommand?.epoch || 0
       };
+      replaySocket.serverMessage({ serverContent: { inputTranscription: { text: '영상 10초 앞으로 움직여 줘' } } });
+      await new Promise((resolve) => setTimeout(resolve, 450));
+      const replayTraceTurnId = ensureVpTranscriptState(live).traceTurnId;
       const toolTimeBefore = cook3Time;
-      handleGeminiToolCall(live, { functionCalls: [{ id: 'replay-tool-a', name: 'seek_video', args: { direction: 'forward', seconds: 10 } }] });
+      replaySocket.serverMessage({ toolCall: { functionCalls: [{ id: 'replay-tool-a', name: 'seek_video', args: { direction: 'forward', seconds: 10 } }] } });
+      await waitFor(
+        () => sentMessages(replaySocket).some((message) => message.toolResponse?.functionResponses?.some((response) => response.id === 'replay-tool-a')),
+        2000,
+        'replay된 발화의 도구 응답이 전송되지 않았습니다.'
+      );
       const toolTimeAfterFirst = cook3Time;
-      handleGeminiToolCall(live, { functionCalls: [{ id: 'replay-tool-b', name: 'seek_video', args: { seconds: 10, direction: 'forward' } }] });
+      const commandResultCountAfterFirst = live.toolCommandResults.size;
+      replaySocket.serverMessage({ toolCall: { functionCalls: [{ id: 'replay-tool-b', name: 'seek_video', args: { seconds: 10, direction: 'forward' } }] } });
+      await waitFor(
+        () => sentMessages(replaySocket).some((message) => message.toolResponse?.functionResponses?.some((response) => response.id === 'replay-tool-b')),
+        2000,
+        'replay된 발화의 중복 도구 응답이 전송되지 않았습니다.'
+      );
+      replaySocket.serverMessage({ serverContent: {
+        outputTranscription: { text: '영상을 10초 앞으로 이동했어요.' },
+        turnComplete: true
+      } });
+      await new Promise((resolve) => setTimeout(resolve, 1120));
+      const replayTrace = harness.traceRequests.find((payload) => payload.turnId === replayTraceTurnId) || {};
       const replayToolDedupe = {
         firstDelta: toolTimeAfterFirst - toolTimeBefore,
-        secondDelta: cook3Time - toolTimeAfterFirst
+        commandResultCountAfterFirst,
+        commandResultCountAfterSecond: live.toolCommandResults.size,
+        commandCompleted: !!replayedCommand?.completed,
+        userText: replayTrace.userText || replayedCommand?.text || '',
+        assistantText: replayTrace.assistantText || '',
+        traceLogged: !!replayTrace.turnId,
+        sameEpoch: replayedCommandEpoch === replayedCommand?.epoch
+      };
+
+      // A resumption checkpoint can arrive in the middle of speech. Audio added
+      // after that checkpoint must make the turn unsafe again and be replayed.
+      if (typeof resetGeminiLocalVad === 'function') resetGeminiLocalVad(live);
+      await feed(live, 666, 0.0001, 4);
+      await feed(live, 6666, 0.08, 5);
+      replaySocket.serverMessage({ sessionResumptionUpdate: { resumable: true, newHandle: 'tail-checkpoint-handle' } });
+      await new Promise((resolve) => setTimeout(resolve, 40));
+      await feed(live, 7777, 0.08, 4);
+      const checkpointBeforeDrop = {
+        safe: live.resumeCheckpointSafe,
+        replaySamples: (live.resumeReplay || []).filter((event) => event.type === 'audio').map((event) => new Int16Array(event.buffer)[0]),
+        awaitingBoundary: !!live.activeCommand?.awaitingInterruptionBoundary,
+        replayableCommand: hasReplayableGeminiActiveCommand(live)
+      };
+      replaySocket.serverClose(1006, 'post-checkpoint tail drop');
+      await waitFor(
+        () => harness.sockets.length >= 7 && geminiLive === live && live.ready,
+        8000,
+        'checkpoint 이후 audio tail 재연결이 완료되지 않았습니다.'
+      );
+      const tailReplaySocket = harness.sockets[6];
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      const checkpointTailReplay = {
+        tailPresent: audioMessages(tailReplaySocket).some((message) => firstPcmSample(message) === 7777),
+        safeReset: live.resumeCheckpointSafe === false,
+        checkpointBeforeDrop,
+        sentSamples: audioMessages(tailReplaySocket).map(firstPcmSample)
       };
       return {
         micAfterClose,
@@ -510,6 +596,7 @@ try {
         invalidResumeFallback,
         midSpeechReplay,
         replayToolDedupe,
+        checkpointTailReplay,
         transcriptLanguageGuard,
         transcriptScrollIsolation,
         sentAudioFrames: live.sentAudioFrames || 0,
@@ -546,20 +633,23 @@ try {
   if (secondPreRoll < 0 || secondSpeech < 0 || secondPreRoll > secondSpeech || result.finalEndCount < result.firstEndCount + 1) {
     throw new Error(`장시간 무음 뒤 후속 발화가 새 utterance로 전송되지 않았습니다: ${JSON.stringify(result)}`);
   }
-  if (!result.pageSuspend.sameLive || !result.pageSuspend.micReleased || result.pageSuspend.handle !== 'test-resume-handle-1' ||
+  if (!result.pageSuspend.sameLive || !result.pageSuspend.micReleased || !result.pageSuspend.boundaryCleared || !result.pageSuspend.commandInvalidated || result.pageSuspend.handle !== 'test-resume-handle-1' ||
       !result.pageResume.sameLive || !result.pageResume.micLive || result.pageResume.handleInPayload !== 'test-resume-handle-1' || result.pageResume.handleInSetup !== 'test-resume-handle-1') {
     throw new Error(`페이지 중단·복귀에서 세션 컨텍스트와 마이크가 자동 복구되지 않았습니다: ${JSON.stringify(result)}`);
   }
   if (!result.invalidResumeFallback.handleCleared || result.invalidResumeFallback.payloadHandle || result.invalidResumeFallback.setupHandle || !result.invalidResumeFallback.ready) {
     throw new Error(`유효하지 않은 session resumption handle이 fresh session으로 복구되지 않았습니다: ${JSON.stringify(result)}`);
   }
-  if (result.midSpeechReplay.preRollIndex < 0 || result.midSpeechReplay.speechIndex < 0 || result.midSpeechReplay.preRollIndex > result.midSpeechReplay.speechIndex || result.midSpeechReplay.streamEnds < 1) {
+  if (result.midSpeechReplay.preRollIndex < 0 || result.midSpeechReplay.speechIndex < 0 || result.midSpeechReplay.preRollIndex > result.midSpeechReplay.speechIndex || result.midSpeechReplay.streamEnds < 1 || !result.midSpeechReplay.commandPreserved || result.midSpeechReplay.commandEpoch < 1) {
     throw new Error(`발화 도중 연결 종료 뒤 전체 utterance replay가 동작하지 않았습니다: ${JSON.stringify(result)}`);
   }
-  if (result.replayToolDedupe.firstDelta !== 10 || result.replayToolDedupe.secondDelta !== 0) {
+  if (result.replayToolDedupe.firstDelta !== 10 || result.replayToolDedupe.commandResultCountAfterFirst !== result.replayToolDedupe.commandResultCountAfterSecond || !result.replayToolDedupe.commandCompleted || !result.replayToolDedupe.traceLogged || !result.replayToolDedupe.sameEpoch || !result.replayToolDedupe.userText.includes('영상 10초') || !result.replayToolDedupe.assistantText.includes('이동했어요')) {
     throw new Error(`replay 후 새 call id로 반복된 도구가 중복 실행됐습니다: ${JSON.stringify(result)}`);
   }
-  if (!result.transcriptLanguageGuard.rejectedForeign || !result.transcriptLanguageGuard.noticeShown || !result.transcriptLanguageGuard.acceptedKorean) {
+  if (!result.checkpointTailReplay.tailPresent || !result.checkpointTailReplay.safeReset) {
+    throw new Error(`resumption checkpoint 이후 audio tail replay가 동작하지 않았습니다: ${JSON.stringify(result)}`);
+  }
+  if (!result.transcriptLanguageGuard.rejectedForeign || !result.transcriptLanguageGuard.noticeShown || !result.transcriptLanguageGuard.acceptedMisclassifiedKorean || !result.transcriptLanguageGuard.acceptedKorean) {
     throw new Error(`전사 언어 품질 게이트가 동작하지 않았습니다: ${JSON.stringify(result)}`);
   }
   if (!result.transcriptScrollIsolation.assistantScrollable || !result.transcriptScrollIsolation.stageUnchanged) {

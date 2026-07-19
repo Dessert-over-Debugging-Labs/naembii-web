@@ -1,3 +1,4 @@
+const { createHmac } = require('node:crypto');
 const { NodeSDK } = require('@opentelemetry/sdk-node');
 const { LangfuseSpanProcessor } = require('@langfuse/otel');
 const { propagateAttributes, startActiveObservation } = require('@langfuse/tracing');
@@ -46,28 +47,104 @@ function validDate(value) {
   return Number.isFinite(date.getTime()) ? date : undefined;
 }
 
+function boundedString(value, max = 200) {
+  return String(value ?? '').trim().slice(0, max);
+}
+
+function hashVisitorId(visitorId, secret = process.env.NAEMBI_USER_HASH_SECRET || process.env.LANGFUSE_SECRET_KEY) {
+  const source = boundedString(visitorId, 180);
+  const key = String(secret || '').trim();
+  if (!source || !key) return '';
+  return `visitor_${createHmac('sha256', key).update(source, 'utf8').digest('hex').slice(0, 24)}`;
+}
+
+function turnDisplayName(turn) {
+  const recipe = boundedString(turn?.recipe, 80) || '현재 레시피';
+  const stepIndex = Number.isInteger(Number(turn?.stepIndex)) ? Number(turn.stepIndex) : 0;
+  const totalSteps = Number.isInteger(Number(turn?.totalSteps)) ? Number(turn.totalSteps) : 0;
+  const step = stepIndex > 0
+    ? `${stepIndex}${totalSteps > 0 ? `/${totalSteps}` : ''}단계`
+    : '단계 미지정';
+  const turnNumber = Number.isInteger(Number(turn?.turnNumber)) ? Number(turn.turnNumber) : 1;
+  return boundedString(`${recipe} · ${step} · ${turnNumber}턴`, 200);
+}
+
+function traceMetadata(turn) {
+  const metadata = {
+    turnId: turn?.turnId,
+    turnNumber: turn?.turnNumber,
+    sessionId: turn?.sessionId,
+    sessionStartedAt: turn?.sessionStartedAt,
+    recipeId: turn?.recipeId,
+    recipe: turn?.recipe,
+    stepIndex: turn?.stepIndex,
+    totalSteps: turn?.totalSteps,
+    stepTitle: turn?.stepTitle,
+    cookingStatus: turn?.cookingStatus,
+    turnStatus: turn?.turnStatus,
+    page: turn?.page
+  };
+  return Object.fromEntries(
+    Object.entries(metadata).map(([key, value]) => [key, boundedString(value, 200)])
+  );
+}
+
+function cookingContextMessage(turn) {
+  const recipe = boundedString(turn?.recipe, 200) || '현재 레시피';
+  const stepIndex = Number(turn?.stepIndex) || 0;
+  const totalSteps = Number(turn?.totalSteps) || 0;
+  const stepTitle = boundedString(turn?.stepTitle, 240) || '현재 단계';
+  const status = boundedString(turn?.cookingStatus, 40) || 'cooking';
+  const turnNumber = Number(turn?.turnNumber) || 1;
+  const sessionStartedAt = boundedString(turn?.sessionStartedAt, 40) || '알 수 없음';
+  return [
+    '[요리 세션 맥락]',
+    `레시피: ${recipe}`,
+    `현재 단계: ${stepIndex}${totalSteps ? `/${totalSteps}` : ''} · ${stepTitle}`,
+    `조리 상태: ${status}`,
+    `대화 턴: ${turnNumber}`,
+    `세션 시작: ${sessionStartedAt}`
+  ].join('\n');
+}
+
+function conversationInput(turn) {
+  return [
+    { role: 'system', content: cookingContextMessage(turn) },
+    { role: 'user', content: boundedString(turn?.userText, 3_000) }
+  ];
+}
+
 async function recordConversationTurn(turn) {
   const state = getTracingState();
   if (!state) return { stored: false, reason: 'not-configured' };
 
-  const safeTurn = redactSensitive(turn);
+  const userId = hashVisitorId(turn?.visitorId);
+  const { visitorId: _visitorId, ...turnWithoutVisitor } = turn || {};
+  const safeTurn = redactSensitive(turnWithoutVisitor);
   const startedAt = validDate(safeTurn.startedAt);
+  const displayName = turnDisplayName(safeTurn);
+  const propagatedMetadata = traceMetadata(safeTurn);
   try {
     await propagateAttributes(
       {
-        traceName: 'voice-cooking-turn',
+        traceName: displayName,
+        ...(userId ? { userId } : {}),
         sessionId: safeTurn.sessionId,
-        tags: ['voice-assistant', 'cooking', 'transcript-only'],
-        version: '1'
+        metadata: propagatedMetadata,
+        tags: ['voice-assistant', 'cooking', 'transcript-only', `turn-${safeTurn.turnStatus || 'completed'}`],
+        version: '2'
       },
       async () => startActiveObservation(
-        'gemini-live-turn',
+        displayName,
         async (generation) => {
           generation.update({
             model: safeTurn.model || undefined,
-            input: [{ role: 'user', content: safeTurn.userText }],
+            input: conversationInput(safeTurn),
             output: { role: 'assistant', content: safeTurn.assistantText },
             metadata: {
+              ...(userId ? { userId } : {}),
+              sessionId: safeTurn.sessionId,
+              sessionStartedAt: safeTurn.sessionStartedAt,
               turnId: safeTurn.turnId,
               turnNumber: safeTurn.turnNumber,
               recipeId: safeTurn.recipeId,
@@ -81,7 +158,8 @@ async function recordConversationTurn(turn) {
               completedAt: safeTurn.completedAt,
               receivedAt: safeTurn.receivedAt,
               page: safeTurn.page,
-              redactionVersion: '1'
+              toolCalls: safeTurn.toolCalls || [],
+              redactionVersion: '2'
             }
           });
         },
@@ -99,8 +177,13 @@ async function recordConversationTurn(turn) {
 }
 
 module.exports = {
+  conversationInput,
+  cookingContextMessage,
+  hashVisitorId,
   langfuseConfigured,
   recordConversationTurn,
   redactSensitive,
-  redactString
+  redactString,
+  traceMetadata,
+  turnDisplayName
 };

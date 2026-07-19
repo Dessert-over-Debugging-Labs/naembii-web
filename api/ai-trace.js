@@ -1,6 +1,19 @@
 const { allowCors, clean, json, readBody } = require('./_lib/collect');
 const { langfuseConfigured, recordConversationTurn } = require('./_lib/langfuse');
 
+const MAX_TOOL_CALLS_PER_TURN = 12;
+const TOOL_ARG_RULES = Object.freeze({
+  move_cooking_step: Object.freeze({ direction: ['next', 'previous'] }),
+  go_to_cooking_step: Object.freeze({ step: [1, 20] }),
+  set_cooking_timer: Object.freeze({ seconds: [1, 7200] }),
+  set_cooking_timer_state: Object.freeze({ state: ['pause', 'resume', 'cancel'] }),
+  set_video_playback: Object.freeze({ state: ['play', 'pause'] }),
+  seek_video: Object.freeze({ direction: ['backward', 'forward'], seconds: [1, 60] }),
+  set_video_speed: Object.freeze({ speed: ['0.5', '0.75', '1', '1.25', '1.5', '2'] }),
+  set_video_repeat: Object.freeze({ enabled: 'boolean' }),
+  show_cooking_ingredients: Object.freeze({})
+});
+
 function integer(value, min, max) {
   const parsed = Number(value);
   if (!Number.isInteger(parsed)) return min;
@@ -10,6 +23,47 @@ function integer(value, min, max) {
 function turnStatus(value) {
   const status = clean(value, 24);
   return ['completed', 'interrupted', 'abandoned'].includes(status) ? status : 'completed';
+}
+
+function safeToolArgs(name, value) {
+  const rules = TOOL_ARG_RULES[name];
+  if (!rules || !value || typeof value !== 'object' || Array.isArray(value)) return {};
+
+  const args = {};
+  for (const [key, rule] of Object.entries(rules)) {
+    const candidate = value[key];
+    if (rule === 'boolean') {
+      if (typeof candidate === 'boolean') args[key] = candidate;
+      continue;
+    }
+    if (key === 'step' || key === 'seconds') {
+      if (typeof candidate === 'number'
+        && Number.isInteger(candidate)
+        && candidate >= rule[0]
+        && candidate <= rule[1]) args[key] = candidate;
+      continue;
+    }
+    const text = typeof candidate === 'string' ? candidate : '';
+    if (rule.includes(text)) args[key] = text;
+  }
+  return args;
+}
+
+function safeToolCalls(value) {
+  if (!Array.isArray(value)) return [];
+  const calls = [];
+  for (const candidate of value.slice(0, MAX_TOOL_CALLS_PER_TURN)) {
+    if (!candidate || typeof candidate !== 'object' || Array.isArray(candidate)) continue;
+    const name = clean(candidate.name, 80);
+    if (!Object.hasOwn(TOOL_ARG_RULES, name)) continue;
+    calls.push({
+      name,
+      allowed: candidate.allowed === true,
+      args: safeToolArgs(name, candidate.args),
+      reason: typeof candidate.reason === 'string' ? clean(candidate.reason, 240) : ''
+    });
+  }
+  return calls;
 }
 
 function turnTimestamps(body, now = Date.now()) {
@@ -24,7 +78,13 @@ function turnTimestamps(body, now = Date.now()) {
   const startedMs = Number.isFinite(rawStarted)
     ? Math.max(minStarted, Math.min(completedMs, rawStarted))
     : completedMs;
+  const rawSessionStarted = Date.parse(clean(body.sessionStartedAt, 40));
+  const minSessionStarted = completedMs - 7 * 24 * 60 * 60 * 1000;
+  const sessionStartedMs = Number.isFinite(rawSessionStarted)
+    ? Math.max(minSessionStarted, Math.min(startedMs, rawSessionStarted))
+    : startedMs;
   return {
+    sessionStartedAt: new Date(sessionStartedMs).toISOString(),
     startedAt: new Date(startedMs).toISOString(),
     completedAt: new Date(completedMs).toISOString(),
     receivedAt: new Date(now).toISOString()
@@ -53,6 +113,7 @@ function turnPayload(body) {
   return {
     turnId: clean(body.turnId, 140),
     sessionId: clean(body.sessionId, 140),
+    visitorId: clean(body.visitorId, 180),
     turnNumber: integer(body.turnNumber, 1, 10_000),
     model: clean(body.model, 160),
     userText: clean(body.userText, 3_000),
@@ -64,6 +125,7 @@ function turnPayload(body) {
     stepTitle: clean(body.stepTitle, 240),
     cookingStatus: clean(body.cookingStatus, 40),
     turnStatus: turnStatus(body.turnStatus),
+    toolCalls: safeToolCalls(body.toolCalls),
     ...timestamps,
     page: clean(body.page, 160)
   };
@@ -99,4 +161,10 @@ module.exports = async function handler(req, res) {
   }
 };
 
-module.exports._test = { requestOriginAllowed, turnPayload, turnTimestamps };
+module.exports._test = {
+  requestOriginAllowed,
+  safeToolArgs,
+  safeToolCalls,
+  turnPayload,
+  turnTimestamps
+};

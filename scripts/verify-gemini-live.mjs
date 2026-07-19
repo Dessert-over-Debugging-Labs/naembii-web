@@ -41,11 +41,19 @@ if (!systemInstruction.includes('후속 제안은 하지 않는다.') || !system
 if (!systemInstruction.includes('반드시 한국어로 답한다.')) {
   fail('Gemini Live의 한국어 응답 지시가 토큰 설정에 포함되지 않았습니다.');
 }
+if (!systemInstruction.includes('사용자가 명시적으로 요청한 조작만 수행한다.')
+  || !systemInstruction.includes('“영상 멈춰 줘”에는 영상 일시 정지만 호출하며 단계 이동은 절대 호출하지 않는다.')) {
+  fail('Gemini Live의 명시적 조작 전용 정책이 토큰 설정에 포함되지 않았습니다.');
+}
 const inputLanguageHints = tokenData.liveSetup?.inputAudioTranscription?.languageHints?.languageCodes || [];
 const outputLanguageHints = tokenData.liveSetup?.outputAudioTranscription?.languageHints?.languageCodes || [];
 const speechLanguage = tokenData.liveSetup?.generationConfig?.speechConfig?.languageCode || '';
 if (!inputLanguageHints.includes('ko-KR') || !inputLanguageHints.includes('en-US') || !outputLanguageHints.includes('ko-KR') || speechLanguage !== 'ko-KR') {
   fail('Gemini Live 전사/응답 언어 설정이 한국어 중심으로 고정되지 않았습니다.');
+}
+const adaptationPhrases = tokenData.liveSetup?.inputAudioTranscription?.adaptationPhrases || [];
+if (adaptationPhrases.includes('다음 단계') || adaptationPhrases.includes('이전 단계')) {
+  fail('단계 이동 문구가 음성 인식을 편향하는 고정 adaptation phrase에 남아 있습니다.');
 }
 const activityDetection = tokenData.liveSetup?.realtimeInputConfig?.automaticActivityDetection;
 if (!activityDetection || activityDetection.disabled === true || Number(activityDetection.silenceDurationMs) < 500) {

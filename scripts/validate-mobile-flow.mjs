@@ -457,6 +457,17 @@ try {
           } });
           return;
         }
+        if (text.includes('영상 멈춰')) {
+          respond({ toolCall: { functionCalls: [
+            { id: 'pause-call', name: 'set_video_playback', args: { state: 'pause' } },
+            { id: 'unwanted-step-call', name: 'move_cooking_step', args: { direction: 'next' } }
+          ] } });
+          return;
+        }
+        if (text.includes('왜 자꾸')) {
+          respond({ toolCall: { functionCalls: [{ id: 'complaint-step-call', name: 'move_cooking_step', args: { direction: 'next' } }] } });
+          return;
+        }
         if (text.includes('타이머')) {
           respond({ toolCall: { functionCalls: [{ id: 'timer-call', name: 'set_cooking_timer', args: { seconds: 60 } }] } });
           return;
@@ -657,6 +668,120 @@ try {
         micLive: !!geminiLive?.micStream && geminiLive.micStream.getAudioTracks().every((track) => track.readyState === 'live'),
         microphoneRequests
       };
+      clearGeminiPlayback(geminiLive);
+      geminiLive.responseInFlight = false;
+      const outOfOrderAudioBefore = window.__geminiAudioSources.length;
+      const outOfOrderCommand = createGeminiActiveCommand(geminiLive, 'audio');
+      outOfOrderCommand.startedAt = Date.now() - 5000;
+      outOfOrderCommand.audioEndedAt = Date.now() - 500;
+      beginVpTranscriptTurn(geminiLive, { awaitingInput: true });
+      const outOfOrderPcm = new Uint8Array(960);
+      const outOfOrderPcmData = btoa(String.fromCharCode(...outOfOrderPcm));
+      handleGeminiServerContent(geminiLive, {
+        modelTurn: { parts: [{ inlineData: { data: outOfOrderPcmData, mimeType: 'audio/pcm;rate=24000' } }] },
+        turnComplete: true
+      });
+      const outOfOrderBuffered = {
+        eventCount: outOfOrderCommand.pendingServerContent?.length || 0,
+        audioDelta: window.__geminiAudioSources.length - outOfOrderAudioBefore,
+        completed: !!outOfOrderCommand.completed
+      };
+      handleGeminiServerContent(geminiLive, {
+        inputTranscription: { text: '지금 단계가 어떻게 돼?' }
+      });
+      await new Promise((resolve) => setTimeout(resolve, 650));
+      handleGeminiServerContent(geminiLive, {
+        outputTranscription: { text: '전사 순서가 바뀌어도 현재 답변이에요.' }
+      });
+      await new Promise((resolve) => setTimeout(resolve, 1120));
+      const outOfOrderResponse = {
+        ...outOfOrderBuffered,
+        audioDeltaAfterInput: window.__geminiAudioSources.length - outOfOrderAudioBefore,
+        completedAfterInput: !!outOfOrderCommand.completed,
+        userText: ensureVpTranscriptState(geminiLive).userText,
+        assistantText: ensureVpTranscriptState(geminiLive).assistantText
+      };
+      clearGeminiPlayback(geminiLive);
+      geminiLive.responseInFlight = true;
+      const interruptedCommand = createGeminiActiveCommand(geminiLive, 'audio');
+      interruptedCommand.audioEndedAt = Date.now() - 500;
+      beginVpTranscriptTurn(geminiLive, { awaitingInput: true });
+      handleGeminiServerContent(geminiLive, {
+        inputTranscription: { text: '이전 턴의 늦은 전사' },
+        outputTranscription: { text: '이전 턴의 늦은 답변' }
+      });
+      const interruptionBeforeBoundary = {
+        awaiting: !!interruptedCommand.awaitingInterruptionBoundary,
+        userText: ensureVpTranscriptState(geminiLive).userText,
+        buffered: interruptedCommand.pendingServerContent?.length || 0
+      };
+      handleGeminiServerContent(geminiLive, {
+        interrupted: true,
+        inputTranscription: { text: '현재 발화는 그대로 보존해 줘' }
+      });
+      const interruptionAtBoundary = {
+        userText: ensureVpTranscriptState(geminiLive).userText,
+        buffered: interruptedCommand.pendingServerContent?.length || 0,
+        ignoresOldTurnComplete: !!geminiLive.ignoreInterruptedTurnComplete
+      };
+      handleGeminiServerContent(geminiLive, { turnComplete: true });
+      handleGeminiServerContent(geminiLive, {
+        outputTranscription: { text: '현재 턴의 답변만 남아요.' },
+        turnComplete: true
+      });
+      await new Promise((resolve) => setTimeout(resolve, 1120));
+      const interruptionBoundary = {
+        ...interruptionBeforeBoundary,
+        atBoundary: interruptionAtBoundary,
+        completed: !!interruptedCommand.completed,
+        assistantText: ensureVpTranscriptState(geminiLive).assistantText
+      };
+      geminiLive.responseInFlight = true;
+      const preBoundaryOnlyCommand = createGeminiActiveCommand(geminiLive, 'audio');
+      preBoundaryOnlyCommand.audioEndedAt = Date.now() - 500;
+      beginVpTranscriptTurn(geminiLive, { awaitingInput: true });
+      handleGeminiServerContent(geminiLive, {
+        inputTranscription: { text: '경계 전에 도착한 현재 발화' }
+      });
+      handleGeminiServerContent(geminiLive, { interrupted: true });
+      const preBoundaryOnlyAtInterruption = {
+        userText: ensureVpTranscriptState(geminiLive).userText,
+        trusted: preBoundaryOnlyCommand.inputTranscriptTrusted
+      };
+      handleGeminiServerContent(geminiLive, { turnComplete: true });
+      handleGeminiServerContent(geminiLive, {
+        outputTranscription: { text: '현재 응답은 보존됐어요.' },
+        turnComplete: true
+      });
+      await new Promise((resolve) => setTimeout(resolve, 1120));
+      const preBoundaryOnlyInput = {
+        ...preBoundaryOnlyAtInterruption,
+        completed: !!preBoundaryOnlyCommand.completed,
+        assistantText: ensureVpTranscriptState(geminiLive).assistantText
+      };
+      const partialSpeechStepBefore = document.querySelector('#cookTrack3 .scard.active')?.dataset.i || '';
+      createGeminiActiveCommand(geminiLive, 'audio');
+      beginVpTranscriptTurn(geminiLive, { awaitingInput: true });
+      geminiLive.vadSpeaking = true;
+      updateVpTranscript(geminiLive, 'user', '다음 단계로 넘어가 줘 그런데 아직 말하는 중이야');
+      handleGeminiToolCall(geminiLive, { functionCalls: [
+        { id: 'partial-step-call', name: 'move_cooking_step', args: { direction: 'next' } }
+      ] });
+      await new Promise((resolve) => setTimeout(resolve, 3800));
+      geminiLive.vadSpeaking = false;
+      const partialSpeechStepAfter = document.querySelector('#cookTrack3 .scard.active')?.dataset.i || '';
+      const lateTranscriptStepBefore = partialSpeechStepAfter;
+      createGeminiActiveCommand(geminiLive, 'audio');
+      geminiLive.activeCommand.audioEndedAt = Date.now();
+      beginVpTranscriptTurn(geminiLive, { awaitingInput: true });
+      updateVpTranscript(geminiLive, 'user', '다음 단계로 넘어가 줘');
+      handleGeminiToolCall(geminiLive, { functionCalls: [
+        { id: 'late-transcript-step-call', name: 'move_cooking_step', args: { direction: 'next' } }
+      ] });
+      await new Promise((resolve) => setTimeout(resolve, 180));
+      updateVpTranscript(geminiLive, 'user', '다음 단계로 넘어가 줘라고 한 게 아니야');
+      await new Promise((resolve) => setTimeout(resolve, 520));
+      const lateTranscriptStepAfter = document.querySelector('#cookTrack3 .scard.active')?.dataset.i || '';
       const sendVoiceIntent = async (text) => {
         sendGeminiLiveMessage(geminiLive, { realtimeInput: { text } });
         await new Promise((resolve) => setTimeout(resolve, 220));
@@ -665,6 +790,11 @@ try {
       await sendVoiceIntent('타이머 1분 맞춰줘');
       const timerTotalAfterTool = timerTotal;
       const afterTimerStep = document.querySelector('#cookTrack3 .scard.active')?.dataset.i;
+      const beforePauseStep = document.querySelector('#cookTrack3 .scard.active')?.dataset.i;
+      await sendVoiceIntent('영상 멈춰 줘');
+      const afterPauseStep = document.querySelector('#cookTrack3 .scard.active')?.dataset.i;
+      await sendVoiceIntent('다음 단계로 왜 자꾸 이동하는 거야?');
+      const afterComplaintStep = document.querySelector('#cookTrack3 .scard.active')?.dataset.i;
       await sendVoiceIntent('다음 단계로 넘어가줘');
       await new Promise((resolve) => setTimeout(resolve, 520));
       const afterNextStep = document.querySelector('#cookTrack3 .scard.active')?.dataset.i;
@@ -672,7 +802,12 @@ try {
       await sendVoiceIntent('영상 10초 앞으로 움직여줘');
       const timeAfterSeek = cook3Time;
       const transcript = [...document.querySelectorAll('#vpTranscript .vp-transcript-entry')].map((entry) => entry.textContent.trim());
-      const toolResponses = window.__geminiMessages.filter((message) => message.toolResponse).map((message) => message.toolResponse.functionResponses[0]?.name || '');
+      const toolResponseBatches = window.__geminiMessages.filter((message) => message.toolResponse).map((message) => message.toolResponse.functionResponses || []);
+      const toolResponses = toolResponseBatches.flat().map((response) => response?.name || '');
+      const unwantedMoveResponse = toolResponseBatches.flat().find((response) => response?.id === 'unwanted-step-call')?.response || {};
+      const complaintMoveResponse = toolResponseBatches.flat().find((response) => response?.id === 'complaint-step-call')?.response || {};
+      const partialSpeechResponse = toolResponseBatches.flat().find((response) => response?.id === 'partial-step-call')?.response || {};
+      const lateTranscriptResponse = toolResponseBatches.flat().find((response) => response?.id === 'late-transcript-step-call')?.response || {};
       setVsVol(42);
       window.__youtubeCommands.length = 0;
       const sourceStart = window.__geminiAudioSources.length;
@@ -698,15 +833,29 @@ try {
         resized,
         intermediate,
         contextRefresh,
+        outOfOrderResponse,
+        interruptionBoundary,
+        preBoundaryOnlyInput,
+        partialSpeechStepBefore,
+        partialSpeechStepAfter,
+        partialSpeechResponse,
+        lateTranscriptStepBefore,
+        lateTranscriptStepAfter,
+        lateTranscriptResponse,
         ducking,
         panel: document.getElementById('vpanel').className,
         afterTimerStep,
+        beforePauseStep,
+        afterPauseStep,
+        afterComplaintStep,
         afterNextStep,
         timerTotalAfterTool,
         timeBeforeSeek,
         timeAfterSeek,
         transcript,
         toolResponses,
+        unwantedMoveResponse,
+        complaintMoveResponse,
         tracePayloads
       };
     } finally {
@@ -839,8 +988,27 @@ try {
   if (assistant.contextRefresh.tokenRequests < 2 || !assistant.contextRefresh.initialStep.includes('1/5') || !assistant.contextRefresh.refreshedStep.includes('3/5') || !assistant.contextRefresh.refreshedNotes.includes('양파') || assistant.contextRefresh.sessionResumptionHandle !== 'mobile-test-resume-handle' || assistant.contextRefresh.activeStep !== '2' || !assistant.contextRefresh.contextKey.includes(':cooking:3') || !assistant.contextRefresh.micLive || assistant.contextRefresh.microphoneRequests !== assistant.deviceSwitch.microphoneRequests) {
     throw new Error('조리 단계 이동 뒤 Gemini Live 프롬프트를 현재 단계로 재연결하지 못했습니다.');
   }
+  if (assistant.outOfOrderResponse.eventCount < 1 || assistant.outOfOrderResponse.audioDelta !== 0 || assistant.outOfOrderResponse.completed || assistant.outOfOrderResponse.audioDeltaAfterInput < 1 || !assistant.outOfOrderResponse.completedAfterInput || !assistant.outOfOrderResponse.userText.includes('지금 단계') || !assistant.outOfOrderResponse.assistantText.includes('전사 순서')) {
+    throw new Error('입력 전사보다 먼저 온 Gemini 응답을 안전하게 보관했다가 현재 턴에 복원하지 못했습니다.');
+  }
+  if (!assistant.interruptionBoundary.awaiting || assistant.interruptionBoundary.userText || assistant.interruptionBoundary.buffered < 1 || !assistant.interruptionBoundary.atBoundary.userText.includes('현재 발화') || assistant.interruptionBoundary.atBoundary.buffered !== 0 || !assistant.interruptionBoundary.atBoundary.ignoresOldTurnComplete || !assistant.interruptionBoundary.completed || assistant.interruptionBoundary.assistantText.includes('이전 턴') || !assistant.interruptionBoundary.assistantText.includes('현재 턴')) {
+    throw new Error('Gemini interruption 경계에서 이전 턴 전사·응답을 버리고 현재 턴만 보존하지 못했습니다.');
+  }
+  if (!assistant.preBoundaryOnlyInput.userText.includes('경계 전에 도착한 현재 발화') || assistant.preBoundaryOnlyInput.trusted !== false || !assistant.preBoundaryOnlyInput.completed || !assistant.preBoundaryOnlyInput.assistantText.includes('현재 응답')) {
+    throw new Error('interrupted보다 먼저 온 경계 전 전사를 기록하되 도구 실행용으로 신뢰하지 못했습니다.');
+  }
   if (assistant.afterTimerStep !== '2' || assistant.timerTotalAfterTool !== 60 || assistant.afterNextStep !== '3') {
     throw new Error('Gemini Live 타이머/다음 단계 tool call이 기존 조리 함수로 연결되지 않았습니다.');
+  }
+  const blockedToolCodes = ['TOOL_INTENT_MISMATCH', 'NON_COMMAND_UTTERANCE', 'USER_UTTERANCE_NOT_FINAL'];
+  if (assistant.afterPauseStep !== assistant.beforePauseStep || assistant.afterComplaintStep !== assistant.beforePauseStep || !blockedToolCodes.includes(assistant.unwantedMoveResponse.code) || !blockedToolCodes.includes(assistant.complaintMoveResponse.code)) {
+    throw new Error('사용자가 요청하지 않은 조리 단계 도구 호출이 실행되었습니다.');
+  }
+  if (assistant.partialSpeechStepAfter !== assistant.partialSpeechStepBefore || assistant.partialSpeechResponse.code !== 'USER_UTTERANCE_NOT_FINAL') {
+    throw new Error('음성 발화가 끝나기 전에 조리 단계 도구가 실행되었습니다.');
+  }
+  if (assistant.lateTranscriptStepAfter !== assistant.lateTranscriptStepBefore || assistant.lateTranscriptResponse.code !== 'NON_COMMAND_UTTERANCE') {
+    throw new Error('VAD 종료 직후 늦게 도착한 부정 전사보다 먼저 조리 단계 도구가 실행되었습니다.');
   }
   if (assistant.timeAfterSeek < assistant.timeBeforeSeek + 10) {
     throw new Error('Gemini Live 영상 이동 tool call이 기존 영상 제어 함수로 연결되지 않았습니다.');
@@ -856,16 +1024,24 @@ try {
       throw new Error(`Gemini Live ${name} tool response가 전송되지 않았습니다.`);
     }
   }
-  if (assistant.tracePayloads.length < 4 || assistant.tracePayloads.some((payload) => !payload.turnId || !payload.sessionId || !payload.userText || !Number.isInteger(payload.turnNumber) || !['completed', 'interrupted', 'abandoned'].includes(payload.turnStatus))) {
+  if (assistant.tracePayloads.length < 6 || assistant.tracePayloads.some((payload) => !payload.turnId || !payload.sessionId || !payload.visitorId || !payload.sessionStartedAt || !payload.userText || !Number.isInteger(payload.turnNumber) || !['completed', 'interrupted', 'abandoned'].includes(payload.turnStatus))) {
     throw new Error('Gemini Live 완료 턴이 Langfuse payload로 전송되지 않았습니다.');
   }
   const traceSessions = new Set(assistant.tracePayloads.map((payload) => payload.sessionId));
   if (traceSessions.size !== 1 || new Set(assistant.tracePayloads.map((payload) => payload.turnId)).size !== assistant.tracePayloads.length) {
     throw new Error('Langfuse 턴이 하나의 세션으로 묶이지 않거나 turnId가 중복됩니다.');
   }
+  const orderedTurnNumbers = assistant.tracePayloads.map((payload) => payload.turnNumber);
+  if (new Set(assistant.tracePayloads.map((payload) => payload.visitorId)).size !== 1 || orderedTurnNumbers.some((number, index) => index > 0 && number <= orderedTurnNumbers[index - 1])) {
+    throw new Error('Langfuse 가명 사용자 또는 대화 턴 순서가 일관되지 않습니다.');
+  }
   const moveTrace = assistant.tracePayloads.find((payload) => payload.userText.includes('다음 단계'));
   if (!moveTrace || moveTrace.stepIndex !== 3 || moveTrace.totalSteps !== 5 || !moveTrace.recipe.includes('순두부찌개')) {
     throw new Error('Langfuse 턴에 질문 시점의 레시피·조리 단계가 보존되지 않았습니다.');
+  }
+  const pauseTrace = assistant.tracePayloads.find((payload) => payload.userText.includes('영상 멈춰'));
+  if (!pauseTrace || !pauseTrace.toolCalls?.some((call) => call.name === 'set_video_playback' && call.allowed) || !pauseTrace.toolCalls?.some((call) => call.name === 'move_cooking_step' && !call.allowed)) {
+    throw new Error('Langfuse 턴에 실행·차단된 도구 결정이 함께 기록되지 않았습니다.');
   }
   if (assistant.tracePayloads.some((payload) => ['audio', 'inlineData', 'pendingPcm', 'resumeReplay'].some((key) => Object.hasOwn(payload, key)))) {
     throw new Error('Langfuse payload에 원본 오디오 데이터가 포함됐습니다.');
