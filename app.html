@@ -2288,7 +2288,7 @@
       sessionStartedAt:new Date().toISOString(),cookStartedAt:'',cookEndedAt:'',cookCompleted:false,
       connectCount:0,goAwayCount:0,totalOpenMs:0,openedAt:0,
       closedSentAudioBytes:0,sentAudioBase:0,sentAudioBaseLive:null,
-      turns:0,promptTokensLast:0,promptTokensMax:0,promptTokensSum:0,
+      turns:0,conversationTurns:0,promptTokensLast:0,promptTokensMax:0,promptTokensSum:0,
       responseTokensLast:0,responseTokensMax:0,responseTokensSum:0,
       totalTokensLast:0,totalTokensMax:0,
       promptAudioTokensSum:0,promptTextTokensSum:0,responseAudioTokensSum:0,responseTextTokensSum:0
@@ -4305,7 +4305,7 @@
   }
   function ensureVpTranscriptState(live){
     if(!live.transcript){
-      live.transcript={epoch:0,history:[],userText:'',assistantText:'',pendingAssistantText:'',hasUser:false,complete:false,lastAssistantText:'',awaitingInput:false};
+      live.transcript={epoch:0,history:[],userText:'',assistantText:'',pendingAssistantText:'',hasUser:false,complete:false,lastAssistantText:'',awaitingInput:false,traceSessionId:'',traceTurnId:'',traceTurnNumber:0,traceContext:null,traceStartedAt:''};
     }else if(!Array.isArray(live.transcript.history)){
       live.transcript.history=[];
     }
@@ -4325,6 +4325,45 @@
     state.pendingAssistantText='';
     state.hasUser=false;
     state.complete=false;
+    state.traceSessionId='';
+    state.traceTurnId='';
+    state.traceTurnNumber=0;
+    state.traceContext=null;
+    state.traceStartedAt='';
+  }
+  function captureVpTraceContext(state){
+    if(!state.traceContext)state.traceContext={...currentGeminiCookingContext()};
+    if(!state.traceStartedAt)state.traceStartedAt=new Date().toISOString();
+    return state;
+  }
+  function identifyVpTraceTurn(state){
+    captureVpTraceContext(state);
+    if(state.traceTurnId)return state;
+    const usage=guEnsure();
+    usage.conversationTurns=(Number(usage.conversationTurns)||0)+1;
+    state.traceSessionId=usage.usageId;
+    state.traceTurnNumber=usage.conversationTurns;
+    state.traceTurnId=usage.usageId+':turn:'+state.traceTurnNumber;
+    return state;
+  }
+  function recordVpTraceTurn(live,state,turnStatus='completed'){
+    identifyVpTraceTurn(state);
+    const userText=String(state.userText||'').trim();
+    const assistantText=String(state.assistantText||state.pendingAssistantText||'').trim();
+    if(!userText||!state.traceSessionId||!state.traceTurnId)return;
+    if(live.loggedTraceTurnIds?.has(state.traceTurnId))return;
+    live.loggedTraceTurnIds?.add(state.traceTurnId);
+    const context=state.traceContext||currentGeminiCookingContext();
+    const payload={
+      turnId:state.traceTurnId,sessionId:state.traceSessionId,turnNumber:state.traceTurnNumber,
+      model:live.model||'',userText,assistantText,
+      recipeId:context.recipeId||'',recipe:context.recipe||'',stepIndex:context.stepIndex||0,totalSteps:context.totalSteps||0,
+      stepTitle:context.stepTitle||'',cookingStatus:context.status||'',
+      turnStatus,startedAt:state.traceStartedAt||'',completedAt:new Date().toISOString(),page:location.pathname
+    };
+    fetch('/api/ai-trace',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload),keepalive:true})
+      .then(response=>{if(!response.ok)throw new Error('Langfuse trace '+response.status);})
+      .catch(error=>console.warn('Langfuse conversation trace failed',error?.message||error));
   }
   function latestVpTranscriptHistoryTurn(history=[]){
     if(!history.length)return [];
@@ -4360,10 +4399,12 @@
   }
   function beginVpTranscriptTurn(live,options={}){
     const state=ensureVpTranscriptState(live);
+    if(state.hasUser&&!state.complete)recordVpTraceTurn(live,state,'interrupted');
     if(state.assistantText)state.lastAssistantText=state.assistantText;
     commitVpTranscriptTurn(state);
     state.epoch+=1;
     state.awaitingInput=!!options.awaitingInput;
+    captureVpTraceContext(state);
     renderVpTranscript(live);
     return state;
   }
@@ -4373,6 +4414,7 @@
     let state=ensureVpTranscriptState(live);
     if(role==='user'){
       if(!state.epoch)state.epoch=1;
+      identifyVpTraceTurn(state);
       state.awaitingInput=false;
       state.hasUser=true;
       state.userText=mergeVpTranscript(state.userText,value);
@@ -4863,6 +4905,8 @@
     const live=geminiLive;
     if(!live)return;
     if(live.toolResponsePending){live.pendingStopReason=reason;return;}
+    const transcript=ensureVpTranscriptState(live);
+    if(transcript.hasUser&&!transcript.complete)recordVpTraceTurn(live,transcript,'abandoned');
     geminiLive=null;
     geminiLiveConnecting=null;
     live.closing=true;
@@ -5062,7 +5106,10 @@
     }
     if(content.turnComplete){
       const transcript=ensureVpTranscriptState(live);
-      if(transcript.hasUser)transcript.complete=true;
+      if(transcript.hasUser&&!transcript.complete){
+        transcript.complete=true;
+        recordVpTraceTurn(live,transcript,'completed');
+      }
       live.responseInFlight=false;
       panel?.classList.remove('thinking','answering');
       panel?.classList.remove('mic-active');
@@ -5220,7 +5267,7 @@
         audioContext:null,outputGain:null,playbackNodes:new Set(),nextAudioTime:0,pendingPcm:[],pendingPcmBytes:0,resumeReplay:[],resumeReplayBytes:0,
         vadSpeaking:false,vadStartFrames:0,vadSilenceMs:0,vadPreRoll:[],vadPreRollMs:0,
         capturedAudioFrames:0,capturedAudioBytes:0,sentAudioFrames:0,sentAudioBytes:0,activeAudioFrames:0,lastAudioAt:0,lastNonSilentAt:0,inputLevel:0,micMeterMode:'waiting',micWatchdog:null,
-        transcript:null,commandEpoch:0,cancelledToolCalls:new Set(),toolCallResults:new Map(),toolCommandResults:new Map(),toolResponsePending:false,pendingStopReason:'',responseInFlight:false,
+        transcript:null,loggedTraceTurnIds:new Set(),commandEpoch:0,cancelledToolCalls:new Set(),toolCallResults:new Map(),toolCommandResults:new Map(),toolResponsePending:false,pendingStopReason:'',responseInFlight:false,
         contextKey:'',pendingContextRestart:false,contextRestartTimer:null,contextRestarting:false,answerUnavailable:false
       };
       geminiLive=live;

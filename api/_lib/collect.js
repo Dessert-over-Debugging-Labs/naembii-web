@@ -4,12 +4,12 @@ function json(res, status, body) {
   res.end(JSON.stringify(body));
 }
 
-function readBody(req) {
+function readBody(req, maxLength = 100_000) {
   return new Promise((resolve, reject) => {
     let raw = '';
     req.on('data', (chunk) => {
       raw += chunk;
-      if (raw.length > 100_000) {
+      if (raw.length > maxLength) {
         req.destroy();
         reject(new Error('요청이 너무 큽니다.'));
       }

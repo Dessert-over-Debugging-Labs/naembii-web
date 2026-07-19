@@ -370,6 +370,7 @@ try {
     let microphoneRequests = 0;
     const requestedDeviceIds = [];
     const tokenPayloads = [];
+    const tracePayloads = [];
     const makeMicrophoneStream = (deviceId = 'mic-built-in') => {
       const label = deviceId === 'mic-usb' ? 'USB Studio Microphone' : 'MacBook Microphone';
       const listeners = new Map();
@@ -488,6 +489,13 @@ try {
       }
     }
     window.fetch = (url, options) => {
+      if (String(url).endsWith('/api/ai-trace')) {
+        tracePayloads.push(JSON.parse(options?.body || '{}'));
+        return Promise.resolve(new Response(JSON.stringify({ ok: true, storedBy: 'test' }), {
+          status: 202,
+          headers: { 'content-type': 'application/json' }
+        }));
+      }
       if (String(url).endsWith('/api/gemini-live-token')) {
         const payload = JSON.parse(options?.body || '{}');
         tokenPayloads.push(payload);
@@ -698,7 +706,8 @@ try {
         timeBeforeSeek,
         timeAfterSeek,
         transcript,
-        toolResponses
+        toolResponses,
+        tracePayloads
       };
     } finally {
       hf3Reset();
@@ -846,6 +855,20 @@ try {
     if (!assistant.toolResponses.includes(name)) {
       throw new Error(`Gemini Live ${name} tool response가 전송되지 않았습니다.`);
     }
+  }
+  if (assistant.tracePayloads.length < 4 || assistant.tracePayloads.some((payload) => !payload.turnId || !payload.sessionId || !payload.userText || !Number.isInteger(payload.turnNumber) || !['completed', 'interrupted', 'abandoned'].includes(payload.turnStatus))) {
+    throw new Error('Gemini Live 완료 턴이 Langfuse payload로 전송되지 않았습니다.');
+  }
+  const traceSessions = new Set(assistant.tracePayloads.map((payload) => payload.sessionId));
+  if (traceSessions.size !== 1 || new Set(assistant.tracePayloads.map((payload) => payload.turnId)).size !== assistant.tracePayloads.length) {
+    throw new Error('Langfuse 턴이 하나의 세션으로 묶이지 않거나 turnId가 중복됩니다.');
+  }
+  const moveTrace = assistant.tracePayloads.find((payload) => payload.userText.includes('다음 단계'));
+  if (!moveTrace || moveTrace.stepIndex !== 3 || moveTrace.totalSteps !== 5 || !moveTrace.recipe.includes('순두부찌개')) {
+    throw new Error('Langfuse 턴에 질문 시점의 레시피·조리 단계가 보존되지 않았습니다.');
+  }
+  if (assistant.tracePayloads.some((payload) => ['audio', 'inlineData', 'pendingPcm', 'resumeReplay'].some((key) => Object.hasOwn(payload, key)))) {
+    throw new Error('Langfuse payload에 원본 오디오 데이터가 포함됐습니다.');
   }
 } finally {
   if (ws) ws.close();
