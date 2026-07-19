@@ -41,9 +41,10 @@ if (!systemInstruction.includes('후속 제안은 하지 않는다.') || !system
 if (!systemInstruction.includes('반드시 한국어로 답한다.')) {
   fail('Gemini Live의 한국어 응답 지시가 토큰 설정에 포함되지 않았습니다.');
 }
-if (!systemInstruction.includes('사용자가 명시적으로 요청한 조작만 수행한다.')
+if (!systemInstruction.includes('자연스러운 구어체와 음성 인식의 사소한 종결형 차이에도 같은 의도로 처리한다.')
+  || !systemInstruction.includes('도구를 먼저 호출하고 결과를 받은 뒤에만 성공 여부를 답한다.')
   || !systemInstruction.includes('“영상 멈춰 줘”에는 영상 일시 정지만 호출하며 단계 이동은 절대 호출하지 않는다.')) {
-  fail('Gemini Live의 명시적 조작 전용 정책이 토큰 설정에 포함되지 않았습니다.');
+  fail('Gemini Live의 자연스러운 도구 호출 정책이 토큰 설정에 포함되지 않았습니다.');
 }
 const inputLanguageHints = tokenData.liveSetup?.inputAudioTranscription?.languageHints?.languageCodes || [];
 const outputLanguageHints = tokenData.liveSetup?.outputAudioTranscription?.languageHints?.languageCodes || [];

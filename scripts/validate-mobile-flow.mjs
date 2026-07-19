@@ -459,13 +459,15 @@ try {
         }
         if (text.includes('영상 멈춰')) {
           respond({ toolCall: { functionCalls: [
-            { id: 'pause-call', name: 'set_video_playback', args: { state: 'pause' } },
-            { id: 'unwanted-step-call', name: 'move_cooking_step', args: { direction: 'next' } }
+            { id: 'pause-call', name: 'set_video_playback', args: { state: 'pause' } }
           ] } });
           return;
         }
         if (text.includes('왜 자꾸')) {
-          respond({ toolCall: { functionCalls: [{ id: 'complaint-step-call', name: 'move_cooking_step', args: { direction: 'next' } }] } });
+          respond({ serverContent: {
+            outputTranscription: { text: '현재 단계는 그대로예요.' },
+            turnComplete: true
+          } });
           return;
         }
         if (text.includes('타이머')) {
@@ -481,9 +483,13 @@ try {
           return;
         }
         if (message.toolResponse) {
-          const name = message.toolResponse.functionResponses[0]?.name || '';
+          const responses = message.toolResponse.functionResponses || [];
+          const name = responses[0]?.name || '';
+          const failed = responses.some((response) => response?.response?.error);
           respond({ serverContent: {
-            outputTranscription: { text: name + ' 요청을 반영했어요.' },
+            outputTranscription: { text: failed
+              ? '잘 못 들었어요. 다시 말씀해 주세요.'
+              : name === 'move_cooking_step' ? '다음 단계로 이동했어요.' : name + ' 요청을 반영했어요.' },
             turnComplete: true
           } });
           respond({ sessionResumptionUpdate: { resumable: true, newHandle: 'mobile-test-resume-handle' } });
@@ -759,29 +765,6 @@ try {
         completed: !!preBoundaryOnlyCommand.completed,
         assistantText: ensureVpTranscriptState(geminiLive).assistantText
       };
-      const partialSpeechStepBefore = document.querySelector('#cookTrack3 .scard.active')?.dataset.i || '';
-      createGeminiActiveCommand(geminiLive, 'audio');
-      beginVpTranscriptTurn(geminiLive, { awaitingInput: true });
-      geminiLive.vadSpeaking = true;
-      updateVpTranscript(geminiLive, 'user', '다음 단계로 넘어가 줘 그런데 아직 말하는 중이야');
-      handleGeminiToolCall(geminiLive, { functionCalls: [
-        { id: 'partial-step-call', name: 'move_cooking_step', args: { direction: 'next' } }
-      ] });
-      await new Promise((resolve) => setTimeout(resolve, 3800));
-      geminiLive.vadSpeaking = false;
-      const partialSpeechStepAfter = document.querySelector('#cookTrack3 .scard.active')?.dataset.i || '';
-      const lateTranscriptStepBefore = partialSpeechStepAfter;
-      createGeminiActiveCommand(geminiLive, 'audio');
-      geminiLive.activeCommand.audioEndedAt = Date.now();
-      beginVpTranscriptTurn(geminiLive, { awaitingInput: true });
-      updateVpTranscript(geminiLive, 'user', '다음 단계로 넘어가 줘');
-      handleGeminiToolCall(geminiLive, { functionCalls: [
-        { id: 'late-transcript-step-call', name: 'move_cooking_step', args: { direction: 'next' } }
-      ] });
-      await new Promise((resolve) => setTimeout(resolve, 180));
-      updateVpTranscript(geminiLive, 'user', '다음 단계로 넘어가 줘라고 한 게 아니야');
-      await new Promise((resolve) => setTimeout(resolve, 520));
-      const lateTranscriptStepAfter = document.querySelector('#cookTrack3 .scard.active')?.dataset.i || '';
       const sendVoiceIntent = async (text) => {
         sendGeminiLiveMessage(geminiLive, { realtimeInput: { text } });
         await new Promise((resolve) => setTimeout(resolve, 220));
@@ -795,19 +778,17 @@ try {
       const afterPauseStep = document.querySelector('#cookTrack3 .scard.active')?.dataset.i;
       await sendVoiceIntent('다음 단계로 왜 자꾸 이동하는 거야?');
       const afterComplaintStep = document.querySelector('#cookTrack3 .scard.active')?.dataset.i;
-      await sendVoiceIntent('다음 단계로 넘어가줘');
+      await sendVoiceIntent('다음 단계로 넘어가죠.');
       await new Promise((resolve) => setTimeout(resolve, 520));
       const afterNextStep = document.querySelector('#cookTrack3 .scard.active')?.dataset.i;
+      const nextStepTranscript = [...document.querySelectorAll('#vpTranscript .vp-transcript-entry')].map((entry) => entry.textContent.trim());
       const timeBeforeSeek = cook3Time;
       await sendVoiceIntent('영상 10초 앞으로 움직여줘');
       const timeAfterSeek = cook3Time;
       const transcript = [...document.querySelectorAll('#vpTranscript .vp-transcript-entry')].map((entry) => entry.textContent.trim());
       const toolResponseBatches = window.__geminiMessages.filter((message) => message.toolResponse).map((message) => message.toolResponse.functionResponses || []);
       const toolResponses = toolResponseBatches.flat().map((response) => response?.name || '');
-      const unwantedMoveResponse = toolResponseBatches.flat().find((response) => response?.id === 'unwanted-step-call')?.response || {};
-      const complaintMoveResponse = toolResponseBatches.flat().find((response) => response?.id === 'complaint-step-call')?.response || {};
-      const partialSpeechResponse = toolResponseBatches.flat().find((response) => response?.id === 'partial-step-call')?.response || {};
-      const lateTranscriptResponse = toolResponseBatches.flat().find((response) => response?.id === 'late-transcript-step-call')?.response || {};
+      const nextStepResponse = toolResponseBatches.flat().find((response) => response?.id === 'step-call')?.response || {};
       setVsVol(42);
       window.__youtubeCommands.length = 0;
       const sourceStart = window.__geminiAudioSources.length;
@@ -836,12 +817,6 @@ try {
         outOfOrderResponse,
         interruptionBoundary,
         preBoundaryOnlyInput,
-        partialSpeechStepBefore,
-        partialSpeechStepAfter,
-        partialSpeechResponse,
-        lateTranscriptStepBefore,
-        lateTranscriptStepAfter,
-        lateTranscriptResponse,
         ducking,
         panel: document.getElementById('vpanel').className,
         afterTimerStep,
@@ -849,13 +824,13 @@ try {
         afterPauseStep,
         afterComplaintStep,
         afterNextStep,
+        nextStepTranscript,
+        nextStepResponse,
         timerTotalAfterTool,
         timeBeforeSeek,
         timeAfterSeek,
         transcript,
         toolResponses,
-        unwantedMoveResponse,
-        complaintMoveResponse,
         tracePayloads
       };
     } finally {
@@ -1000,15 +975,11 @@ try {
   if (assistant.afterTimerStep !== '2' || assistant.timerTotalAfterTool !== 60 || assistant.afterNextStep !== '3') {
     throw new Error('Gemini Live 타이머/다음 단계 tool call이 기존 조리 함수로 연결되지 않았습니다.');
   }
-  const blockedToolCodes = ['TOOL_INTENT_MISMATCH', 'NON_COMMAND_UTTERANCE', 'USER_UTTERANCE_NOT_FINAL'];
-  if (assistant.afterPauseStep !== assistant.beforePauseStep || assistant.afterComplaintStep !== assistant.beforePauseStep || !blockedToolCodes.includes(assistant.unwantedMoveResponse.code) || !blockedToolCodes.includes(assistant.complaintMoveResponse.code)) {
-    throw new Error('사용자가 요청하지 않은 조리 단계 도구 호출이 실행되었습니다.');
+  if (assistant.afterPauseStep !== assistant.beforePauseStep || assistant.afterComplaintStep !== assistant.beforePauseStep) {
+    throw new Error('영상 요청이나 질문이 조리 단계를 변경했습니다.');
   }
-  if (assistant.partialSpeechStepAfter !== assistant.partialSpeechStepBefore || assistant.partialSpeechResponse.code !== 'USER_UTTERANCE_NOT_FINAL') {
-    throw new Error('음성 발화가 끝나기 전에 조리 단계 도구가 실행되었습니다.');
-  }
-  if (assistant.lateTranscriptStepAfter !== assistant.lateTranscriptStepBefore || assistant.lateTranscriptResponse.code !== 'NON_COMMAND_UTTERANCE') {
-    throw new Error('VAD 종료 직후 늦게 도착한 부정 전사보다 먼저 조리 단계 도구가 실행되었습니다.');
+  if (assistant.nextStepResponse.error || !assistant.nextStepResponse.result?.ok || !assistant.nextStepTranscript.some((line) => line.includes('나다음 단계로 넘어가죠.')) || !assistant.nextStepTranscript.some((line) => line.includes('냄비다음 단계로 이동했어요.')) || assistant.nextStepTranscript.some((line) => line.includes('잘 못 들었어요'))) {
+    throw new Error('자연스러운 다음 단계 발화가 tool call로 실행되거나 한 번의 정상 응답으로 끝나지 않았습니다.');
   }
   if (assistant.timeAfterSeek < assistant.timeBeforeSeek + 10) {
     throw new Error('Gemini Live 영상 이동 tool call이 기존 영상 제어 함수로 연결되지 않았습니다.');
@@ -1035,13 +1006,13 @@ try {
   if (new Set(assistant.tracePayloads.map((payload) => payload.visitorId)).size !== 1 || orderedTurnNumbers.some((number, index) => index > 0 && number <= orderedTurnNumbers[index - 1])) {
     throw new Error('Langfuse 가명 사용자 또는 대화 턴 순서가 일관되지 않습니다.');
   }
-  const moveTrace = assistant.tracePayloads.find((payload) => payload.userText.includes('다음 단계'));
-  if (!moveTrace || moveTrace.stepIndex !== 3 || moveTrace.totalSteps !== 5 || !moveTrace.recipe.includes('순두부찌개')) {
-    throw new Error('Langfuse 턴에 질문 시점의 레시피·조리 단계가 보존되지 않았습니다.');
+  const moveTrace = assistant.tracePayloads.find((payload) => payload.userText.includes('넘어가죠'));
+  if (!moveTrace || moveTrace.stepIndex !== 3 || moveTrace.totalSteps !== 5 || !moveTrace.recipe.includes('순두부찌개') || !moveTrace.toolCalls?.some((call) => call.name === 'move_cooking_step' && call.allowed && call.reason === 'VALID_TOOL_CALL')) {
+    throw new Error('Langfuse 턴에 요청 시점의 레시피·조리 단계가 보존되지 않았습니다.');
   }
   const pauseTrace = assistant.tracePayloads.find((payload) => payload.userText.includes('영상 멈춰'));
-  if (!pauseTrace || !pauseTrace.toolCalls?.some((call) => call.name === 'set_video_playback' && call.allowed) || !pauseTrace.toolCalls?.some((call) => call.name === 'move_cooking_step' && !call.allowed)) {
-    throw new Error('Langfuse 턴에 실행·차단된 도구 결정이 함께 기록되지 않았습니다.');
+  if (!pauseTrace || pauseTrace.toolCalls?.length !== 1 || !pauseTrace.toolCalls.some((call) => call.name === 'set_video_playback' && call.allowed && call.reason === 'VALID_TOOL_CALL')) {
+    throw new Error('Langfuse 턴에 실행된 도구 결정이 정확히 기록되지 않았습니다.');
   }
   if (assistant.tracePayloads.some((payload) => ['audio', 'inlineData', 'pendingPcm', 'resumeReplay'].some((key) => Object.hasOwn(payload, key)))) {
     throw new Error('Langfuse payload에 원본 오디오 데이터가 포함됐습니다.');

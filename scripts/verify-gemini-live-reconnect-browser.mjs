@@ -522,7 +522,17 @@ try {
       await waitFor(
         () => sentMessages(replaySocket).some((message) => message.toolResponse?.functionResponses?.some((response) => response.id === 'replay-tool-a')),
         2000,
-        'replay된 발화의 도구 응답이 전송되지 않았습니다.'
+        'replay된 발화의 도구 응답이 전송되지 않았습니다. '+JSON.stringify({
+          hasInputTranscript:replayedCommand?.hasInputTranscript,
+          inputTranscriptTrusted:replayedCommand?.inputTranscriptTrusted,
+          vadSpeaking:live.vadSpeaking,
+          audioEndedAt:replayedCommand?.audioEndedAt||0,
+          awaitingInterruptionBoundary:replayedCommand?.awaitingInterruptionBoundary,
+          ignoreInterruptedTurnComplete:live.ignoreInterruptedTurnComplete,
+          commandCompleted:replayedCommand?.completed,
+          activeEpoch:live.activeCommand?.epoch||0,
+          commandEpoch:live.commandEpoch||0
+        })
       );
       const toolTimeAfterFirst = cook3Time;
       const commandResultCountAfterFirst = live.toolCommandResults.size;
