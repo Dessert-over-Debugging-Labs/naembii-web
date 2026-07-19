@@ -447,6 +447,7 @@ try {
         }
         const text = message.realtimeInput?.text || '';
         if (text) {
+          this.lastUserText = text;
           respond({ serverContent: { inputTranscription: { text: text.replace(/^현재 조리 단계는 .*?사용자 요청: /, '') } } });
         }
         if (message.realtimeInput?.audio) {
@@ -457,6 +458,13 @@ try {
           } });
           return;
         }
+        if (text.includes('영상 재생')) {
+          respond({ toolCall: { functionCalls: [
+            { id: 'wrong-step-before-play', name: 'move_cooking_step', args: { direction: 'next' } },
+            { id: 'play-call', name: 'set_video_playback', args: { state: 'play' } }
+          ] } });
+          return;
+        }
         if (text.includes('영상 멈춰')) {
           respond({ toolCall: { functionCalls: [
             { id: 'pause-call', name: 'set_video_playback', args: { state: 'pause' } }
@@ -464,10 +472,7 @@ try {
           return;
         }
         if (text.includes('왜 자꾸')) {
-          respond({ serverContent: {
-            outputTranscription: { text: '현재 단계는 그대로예요.' },
-            turnComplete: true
-          } });
+          respond({ toolCall: { functionCalls: [{ id: 'wrong-video-for-complaint', name: 'set_video_playback', args: { state: 'play' } }] } });
           return;
         }
         if (text.includes('타이머')) {
@@ -475,7 +480,7 @@ try {
           return;
         }
         if (text.includes('다음 단계')) {
-          respond({ toolCall: { functionCalls: [{ id: 'step-call', name: 'move_cooking_step', args: { direction: 'next' } }] } });
+          respond({ toolCall: { functionCalls: [{ id: 'wrong-video-before-step', name: 'set_video_playback', args: { state: 'play' } }] } });
           return;
         }
         if (text.includes('10초 앞으로')) {
@@ -484,12 +489,31 @@ try {
         }
         if (message.toolResponse) {
           const responses = message.toolResponse.functionResponses || [];
-          const name = responses[0]?.name || '';
+          const correction = responses.find((response) => response?.response?.result?.correctionRequired);
+          if (correction && this.lastUserText?.includes('왜 자꾸')) {
+            respond({ serverContent: {
+              outputTranscription: { text: '현재 단계는 그대로예요.' },
+              turnComplete: true
+            } });
+            return;
+          }
+          if (correction?.response?.result?.expectedTools?.includes('move_cooking_step')) {
+            respond({ toolCall: { functionCalls: [{ id: 'wrong-video-before-step-again', name: 'set_video_playback', args: { state: 'play' } }] } });
+            return;
+          }
+          if (responses.some((response) => response?.id === 'wrong-video-before-step-again')) {
+            respond({ toolCall: { functionCalls: [{ id: 'step-call', name: 'move_cooking_step', args: { direction: 'next' } }] } });
+            return;
+          }
+          const executed = responses.find((response) => response?.response?.result?.ok && !response?.response?.result?.ignored);
+          const name = executed?.name || '';
           const failed = responses.some((response) => response?.response?.error);
           respond({ serverContent: {
             outputTranscription: { text: failed
               ? '잘 못 들었어요. 다시 말씀해 주세요.'
-              : name === 'move_cooking_step' ? '다음 단계로 이동했어요.' : name + ' 요청을 반영했어요.' },
+              : name === 'move_cooking_step' ? '다음 단계로 이동했어요.'
+                : name === 'set_video_playback' ? (executed?.response?.result?.videoPlaying ? '영상을 재생했어요.' : '영상을 멈췄어요.')
+                  : name + ' 요청을 반영했어요.' },
             turnComplete: true
           } });
           respond({ sessionResumptionUpdate: { resumable: true, newHandle: 'mobile-test-resume-handle' } });
@@ -776,8 +800,16 @@ try {
       const beforePauseStep = document.querySelector('#cookTrack3 .scard.active')?.dataset.i;
       await sendVoiceIntent('영상 멈춰 줘');
       const afterPauseStep = document.querySelector('#cookTrack3 .scard.active')?.dataset.i;
+      const beforeVideoPlayStep = afterPauseStep;
+      const beforeVideoPlaying = cook3Playing;
+      await sendVoiceIntent('영상 재생해 줘.');
+      await new Promise((resolve) => setTimeout(resolve, 520));
+      const afterVideoPlayStep = document.querySelector('#cookTrack3 .scard.active')?.dataset.i;
+      const afterVideoPlaying = cook3Playing;
+      const videoPlayTranscript = [...document.querySelectorAll('#vpTranscript .vp-transcript-entry')].map((entry) => entry.textContent.trim());
       await sendVoiceIntent('다음 단계로 왜 자꾸 이동하는 거야?');
       const afterComplaintStep = document.querySelector('#cookTrack3 .scard.active')?.dataset.i;
+      const complaintTranscript = [...document.querySelectorAll('#vpTranscript .vp-transcript-entry')].map((entry) => entry.textContent.trim());
       await sendVoiceIntent('다음 단계로 넘어가죠.');
       await new Promise((resolve) => setTimeout(resolve, 520));
       const afterNextStep = document.querySelector('#cookTrack3 .scard.active')?.dataset.i;
@@ -789,6 +821,11 @@ try {
       const toolResponseBatches = window.__geminiMessages.filter((message) => message.toolResponse).map((message) => message.toolResponse.functionResponses || []);
       const toolResponses = toolResponseBatches.flat().map((response) => response?.name || '');
       const nextStepResponse = toolResponseBatches.flat().find((response) => response?.id === 'step-call')?.response || {};
+      const wrongVideoBeforeStepResponse = toolResponseBatches.flat().find((response) => response?.id === 'wrong-video-before-step')?.response || {};
+      const repeatedWrongVideoBeforeStepResponse = toolResponseBatches.flat().find((response) => response?.id === 'wrong-video-before-step-again')?.response || {};
+      const wrongVideoForComplaintResponse = toolResponseBatches.flat().find((response) => response?.id === 'wrong-video-for-complaint')?.response || {};
+      const wrongStepBeforePlayResponse = toolResponseBatches.flat().find((response) => response?.id === 'wrong-step-before-play')?.response || {};
+      const videoPlayResponse = toolResponseBatches.flat().find((response) => response?.id === 'play-call')?.response || {};
       setVsVol(42);
       window.__youtubeCommands.length = 0;
       const sourceStart = window.__geminiAudioSources.length;
@@ -822,10 +859,21 @@ try {
         afterTimerStep,
         beforePauseStep,
         afterPauseStep,
+        beforeVideoPlayStep,
+        afterVideoPlayStep,
+        beforeVideoPlaying,
+        afterVideoPlaying,
+        videoPlayTranscript,
+        wrongStepBeforePlayResponse,
+        videoPlayResponse,
         afterComplaintStep,
+        complaintTranscript,
         afterNextStep,
         nextStepTranscript,
         nextStepResponse,
+        wrongVideoBeforeStepResponse,
+        repeatedWrongVideoBeforeStepResponse,
+        wrongVideoForComplaintResponse,
         timerTotalAfterTool,
         timeBeforeSeek,
         timeAfterSeek,
@@ -978,7 +1026,16 @@ try {
   if (assistant.afterPauseStep !== assistant.beforePauseStep || assistant.afterComplaintStep !== assistant.beforePauseStep) {
     throw new Error('영상 요청이나 질문이 조리 단계를 변경했습니다.');
   }
-  if (assistant.nextStepResponse.error || !assistant.nextStepResponse.result?.ok || !assistant.nextStepTranscript.some((line) => line.includes('나다음 단계로 넘어가죠.')) || !assistant.nextStepTranscript.some((line) => line.includes('냄비다음 단계로 이동했어요.')) || assistant.nextStepTranscript.some((line) => line.includes('잘 못 들었어요'))) {
+  if (assistant.wrongVideoForComplaintResponse.error || !assistant.wrongVideoForComplaintResponse.result?.correctionRequired || assistant.wrongVideoForComplaintResponse.result?.correctionAttempt !== 1 || !assistant.complaintTranscript.some((line) => line.includes('냄비현재 단계는 그대로예요.')) || assistant.complaintTranscript.some((line) => /이동했어요|실패|다시 말씀해/.test(line))) {
+    throw new Error('질문·불만에 잘못 생성된 도구를 실행하지 않고 답변으로 복구하지 못했습니다.');
+  }
+  if (assistant.afterVideoPlayStep !== assistant.beforeVideoPlayStep || assistant.beforeVideoPlaying || !assistant.afterVideoPlaying || assistant.wrongStepBeforePlayResponse.error || assistant.wrongStepBeforePlayResponse.result?.code !== 'TOOL_DOMAIN_MISMATCH' || !assistant.wrongStepBeforePlayResponse.result?.ignored || !assistant.wrongStepBeforePlayResponse.result?.silent || !assistant.videoPlayResponse.result?.ok) {
+    throw new Error('영상 재생 요청에서 잘못 생성된 단계 도구를 무시하고 영상만 재생하지 못했습니다.');
+  }
+  if (!assistant.videoPlayTranscript.some((line) => line.includes('나영상 재생해 줘.')) || !assistant.videoPlayTranscript.some((line) => line.includes('냄비영상을 재생했어요.')) || assistant.videoPlayTranscript.some((line) => /다음 단계|한 번에 한 가지|잘 못 들었/.test(line))) {
+    throw new Error('영상 재생 요청의 응답에 내부 도구 보정 안내가 노출됐습니다.');
+  }
+  if (assistant.wrongVideoBeforeStepResponse.error || assistant.wrongVideoBeforeStepResponse.result?.code !== 'TOOL_DOMAIN_MISMATCH' || !assistant.wrongVideoBeforeStepResponse.result?.correctionRequired || assistant.wrongVideoBeforeStepResponse.result?.correctionAttempt !== 1 || !assistant.wrongVideoBeforeStepResponse.result?.expectedTools?.includes('move_cooking_step') || assistant.repeatedWrongVideoBeforeStepResponse.error || assistant.repeatedWrongVideoBeforeStepResponse.result?.code !== 'TOOL_DOMAIN_MISMATCH' || assistant.repeatedWrongVideoBeforeStepResponse.result?.correctionRequired || assistant.nextStepResponse.error || !assistant.nextStepResponse.result?.ok || !assistant.nextStepTranscript.some((line) => line.includes('나다음 단계로 넘어가죠.')) || !assistant.nextStepTranscript.some((line) => line.includes('냄비다음 단계로 이동했어요.')) || assistant.nextStepTranscript.some((line) => /잘 못 들었어요|영상 재생에 실패/.test(line))) {
     throw new Error('자연스러운 다음 단계 발화가 tool call로 실행되거나 한 번의 정상 응답으로 끝나지 않았습니다.');
   }
   if (assistant.timeAfterSeek < assistant.timeBeforeSeek + 10) {
@@ -1013,6 +1070,10 @@ try {
   const pauseTrace = assistant.tracePayloads.find((payload) => payload.userText.includes('영상 멈춰'));
   if (!pauseTrace || pauseTrace.toolCalls?.length !== 1 || !pauseTrace.toolCalls.some((call) => call.name === 'set_video_playback' && call.allowed && call.reason === 'VALID_TOOL_CALL')) {
     throw new Error('Langfuse 턴에 실행된 도구 결정이 정확히 기록되지 않았습니다.');
+  }
+  const videoPlayTrace = assistant.tracePayloads.find((payload) => payload.userText.includes('영상 재생'));
+  if (!videoPlayTrace || videoPlayTrace.stepIndex !== 3 || videoPlayTrace.toolCalls?.length !== 2 || !videoPlayTrace.toolCalls.some((call) => call.name === 'move_cooking_step' && !call.allowed && call.reason === 'TOOL_DOMAIN_MISMATCH') || !videoPlayTrace.toolCalls.some((call) => call.name === 'set_video_playback' && call.allowed && call.reason === 'VALID_TOOL_CALL')) {
+    throw new Error('Langfuse에 영상 재생 요청의 무시·실행 도구 결정이 정확히 기록되지 않았습니다.');
   }
   if (assistant.tracePayloads.some((payload) => ['audio', 'inlineData', 'pendingPcm', 'resumeReplay'].some((key) => Object.hasOwn(payload, key)))) {
     throw new Error('Langfuse payload에 원본 오디오 데이터가 포함됐습니다.');

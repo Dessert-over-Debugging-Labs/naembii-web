@@ -6,7 +6,7 @@ import vm from 'node:vm';
 const require = createRequire(import.meta.url);
 const { _test: tokenPolicy } = require('../api/gemini-live-token');
 const html = readFileSync(new URL('../app.html', import.meta.url), 'utf8');
-const guardSource = html.match(/  function authorizeGeminiToolCall[\s\S]*?(?=\n  function noteVpToolDecision)/)?.[0];
+const guardSource = html.match(/  function geminiToolDomain[\s\S]*?(?=\n  function noteVpToolDecision)/)?.[0];
 assert.ok(guardSource, 'Gemini tool schema guard source was not found in app.html');
 
 const context = vm.createContext({
@@ -14,8 +14,8 @@ const context = vm.createContext({
 });
 vm.runInContext(`${guardSource}\nthis.authorize = authorizeGeminiToolCall;`, context);
 
-function decision(name, args, contextKey = 'recipe:cooking:1') {
-  return context.authorize(name, args, contextKey);
+function decision(name, args, text = '', contextKey = 'recipe:cooking:1') {
+  return context.authorize(name, args, contextKey, text);
 }
 
 // Gemini가 판단한 자연어 의도를 브라우저 정규식으로 다시 해석하지 않는다.
@@ -28,7 +28,7 @@ assert.equal(decision('go_to_cooking_step', { step: 5 }).allowed, true);
 assert.equal(decision('go_to_cooking_step', { step: 0 }).allowed, false);
 assert.equal(decision('go_to_cooking_step', { step: 6 }).allowed, false);
 assert.equal(decision('go_to_cooking_step', { step: '3' }).allowed, false);
-assert.equal(decision('go_to_cooking_step', { step: 3 }, 'recipe:cooking:0').code, 'COOKING_CONTEXT_CHANGED');
+assert.equal(decision('go_to_cooking_step', { step: 3 }, '3단계로 이동해 줘', 'recipe:cooking:0').code, 'COOKING_CONTEXT_CHANGED');
 
 assert.equal(decision('set_cooking_timer', { seconds: 1 }).allowed, true);
 assert.equal(decision('set_cooking_timer', { seconds: 7200 }).allowed, true);
@@ -57,6 +57,18 @@ assert.equal(decision('set_video_repeat', { enabled: 'false' }).allowed, false);
 assert.equal(decision('show_cooking_ingredients', {}).allowed, true);
 assert.equal(decision('delete_recipe', {}).allowed, false);
 
+// 활용형은 해석하지 않고 사용자가 명시한 조작 대상 명사와 tool domain만 맞춘다.
+assert.equal(decision('set_video_playback', { state: 'play' }, '영상 재생해 줘.').allowed, true);
+const wrongStepForVideo = decision('move_cooking_step', { direction: 'next' }, '영상 재생해 줘.');
+assert.equal(wrongStepForVideo.code, 'TOOL_DOMAIN_MISMATCH');
+assert.deepEqual([...wrongStepForVideo.requestedDomains], ['video']);
+assert.deepEqual([...wrongStepForVideo.expectedTools], ['set_video_playback', 'seek_video', 'set_video_speed', 'set_video_repeat']);
+assert.equal(decision('move_cooking_step', { direction: 'next' }, '다음 단계로 넘어가죠.').allowed, true);
+assert.equal(decision('set_video_playback', { state: 'play' }, '다음 단계로 넘어가죠.').code, 'TOOL_DOMAIN_MISMATCH');
+assert.equal(decision('set_cooking_timer', { seconds: 180 }, '영상 3분 재생해 줘.').code, 'TOOL_DOMAIN_MISMATCH');
+assert.equal(decision('show_cooking_ingredients', {}, '타이머 멈춰 줘.').code, 'TOOL_DOMAIN_MISMATCH');
+assert.equal(decision('set_video_playback', { state: 'play' }, '재생해 줘.').allowed, true);
+
 const handler = html.match(/  function handleGeminiToolCall[\s\S]*?(?=\n  function bufferedGeminiResponseBytes)/)?.[0] || '';
 assert.match(handler, /authorizeGeminiToolCall/);
 assert.match(handler, /if\(!decision\.allowed\)/);
@@ -64,6 +76,14 @@ assert.ok(handler.indexOf('if(!decision.allowed)') < handler.indexOf('runGeminiT
 assert.match(handler, /STALE_USER_COMMAND/);
 assert.match(handler, /COMMAND_NOT_READY/);
 assert.match(handler, /EXTRA_TOOL_CALL/);
+assert.match(handler, /TOOL_DOMAIN_MISMATCH/);
+assert.match(handler, /ignored:true/);
+assert.match(handler, /silent:true/);
+assert.match(handler, /correctionRequired/);
+assert.match(handler, /expectedTools/);
+assert.match(handler, /hasAllowedDecision/);
+assert.match(handler, /toolCorrectionIssued/);
+assert.match(handler, /correctionAttempt:1/);
 assert.match(handler, /active\?\.toolActionKey/);
 assert.match(handler, /active\.toolActionKey=actionKey/);
 assert.match(handler, /transcriptReady/);
@@ -94,6 +114,15 @@ assert.match(liveConfig.systemInstruction, /자연스러운 구어체와 음성 
 assert.match(liveConfig.systemInstruction, /도구를 먼저 호출하고 결과를 받은 뒤에만 성공 여부를 답한다/);
 assert.match(liveConfig.systemInstruction, /도구 실행 오류를 듣기 실패로 표현하지 않는다/);
 assert.match(liveConfig.systemInstruction, /한 발화에서는 가장 명확한 핵심 조작 하나만 호출한다/);
+assert.match(liveConfig.systemInstruction, /영상 도구만 호출하고 조리 단계 도구를 함께 호출하지 않는다/);
+assert.match(liveConfig.systemInstruction, /ignored: true/);
+assert.match(liveConfig.systemInstruction, /silent: true/);
+assert.match(liveConfig.systemInstruction, /correctionRequired: true/);
+assert.match(liveConfig.systemInstruction, /expectedTools/);
+assert.match(liveConfig.systemInstruction, /질문이나 불만이면 도구 없이 답하고/);
+assert.match(liveConfig.systemInstruction, /“영상 재생해 줘”에는 set_video_playback의 state를 play/);
+assert.match(liveConfig.systemInstruction, /“다음 단계로 넘어가죠”에는 move_cooking_step의 direction을 next/);
+assert.match(liveConfig.systemInstruction, /“다음 단계로 왜 자꾸 이동하는 거야\?”는 질문이자 불만/);
 assert.match(liveConfig.systemInstruction, /예약 실행은 지원하지 않는다/);
 assert.match(liveConfig.systemInstruction, /영상 일시 정지만 호출하며 단계 이동은 절대 호출하지 않는다/);
 assert.match(liveConfig.systemInstruction, /“안녕”, “냄비야” 같은 인사에는 짧게 한국어로 답한다/);

@@ -5169,8 +5169,38 @@
     if(value&&typeof value==='object')return Object.keys(value).sort().reduce((result,key)=>{result[key]=stableGeminiToolArgs(value[key]);return result;},{});
     return value;
   }
-  function authorizeGeminiToolCall(name,args,commandContextKey){
+  function geminiToolDomain(name){
+    if(name==='move_cooking_step'||name==='go_to_cooking_step')return 'step';
+    if(name==='set_cooking_timer'||name==='set_cooking_timer_state')return 'timer';
+    if(name==='set_video_playback'||name==='seek_video'||name==='set_video_speed'||name==='set_video_repeat')return 'video';
+    if(name==='show_cooking_ingredients')return 'ingredients';
+    return '';
+  }
+  function mentionedGeminiToolDomains(text){
+    const value=String(text||'').normalize('NFKC').toLowerCase();
+    const domains=new Set();
+    if(['단계','스텝'].some(word=>value.includes(word)))domains.add('step');
+    if(['타이머','알람'].some(word=>value.includes(word)))domains.add('timer');
+    if(['영상','비디오','유튜브'].some(word=>value.includes(word)))domains.add('video');
+    if(['재료','준비물'].some(word=>value.includes(word)))domains.add('ingredients');
+    return domains;
+  }
+  function geminiToolsForDomains(domains){
+    const names=[];
+    if(domains.includes('step'))names.push('move_cooking_step','go_to_cooking_step');
+    if(domains.includes('timer'))names.push('set_cooking_timer','set_cooking_timer_state');
+    if(domains.includes('video'))names.push('set_video_playback','seek_video','set_video_speed','set_video_repeat');
+    if(domains.includes('ingredients'))names.push('show_cooking_ingredients');
+    return names;
+  }
+  function authorizeGeminiToolCall(name,args,commandContextKey,userText=''){
     const values=args&&typeof args==='object'&&!Array.isArray(args)?args:{};
+    const domain=geminiToolDomain(name);
+    const mentionedDomains=mentionedGeminiToolDomains(userText);
+    if(domain&&mentionedDomains.size&&!mentionedDomains.has(domain)){
+      const requestedDomains=[...mentionedDomains];
+      return {allowed:false,code:'TOOL_DOMAIN_MISMATCH',reason:'사용자가 언급한 조작 영역과 다른 도구라 실행하지 않았어요.',requestedDomains,expectedTools:geminiToolsForDomains(requestedDomains)};
+    }
     if((name==='move_cooking_step'||name==='go_to_cooking_step')&&commandContextKey&&commandContextKey!==currentGeminiCookingContext().key){
       return {allowed:false,code:'COOKING_CONTEXT_CHANGED',reason:'말씀하신 뒤 조리 단계가 이미 바뀌어 추가 이동을 실행하지 않았어요.'};
     }
@@ -5243,6 +5273,7 @@
     live.toolResponsePending=true;
     const active=live.activeCommand?.epoch===batch.commandEpoch?live.activeCommand:null;
     const stale=!active||batch.commandEpoch!==(live.commandEpoch||0)||batch.connectionEpoch!==(live.connectionEpoch||0)||!!active.completed;
+    const userText=stale?'':String(active?.text||state.userText||'').trim();
     const transcriptReady=active?.source==='text'||(!!active?.hasInputTranscript&&active.inputTranscriptTrusted!==false);
     const audioReady=active?.source!=='audio'||!!active.audioEndedAt;
     const commandReady=!stale&&transcriptReady&&audioReady&&!active.awaitingInterruptionBoundary&&!live.ignoreInterruptedTurnComplete;
@@ -5262,7 +5293,7 @@
         ?{allowed:false,code:'STALE_USER_COMMAND',reason:'새 사용자 발화가 시작되어 이전 조작을 실행하지 않았어요.'}
         :!commandReady
           ?{allowed:false,code:'COMMAND_NOT_READY',reason:'현재 사용자 발화가 끝까지 확인되지 않아 조작을 실행하지 않았어요.'}
-          :authorizeGeminiToolCall(call.name,call.args||{},active.contextKey);
+          :authorizeGeminiToolCall(call.name,call.args||{},active.contextKey,userText);
       if(!decision.allowed)return decision;
       const actionKey=call.name+':'+JSON.stringify(stableGeminiToolArgs(call.args||{}));
       if(acceptedActionKey&&acceptedActionKey!==actionKey)return {allowed:false,code:'EXTRA_TOOL_CALL',reason:'한 발화에서는 한 가지 조작만 실행해요.'};
@@ -5270,6 +5301,7 @@
       if(active)active.toolActionKey=actionKey;
       return decision;
     });
+    const hasAllowedDecision=decisions.some(decision=>decision.allowed);
     const functionResponses=calls.map(call=>{
       const decision=decisions.shift();
       if(live.cancelledToolCalls?.has(call.id)){
@@ -5278,7 +5310,17 @@
       if(live.toolCallResults?.has(call.id))return live.toolCallResults.get(call.id);
       noteVpToolDecision(live,call,decision,batch.traceTurnId);
       if(!decision.allowed){
-        const blocked={id:call.id,name:call.name,response:{error:decision.reason,code:decision.code}};
+        const ignored=decision.code==='TOOL_DOMAIN_MISMATCH'||decision.code==='EXTRA_TOOL_CALL';
+        const correctionRequired=decision.code==='TOOL_DOMAIN_MISMATCH'&&!hasAllowedDecision&&!active?.toolCorrectionIssued;
+        if(correctionRequired&&active)active.toolCorrectionIssued=true;
+        const blocked={id:call.id,name:call.name,response:ignored
+          ?{result:{executed:false,ignored:true,silent:true,code:decision.code,...(correctionRequired?{
+            correctionRequired:true,
+            correctionAttempt:1,
+            expectedTools:decision.expectedTools||[],
+            instruction:'사용자 발화가 실제 조작 요청인지 다시 판단하세요. 조작 요청일 때만 expectedTools 중 맞는 도구를 한 번 호출하고, 질문이나 불만이면 도구 없이 답하세요. 내부 보정은 언급하지 마세요.'
+          }:{})}}
+          :{error:decision.reason,code:decision.code}};
         live.toolCallResults?.set(call.id,blocked);
         return blocked;
       }
