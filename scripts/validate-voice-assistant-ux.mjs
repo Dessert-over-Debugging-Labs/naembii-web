@@ -109,7 +109,11 @@ function buildScorecard(result, serverLanguageConfig) {
     ),
     addScore(
       '도구 실행 연결',
-      result.replayToolDedupe?.firstDelta === 10 && result.replayToolDedupe?.secondDelta === 0,
+      result.replayToolDedupe?.firstDelta === 10
+        && result.replayToolDedupe?.commandResultCountAfterFirst === result.replayToolDedupe?.commandResultCountAfterSecond
+        && result.replayToolDedupe?.commandCompleted
+        && result.replayToolDedupe?.traceLogged
+        && result.replayToolDedupe?.sameEpoch,
       `toolDelta=${JSON.stringify(result.replayToolDedupe || {})}`
     ),
     addScore(
