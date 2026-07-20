@@ -3,6 +3,21 @@ const { allowCors, clean, json, readBody } = require('./_lib/collect');
 const DEFAULT_MODEL = 'gemini-3.1-flash-live-preview';
 const DEFAULT_TTL_MINUTES = 30;
 const DEFAULT_NEW_SESSION_SECONDS = 60;
+const LIVE_INPUT_LANGUAGE_CODES = ['ko-KR', 'en-US'];
+const LIVE_OUTPUT_LANGUAGE_CODES = ['ko-KR'];
+const LIVE_BASE_ADAPTATION_PHRASES = [
+  '냄비',
+  '요리 비서',
+  '옥수수',
+  '인분',
+  '큰술',
+  '작은술',
+  '타이머',
+  '조리 단계',
+  '재료 보기',
+  '유튜브',
+  'YouTube'
+];
 
 // These tools are locked into the ephemeral token so a browser cannot expand
 // the actions Gemini may request after receiving a token.
@@ -10,7 +25,7 @@ const LIVE_TOOLS = [{
   functionDeclarations: [
     {
       name: 'move_cooking_step',
-      description: 'Move the visible cooking step forward or backward when the user explicitly asks.',
+      description: 'Move the visible cooking step only when the current user utterance explicitly commands next or previous. Never call for questions, explanations, complaints, or a video/timer request.',
       parameters: {
         type: 'object',
         properties: {
@@ -21,7 +36,7 @@ const LIVE_TOOLS = [{
     },
     {
       name: 'go_to_cooking_step',
-      description: 'Show a specific numbered cooking step when the user explicitly names a step number.',
+      description: 'Show a specific cooking step when the current user utterance explicitly requests a numbered or ordinal step, the first/starting step, or the last/final step. Map first/starting to step 1 and last/final to the current totalSteps from context. A question or incidental mention of a step is not a command.',
       parameters: {
         type: 'object',
         properties: {
@@ -32,7 +47,7 @@ const LIVE_TOOLS = [{
     },
     {
       name: 'set_cooking_timer',
-      description: 'Start or replace the cooking timer with an explicit duration in seconds.',
+      description: 'Start or replace the cooking timer only when the current user utterance explicitly requests a timer with the exact duration. Never infer the duration.',
       parameters: {
         type: 'object',
         properties: {
@@ -43,7 +58,7 @@ const LIVE_TOOLS = [{
     },
     {
       name: 'set_cooking_timer_state',
-      description: 'Pause, resume, or cancel the active cooking timer when the user explicitly asks.',
+      description: 'Pause, resume, or cancel the timer only when the current user utterance explicitly requests that exact timer action.',
       parameters: {
         type: 'object',
         properties: {
@@ -54,7 +69,7 @@ const LIVE_TOOLS = [{
     },
     {
       name: 'set_video_playback',
-      description: 'Play or pause the current cooking video when the user explicitly asks.',
+      description: 'Play or pause only the cooking video when the current user utterance explicitly requests that exact video action. Never move the cooking step together with this tool unless separately requested.',
       parameters: {
         type: 'object',
         properties: {
@@ -65,7 +80,7 @@ const LIVE_TOOLS = [{
     },
     {
       name: 'seek_video',
-      description: 'Seek the cooking video backward or forward by a short, explicit number of seconds.',
+      description: 'Seek the cooking video only when the current user utterance explicitly gives the exact direction and number of seconds. Never infer either value.',
       parameters: {
         type: 'object',
         properties: {
@@ -77,7 +92,7 @@ const LIVE_TOOLS = [{
     },
     {
       name: 'set_video_speed',
-      description: 'Set the cooking video playback speed to one of the supported values when the user explicitly asks.',
+      description: 'Set video speed only when the current user utterance explicitly gives the exact supported speed. Never infer a numeric speed from vague wording.',
       parameters: {
         type: 'object',
         properties: {
@@ -88,7 +103,7 @@ const LIVE_TOOLS = [{
     },
     {
       name: 'set_video_repeat',
-      description: 'Turn repetition of the current cooking-video segment on or off when the user explicitly asks.',
+      description: 'Change video-segment repetition only when the current user utterance explicitly requests on or off.',
       parameters: {
         type: 'object',
         properties: {
@@ -99,7 +114,7 @@ const LIVE_TOOLS = [{
     },
     {
       name: 'show_cooking_ingredients',
-      description: 'Open the current recipe ingredient list when the user explicitly asks to see ingredients.'
+      description: 'Open the ingredient list only when the current user utterance explicitly asks to see or open it. A question merely mentioning an ingredient is not a command.'
     }
   ]
 }];
@@ -130,35 +145,87 @@ function liveSystemInstruction(payload) {
   const step = clean(payload.step, 160) || '현재 단계';
   const stepNotes = clean(payload.stepNotes, 520);
   const ingredients = clean(payload.ingredients, 720);
+  const totalSteps = Math.trunc(clampNumber(payload.totalSteps, 0, 0, 20));
   return [
     '너는 냄비의 조리 중 음성 비서다.',
     '사용자는 모바일 웹으로 주방에서 요리 중이다.',
-    '사용자가 물은 내용 또는 요청한 조작에 필요한 답만 한국어로 말한다. 인사, 공감, 반복, 요약, 부연 설명, 선택지, 후속 제안은 하지 않는다.',
+    '반드시 한국어로 답한다. 조리 도구, 브랜드명, YouTube 같은 짧은 영어 고유명사만 그대로 말할 수 있다.',
+    '입력 언어를 추측하거나 지적하지 않는다. 한글이 포함된 발화는 짧아도 정상적인 한국어로 처리하고, “안녕”, “냄비야” 같은 인사에는 짧게 한국어로 답한다.',
+    '발화를 이해하지 못한 경우에만 짧게 되묻고, 도구 실행 오류를 듣기 실패로 표현하지 않는다. 사용자의 언어를 바꿔 말하라고 요구하지 않는다.',
+    '사용자가 물은 내용 또는 요청한 조작에 필요한 답만 말한다. 불필요한 반복, 요약, 부연 설명, 선택지, 후속 제안은 하지 않는다.',
     '기본적으로 한 문장으로 답한다. 정확한 수치, 안전 경고 또는 의도 확인이 꼭 필요할 때만 짧은 두 문장으로 답한다.',
     '묻지 않은 다음 단계, 재료, 대안, 팁을 덧붙이지 않는다.',
     '정보가 부족하거나 의도가 불명확하면 추측하지 말고 짧은 확인 질문 하나만 한다.',
     '안전하지 않은 조리 지시는 피하고, 뜨거운 기름/칼/불 사용 시 주의를 먼저 말한다.',
-    '영상, 단계, 타이머, 재료 목록을 조작해 달라는 명확한 요청에만 제공된 도구를 호출한다.',
-    '명확한 조작 요청은 제공된 도구를 먼저 실행하고, 결과에 필요한 말만 짧게 답한다. 도구 이름이나 내부 처리 과정은 말하지 않는다.',
+    '영상, 단계, 타이머, 재료 목록 조작을 요청하면 의미에 맞는 제공 도구를 호출한다. 자연스러운 구어체와 음성 인식의 사소한 종결형 차이에도 같은 의도로 처리한다.',
+    '도구가 필요한 요청은 도구를 먼저 호출하고 결과를 받은 뒤에만 성공 여부를 답한다. 결과 전에 조작이 끝났다고 말하지 않는다.',
+    '사용자가 요청한 조작만 수행하며 방향, 단계, 시간, 속도를 임의로 만들지 않는다.',
+    '이전 대화와 이전 도구 호출은 현재 발화를 이해하기 위한 참고 정보일 뿐이다. 이전 턴의 조작을 현재 턴에 이어서 실행하거나 반복하지 않는다.',
+    '도구 실행 여부와 도구·인자는 반드시 현재 사용자 발화 하나만 근거로 매 턴 새로 판단한다. 현재 발화에 명시적인 조작 요청이 없으면 이전 턴에서 사용한 도구도 호출하지 않는다.',
+    '질문이나 설명 요청에는 도구를 호출하지 않고 답한다.',
+    '현재 발화가 질문, 수량·재료 문의 또는 설명 요청이면 답만 하고 직전 턴의 단계·영상·타이머 조작을 반복하지 않는다.',
+    '한 발화에서는 가장 명확한 핵심 조작 하나만 호출한다.',
+    '영상 재생·멈춤·이동·속도·반복 요청에는 영상 도구만 호출하고 조리 단계 도구를 함께 호출하지 않는다. 조리 단계 요청에는 단계 도구만 호출한다.',
+    '도구 응답에 ignored: true 또는 silent: true가 있으면 실행되지 않은 내부 보정이므로 사용자에게 언급하지 않는다. 실제 실행 결과만 짧게 확인한다.',
+    '도구 응답에 correctionRequired: true가 있으면 사용자 발화가 실제 조작 요청인지 다시 판단한다. 질문이나 불만이면 도구 없이 답하고, 실제 조작 요청일 때만 expectedTools 중 맞는 도구를 한 번 호출한다. 실패나 내부 보정은 언급하지 않는다.',
+    '예약 실행은 지원하지 않는다. “물이 끓으면”, “나중에”처럼 미래 조건이 붙은 요청에는 지금 도구를 호출하지 말고 그때 다시 요청해 달라고 짧게 답한다.',
+    '“첫 단계”, “처음 단계”, “맨 처음 단계”는 1단계를 뜻하고, “마지막 단계”, “맨 마지막 단계”, “최종 단계”는 현재 전체 단계 수에 해당하는 단계를 뜻하는 명확한 목적지다. 이런 표현은 숫자 추정이 아니므로 go_to_cooking_step을 호출한다.',
+    '예: “영상 멈춰 줘”에는 영상 일시 정지만 호출하며 단계 이동은 절대 호출하지 않는다.',
+    '예: “영상 재생해 줘”에는 set_video_playback의 state를 play로 설정해 정확히 한 번 호출하고 단계 도구는 호출하지 않는다.',
+    '예: “다음 단계로 넘어가죠”에는 move_cooking_step의 direction을 next로 설정해 정확히 한 번 호출하고 영상 도구는 호출하지 않는다.',
+    '예: “다음 단계로 왜 자꾸 이동하는 거야?”는 질문이자 불만이므로 어떤 도구도 호출하지 않고 답만 한다.',
+    '예: 직전 두 턴에서 “이전 단계로 넘어가죠”를 실행했더라도, 현재 발화가 “옥수수 몇 개 나와야 돼?”라면 이전 단계 도구를 호출하지 않고 옥수수 양만 답한다.',
+    '예: “마지막 단계로 이동해 줘”에는 go_to_cooking_step의 step을 현재 전체 단계 수로 설정해 정확히 한 번 호출한다.',
+    '첫 단계나 마지막 단계 도구 실행 결과도 영어로 번역하지 말고 “첫 단계로 이동했어요”, “마지막 단계로 이동했어요”처럼 한국어로 말한다.',
+    '예: “이전에 올리브유 바르는 단계가 있었어?”는 질문이므로 어떤 도구도 호출하지 않고 답만 한다.',
+    '도구 결과에 필요한 말만 짧게 답하며 도구 이름이나 내부 처리 과정은 말하지 않는다.',
     '도구로 처리할 수 없는 조리 질문은 현재 레시피와 단계 정보를 기준으로 직접 답한다.',
     '현재 단계와 무관한 이전 또는 다음 단계를 임의로 언급하지 않는다.',
     `현재 레시피: ${recipe}`,
     servings ? `기준 인분: ${servings} (인분 조절 질문은 이 기준의 배수로 계산해 답한다)` : '',
     totalTime ? `총 조리 시간: ${totalTime}` : '',
+    totalSteps ? `전체 조리 단계 수: ${totalSteps}` : '',
     `현재 단계: ${step}`,
     stepNotes ? `현재 단계 세부: ${stepNotes}` : '',
     ingredients ? `현재 재료: ${ingredients}` : ''
   ].filter(Boolean).join('\n');
 }
 
+function liveTranscriptionAdaptationPhrases(payload) {
+  const values = [
+    ...LIVE_BASE_ADAPTATION_PHRASES,
+    clean(payload.recipe, 120),
+    clean(payload.step, 160),
+    clean(payload.stepNotes, 520),
+    clean(payload.ingredients, 720)
+  ];
+  const phrases = new Set();
+  for (const value of values) {
+    for (const phrase of String(value || '').split(/[,\n·/()]+/)) {
+      const trimmed = phrase.trim();
+      if (trimmed.length >= 2 && trimmed.length <= 40) phrases.add(trimmed);
+    }
+  }
+  return [...phrases].slice(0, 64);
+}
+
 function liveConfig(payload) {
   const sessionResumptionHandle = resumeHandle(payload);
+  const adaptationPhrases = liveTranscriptionAdaptationPhrases(payload);
   return {
     responseModalities: ['AUDIO'],
-    temperature: 0.6,
+    temperature: 0.2,
     systemInstruction: liveSystemInstruction(payload),
-    inputAudioTranscription: {},
-    outputAudioTranscription: {},
+    speechConfig: {
+      languageCode: 'ko-KR'
+    },
+    inputAudioTranscription: {
+      languageHints: { languageCodes: LIVE_INPUT_LANGUAGE_CODES },
+      adaptationPhrases
+    },
+    outputAudioTranscription: {
+      languageHints: { languageCodes: LIVE_OUTPUT_LANGUAGE_CODES }
+    },
     realtimeInputConfig: {
       automaticActivityDetection: {
         disabled: false,
@@ -177,7 +244,8 @@ function liveSetup(model, config) {
     model: `models/${model}`,
     generationConfig: {
       responseModalities: config.responseModalities,
-      temperature: config.temperature
+      temperature: config.temperature,
+      speechConfig: config.speechConfig
     },
     systemInstruction: {
       parts: [{ text: config.systemInstruction }]
@@ -279,4 +347,11 @@ module.exports = async function handler(req, res) {
       error: error.message || 'Gemini Live 토큰 발급에 실패했습니다.'
     });
   }
+};
+
+module.exports._test = {
+  liveConfig,
+  liveSetup,
+  liveSystemInstruction,
+  liveTranscriptionAdaptationPhrases
 };

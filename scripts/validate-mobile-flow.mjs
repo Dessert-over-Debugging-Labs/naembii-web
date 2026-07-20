@@ -272,6 +272,54 @@ try {
     return { videoVolume, videoRestored, voice, muted, restored, slower, slowest };
   })()`);
 
+  const cookRestart = await evaluate(`(async () => {
+    show('cook3');
+    hideCookHint();
+    await new Promise((resolve) => setTimeout(resolve, 160));
+    cook3Car.goTo(2);
+    cook3Time = 87;
+    cookYoutubeEnded = true;
+    cookYoutubeLastReportedTime = 86;
+    cookYoutubeAutoplayStarted = true;
+    cook3Playing = true;
+    startUnifiedTimer(90, false);
+    openIngredients('check');
+    openTimer();
+    openVideoSettings();
+    toggleHf3({ startLive: false });
+    if (!vsLoopOn) toggleVsLoop();
+    setVsLoopCount(2, document.querySelector('#vsLoopCount .vchip[data-loop="2"]'));
+    setVsLoopEnd('next', document.querySelector('#vsLoopEnd .vchip[data-loop-end="next"]'));
+    setVsSpeed(1.5);
+    await new Promise((resolve) => setTimeout(resolve, 160));
+    show('detail');
+    await new Promise((resolve) => setTimeout(resolve, 140));
+    startCook();
+    await new Promise((resolve) => setTimeout(resolve, 260));
+    return {
+      active: document.querySelector('.view.active')?.id || '',
+      activeStep: document.querySelector('#cookTrack3 .scard.active')?.dataset.i || '',
+      currentStep: cook3CurrentStep,
+      cookTime: cook3Time,
+      playing: cook3Playing,
+      ended: cookYoutubeEnded,
+      autoplayStarted: cookYoutubeAutoplayStarted,
+      timerTotal,
+      timerLeft,
+      timerVisible: document.getElementById('stageTimer').classList.contains('show'),
+      ingredientsOpen: document.getElementById('ingSheet').classList.contains('show'),
+      timerSheetOpen: document.getElementById('timerSheet').classList.contains('show'),
+      settingsOpen: document.getElementById('videoSettings').classList.contains('show'),
+      voicePanelOpen: document.getElementById('vpanel').classList.contains('open'),
+      voiceModalOpen: document.getElementById('voiceModal').classList.contains('show'),
+      loopOn: vsLoopOn,
+      loopCount: vsLoopCount,
+      loopEnd: vsLoopEnd,
+      speed: vsSpeed,
+      hintVisible: document.getElementById('cookHint').classList.contains('show')
+    };
+  })()`);
+
   const tutorial = await evaluate(`(async () => {
     show('cook3');
     await new Promise((resolve) => setTimeout(resolve, 260));
@@ -322,6 +370,7 @@ try {
     let microphoneRequests = 0;
     const requestedDeviceIds = [];
     const tokenPayloads = [];
+    const tracePayloads = [];
     const makeMicrophoneStream = (deviceId = 'mic-built-in') => {
       const label = deviceId === 'mic-usb' ? 'USB Studio Microphone' : 'MacBook Microphone';
       const listeners = new Map();
@@ -398,6 +447,7 @@ try {
         }
         const text = message.realtimeInput?.text || '';
         if (text) {
+          this.lastUserText = text;
           respond({ serverContent: { inputTranscription: { text: text.replace(/^현재 조리 단계는 .*?사용자 요청: /, '') } } });
         }
         if (message.realtimeInput?.audio) {
@@ -408,12 +458,29 @@ try {
           } });
           return;
         }
+        if (text.includes('영상 재생')) {
+          respond({ toolCall: { functionCalls: [
+            { id: 'wrong-step-before-play', name: 'move_cooking_step', args: { direction: 'next' } },
+            { id: 'play-call', name: 'set_video_playback', args: { state: 'play' } }
+          ] } });
+          return;
+        }
+        if (text.includes('영상 멈춰')) {
+          respond({ toolCall: { functionCalls: [
+            { id: 'pause-call', name: 'set_video_playback', args: { state: 'pause' } }
+          ] } });
+          return;
+        }
+        if (text.includes('왜 자꾸')) {
+          respond({ toolCall: { functionCalls: [{ id: 'wrong-video-for-complaint', name: 'set_video_playback', args: { state: 'play' } }] } });
+          return;
+        }
         if (text.includes('타이머')) {
           respond({ toolCall: { functionCalls: [{ id: 'timer-call', name: 'set_cooking_timer', args: { seconds: 60 } }] } });
           return;
         }
         if (text.includes('다음 단계')) {
-          respond({ toolCall: { functionCalls: [{ id: 'step-call', name: 'move_cooking_step', args: { direction: 'next' } }] } });
+          respond({ toolCall: { functionCalls: [{ id: 'wrong-video-before-step', name: 'set_video_playback', args: { state: 'play' } }] } });
           return;
         }
         if (text.includes('10초 앞으로')) {
@@ -421,9 +488,32 @@ try {
           return;
         }
         if (message.toolResponse) {
-          const name = message.toolResponse.functionResponses[0]?.name || '';
+          const responses = message.toolResponse.functionResponses || [];
+          const correction = responses.find((response) => response?.response?.result?.correctionRequired);
+          if (correction && this.lastUserText?.includes('왜 자꾸')) {
+            respond({ serverContent: {
+              outputTranscription: { text: '현재 단계는 그대로예요.' },
+              turnComplete: true
+            } });
+            return;
+          }
+          if (correction?.response?.result?.expectedTools?.includes('move_cooking_step')) {
+            respond({ toolCall: { functionCalls: [{ id: 'wrong-video-before-step-again', name: 'set_video_playback', args: { state: 'play' } }] } });
+            return;
+          }
+          if (responses.some((response) => response?.id === 'wrong-video-before-step-again')) {
+            respond({ toolCall: { functionCalls: [{ id: 'step-call', name: 'move_cooking_step', args: { direction: 'next' } }] } });
+            return;
+          }
+          const executed = responses.find((response) => response?.response?.result?.ok && !response?.response?.result?.ignored);
+          const name = executed?.name || '';
+          const failed = responses.some((response) => response?.response?.error);
           respond({ serverContent: {
-            outputTranscription: { text: name + ' 요청을 반영했어요.' },
+            outputTranscription: { text: failed
+              ? '잘 못 들었어요. 다시 말씀해 주세요.'
+              : name === 'move_cooking_step' ? '다음 단계로 이동했어요.'
+                : name === 'set_video_playback' ? (executed?.response?.result?.videoPlaying ? '영상을 재생했어요.' : '영상을 멈췄어요.')
+                  : name + ' 요청을 반영했어요.' },
             turnComplete: true
           } });
           respond({ sessionResumptionUpdate: { resumable: true, newHandle: 'mobile-test-resume-handle' } });
@@ -440,6 +530,13 @@ try {
       }
     }
     window.fetch = (url, options) => {
+      if (String(url).endsWith('/api/ai-trace')) {
+        tracePayloads.push(JSON.parse(options?.body || '{}'));
+        return Promise.resolve(new Response(JSON.stringify({ ok: true, storedBy: 'test' }), {
+          status: 202,
+          headers: { 'content-type': 'application/json' }
+        }));
+      }
       if (String(url).endsWith('/api/gemini-live-token')) {
         const payload = JSON.parse(options?.body || '{}');
         tokenPayloads.push(payload);
@@ -449,9 +546,9 @@ try {
           model: 'gemini-3.1-flash-live-preview',
           liveSetup: {
             model: 'models/gemini-3.1-flash-live-preview',
-            generationConfig: { responseModalities: ['AUDIO'] },
-            inputAudioTranscription: {},
-            outputAudioTranscription: {},
+            generationConfig: { responseModalities: ['AUDIO'], speechConfig: { languageCode: 'ko-KR' } },
+            inputAudioTranscription: { languageHints: { languageCodes: ['ko-KR', 'en-US'] } },
+            outputAudioTranscription: { languageHints: { languageCodes: ['ko-KR'] } },
             realtimeInputConfig: { automaticActivityDetection: { disabled: false, silenceDurationMs: 700 } },
             sessionResumption: payload.sessionResumptionHandle ? { handle: payload.sessionResumptionHandle } : {},
             contextWindowCompression: { slidingWindow: {} },
@@ -483,10 +580,11 @@ try {
     try {
       toggleHf3();
       await new Promise((resolve) => setTimeout(resolve, 250));
+      const openingWaveStyle = getComputedStyle(document.querySelector('.vp-input-wave'));
       const opened = {
         panel: document.getElementById('vpanel').className,
         compact: document.getElementById('vpanel').classList.contains('compact'),
-        conversationUi: !document.querySelector('#vpVoiceTitle,#vpLiveStatus,#vpVoiceHint,#vpInputMeter,#vpInputSource,#vpInputDevice,.vp-listening,.vp-voice-kicker,.vp-idle-wave') && document.getElementById('vpIdleState')?.textContent.includes('무엇이 궁금해요?') && getComputedStyle(document.querySelector('.vp-input-wave')).display === 'none',
+        conversationUi: !document.querySelector('#vpVoiceTitle,#vpLiveStatus,#vpVoiceHint,#vpInputMeter,#vpInputSource,#vpInputDevice,.vp-listening,.vp-voice-kicker,.vp-idle-wave') && document.getElementById('vpIdleState')?.textContent.includes('무엇이 궁금해요?') && openingWaveStyle.visibility === 'hidden' && Number(openingWaveStyle.opacity) === 0,
         microphoneRequests,
         micLive: !!geminiLive?.micStream && geminiLive.micStream.getAudioTracks().every((track) => track.readyState === 'live'),
         micLabel: document.querySelector('.vp-mic')?.getAttribute('aria-label') || '',
@@ -515,13 +613,14 @@ try {
       geminiLive.inputProcessor.onaudioprocess?.({ inputBuffer: { getChannelData: () => signal } });
       const voiceActivity = {
         panelMicActive: document.getElementById('vpanel').classList.contains('mic-active'),
-        waveVisible: getComputedStyle(document.querySelector('.vp-input-wave')).display !== 'none'
+        waveVisible: document.getElementById('vpanel').classList.contains('mic-active') && getComputedStyle(document.querySelector('.vp-input-wave')).display !== 'none'
       };
       await new Promise((resolve) => setTimeout(resolve, 260));
       for (let index = 0; index < 10; index += 1) {
         geminiLive.inputProcessor.onaudioprocess?.({ inputBuffer: { getChannelData: () => new Float32Array(2048) } });
       }
-      voiceActivity.waveHidesWhenSilent = !document.getElementById('vpanel').classList.contains('mic-active') && getComputedStyle(document.querySelector('.vp-input-wave')).display === 'none';
+      const silentWaveStyle = getComputedStyle(document.querySelector('.vp-input-wave'));
+      voiceActivity.waveHidesWhenSilent = !document.getElementById('vpanel').classList.contains('mic-active') && silentWaveStyle.visibility === 'hidden' && Number(silentWaveStyle.opacity) === 0;
       await new Promise((resolve) => setTimeout(resolve, 80));
       const audioTransport = {
         capturedFrames: geminiLive.capturedAudioFrames,
@@ -535,29 +634,33 @@ try {
       };
       const compactScroll = document.getElementById('vpScroll');
       const compactReply = '불을 한 단계 낮추고 팬 가장자리의 양념을 가운데로 모아 주세요. 물이나 면수를 한 숟갈씩 넣어 농도를 풀고 천천히 섞으면 좋아요. '.repeat(8);
+      document.getElementById('vpTranscript').classList.add('turn-pair');
       document.getElementById('vpTranscript').innerHTML = '<div class="vp-transcript-entry user"><b>나</b><span>양념이 타는 것 같아.</span></div><div class="vp-transcript-entry assistant"><b>냄비</b><span>' + compactReply + '</span></div>';
       compactScroll.classList.add('has-transcript');
       await new Promise((resolve) => setTimeout(resolve, 80));
-      const compactScrollBefore = compactScroll.scrollTop;
-      compactScroll.scrollTop = compactScroll.scrollHeight;
+      const compactAssistantText = document.querySelector('#vpTranscript .vp-transcript-entry.assistant span');
+      const compactScrollBefore = compactAssistantText.scrollTop;
+      compactAssistantText.scrollTop = compactAssistantText.scrollHeight;
       await new Promise((resolve) => setTimeout(resolve, 40));
       const compactTranscript = {
         keepsCompact: document.getElementById('vpanel').classList.contains('compact'),
         ctrlHeight: Math.round(document.getElementById('cook3Ctrl').getBoundingClientRect().height),
-        scrollClientHeight: compactScroll.clientHeight,
-        scrollHeight: compactScroll.scrollHeight,
-        scrollOverflowY: getComputedStyle(compactScroll).overflowY,
-        scrollMoved: compactScroll.scrollTop > compactScrollBefore
+        scrollClientHeight: compactAssistantText.clientHeight,
+        scrollHeight: compactAssistantText.scrollHeight,
+        scrollOverflowY: getComputedStyle(compactAssistantText).overflowY,
+        scrollMoved: compactAssistantText.scrollTop > compactScrollBefore
       };
       document.getElementById('vpSizeHandle').click();
       await new Promise((resolve) => setTimeout(resolve, 160));
       const longAssistantReply = '불을 한 단계 낮추고 팬 가장자리의 양념을 가운데로 모아 주세요. 물이나 면수를 한 숟갈씩 넣어 농도를 풀고 천천히 섞으면 좋아요. '.repeat(12);
+      document.getElementById('vpTranscript').classList.add('turn-pair');
       document.getElementById('vpTranscript').innerHTML = '<div class="vp-transcript-entry user"><b>나</b><span>양념이 타는 것 같아.</span></div><div class="vp-transcript-entry assistant"><b>냄비</b><span>' + longAssistantReply + '</span></div>';
       document.getElementById('vpScroll').classList.add('has-transcript');
       await new Promise((resolve) => setTimeout(resolve, 240));
       const vpScroll = document.getElementById('vpScroll');
-      const scrollBefore = vpScroll.scrollTop;
-      vpScroll.scrollTop = vpScroll.scrollHeight;
+      const expandedAssistantText = document.querySelector('#vpTranscript .vp-transcript-entry.assistant span');
+      const scrollBefore = expandedAssistantText.scrollTop;
+      expandedAssistantText.scrollTop = expandedAssistantText.scrollHeight;
       await new Promise((resolve) => setTimeout(resolve, 60));
       const resized = {
         panel: document.getElementById('vpanel').className,
@@ -565,11 +668,11 @@ try {
         handleValue: document.getElementById('vpSizeHandle').getAttribute('aria-valuenow'),
         ctrlHeight: Math.round(document.getElementById('cook3Ctrl').getBoundingClientRect().height),
         ctrlHasExpandedClass: document.getElementById('cook3Ctrl').classList.contains('vpanel-expanded'),
-        scrollClientHeight: vpScroll.clientHeight,
-        scrollHeight: vpScroll.scrollHeight,
-        scrollTopAfter: vpScroll.scrollTop,
-        scrollOverflowY: getComputedStyle(vpScroll).overflowY,
-        scrollMoved: vpScroll.scrollTop > scrollBefore
+        scrollClientHeight: expandedAssistantText.clientHeight,
+        scrollHeight: expandedAssistantText.scrollHeight,
+        scrollTopAfter: expandedAssistantText.scrollTop,
+        scrollOverflowY: getComputedStyle(expandedAssistantText).overflowY,
+        scrollMoved: expandedAssistantText.scrollTop > scrollBefore
       };
       const handle = document.getElementById('vpSizeHandle');
       const rect = handle.getBoundingClientRect();
@@ -595,6 +698,97 @@ try {
         micLive: !!geminiLive?.micStream && geminiLive.micStream.getAudioTracks().every((track) => track.readyState === 'live'),
         microphoneRequests
       };
+      clearGeminiPlayback(geminiLive);
+      geminiLive.responseInFlight = false;
+      const outOfOrderAudioBefore = window.__geminiAudioSources.length;
+      const outOfOrderCommand = createGeminiActiveCommand(geminiLive, 'audio');
+      outOfOrderCommand.startedAt = Date.now() - 5000;
+      outOfOrderCommand.audioEndedAt = Date.now() - 500;
+      beginVpTranscriptTurn(geminiLive, { awaitingInput: true });
+      const outOfOrderPcm = new Uint8Array(960);
+      const outOfOrderPcmData = btoa(String.fromCharCode(...outOfOrderPcm));
+      handleGeminiServerContent(geminiLive, {
+        modelTurn: { parts: [{ inlineData: { data: outOfOrderPcmData, mimeType: 'audio/pcm;rate=24000' } }] },
+        turnComplete: true
+      });
+      const outOfOrderBuffered = {
+        eventCount: outOfOrderCommand.pendingServerContent?.length || 0,
+        audioDelta: window.__geminiAudioSources.length - outOfOrderAudioBefore,
+        completed: !!outOfOrderCommand.completed
+      };
+      handleGeminiServerContent(geminiLive, {
+        inputTranscription: { text: '지금 단계가 어떻게 돼?' }
+      });
+      await new Promise((resolve) => setTimeout(resolve, 650));
+      handleGeminiServerContent(geminiLive, {
+        outputTranscription: { text: '전사 순서가 바뀌어도 현재 답변이에요.' }
+      });
+      await new Promise((resolve) => setTimeout(resolve, 1120));
+      const outOfOrderResponse = {
+        ...outOfOrderBuffered,
+        audioDeltaAfterInput: window.__geminiAudioSources.length - outOfOrderAudioBefore,
+        completedAfterInput: !!outOfOrderCommand.completed,
+        userText: ensureVpTranscriptState(geminiLive).userText,
+        assistantText: ensureVpTranscriptState(geminiLive).assistantText
+      };
+      clearGeminiPlayback(geminiLive);
+      geminiLive.responseInFlight = true;
+      const interruptedCommand = createGeminiActiveCommand(geminiLive, 'audio');
+      interruptedCommand.audioEndedAt = Date.now() - 500;
+      beginVpTranscriptTurn(geminiLive, { awaitingInput: true });
+      handleGeminiServerContent(geminiLive, {
+        inputTranscription: { text: '이전 턴의 늦은 전사' },
+        outputTranscription: { text: '이전 턴의 늦은 답변' }
+      });
+      const interruptionBeforeBoundary = {
+        awaiting: !!interruptedCommand.awaitingInterruptionBoundary,
+        userText: ensureVpTranscriptState(geminiLive).userText,
+        buffered: interruptedCommand.pendingServerContent?.length || 0
+      };
+      handleGeminiServerContent(geminiLive, {
+        interrupted: true,
+        inputTranscription: { text: '현재 발화는 그대로 보존해 줘' }
+      });
+      const interruptionAtBoundary = {
+        userText: ensureVpTranscriptState(geminiLive).userText,
+        buffered: interruptedCommand.pendingServerContent?.length || 0,
+        ignoresOldTurnComplete: !!geminiLive.ignoreInterruptedTurnComplete
+      };
+      handleGeminiServerContent(geminiLive, { turnComplete: true });
+      handleGeminiServerContent(geminiLive, {
+        outputTranscription: { text: '현재 턴의 답변만 남아요.' },
+        turnComplete: true
+      });
+      await new Promise((resolve) => setTimeout(resolve, 1120));
+      const interruptionBoundary = {
+        ...interruptionBeforeBoundary,
+        atBoundary: interruptionAtBoundary,
+        completed: !!interruptedCommand.completed,
+        assistantText: ensureVpTranscriptState(geminiLive).assistantText
+      };
+      geminiLive.responseInFlight = true;
+      const preBoundaryOnlyCommand = createGeminiActiveCommand(geminiLive, 'audio');
+      preBoundaryOnlyCommand.audioEndedAt = Date.now() - 500;
+      beginVpTranscriptTurn(geminiLive, { awaitingInput: true });
+      handleGeminiServerContent(geminiLive, {
+        inputTranscription: { text: '경계 전에 도착한 현재 발화' }
+      });
+      handleGeminiServerContent(geminiLive, { interrupted: true });
+      const preBoundaryOnlyAtInterruption = {
+        userText: ensureVpTranscriptState(geminiLive).userText,
+        trusted: preBoundaryOnlyCommand.inputTranscriptTrusted
+      };
+      handleGeminiServerContent(geminiLive, { turnComplete: true });
+      handleGeminiServerContent(geminiLive, {
+        outputTranscription: { text: '현재 응답은 보존됐어요.' },
+        turnComplete: true
+      });
+      await new Promise((resolve) => setTimeout(resolve, 1120));
+      const preBoundaryOnlyInput = {
+        ...preBoundaryOnlyAtInterruption,
+        completed: !!preBoundaryOnlyCommand.completed,
+        assistantText: ensureVpTranscriptState(geminiLive).assistantText
+      };
       const sendVoiceIntent = async (text) => {
         sendGeminiLiveMessage(geminiLive, { realtimeInput: { text } });
         await new Promise((resolve) => setTimeout(resolve, 220));
@@ -603,14 +797,35 @@ try {
       await sendVoiceIntent('타이머 1분 맞춰줘');
       const timerTotalAfterTool = timerTotal;
       const afterTimerStep = document.querySelector('#cookTrack3 .scard.active')?.dataset.i;
-      await sendVoiceIntent('다음 단계로 넘어가줘');
+      const beforePauseStep = document.querySelector('#cookTrack3 .scard.active')?.dataset.i;
+      await sendVoiceIntent('영상 멈춰 줘');
+      const afterPauseStep = document.querySelector('#cookTrack3 .scard.active')?.dataset.i;
+      const beforeVideoPlayStep = afterPauseStep;
+      const beforeVideoPlaying = cook3Playing;
+      await sendVoiceIntent('영상 재생해 줘.');
+      await new Promise((resolve) => setTimeout(resolve, 520));
+      const afterVideoPlayStep = document.querySelector('#cookTrack3 .scard.active')?.dataset.i;
+      const afterVideoPlaying = cook3Playing;
+      const videoPlayTranscript = [...document.querySelectorAll('#vpTranscript .vp-transcript-entry')].map((entry) => entry.textContent.trim());
+      await sendVoiceIntent('다음 단계로 왜 자꾸 이동하는 거야?');
+      const afterComplaintStep = document.querySelector('#cookTrack3 .scard.active')?.dataset.i;
+      const complaintTranscript = [...document.querySelectorAll('#vpTranscript .vp-transcript-entry')].map((entry) => entry.textContent.trim());
+      await sendVoiceIntent('다음 단계로 넘어가죠.');
       await new Promise((resolve) => setTimeout(resolve, 520));
       const afterNextStep = document.querySelector('#cookTrack3 .scard.active')?.dataset.i;
+      const nextStepTranscript = [...document.querySelectorAll('#vpTranscript .vp-transcript-entry')].map((entry) => entry.textContent.trim());
       const timeBeforeSeek = cook3Time;
       await sendVoiceIntent('영상 10초 앞으로 움직여줘');
       const timeAfterSeek = cook3Time;
       const transcript = [...document.querySelectorAll('#vpTranscript .vp-transcript-entry')].map((entry) => entry.textContent.trim());
-      const toolResponses = window.__geminiMessages.filter((message) => message.toolResponse).map((message) => message.toolResponse.functionResponses[0]?.name || '');
+      const toolResponseBatches = window.__geminiMessages.filter((message) => message.toolResponse).map((message) => message.toolResponse.functionResponses || []);
+      const toolResponses = toolResponseBatches.flat().map((response) => response?.name || '');
+      const nextStepResponse = toolResponseBatches.flat().find((response) => response?.id === 'step-call')?.response || {};
+      const wrongVideoBeforeStepResponse = toolResponseBatches.flat().find((response) => response?.id === 'wrong-video-before-step')?.response || {};
+      const repeatedWrongVideoBeforeStepResponse = toolResponseBatches.flat().find((response) => response?.id === 'wrong-video-before-step-again')?.response || {};
+      const wrongVideoForComplaintResponse = toolResponseBatches.flat().find((response) => response?.id === 'wrong-video-for-complaint')?.response || {};
+      const wrongStepBeforePlayResponse = toolResponseBatches.flat().find((response) => response?.id === 'wrong-step-before-play')?.response || {};
+      const videoPlayResponse = toolResponseBatches.flat().find((response) => response?.id === 'play-call')?.response || {};
       setVsVol(42);
       window.__youtubeCommands.length = 0;
       const sourceStart = window.__geminiAudioSources.length;
@@ -636,15 +851,35 @@ try {
         resized,
         intermediate,
         contextRefresh,
+        outOfOrderResponse,
+        interruptionBoundary,
+        preBoundaryOnlyInput,
         ducking,
         panel: document.getElementById('vpanel').className,
         afterTimerStep,
+        beforePauseStep,
+        afterPauseStep,
+        beforeVideoPlayStep,
+        afterVideoPlayStep,
+        beforeVideoPlaying,
+        afterVideoPlaying,
+        videoPlayTranscript,
+        wrongStepBeforePlayResponse,
+        videoPlayResponse,
+        afterComplaintStep,
+        complaintTranscript,
         afterNextStep,
+        nextStepTranscript,
+        nextStepResponse,
+        wrongVideoBeforeStepResponse,
+        repeatedWrongVideoBeforeStepResponse,
+        wrongVideoForComplaintResponse,
         timerTotalAfterTool,
         timeBeforeSeek,
         timeAfterSeek,
         transcript,
-        toolResponses
+        toolResponses,
+        tracePayloads
       };
     } finally {
       hf3Reset();
@@ -668,7 +903,7 @@ try {
     }
   })()`);
 
-  const result = { home, search, feedback, timer, ingredients, settings, tutorial, assistant };
+  const result = { home, search, feedback, timer, ingredients, settings, cookRestart, tutorial, assistant };
   console.log(JSON.stringify(result, null, 2));
 
   if (home.marketing || home.active !== 'home') {
@@ -731,6 +966,15 @@ try {
   if (settings.slowest.value !== '0.5×' || settings.slowest.active !== '0.5×' || !settings.slowest.downDisabled) {
     throw new Error('재생속도 최저 단계와 - 버튼 비활성화가 동작하지 않았습니다.');
   }
+  if (cookRestart.active !== 'cook3' || cookRestart.activeStep !== '0' || cookRestart.currentStep !== 0 || cookRestart.cookTime !== 0) {
+    throw new Error(`상세에서 다시 요리 시작 시 첫 단계 초기 화면으로 돌아가지 않습니다: ${JSON.stringify(cookRestart)}`);
+  }
+  if (cookRestart.timerTotal !== 0 || cookRestart.timerLeft !== 0 || cookRestart.timerVisible || cookRestart.ingredientsOpen || cookRestart.timerSheetOpen || cookRestart.settingsOpen || cookRestart.voicePanelOpen || cookRestart.voiceModalOpen) {
+    throw new Error(`상세에서 다시 요리 시작 시 이전 조리 오버레이가 남아 있습니다: ${JSON.stringify(cookRestart)}`);
+  }
+  if (cookRestart.loopOn || cookRestart.loopCount !== 0 || cookRestart.loopEnd !== 'stop' || cookRestart.speed !== 1 || cookRestart.playing || cookRestart.ended || cookRestart.autoplayStarted || !cookRestart.hintVisible) {
+    throw new Error(`상세에서 다시 요리 시작 시 영상/반복 상태가 초기화되지 않았습니다: ${JSON.stringify(cookRestart)}`);
+  }
   if (!tutorial.visible || !tutorial.insideCookBody || tutorial.screenCoverage > 0.2 || tutorial.overlapRatio > 0.35) {
     throw new Error('조리 튜토리얼이 화면 내부 패널로 보이지 않거나 조리 카드를 과하게 가립니다.');
   }
@@ -767,8 +1011,32 @@ try {
   if (assistant.contextRefresh.tokenRequests < 2 || !assistant.contextRefresh.initialStep.includes('1/5') || !assistant.contextRefresh.refreshedStep.includes('3/5') || !assistant.contextRefresh.refreshedNotes.includes('양파') || assistant.contextRefresh.sessionResumptionHandle !== 'mobile-test-resume-handle' || assistant.contextRefresh.activeStep !== '2' || !assistant.contextRefresh.contextKey.includes(':cooking:3') || !assistant.contextRefresh.micLive || assistant.contextRefresh.microphoneRequests !== assistant.deviceSwitch.microphoneRequests) {
     throw new Error('조리 단계 이동 뒤 Gemini Live 프롬프트를 현재 단계로 재연결하지 못했습니다.');
   }
+  if (assistant.outOfOrderResponse.eventCount < 1 || assistant.outOfOrderResponse.audioDelta !== 0 || assistant.outOfOrderResponse.completed || assistant.outOfOrderResponse.audioDeltaAfterInput < 1 || !assistant.outOfOrderResponse.completedAfterInput || !assistant.outOfOrderResponse.userText.includes('지금 단계') || !assistant.outOfOrderResponse.assistantText.includes('전사 순서')) {
+    throw new Error('입력 전사보다 먼저 온 Gemini 응답을 안전하게 보관했다가 현재 턴에 복원하지 못했습니다.');
+  }
+  if (!assistant.interruptionBoundary.awaiting || assistant.interruptionBoundary.userText || assistant.interruptionBoundary.buffered < 1 || !assistant.interruptionBoundary.atBoundary.userText.includes('현재 발화') || assistant.interruptionBoundary.atBoundary.buffered !== 0 || !assistant.interruptionBoundary.atBoundary.ignoresOldTurnComplete || !assistant.interruptionBoundary.completed || assistant.interruptionBoundary.assistantText.includes('이전 턴') || !assistant.interruptionBoundary.assistantText.includes('현재 턴')) {
+    throw new Error('Gemini interruption 경계에서 이전 턴 전사·응답을 버리고 현재 턴만 보존하지 못했습니다.');
+  }
+  if (!assistant.preBoundaryOnlyInput.userText.includes('경계 전에 도착한 현재 발화') || assistant.preBoundaryOnlyInput.trusted !== false || !assistant.preBoundaryOnlyInput.completed || !assistant.preBoundaryOnlyInput.assistantText.includes('현재 응답')) {
+    throw new Error('interrupted보다 먼저 온 경계 전 전사를 기록하되 도구 실행용으로 신뢰하지 못했습니다.');
+  }
   if (assistant.afterTimerStep !== '2' || assistant.timerTotalAfterTool !== 60 || assistant.afterNextStep !== '3') {
     throw new Error('Gemini Live 타이머/다음 단계 tool call이 기존 조리 함수로 연결되지 않았습니다.');
+  }
+  if (assistant.afterPauseStep !== assistant.beforePauseStep || assistant.afterComplaintStep !== assistant.beforePauseStep) {
+    throw new Error('영상 요청이나 질문이 조리 단계를 변경했습니다.');
+  }
+  if (assistant.wrongVideoForComplaintResponse.error || !assistant.wrongVideoForComplaintResponse.result?.correctionRequired || assistant.wrongVideoForComplaintResponse.result?.correctionAttempt !== 1 || !assistant.complaintTranscript.some((line) => line.includes('냄비현재 단계는 그대로예요.')) || assistant.complaintTranscript.some((line) => /이동했어요|실패|다시 말씀해/.test(line))) {
+    throw new Error('질문·불만에 잘못 생성된 도구를 실행하지 않고 답변으로 복구하지 못했습니다.');
+  }
+  if (assistant.afterVideoPlayStep !== assistant.beforeVideoPlayStep || assistant.beforeVideoPlaying || !assistant.afterVideoPlaying || assistant.wrongStepBeforePlayResponse.error || assistant.wrongStepBeforePlayResponse.result?.code !== 'TOOL_DOMAIN_MISMATCH' || !assistant.wrongStepBeforePlayResponse.result?.ignored || !assistant.wrongStepBeforePlayResponse.result?.silent || !assistant.videoPlayResponse.result?.ok) {
+    throw new Error('영상 재생 요청에서 잘못 생성된 단계 도구를 무시하고 영상만 재생하지 못했습니다.');
+  }
+  if (!assistant.videoPlayTranscript.some((line) => line.includes('나영상 재생해 줘.')) || !assistant.videoPlayTranscript.some((line) => line.includes('냄비영상을 재생했어요.')) || assistant.videoPlayTranscript.some((line) => /다음 단계|한 번에 한 가지|잘 못 들었/.test(line))) {
+    throw new Error('영상 재생 요청의 응답에 내부 도구 보정 안내가 노출됐습니다.');
+  }
+  if (assistant.wrongVideoBeforeStepResponse.error || assistant.wrongVideoBeforeStepResponse.result?.code !== 'TOOL_DOMAIN_MISMATCH' || !assistant.wrongVideoBeforeStepResponse.result?.correctionRequired || assistant.wrongVideoBeforeStepResponse.result?.correctionAttempt !== 1 || !assistant.wrongVideoBeforeStepResponse.result?.expectedTools?.includes('move_cooking_step') || assistant.repeatedWrongVideoBeforeStepResponse.error || assistant.repeatedWrongVideoBeforeStepResponse.result?.code !== 'TOOL_DOMAIN_MISMATCH' || assistant.repeatedWrongVideoBeforeStepResponse.result?.correctionRequired || assistant.nextStepResponse.error || !assistant.nextStepResponse.result?.ok || !assistant.nextStepTranscript.some((line) => line.includes('나다음 단계로 넘어가죠.')) || !assistant.nextStepTranscript.some((line) => line.includes('냄비다음 단계로 이동했어요.')) || assistant.nextStepTranscript.some((line) => /잘 못 들었어요|영상 재생에 실패/.test(line))) {
+    throw new Error('자연스러운 다음 단계 발화가 tool call로 실행되거나 한 번의 정상 응답으로 끝나지 않았습니다.');
   }
   if (assistant.timeAfterSeek < assistant.timeBeforeSeek + 10) {
     throw new Error('Gemini Live 영상 이동 tool call이 기존 영상 제어 함수로 연결되지 않았습니다.');
@@ -783,6 +1051,32 @@ try {
     if (!assistant.toolResponses.includes(name)) {
       throw new Error(`Gemini Live ${name} tool response가 전송되지 않았습니다.`);
     }
+  }
+  if (assistant.tracePayloads.length < 6 || assistant.tracePayloads.some((payload) => !payload.turnId || !payload.sessionId || !payload.visitorId || !payload.sessionStartedAt || !payload.userText || !Number.isInteger(payload.turnNumber) || !['completed', 'interrupted', 'abandoned'].includes(payload.turnStatus))) {
+    throw new Error('Gemini Live 완료 턴이 Langfuse payload로 전송되지 않았습니다.');
+  }
+  const traceSessions = new Set(assistant.tracePayloads.map((payload) => payload.sessionId));
+  if (traceSessions.size !== 1 || new Set(assistant.tracePayloads.map((payload) => payload.turnId)).size !== assistant.tracePayloads.length) {
+    throw new Error('Langfuse 턴이 하나의 세션으로 묶이지 않거나 turnId가 중복됩니다.');
+  }
+  const orderedTurnNumbers = assistant.tracePayloads.map((payload) => payload.turnNumber);
+  if (new Set(assistant.tracePayloads.map((payload) => payload.visitorId)).size !== 1 || orderedTurnNumbers.some((number, index) => index > 0 && number <= orderedTurnNumbers[index - 1])) {
+    throw new Error('Langfuse 가명 사용자 또는 대화 턴 순서가 일관되지 않습니다.');
+  }
+  const moveTrace = assistant.tracePayloads.find((payload) => payload.userText.includes('넘어가죠'));
+  if (!moveTrace || moveTrace.stepIndex !== 3 || moveTrace.totalSteps !== 5 || !moveTrace.recipe.includes('순두부찌개') || !moveTrace.toolCalls?.some((call) => call.name === 'move_cooking_step' && call.allowed && call.reason === 'VALID_TOOL_CALL')) {
+    throw new Error('Langfuse 턴에 요청 시점의 레시피·조리 단계가 보존되지 않았습니다.');
+  }
+  const pauseTrace = assistant.tracePayloads.find((payload) => payload.userText.includes('영상 멈춰'));
+  if (!pauseTrace || pauseTrace.toolCalls?.length !== 1 || !pauseTrace.toolCalls.some((call) => call.name === 'set_video_playback' && call.allowed && call.reason === 'VALID_TOOL_CALL')) {
+    throw new Error('Langfuse 턴에 실행된 도구 결정이 정확히 기록되지 않았습니다.');
+  }
+  const videoPlayTrace = assistant.tracePayloads.find((payload) => payload.userText.includes('영상 재생'));
+  if (!videoPlayTrace || videoPlayTrace.stepIndex !== 3 || videoPlayTrace.toolCalls?.length !== 2 || !videoPlayTrace.toolCalls.some((call) => call.name === 'move_cooking_step' && !call.allowed && call.reason === 'TOOL_DOMAIN_MISMATCH') || !videoPlayTrace.toolCalls.some((call) => call.name === 'set_video_playback' && call.allowed && call.reason === 'VALID_TOOL_CALL')) {
+    throw new Error('Langfuse에 영상 재생 요청의 무시·실행 도구 결정이 정확히 기록되지 않았습니다.');
+  }
+  if (assistant.tracePayloads.some((payload) => ['audio', 'inlineData', 'pendingPcm', 'resumeReplay'].some((key) => Object.hasOwn(payload, key)))) {
+    throw new Error('Langfuse payload에 원본 오디오 데이터가 포함됐습니다.');
   }
 } finally {
   if (ws) ws.close();

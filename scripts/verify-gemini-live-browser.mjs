@@ -104,8 +104,14 @@ try {
         await new Promise((resolve) => setTimeout(resolve, 180));
       }
       await new Promise((resolve) => setTimeout(resolve, 700));
-      const timeBefore = cook3Time;
       const micStarted = !!geminiLive?.micStream && !!geminiLive?.inputProcessor && geminiLive.micStream.getAudioTracks().every((track) => track.readyState === 'live');
+      // Headless Chrome's fake microphone can expose a live track without
+      // producing callbacks. Probe the real socket transport with 20 ms of
+      // silence so PCM format/lifecycle verification stays deterministic.
+      if (geminiLive?.ready && !(geminiLive.sentAudioFrames || 0)) {
+        transmitGeminiPcm(geminiLive, new ArrayBuffer(640));
+        transmitGeminiAudioStreamEnd(geminiLive);
+      }
       const micInputFrames = geminiLive?.sentAudioFrames || 0;
       const micInputBytes = geminiLive?.sentAudioBytes || 0;
       const micInputMimeType = geminiLive?.inputMimeType || '';
@@ -113,30 +119,177 @@ try {
       stopGeminiMicrophone();
       await new Promise((resolve) => setTimeout(resolve, 300));
       const micStopped = !geminiLive?.micStream && !geminiLive?.inputProcessor;
-      sendGeminiLiveMessage(geminiLive,{realtimeInput:{text:'현재 영상을 10초 앞으로 움직여줘. 반드시 제공된 도구를 사용해.'}});
-      const deadline = Date.now() + 24000;
-      while (Date.now() < deadline) {
-        const transcript = [...document.querySelectorAll('#vpTranscript .vp-transcript-entry')].map((entry) => entry.textContent.trim());
-        if (transcript.some((line) => line.includes('냄비')) && cook3Time >= timeBefore + 10) {
-          return {
-            transcript,
-            timeBefore,
-            timeAfter: cook3Time,
-            audioStarts,
-            micStarted,
-            micInputFrames,
-            micInputBytes,
-            micInputMimeType,
-            micStopped,
-            panel: document.getElementById('vpanel').className
-          };
+      const transcriptLines = () => [...document.querySelectorAll('#vpTranscript .vp-transcript-entry')].map((entry) => entry.textContent.trim());
+      const waitUntil = async (predicate, message, timeout = 24000) => {
+        const deadline = Date.now() + timeout;
+        while (Date.now() < deadline) {
+          if (predicate()) return;
+          await new Promise((resolve) => setTimeout(resolve, 180));
         }
-        await new Promise((resolve) => setTimeout(resolve, 180));
+        throw new Error(message);
+      };
+
+      await waitUntil(() => isGeminiLiveOpen(geminiLive), '첫 인사 직전에 Gemini Live 연결이 열리지 않았습니다.');
+      sendGeminiLiveMessage(geminiLive,{realtimeInput:{text:'안녕.'}});
+      const greetingEpoch = geminiLive.commandEpoch;
+      await waitUntil(
+        () => geminiLive?.activeCommand?.epoch === greetingEpoch && geminiLive.activeCommand.completed && !!document.querySelector('#vpTranscript .vp-transcript-entry.assistant'),
+        '짧은 한국어 인사에 대한 응답이 완료되지 않았습니다.'
+      );
+      const greetingTranscript = transcriptLines();
+
+      if (cook3Playing) videoTogglePlay();
+      const videoPlayStepBefore = document.querySelector('#cookTrack3 .scard.active')?.dataset.i || '';
+      const videoPlayingBefore = cook3Playing;
+      await waitUntil(() => isGeminiLiveOpen(geminiLive), '영상 재생 명령 직전에 Gemini Live 연결이 열리지 않았습니다.');
+      sendGeminiLiveMessage(geminiLive,{realtimeInput:{text:'영상 재생해 줘.'}});
+      const videoPlayEpoch = geminiLive.commandEpoch;
+      await waitUntil(() => cook3Playing, '영상 재생 명령이 실행되지 않았습니다.');
+      const videoPlayStepAfter = document.querySelector('#cookTrack3 .scard.active')?.dataset.i || '';
+      const videoPlayingAfter = cook3Playing;
+      if (cook3Playing) videoTogglePlay();
+      await waitUntil(
+        () => geminiLive?.activeCommand?.epoch === videoPlayEpoch && geminiLive.activeCommand.completed,
+        '영상 재생 도구 응답이 완료되지 않았습니다.'
+      );
+      const videoPlayTranscript = transcriptLines();
+      await waitUntil(() => !geminiLive?.playbackNodes?.size, '영상 재생 응답 오디오가 끝나지 않았습니다.');
+
+      const complaintStepBefore = document.querySelector('#cookTrack3 .scard.active')?.dataset.i || '';
+      await waitUntil(() => isGeminiLiveOpen(geminiLive), '질문·불만 검증 직전에 Gemini Live 연결이 열리지 않았습니다.');
+      sendGeminiLiveMessage(geminiLive,{realtimeInput:{text:'다음 단계로 왜 자꾸 이동하는 거야?'}});
+      const complaintEpoch = geminiLive.commandEpoch;
+      await waitUntil(
+        () => geminiLive?.activeCommand?.epoch === complaintEpoch && geminiLive.activeCommand.completed,
+        '질문·불만에 대한 응답이 완료되지 않았습니다.'
+      );
+      const complaintStepAfter = document.querySelector('#cookTrack3 .scard.active')?.dataset.i || '';
+      const complaintToolExecuted = !!geminiLive?.activeCommand?.toolExecuted;
+      const complaintTranscript = transcriptLines();
+      await waitUntil(() => !geminiLive?.playbackNodes?.size, '질문·불만 응답 오디오가 끝나지 않았습니다.');
+
+      const nextStepBefore = document.querySelector('#cookTrack3 .scard.active')?.dataset.i || '';
+      await waitUntil(() => isGeminiLiveOpen(geminiLive), '다음 단계 명령 직전에 Gemini Live 연결이 열리지 않았습니다.');
+      sendGeminiLiveMessage(geminiLive,{realtimeInput:{text:'다음 단계로 넘어가죠.'}});
+      const nextStepEpoch = geminiLive.commandEpoch;
+      await waitUntil(
+        () => document.querySelector('#cookTrack3 .scard.active')?.dataset.i === String(Number(nextStepBefore) + 1),
+        '자연스러운 다음 단계 이동 명령이 실행되지 않았습니다.'
+      );
+      await waitUntil(
+        () => geminiLive?.activeCommand?.epoch === nextStepEpoch && geminiLive.activeCommand.completed,
+        '다음 단계 도구 응답이 완료되지 않았습니다.'
+      );
+      const nextStepAfter = document.querySelector('#cookTrack3 .scard.active')?.dataset.i || '';
+      const nextStepTranscript = transcriptLines();
+
+      // 직전 도구 이력은 참고만 하고 현재 발화만으로 새 도구를 판단하는지 검증한다.
+      cook3Car.goTo(Math.min(2, Math.max(0, (currentRecipe?.steps?.length || 1) - 1)));
+      await waitUntil(
+        () => isGeminiLiveOpen(geminiLive)
+          && !geminiLive?.contextRestarting
+          && !geminiLive?.pendingContextRestart
+          && geminiLive?.contextKey === currentGeminiCookingContext().key
+          && !geminiLive?.playbackNodes?.size,
+        '연속 이전 단계 검증용 조리 맥락이 준비되지 않았습니다.',
+        30000
+      );
+      const previousTransitions = [];
+      for (let index = 0; index < 2; index += 1) {
+        const before = Number(document.querySelector('#cookTrack3 .scard.active')?.dataset.i || 0);
+        sendGeminiLiveMessage(geminiLive,{realtimeInput:{text:'이전 단계로 넘어가죠.'}});
+        const epoch = geminiLive.commandEpoch;
+        await waitUntil(
+          () => Number(document.querySelector('#cookTrack3 .scard.active')?.dataset.i || 0) === before - 1,
+          '이전 단계 명령이 실행되지 않았습니다.'
+        );
+        await waitUntil(
+          () => geminiLive?.activeCommand?.epoch === epoch && geminiLive.activeCommand.completed,
+          '이전 단계 도구 응답이 완료되지 않았습니다.'
+        );
+        previousTransitions.push([before, Number(document.querySelector('#cookTrack3 .scard.active')?.dataset.i || 0)]);
+        await waitUntil(() => !geminiLive?.playbackNodes?.size, '이전 단계 응답 오디오가 끝나지 않았습니다.');
+        await waitUntil(
+          () => isGeminiLiveOpen(geminiLive)
+            && !geminiLive?.contextRestarting
+            && !geminiLive?.pendingContextRestart
+            && geminiLive?.contextKey === currentGeminiCookingContext().key,
+          '이전 단계 변경 뒤 Gemini Live 조리 맥락이 갱신되지 않았습니다.',
+          30000
+        );
       }
+      const quantityStepBefore = document.querySelector('#cookTrack3 .scard.active')?.dataset.i || '';
+      sendGeminiLiveMessage(geminiLive,{realtimeInput:{text:'옥수수 몇 개 나와야 돼?'}});
+      const quantityEpoch = geminiLive.commandEpoch;
+      await waitUntil(
+        () => geminiLive?.activeCommand?.epoch === quantityEpoch && geminiLive.activeCommand.completed,
+        '직전 도구와 무관한 수량 질문 응답이 완료되지 않았습니다.'
+      );
+      const quantityStepAfter = document.querySelector('#cookTrack3 .scard.active')?.dataset.i || '';
+      const quantityToolExecuted = !!geminiLive?.activeCommand?.toolExecuted;
+      const quantityTranscript = transcriptLines();
+      await waitUntil(() => !geminiLive?.playbackNodes?.size, '수량 질문 응답 오디오가 끝나지 않았습니다.');
+
+      // 단계 변경에 따른 context reconnect와 다음 검증 명령이 겹치지 않도록 독립 Live 세션을 사용한다.
+      hf3Reset();
+      await new Promise((resolve) => setTimeout(resolve, 450));
+      cook3Car.goTo(0);
+      toggleHf3();
+      await waitUntil(() => geminiLive?.ready && geminiLive?.micStream, '마지막 단계 검증용 Gemini Live 세션이 준비되지 않았습니다.');
+      stopGeminiMicrophone();
+
+      const lastStepIndex = Math.max(0, (currentRecipe?.steps?.length || 1) - 1);
+      const lastStepBefore = document.querySelector('#cookTrack3 .scard.active')?.dataset.i || '';
+      await waitUntil(() => isGeminiLiveOpen(geminiLive), '마지막 단계 명령 직전에 Gemini Live 연결이 열리지 않았습니다.');
+      sendGeminiLiveMessage(geminiLive,{realtimeInput:{text:'마지막 단계로 이동해 줘.'}});
+      await waitUntil(
+        () => document.querySelector('#cookTrack3 .scard.active')?.dataset.i === String(lastStepIndex),
+        '마지막 단계 이동 명령이 실행되지 않았습니다.'
+      );
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      const lastStepAfter = document.querySelector('#cookTrack3 .scard.active')?.dataset.i || '';
+      const lastStepTranscript = transcriptLines();
+
+      // 실제 도구 응답이 길어지는 경우 다음 명령의 barge-in과 섞이지 않도록 seek는 새 Live 세션에서 검증한다.
+      hf3Reset();
+      await new Promise((resolve) => setTimeout(resolve, 450));
+      cook3Car.goTo(0);
+      toggleHf3();
+      await waitUntil(() => geminiLive?.ready && geminiLive?.micStream, '영상 이동 검증용 Gemini Live 세션이 준비되지 않았습니다.');
+      stopGeminiMicrophone();
+      await waitUntil(() => isGeminiLiveOpen(geminiLive), '영상 이동 명령 직전에 Gemini Live 연결이 열리지 않았습니다.');
+      const timeBefore = cook3Time;
+      sendGeminiLiveMessage(geminiLive,{realtimeInput:{text:'현재 영상을 10초 앞으로 움직여 줘'}});
+      await waitUntil(() => cook3Time >= timeBefore + 10, '영상 앞으로 10초 명령이 실행되지 않았습니다.');
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      const seekTranscript = transcriptLines();
       return {
-        transcript: [...document.querySelectorAll('#vpTranscript .vp-transcript-entry')].map((entry) => entry.textContent.trim()),
+        transcript: transcriptLines(),
+        greetingTranscript,
+        videoPlayTranscript,
+        complaintTranscript,
+        nextStepTranscript,
+        quantityTranscript,
+        lastStepTranscript,
+        seekTranscript,
         timeBefore,
         timeAfter: cook3Time,
+        lastStepBefore,
+        lastStepAfter,
+        lastStepIndex: String(lastStepIndex),
+        nextStepBefore,
+        nextStepAfter,
+        videoPlayStepBefore,
+        videoPlayStepAfter,
+        videoPlayingBefore,
+        videoPlayingAfter,
+        complaintStepBefore,
+        complaintStepAfter,
+        complaintToolExecuted,
+        previousTransitions,
+        quantityStepBefore,
+        quantityStepAfter,
+        quantityToolExecuted,
         audioStarts,
         micStarted,
         micInputFrames,
@@ -151,11 +304,32 @@ try {
     }
   })()`);
 
-  if (!result.transcript.some((line) => line.includes('냄비'))) {
+  if (![...result.greetingTranscript, ...result.videoPlayTranscript, ...result.complaintTranscript, ...result.nextStepTranscript, ...result.quantityTranscript, ...result.lastStepTranscript, ...result.seekTranscript, ...result.transcript].some((line) => line.includes('냄비'))) {
     throw new Error(`Gemini Live 응답 전사가 화면에 표시되지 않았습니다: ${JSON.stringify(result)}`);
+  }
+  if (!result.greetingTranscript.some((line) => line.includes('냄비')) || result.greetingTranscript.some((line) => /한국어로.*다시/.test(line))) {
+    throw new Error(`짧은 한국어 인사에 잘못된 언어 재요청이 발생했습니다: ${JSON.stringify(result)}`);
+  }
+  if (result.videoPlayStepAfter !== result.videoPlayStepBefore || result.videoPlayingBefore || !result.videoPlayingAfter || result.videoPlayTranscript.some((line) => /다음 단계|한 번에 한 가지|잘 못 들었/.test(line))) {
+    throw new Error(`영상 재생 요청이 영상 외 조작을 실행하거나 내부 보정 문구를 노출했습니다: ${JSON.stringify(result)}`);
+  }
+  if (result.complaintStepAfter !== result.complaintStepBefore || result.complaintToolExecuted || result.complaintTranscript.some((line) => /다음 단계로 이동했어요|잘 못 들었어요|다시 말씀해/.test(line))) {
+    throw new Error(`질문·불만이 조리 조작이나 듣기 실패 응답으로 바뀌었습니다: ${JSON.stringify(result)}`);
+  }
+  if (Number(result.nextStepAfter) !== Number(result.nextStepBefore) + 1 || result.nextStepTranscript.some((line) => /잘 못 들었어요|다시 말씀해/.test(line))) {
+    throw new Error(`자연스러운 다음 단계 명령이 한 번의 정상 도구 응답으로 끝나지 않았습니다: ${JSON.stringify(result)}`);
+  }
+  if (JSON.stringify(result.previousTransitions) !== JSON.stringify([[2, 1], [1, 0]]) || result.quantityStepAfter !== result.quantityStepBefore || result.quantityToolExecuted || !result.quantityTranscript.some((line) => line.includes('옥수수 몇 개 나와야 돼?')) || result.quantityTranscript.some((line) => /이전 단계로 이동했어요|잘 못 들었어요|다시 말씀해/.test(line))) {
+    throw new Error(`직전 단계 도구가 현재 수량 질문에 반복 실행됐습니다: ${JSON.stringify(result)}`);
   }
   if (result.timeAfter < result.timeBefore + 10) {
     throw new Error(`Gemini Live seek_video가 기존 영상 제어에 연결되지 않았습니다: ${JSON.stringify(result)}`);
+  }
+  if (result.lastStepAfter !== result.lastStepIndex) {
+    throw new Error(`Gemini Live 마지막 단계 명령이 현재 레시피의 마지막 단계로 연결되지 않았습니다: ${JSON.stringify(result)}`);
+  }
+  if (result.lastStepTranscript.some((line) => /last\s*step/i.test(line))) {
+    throw new Error(`마지막 단계 실행 확인에 영어 표현이 섞였습니다: ${JSON.stringify(result)}`);
   }
   if (result.audioStarts < 1) {
     throw new Error(`Gemini Live 오디오 재생이 시작되지 않았습니다: ${JSON.stringify(result)}`);
@@ -170,4 +344,11 @@ try {
 } finally {
   if (ws) ws.close();
   child.kill('SIGTERM');
+  if (child.exitCode === null) {
+    await Promise.race([
+      new Promise((resolve) => child.once('exit', resolve)),
+      delay(1500)
+    ]);
+  }
+  if (child.exitCode === null) child.kill('SIGKILL');
 }

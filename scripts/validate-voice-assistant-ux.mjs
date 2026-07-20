@@ -1,11 +1,13 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import { spawn } from 'node:child_process';
 import { resolve } from 'node:path';
+import { createRequire } from 'node:module';
 
 const baseURL = (process.argv[2] || 'http://127.0.0.1:4873').replace(/\/+$/, '');
 const defaultOutputDir = `/tmp/naembi-voice-assistant-ux-${new Date().toISOString().slice(0, 10)}`;
 const outputDir = resolve(process.argv[3] || defaultOutputDir);
 const cdpPort = Number(process.env.NAEMBI_GEMINI_LIVE_RECONNECT_CDP_PORT || 9474);
+const require = createRequire(import.meta.url);
 
 await mkdir(outputDir, { recursive: true });
 
@@ -39,12 +41,52 @@ function parseJsonOutput(stdout) {
   return null;
 }
 
+function inspectServerLanguageConfig() {
+  try {
+    const handler = require('../api/gemini-live-token.js');
+    const internals = handler._test || {};
+    if (typeof internals.liveConfig !== 'function' || typeof internals.liveSetup !== 'function') {
+      throw new Error('gemini-live-token.js test helpers are missing');
+    }
+    const config = internals.liveConfig({
+      recipe: '옥수수 버터구이',
+      servings: '2인분',
+      totalTime: '15분',
+      step: '1/3 · 옥수수 손질',
+      stepNotes: '옥수수 껍질을 벗기고 물기를 닦기',
+      ingredients: '옥수수 2개, 버터 1큰술, YouTube 참고 영상'
+    });
+    const setup = internals.liveSetup('gemini-3.1-flash-live-preview', config);
+    const inputCodes = setup.inputAudioTranscription?.languageHints?.languageCodes || [];
+    const outputCodes = setup.outputAudioTranscription?.languageHints?.languageCodes || [];
+    const adaptationPhrases = setup.inputAudioTranscription?.adaptationPhrases || [];
+    const speechLanguage = setup.generationConfig?.speechConfig?.languageCode || '';
+    const systemInstruction = setup.systemInstruction?.parts?.[0]?.text || '';
+    const ok = inputCodes.includes('ko-KR') &&
+      inputCodes.includes('en-US') &&
+      outputCodes.length === 1 &&
+      outputCodes.includes('ko-KR') &&
+      speechLanguage === 'ko-KR' &&
+      adaptationPhrases.includes('옥수수') &&
+      /반드시 한국어/.test(systemInstruction) &&
+      /영어 고유명사/.test(systemInstruction);
+    return { ok, inputCodes, outputCodes, speechLanguage, adaptationPhraseCount: adaptationPhrases.length };
+  } catch (error) {
+    return { ok: false, error: error.message || String(error) };
+  }
+}
+
 function addScore(name, ok, detail) {
   return { name, score: ok ? 10 : 0, detail };
 }
 
-function buildScorecard(result) {
+function buildScorecard(result, serverLanguageConfig) {
   return [
+    addScore(
+      'Live 전사 언어 설정',
+      Boolean(serverLanguageConfig?.ok),
+      JSON.stringify(serverLanguageConfig || {})
+    ),
     addScore(
       'Gemini Live 세션 재연결',
       result.socketCount >= 2 && result.tokenRequestCount >= 2 && result.sameLiveAfterReconnect,
@@ -67,8 +109,22 @@ function buildScorecard(result) {
     ),
     addScore(
       '도구 실행 연결',
-      result.replayToolDedupe?.firstDelta === 10 && result.replayToolDedupe?.secondDelta === 0,
+      result.replayToolDedupe?.firstDelta === 10
+        && result.replayToolDedupe?.commandResultCountAfterFirst === result.replayToolDedupe?.commandResultCountAfterSecond
+        && result.replayToolDedupe?.commandCompleted
+        && result.replayToolDedupe?.traceLogged
+        && result.replayToolDedupe?.sameEpoch,
       `toolDelta=${JSON.stringify(result.replayToolDedupe || {})}`
+    ),
+    addScore(
+      '비지원 언어 전사 차단',
+      Boolean(result.transcriptLanguageGuard?.rejectedForeign && result.transcriptLanguageGuard?.noticeShown && result.transcriptLanguageGuard?.acceptedKorean),
+      JSON.stringify(result.transcriptLanguageGuard || {})
+    ),
+    addScore(
+      '답변 스크롤 단계 격리',
+      Boolean(result.transcriptScrollIsolation?.assistantScrollable && result.transcriptScrollIsolation?.stageUnchanged),
+      JSON.stringify(result.transcriptScrollIsolation || {})
     ),
     addScore(
       '잘못된 resume fallback',
@@ -133,6 +189,8 @@ function markdownReport({ generatedAt, baseURL, note, scorecard, failures, resul
     `| 전송 오디오 바이트 | ${result?.sentAudioBytes ?? '-'} |`,
     `| resume handle | ${result?.resumedHandle || '-'} |`,
     `| 도구 실행 delta | ${JSON.stringify(result?.replayToolDedupe || {})} |`,
+    `| 전사 언어 가드 | ${JSON.stringify(result?.transcriptLanguageGuard || {})} |`,
+    `| 답변 스크롤 격리 | ${JSON.stringify(result?.transcriptScrollIsolation || {})} |`,
     '',
     '## 문제 목록',
     ''
@@ -161,12 +219,14 @@ function markdownReport({ generatedAt, baseURL, note, scorecard, failures, resul
 const generatedAt = new Date().toISOString();
 const run = await runScript('scripts/verify-gemini-live-reconnect-browser.mjs', [baseURL, String(cdpPort)]);
 const result = parseJsonOutput(run.stdout);
-const scorecard = result ? buildScorecard(result) : [];
+const serverLanguageConfig = inspectServerLanguageConfig();
+const scorecard = result ? buildScorecard(result, serverLanguageConfig) : [];
 const failures = buildFailures(run, result, scorecard);
 const output = {
   generatedAt,
   baseURL,
   note: 'Headless Chrome 하네스가 Gemini Live 토큰/API/WebSocket을 테스트 더블로 대체합니다. 실제 Gemini API 왕복과 실기기 마이크 권한 UI는 별도 수동 검증이 필요합니다.',
+  serverLanguageConfig,
   scorecard,
   failures,
   result,

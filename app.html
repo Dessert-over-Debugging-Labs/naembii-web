@@ -673,7 +673,7 @@
   .vp-transcript-entry span{flex:1 1 auto;min-width:0;overflow:hidden;}
   .vp-transcript-entry.user span{display:block;white-space:nowrap;text-overflow:ellipsis;}
   .vp-transcript-entry.assistant b{color:#FFF2C5;}
-  .vp-transcript-entry.assistant span{display:block;max-height:100%;overflow-y:auto;scrollbar-width:none;font-size:17px;line-height:1.38;font-weight:850;}
+  .vp-transcript-entry.assistant span{display:block;max-height:100%;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;scrollbar-width:none;font-size:17px;line-height:1.38;font-weight:850;}
   .vp-transcript-entry.assistant span::-webkit-scrollbar{display:none;}
   .vpanel.compact .vp-transcript{gap:5px;margin:0;width:100%;}
   .vpanel.compact.mic-active .vp-scroll.has-transcript .vp-transcript{margin:0 52px 0 0;width:calc(100% - 52px);}
@@ -1568,15 +1568,15 @@
         </div>
         <div class="vset-sub collapsed" id="vsLoopCount">
           <span class="vset-mini">횟수</span>
-          <button class="vchip" onclick="setVsLoopCount(1,this)">1회</button>
-          <button class="vchip" onclick="setVsLoopCount(2,this)">2회</button>
-          <button class="vchip" onclick="setVsLoopCount(3,this)">3회</button>
-          <button class="vchip on" onclick="setVsLoopCount(0,this)">무한</button>
+          <button class="vchip" data-loop="1" onclick="setVsLoopCount(1,this)">1회</button>
+          <button class="vchip" data-loop="2" onclick="setVsLoopCount(2,this)">2회</button>
+          <button class="vchip" data-loop="3" onclick="setVsLoopCount(3,this)">3회</button>
+          <button class="vchip on" data-loop="0" onclick="setVsLoopCount(0,this)">무한</button>
         </div>
         <div class="vset-sub collapsed" id="vsLoopEnd">
           <span class="vset-mini">반복 후</span>
-          <button class="vchip on" onclick="setVsLoopEnd('stop',this)">멈춤</button>
-          <button class="vchip" onclick="setVsLoopEnd('next',this)">다음 단계로</button>
+          <button class="vchip on" data-loop-end="stop" onclick="setVsLoopEnd('stop',this)">멈춤</button>
+          <button class="vchip" data-loop-end="next" onclick="setVsLoopEnd('next',this)">다음 단계로</button>
         </div>
         <!-- 볼륨 -->
         <div class="vset-row">
@@ -2272,13 +2272,16 @@
   // ===== Gemini Live 사용량 계측 (UI 없음) — usageMetadata·연결시간·전송 오디오량을 모아 /api/usage로 업로드 =====
   // usageMetadata가 턴 단위 값인지 세션 누적 값인지 문서가 모호해 Sum과 Last/Max를 모두 기록한다.
   // 분석할 때는 usageId별로 seq가 가장 큰 행만 사용한다(중간 플러시는 같은 usageId의 누적 스냅샷).
-  let guSession=null, guLastFlushAt=0, guLastFlushMark='';
+  let guSession=null, guLastFlushAt=0, guLastFlushMark='', guMemoryUid='';
   function guUid(){
     try{
       let id=localStorage.getItem('naembiUid');
       if(!id){id='u'+Date.now().toString(36)+Math.random().toString(36).slice(2,10);localStorage.setItem('naembiUid',id);}
       return id;
-    }catch{return 'u-anon';}
+    }catch{
+      if(!guMemoryUid)guMemoryUid='u-memory-'+Date.now().toString(36)+Math.random().toString(36).slice(2,12);
+      return guMemoryUid;
+    }
   }
   function guEnsure(){
     if(guSession)return guSession;
@@ -2288,7 +2291,7 @@
       sessionStartedAt:new Date().toISOString(),cookStartedAt:'',cookEndedAt:'',cookCompleted:false,
       connectCount:0,goAwayCount:0,totalOpenMs:0,openedAt:0,
       closedSentAudioBytes:0,sentAudioBase:0,sentAudioBaseLive:null,
-      turns:0,promptTokensLast:0,promptTokensMax:0,promptTokensSum:0,
+      turns:0,conversationTurns:0,promptTokensLast:0,promptTokensMax:0,promptTokensSum:0,
       responseTokensLast:0,responseTokensMax:0,responseTokensSum:0,
       totalTokensLast:0,totalTokensMax:0,
       promptAudioTokensSum:0,promptTextTokensSum:0,responseAudioTokensSum:0,responseTextTokensSum:0
@@ -3047,6 +3050,10 @@
   let cook3LoopPlayed=0, cook3SuppressSeek=false; // 구간 반복 완료 횟수 · 단계 자동 전환 시 seek 억제(off=영상 이어짐)
   // Gemini Live 초기화 전에도 캐러셀이 layout()을 호출하므로 기본 핸들러를 둔다.
   let onCookingStageContextChanged=()=>{};
+  function isVoicePanelGestureTarget(event){
+    const target=event?.target;
+    return !!(target instanceof Element&&target.closest('#vpanel'));
+  }
   function makeCarousel(viewId,trackId){
     const viewEl=document.getElementById(viewId), trackEl=document.getElementById(trackId);
     const isCook3=viewId==='cook3';
@@ -3093,20 +3100,60 @@
       viewEl.querySelectorAll('.cook-progress .seg').forEach((seg,i)=>{seg.className='seg'+(i<cur?' done':i===cur?' cur':'');});
       if(viewId==='cook3')syncCookYoutubeStage(cur);
     }
-    function next(){ hideCookHint(); if(cur<maxIdx()){cur++;layout(); if(isCook3&&cur===maxIdx())finishCook(); else toast('"다음 단계" 인식됨','check'); } else { if(isCook3)finishCook(); else show('complete'); } }
-    function prev(){ hideCookHint(); if(cur>0){cur--;layout();toast('이전 단계','arrow-left');} }
+    function next(options={}){ hideCookHint(options); if(cur<maxIdx()){cur++;layout(); if(isCook3&&cur===maxIdx())finishCook(); else toast('"다음 단계" 인식됨','check'); } else { if(isCook3)finishCook(); else show('complete'); } }
+    function prev(options={}){ hideCookHint(options); if(cur>0){cur--;layout();toast('이전 단계','arrow-left');} }
     trackEl.addEventListener('click',e=>{ if(dragMoved)return; const c=e.target.closest('.scard'); if(!c)return; hideCookHint(); if(c.dataset.finish){ if(cur!==maxIdx()){cur=maxIdx();layout();} finishCook(); return; } const i=+c.dataset.i; if(i!==cur){cur=i;layout();} });
-    viewEl.addEventListener('wheel',e=>{ if(!viewEl.classList.contains('active')||scrollLock)return; if(e.deltaY>12){scrollLock=true;next();setTimeout(()=>scrollLock=false,650);} else if(e.deltaY<-12){scrollLock=true;prev();setTimeout(()=>scrollLock=false,650);} },{passive:true});
-    viewEl.addEventListener('pointerdown',e=>{dragY=e.clientY;dragMoved=false;});
+    viewEl.addEventListener('wheel',e=>{ if(isVoicePanelGestureTarget(e)||!viewEl.classList.contains('active')||scrollLock)return; if(e.deltaY>12){scrollLock=true;next();setTimeout(()=>scrollLock=false,650);} else if(e.deltaY<-12){scrollLock=true;prev();setTimeout(()=>scrollLock=false,650);} },{passive:true});
+    viewEl.addEventListener('pointerdown',e=>{if(isVoicePanelGestureTarget(e)){dragY=null;return;}dragY=e.clientY;dragMoved=false;});
     viewEl.addEventListener('pointermove',e=>{if(dragY!==null&&Math.abs(e.clientY-dragY)>8)dragMoved=true;});
-    viewEl.addEventListener('pointerup',e=>{ if(dragY===null)return; const dy=e.clientY-dragY; dragY=null; if(Math.abs(dy)>=40){hideCookHint(); if(dy<0)next(); else prev(); } });
+    viewEl.addEventListener('pointerup',e=>{ if(isVoicePanelGestureTarget(e)){dragY=null;return;} if(dragY===null)return; const dy=e.clientY-dragY; dragY=null; if(Math.abs(dy)>=40){hideCookHint(); if(dy<0)next(); else prev(); } });
     viewEl.addEventListener('pointercancel',()=>{dragY=null;});
     document.addEventListener('keydown',e=>{ if(!viewEl.classList.contains('active'))return; if(e.code==='Space'||e.code==='ArrowRight'||e.code==='ArrowDown'){e.preventDefault();next();} else if(e.code==='ArrowUp'||e.code==='ArrowLeft'){e.preventDefault();prev();} });
     build();layout();
     return {reset(){cur=0;layout();}, rebuild(){build();cur=0;layout();refreshIcons();}, layout, next, prev, advance(){cur=(cur+1)%stepsArr().length;layout();}, goTo(i){cur=Math.max(0,Math.min(maxIdx(),i));layout();}};
   }
   const cook3Car=makeCarousel('cook3','cookTrack3');
+  function resetCookSessionPlaybackState(){
+    cook3StopTimeTracking();
+    stopCookYoutubeLoop();
+    if(cookYoutubePlayTimer){clearInterval(cookYoutubePlayTimer);cookYoutubePlayTimer=null;}
+    if(vgTapTimer){clearTimeout(vgTapTimer);vgTapTimer=null;}
+    cookYoutubeAutoplayStarted=false;
+    cookYoutubeEnded=false;
+    cookYoutubeLastReportedTime=0;
+    cookYoutubeResetGuardAt=0;
+    cook3Playing=false;
+    cook3Time=0;
+    cook3LoopPlayed=0;
+    cook3SuppressSeek=false;
+    vsLoopOn=false;
+    vsLoopCount=0;
+    vsLoopEnd='stop';
+    vsSpeed=1;
+    document.getElementById('vsLoopSw')?.classList.remove('on');
+    document.getElementById('vsLoopCount')?.classList.add('collapsed');
+    document.getElementById('vsLoopEnd')?.classList.add('collapsed');
+    document.querySelectorAll('#vsLoopCount .vchip,#vsLoopEnd .vchip').forEach(button=>button.classList.remove('on'));
+    document.querySelector('#vsLoopCount .vchip[data-loop="0"]')?.classList.add('on');
+    document.querySelector('#vsLoopEnd .vchip[data-loop-end="stop"]')?.classList.add('on');
+    syncVsSpeedUI();
+  }
+  function resetCookSessionOverlays(){
+    hf3Reset();
+    closeVoice();
+    closeIngredients();
+    closeTimer();
+    closeVideoSettings();
+    clearVpNotice();
+    cancelStageTimer({silent:true});
+  }
+  function beginNewCookSession(){
+    resetCookSessionOverlays();
+    resetCookSessionPlaybackState();
+    cook3Car.reset();
+  }
   function startCook(){
+    beginNewCookSession();
     naembiTrack('start_cook',{entrypoint:currentViewId(),...naembiRecipeProps()});
     show('cook3');
   } // show('cook3')에서 현재 레시피로 캐러셀·영상 재구성
@@ -3442,11 +3489,11 @@
     send();
     cookYoutubePlayTimer=setInterval(send,800);
   }
-  function hideCookHint(){
+  function hideCookHint(options={}){
     const h=document.getElementById('cookHint');
     if(h)h.classList.remove('show');
     if(cookHintTimer){clearTimeout(cookHintTimer);cookHintTimer=null;}
-    playCookYoutubeAfterGuide();
+    if(options.startPlayback!==false)playCookYoutubeAfterGuide();
   }
   // "다시 보지 않기": 이번 세션 동안 힌트를 다시 띄우지 않음(값 저장 안 함)
   function dismissHintForever(e){
@@ -3625,14 +3672,14 @@
       toast('타이머 재개','play');
     }
   }
-  function cancelStageTimer(){
+  function cancelStageTimer(options={}){
     if(timerId){clearInterval(timerId);timerId=null;}
     if(stageTimerHideId){clearTimeout(stageTimerHideId);stageTimerHideId=null;}
     stopTimerAlarm(false);
     timerLeft=0;timerTotal=0;timerPaused=false;
     setTimerButtons(false);
     hideStageTimer();
-    toast('타이머 취소','x');
+    if(!options.silent)toast('타이머 취소','x');
   }
   function startCountdown(){
     tsInputChanged();
@@ -3699,6 +3746,45 @@
   }
   function showGeminiPermissionNotice(){
     showVpNotice('마이크 권한이 없어졌어요. 브라우저에서 다시 허용해 주세요.','bad',{duration:2600});
+  }
+  const GEMINI_TRANSCRIPT_ALLOWED_LANGUAGE_PREFIXES=['ko','en'];
+  function geminiTranscriptText(transcription){
+    return String(typeof transcription==='string'?transcription:transcription?.text||'').trim();
+  }
+  function geminiTranscriptLanguageCode(transcription){
+    return String(transcription?.languageCode||transcription?.language_code||'').trim().toLowerCase();
+  }
+  function isAllowedGeminiTranscriptLanguage(languageCode){
+    if(!languageCode)return true;
+    return GEMINI_TRANSCRIPT_ALLOWED_LANGUAGE_PREFIXES.some(prefix=>languageCode===prefix||languageCode.startsWith(prefix+'-')||languageCode.startsWith(prefix+'_'));
+  }
+  function looksLikeSupportedUserTranscript(text){
+    const value=String(text||'').trim();
+    if(!value)return false;
+    if(/[가-힣]/.test(value))return true;
+    if(!/^[\t\n\r -~]+$/.test(value))return false;
+    const words=value.match(/[A-Za-z]+(?:[-'][A-Za-z]+)*/g)||[];
+    if(!words.length)return /[0-9]/.test(value);
+    return words.length<=4&&value.length<=42;
+  }
+  function shouldDisplayGeminiInputTranscript(transcription){
+    const text=geminiTranscriptText(transcription);
+    if(!text)return false;
+    // Live 전사가 한국어 텍스트에 잘못된 언어 메타데이터를 붙여도 한글 자체를 우선 신뢰한다.
+    if(/[가-힣]/.test(text))return true;
+    if(!isAllowedGeminiTranscriptLanguage(geminiTranscriptLanguageCode(transcription)))return false;
+    return looksLikeSupportedUserTranscript(text);
+  }
+  function handleUnsupportedGeminiInputTranscript(live,transcription){
+    if(live?.activeCommand?.epoch===live.commandEpoch&&live.activeCommand.toolExecuted)return;
+    if(live){
+      live.unsupportedTranscriptCount=(live.unsupportedTranscriptCount||0)+1;
+      const now=Date.now();
+      if(now-(live.lastUnsupportedTranscriptNoticeAt||0)<1400)return;
+      live.lastUnsupportedTranscriptNoticeAt=now;
+    }
+    showVpNotice('잘 못 들었어요. 다시 한 번 말씀해 주세요.','bad',{duration:2200});
+    setVpVoiceHint('조금 더 가까이에서 또렷하게 말씀해 주세요.');
   }
   function setVpInputMeter(level=0,label='',active=false){
     const meter=document.getElementById('vpInputMeter');
@@ -3983,6 +4069,12 @@
   const GEMINI_VAD_PREROLL_MS=320;
   const GEMINI_PENDING_AUDIO_MAX_BYTES=640000;
   const GEMINI_PENDING_EVENT_MAX=384;
+  const GEMINI_RESPONSE_BUFFER_MAX_BYTES=512000;
+  const GEMINI_RESPONSE_BUFFER_MAX_EVENTS=96;
+  const GEMINI_RESPONSE_BUFFER_MAX_MS=2500;
+  const GEMINI_RESPONSE_SETTLE_MS=1000;
+  const GEMINI_TOOL_CALL_SETTLE_MAX_MS=3500;
+  const GEMINI_INTERRUPTION_BOUNDARY_MAX_MS=1800;
   const GEMINI_RECONNECT_DELAYS=[250,750,1500,3000,5000,10000,15000];
   let geminiLive=null, geminiLiveConnecting=null;
   function currentGeminiCookingContext(){
@@ -4085,6 +4177,7 @@
     guConnectionClosed();
     live.ready=false;
     live.responseInFlight=false;
+    resetGeminiTransportResponseLifecycle(live);
     const socket=live.socket;
     live.socket=null;
     if(socket&&socket.readyState<WebSocket.CLOSING){
@@ -4225,10 +4318,11 @@
   }
   function ensureVpTranscriptState(live){
     if(!live.transcript){
-      live.transcript={epoch:0,history:[],userText:'',assistantText:'',pendingAssistantText:'',hasUser:false,complete:false,lastAssistantText:'',awaitingInput:false};
+      live.transcript={epoch:0,history:[],userText:'',assistantText:'',pendingAssistantText:'',hasUser:false,complete:false,lastAssistantText:'',awaitingInput:false,traceSessionId:'',traceUsageId:'',traceVisitorId:'',traceSessionStartedAt:'',traceTurnId:'',traceTurnNumber:0,traceContext:null,traceStartedAt:'',traceToolCalls:[]};
     }else if(!Array.isArray(live.transcript.history)){
       live.transcript.history=[];
     }
+    if(!Array.isArray(live.transcript.traceToolCalls))live.transcript.traceToolCalls=[];
     return live.transcript;
   }
   function pushVpTranscriptHistory(state,role,value){
@@ -4245,6 +4339,54 @@
     state.pendingAssistantText='';
     state.hasUser=false;
     state.complete=false;
+    state.traceSessionId='';
+    state.traceUsageId='';
+    state.traceVisitorId='';
+    state.traceSessionStartedAt='';
+    state.traceTurnId='';
+    state.traceTurnNumber=0;
+    state.traceContext=null;
+    state.traceStartedAt='';
+    state.traceToolCalls=[];
+  }
+  function captureVpTraceContext(state){
+    if(!state.traceContext)state.traceContext={...currentGeminiCookingContext()};
+    if(!state.traceStartedAt)state.traceStartedAt=new Date().toISOString();
+    return state;
+  }
+  function identifyVpTraceTurn(state){
+    captureVpTraceContext(state);
+    if(state.traceTurnId)return state;
+    const usage=guEnsure();
+    guCaptureRecipe(usage);
+    usage.conversationTurns=(Number(usage.conversationTurns)||0)+1;
+    const recipeKey=String(state.traceContext?.recipeId||usage.recipeId||'recipe').replace(/[^A-Za-z0-9_-]/g,'').slice(0,48)||'recipe';
+    state.traceUsageId=usage.usageId;
+    state.traceSessionId='cook:'+recipeKey+':'+usage.usageId;
+    state.traceVisitorId=usage.uid;
+    state.traceSessionStartedAt=usage.cookStartedAt||usage.sessionStartedAt;
+    state.traceTurnNumber=usage.conversationTurns;
+    state.traceTurnId=state.traceSessionId+':turn:'+state.traceTurnNumber;
+    return state;
+  }
+  function recordVpTraceTurn(live,state,turnStatus='completed'){
+    identifyVpTraceTurn(state);
+    const userText=String(state.userText||'').trim();
+    const assistantText=String(state.assistantText||state.pendingAssistantText||'').trim();
+    if(!userText||!state.traceSessionId||!state.traceTurnId)return;
+    if(live.loggedTraceTurnIds?.has(state.traceTurnId))return;
+    live.loggedTraceTurnIds?.add(state.traceTurnId);
+    const context=state.traceContext||currentGeminiCookingContext();
+    const payload={
+      turnId:state.traceTurnId,sessionId:state.traceSessionId,usageId:state.traceUsageId,visitorId:state.traceVisitorId,sessionStartedAt:state.traceSessionStartedAt,turnNumber:state.traceTurnNumber,
+      model:live.model||'',userText,assistantText,
+      recipeId:context.recipeId||'',recipe:context.recipe||'',stepIndex:context.stepIndex||0,totalSteps:context.totalSteps||0,
+      stepTitle:context.stepTitle||'',cookingStatus:context.status||'',
+      turnStatus,toolCalls:Array.isArray(state.traceToolCalls)?state.traceToolCalls.slice(0,12):[],startedAt:state.traceStartedAt||'',completedAt:new Date().toISOString(),page:location.pathname
+    };
+    fetch('/api/ai-trace',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload),keepalive:true})
+      .then(response=>{if(!response.ok)throw new Error('Langfuse trace '+response.status);})
+      .catch(error=>console.warn('Langfuse conversation trace failed',error?.message||error));
   }
   function latestVpTranscriptHistoryTurn(history=[]){
     if(!history.length)return [];
@@ -4280,10 +4422,12 @@
   }
   function beginVpTranscriptTurn(live,options={}){
     const state=ensureVpTranscriptState(live);
+    if(state.hasUser&&!state.complete)recordVpTraceTurn(live,state,'interrupted');
     if(state.assistantText)state.lastAssistantText=state.assistantText;
     commitVpTranscriptTurn(state);
     state.epoch+=1;
     state.awaitingInput=!!options.awaitingInput;
+    captureVpTraceContext(state);
     renderVpTranscript(live);
     return state;
   }
@@ -4293,9 +4437,17 @@
     let state=ensureVpTranscriptState(live);
     if(role==='user'){
       if(!state.epoch)state.epoch=1;
+      identifyVpTraceTurn(state);
       state.awaitingInput=false;
       state.hasUser=true;
       state.userText=mergeVpTranscript(state.userText,value);
+      if(live.activeCommand&&live.activeCommand.epoch===live.commandEpoch){
+        const firstInput=!live.activeCommand.hasInputTranscript;
+        live.activeCommand.text=state.userText;
+        live.activeCommand.lastTranscriptAt=Date.now();
+        live.activeCommand.hasInputTranscript=true;
+        if(firstInput&&!live.activeCommand.awaitingInterruptionBoundary)flushPendingGeminiResponse(live,live.activeCommand);
+      }
       if(state.pendingAssistantText){
         state.assistantText=mergeVpTranscript(state.assistantText,state.pendingAssistantText);
         state.pendingAssistantText='';
@@ -4312,6 +4464,17 @@
     }
     renderVpTranscript(live);
     return state.assistantText||state.pendingAssistantText;
+  }
+  function updateTrustedGeminiInputTranscript(live,command,text){
+    if(command?.inputTranscriptTrusted===false){
+      const state=ensureVpTranscriptState(live);
+      state.userText='';
+      state.hasUser=false;
+      command.text='';
+      command.hasInputTranscript=false;
+    }
+    if(command)command.inputTranscriptTrusted=true;
+    return updateVpTranscript(live,'user',text);
   }
   function clearGeminiPlayback(live=geminiLive){
     if(!live)return;
@@ -4330,6 +4493,94 @@
   function syncGeminiLiveOutputGain(){
     if(geminiLive?.outputGain)geminiLive.outputGain.gain.value=assistantVolumeGain();
     syncCookYoutubeDucking();
+  }
+  function discardGeminiCommandResponse(command){
+    if(!command)return;
+    if(command.responseBufferTimer)clearTimeout(command.responseBufferTimer);
+    if(command.finalizeTimer)clearTimeout(command.finalizeTimer);
+    if(command.boundaryTimer)clearTimeout(command.boundaryTimer);
+    command.responseBufferTimer=null;
+    command.finalizeTimer=null;
+    command.boundaryTimer=null;
+    command.pendingServerContent=[];
+    command.pendingServerBytes=0;
+    command.responseBufferStartedAt=0;
+    command.serverTurnComplete=false;
+    command.turnCompleteAt=0;
+    command.responseStarted=false;
+  }
+  function clearGeminiResponseLifecycle(live,{invalidateActive=false}={}){
+    if(!live)return;
+    discardGeminiCommandResponse(live.activeCommand);
+    if(live.activeCommand){
+      live.activeCommand.awaitingInterruptionBoundary=false;
+      live.activeCommand.pendingBoundaryInput='';
+      if(invalidateActive)live.activeCommand.completed=true;
+    }
+    if(live.interruptedTurnTimer)clearTimeout(live.interruptedTurnTimer);
+    live.interruptedTurnTimer=null;
+    live.ignoreInterruptedTurnComplete=false;
+    live.responseCommandEpoch=0;
+    live.outputTranscriptionQuarantineUntil=0;
+  }
+  function hasReplayableGeminiActiveCommand(live){
+    const command=live?.activeCommand;
+    return !!(command&&command.source==='audio'&&!command.completed&&!command.awaitingInterruptionBoundary&&!live.resumeCheckpointSafe
+      &&Array.isArray(live.resumeReplay)&&live.resumeReplay.some(event=>event?.type==='audio'));
+  }
+  function resetGeminiTransportResponseLifecycle(live){
+    const preserveReplayCommand=hasReplayableGeminiActiveCommand(live);
+    clearGeminiResponseLifecycle(live,{invalidateActive:!preserveReplayCommand});
+    if(!preserveReplayCommand&&live?.resumeReplay?.length){
+      live.pendingPcm=[];
+      live.pendingPcmBytes=0;
+      clearGeminiResumeReplay(live);
+    }
+    return preserveReplayCommand;
+  }
+  function createGeminiActiveCommand(live,source,text=''){
+    const previous=live.activeCommand;
+    if(previous?.serverTurnComplete&&previous.hasInputTranscript&&!previous.completed){
+      if(previous.finalizeTimer)clearTimeout(previous.finalizeTimer);
+      previous.finalizeTimer=null;
+      previous.completed=true;
+      const transcript=ensureVpTranscriptState(live);
+      if(transcript.hasUser&&!transcript.complete){
+        transcript.complete=true;
+        recordVpTraceTurn(live,transcript,'completed');
+      }
+      live.responseInFlight=false;
+      live.outputTranscriptionQuarantineUntil=Math.max(Number(live.outputTranscriptionQuarantineUntil)||0,Number(previous.turnCompleteAt||0)+GEMINI_RESPONSE_SETTLE_MS);
+    }
+    discardGeminiCommandResponse(live.activeCommand);
+    live.commandEpoch=(live.commandEpoch||0)+1;
+    const now=Date.now();
+    const awaitingInterruptionBoundary=!!(live.responseInFlight||live.playbackNodes?.size);
+    const command={
+      epoch:live.commandEpoch,source,text:String(text||''),startedAt:now,
+      lastTranscriptAt:text?now:0,audioEndedAt:source==='text'?now:0,
+      hasInputTranscript:false,inputTranscriptTrusted:source==='text'?true:null,completed:false,contextKey:currentGeminiCookingContext().key,
+      awaitingInterruptionBoundary,pendingBoundaryInput:'',pendingServerContent:[],pendingServerBytes:0,serverTurnComplete:false,responseStarted:false
+    };
+    if(awaitingInterruptionBoundary){
+      command.boundaryTimer=setTimeout(()=>{
+        if(live.activeCommand!==command||command.completed)return;
+        command.boundaryTimer=null;
+        command.awaitingInterruptionBoundary=false;
+        const pendingInput=String(command.pendingBoundaryInput||'');
+        command.pendingBoundaryInput='';
+        command.pendingServerContent=[];
+        command.pendingServerBytes=0;
+        command.responseBufferStartedAt=0;
+        if(pendingInput){
+          command.inputTranscriptTrusted=false;
+          updateVpTranscript(live,'user',pendingInput);
+        }
+      },GEMINI_INTERRUPTION_BOUNDARY_MAX_MS);
+    }
+    live.activeCommand=command;
+    live.responseCommandEpoch=0;
+    return command;
   }
   async function ensureGeminiAudioOutput(live){
     const AudioCtor=window.AudioContext||window.webkitAudioContext;
@@ -4374,7 +4625,7 @@
     const text=String(message?.realtimeInput?.text||'').trim();
     if(text||message?.toolResponse)live.resumeCheckpointSafe=false;
     if(text){
-      live.commandEpoch=(live.commandEpoch||0)+1;
+      createGeminiActiveCommand(live,'text',text);
       beginVpTranscriptTurn(live);
       updateVpTranscript(live,'user',text);
     }
@@ -4486,6 +4737,7 @@
   }
   function appendGeminiResumeReplayAudio(live,buffer,level){
     if(!live||!(buffer instanceof ArrayBuffer))return;
+    live.resumeCheckpointSafe=false;
     if(!Array.isArray(live.resumeReplay))live.resumeReplay=[];
     const copy=buffer.slice(0);
     live.resumeReplay.push({type:'audio',buffer:copy,level});
@@ -4494,6 +4746,7 @@
   }
   function appendGeminiResumeReplayEnd(live){
     if(!live)return;
+    live.resumeCheckpointSafe=false;
     if(!Array.isArray(live.resumeReplay))live.resumeReplay=[];
     if(live.resumeReplay[live.resumeReplay.length-1]?.type!=='end')live.resumeReplay.push({type:'end'});
     trimGeminiResumeReplay(live);
@@ -4581,6 +4834,7 @@
   function finishGeminiVadSpeech(live){
     if(!live?.vadSpeaking)return;
     live.vadSpeaking=false;
+    if(live.activeCommand?.epoch===live.commandEpoch)live.activeCommand.audioEndedAt=Date.now();
     live.vadStartFrames=0;
     live.vadSilenceMs=0;
     appendGeminiResumeReplayEnd(live);
@@ -4604,9 +4858,9 @@
       pushGeminiVadPreRoll(live,buffer,rawLevel,durationMs);
       live.vadStartFrames=rawLevel>=GEMINI_VAD_START_LEVEL?(live.vadStartFrames||0)+1:0;
       if(live.vadStartFrames<GEMINI_VAD_START_FRAMES)return;
+      createGeminiActiveCommand(live,'audio');
       const transcript=ensureVpTranscriptState(live);
       if(transcript.complete||transcript.hasUser)beginVpTranscriptTurn(live,{awaitingInput:true});
-      live.commandEpoch=(live.commandEpoch||0)+1;
       live.vadSpeaking=true;
       live.resumeCheckpointSafe=false;
       live.vadSilenceMs=0;
@@ -4782,12 +5036,15 @@
   function stopGeminiLiveSession(reason=''){
     const live=geminiLive;
     if(!live)return;
-    if(live.toolResponsePending){live.pendingStopReason=reason;return;}
+    if(live.toolResponsePending){live.pendingStopReason=reason;live.closingRequested=true;return;}
+    const transcript=ensureVpTranscriptState(live);
+    if(transcript.hasUser&&!transcript.complete)recordVpTraceTurn(live,transcript,'abandoned');
     geminiLive=null;
     geminiLiveConnecting=null;
     live.closing=true;
     live.connectionEpoch=(live.connectionEpoch||0)+1;
     live.micEpoch=(live.micEpoch||0)+1;
+    clearGeminiResponseLifecycle(live,{invalidateActive:true});
     clearGeminiReconnectTimer(live);
     clearGeminiGoAwayTimer(live);
     clearGeminiMicWatchdog(live);
@@ -4853,8 +5110,8 @@
     const values=args&&typeof args==='object'?args:{};
     switch(name){
       case 'move_cooking_step':
-        if(values.direction==='next')cook3Car.next();
-        else if(values.direction==='previous')cook3Car.prev();
+        if(values.direction==='next')cook3Car.next({startPlayback:false});
+        else if(values.direction==='previous')cook3Car.prev({startPlayback:false});
         else return {ok:false,error:'direction 값이 올바르지 않아요.'};
         return {ok:true,...currentGeminiCookingState()};
       case 'go_to_cooking_step':{
@@ -4912,16 +5169,161 @@
     if(value&&typeof value==='object')return Object.keys(value).sort().reduce((result,key)=>{result[key]=stableGeminiToolArgs(value[key]);return result;},{});
     return value;
   }
-  function handleGeminiToolCall(live,toolCall){
+  function geminiToolDomain(name){
+    if(name==='move_cooking_step'||name==='go_to_cooking_step')return 'step';
+    if(name==='set_cooking_timer'||name==='set_cooking_timer_state')return 'timer';
+    if(name==='set_video_playback'||name==='seek_video'||name==='set_video_speed'||name==='set_video_repeat')return 'video';
+    if(name==='show_cooking_ingredients')return 'ingredients';
+    return '';
+  }
+  function mentionedGeminiToolDomains(text){
+    const value=String(text||'').normalize('NFKC').toLowerCase();
+    const domains=new Set();
+    if(['단계','스텝'].some(word=>value.includes(word)))domains.add('step');
+    if(['타이머','알람'].some(word=>value.includes(word)))domains.add('timer');
+    if(['영상','비디오','유튜브'].some(word=>value.includes(word)))domains.add('video');
+    if(['재료','준비물'].some(word=>value.includes(word)))domains.add('ingredients');
+    return domains;
+  }
+  function geminiToolsForDomains(domains){
+    const names=[];
+    if(domains.includes('step'))names.push('move_cooking_step','go_to_cooking_step');
+    if(domains.includes('timer'))names.push('set_cooking_timer','set_cooking_timer_state');
+    if(domains.includes('video'))names.push('set_video_playback','seek_video','set_video_speed','set_video_repeat');
+    if(domains.includes('ingredients'))names.push('show_cooking_ingredients');
+    return names;
+  }
+  function authorizeGeminiToolCall(name,args,commandContextKey,userText=''){
+    const values=args&&typeof args==='object'&&!Array.isArray(args)?args:{};
+    const domain=geminiToolDomain(name);
+    const mentionedDomains=mentionedGeminiToolDomains(userText);
+    if(domain&&mentionedDomains.size&&!mentionedDomains.has(domain)){
+      const requestedDomains=[...mentionedDomains];
+      return {allowed:false,code:'TOOL_DOMAIN_MISMATCH',reason:'사용자가 언급한 조작 영역과 다른 도구라 실행하지 않았어요.',requestedDomains,expectedTools:geminiToolsForDomains(requestedDomains)};
+    }
+    if((name==='move_cooking_step'||name==='go_to_cooking_step')&&commandContextKey&&commandContextKey!==currentGeminiCookingContext().key){
+      return {allowed:false,code:'COOKING_CONTEXT_CHANGED',reason:'말씀하신 뒤 조리 단계가 이미 바뀌어 추가 이동을 실행하지 않았어요.'};
+    }
+    let allowed=false;
+    switch(name){
+      case 'move_cooking_step':
+        allowed=values.direction==='next'||values.direction==='previous';
+        break;
+      case 'go_to_cooking_step':{
+        const step=values.step;
+        const totalSteps=Number(currentGeminiCookingContext().totalSteps)||20;
+        allowed=Number.isInteger(step)&&step>=1&&step<=Math.min(20,totalSteps);
+        break;
+      }
+      case 'set_cooking_timer':
+        allowed=Number.isInteger(values.seconds)&&values.seconds>=1&&values.seconds<=7200;
+        break;
+      case 'set_cooking_timer_state':
+        allowed=values.state==='pause'||values.state==='resume'||values.state==='cancel';
+        break;
+      case 'set_video_playback':
+        allowed=values.state==='play'||values.state==='pause';
+        break;
+      case 'seek_video':
+        allowed=(values.direction==='forward'||values.direction==='backward')&&Number.isInteger(values.seconds)&&values.seconds>=1&&values.seconds<=60;
+        break;
+      case 'set_video_speed':
+        allowed=['0.5','0.75','1','1.25','1.5','2'].includes(String(values.speed));
+        break;
+      case 'set_video_repeat':
+        allowed=typeof values.enabled==='boolean';
+        break;
+      case 'show_cooking_ingredients':
+        allowed=true;
+        break;
+    }
+    return allowed
+      ?{allowed:true,code:'VALID_TOOL_CALL',reason:'허용된 도구와 올바른 인자'}
+      :{allowed:false,code:'INVALID_TOOL_CALL',reason:'도구 요청 값이 올바르지 않아요.'};
+  }
+  function noteVpToolDecision(live,call,decision,traceTurnId=''){
+    const state=ensureVpTranscriptState(live);
+    if(!traceTurnId||state.traceTurnId!==traceTurnId)return;
+    state.traceToolCalls.push({name:String(call?.name||'').slice(0,80),allowed:!!decision.allowed,args:stableGeminiToolArgs(call?.args||{}),reason:String(decision.code||'').slice(0,80)});
+    while(state.traceToolCalls.length>12)state.traceToolCalls.shift();
+  }
+  function finishGeminiToolBatch(live,batch){
+    if(batch.finished)return;
+    batch.finished=true;
+    live.pendingToolBatchCount=Math.max(0,(live.pendingToolBatchCount||0)-1);
+    live.toolResponsePending=live.pendingToolBatchCount>0;
+    if(!live.toolResponsePending&&live.pendingStopReason){
+      const reason=live.pendingStopReason;
+      live.pendingStopReason='';
+      stopGeminiLiveSession(reason);
+    }
+  }
+  function handleGeminiToolCall(live,toolCall,batch=null){
     const calls=Array.isArray(toolCall?.functionCalls)?toolCall.functionCalls:[];
-    if(!calls.length||!isGeminiLiveOpen(live))return;
+    if(!calls.length||!isGeminiLiveOpen(live)){
+      if(batch)finishGeminiToolBatch(live,batch);
+      return;
+    }
+    const state=ensureVpTranscriptState(live);
+    if(!batch){
+      batch={receivedAt:Date.now(),commandEpoch:live.commandEpoch||0,connectionEpoch:live.connectionEpoch||0,traceTurnId:state.traceTurnId||'',finished:false};
+      live.pendingToolBatchCount=(live.pendingToolBatchCount||0)+1;
+    }
     live.responseInFlight=true;
     live.toolResponsePending=true;
+    const active=live.activeCommand?.epoch===batch.commandEpoch?live.activeCommand:null;
+    const stale=!active||batch.commandEpoch!==(live.commandEpoch||0)||batch.connectionEpoch!==(live.connectionEpoch||0)||!!active.completed;
+    const userText=stale?'':String(active?.text||state.userText||'').trim();
+    const transcriptReady=active?.source==='text'||(!!active?.hasInputTranscript&&active.inputTranscriptTrusted!==false);
+    const audioReady=active?.source!=='audio'||!!active.audioEndedAt;
+    const commandReady=!stale&&transcriptReady&&audioReady&&!active.awaitingInterruptionBoundary&&!live.ignoreInterruptedTurnComplete;
+    const shouldWait=!stale&&Date.now()-batch.receivedAt<GEMINI_TOOL_CALL_SETTLE_MAX_MS&&!commandReady;
+    if(shouldWait){
+      setTimeout(()=>handleGeminiToolCall(live,toolCall,batch),80);
+      return;
+    }
+    if(!batch.traceTurnId&&!stale)batch.traceTurnId=state.traceTurnId||'';
+    if(!stale&&commandReady){
+      live.responseCommandEpoch=batch.commandEpoch;
+      active.responseStarted=true;
+    }
+    let acceptedActionKey=String(active?.toolActionKey||'');
+    const decisions=calls.map(call=>{
+      const decision=stale
+        ?{allowed:false,code:'STALE_USER_COMMAND',reason:'새 사용자 발화가 시작되어 이전 조작을 실행하지 않았어요.'}
+        :!commandReady
+          ?{allowed:false,code:'COMMAND_NOT_READY',reason:'현재 사용자 발화가 끝까지 확인되지 않아 조작을 실행하지 않았어요.'}
+          :authorizeGeminiToolCall(call.name,call.args||{},active.contextKey,userText);
+      if(!decision.allowed)return decision;
+      const actionKey=call.name+':'+JSON.stringify(stableGeminiToolArgs(call.args||{}));
+      if(acceptedActionKey&&acceptedActionKey!==actionKey)return {allowed:false,code:'EXTRA_TOOL_CALL',reason:'한 발화에서는 한 가지 조작만 실행해요.'};
+      acceptedActionKey=actionKey;
+      if(active)active.toolActionKey=actionKey;
+      return decision;
+    });
+    const hasAllowedDecision=decisions.some(decision=>decision.allowed);
     const functionResponses=calls.map(call=>{
+      const decision=decisions.shift();
       if(live.cancelledToolCalls?.has(call.id)){
         return {id:call.id,name:call.name,response:{error:'취소된 도구 요청이에요.'}};
       }
       if(live.toolCallResults?.has(call.id))return live.toolCallResults.get(call.id);
+      noteVpToolDecision(live,call,decision,batch.traceTurnId);
+      if(!decision.allowed){
+        const ignored=decision.code==='TOOL_DOMAIN_MISMATCH'||decision.code==='EXTRA_TOOL_CALL';
+        const correctionRequired=decision.code==='TOOL_DOMAIN_MISMATCH'&&!hasAllowedDecision&&!active?.toolCorrectionIssued;
+        if(correctionRequired&&active)active.toolCorrectionIssued=true;
+        const blocked={id:call.id,name:call.name,response:ignored
+          ?{result:{executed:false,ignored:true,silent:true,code:decision.code,...(correctionRequired?{
+            correctionRequired:true,
+            correctionAttempt:1,
+            expectedTools:decision.expectedTools||[],
+            instruction:'사용자 발화가 실제 조작 요청인지 다시 판단하세요. 조작 요청일 때만 expectedTools 중 맞는 도구를 한 번 호출하고, 질문이나 불만이면 도구 없이 답하세요. 내부 보정은 언급하지 마세요.'
+          }:{})}}
+          :{error:decision.reason,code:decision.code}};
+        live.toolCallResults?.set(call.id,blocked);
+        return blocked;
+      }
       const commandKey=(live.commandEpoch||0)+':'+call.name+':'+JSON.stringify(stableGeminiToolArgs(call.args||{}));
       const priorCommand=live.toolCommandResults?.get(commandKey);
       if(priorCommand){
@@ -4931,7 +5333,11 @@
         return repeated;
       }
       let response;
-      try{response={id:call.id,name:call.name,response:{result:runGeminiTool(live,call.name,call.args)}};}
+      try{
+        const result=runGeminiTool(live,call.name,call.args);
+        if(result?.ok&&active)active.toolExecuted=true;
+        response={id:call.id,name:call.name,response:{result}};
+      }
       catch(error){response={id:call.id,name:call.name,response:{error:error.message||'도구 실행에 실패했어요.'}};}
       live.toolCallResults?.set(call.id,response);
       if(live.toolCallResults?.size>256)live.toolCallResults.delete(live.toolCallResults.keys().next().value);
@@ -4941,17 +5347,154 @@
     });
     try{sendGeminiLiveMessage(live,{toolResponse:{functionResponses}});}
     finally{
-      live.toolResponsePending=false;
-      if(live.pendingStopReason)stopGeminiLiveSession(live.pendingStopReason);
+      finishGeminiToolBatch(live,batch);
     }
+  }
+  function bufferedGeminiResponseBytes(event){
+    return String(event?.outputText||'').length*2+(event?.modelParts||[]).reduce((total,part)=>total+String(part?.inlineData?.data||'').length,0);
+  }
+  function bufferGeminiServerResponse(live,content,command){
+    const event={
+      modelParts:Array.isArray(content?.modelParts)?content.modelParts:[],
+      outputText:String(content?.outputText||''),
+      turnComplete:!!content?.turnComplete
+    };
+    if(!event.modelParts.length&&!event.outputText&&!event.turnComplete)return;
+    if(!Array.isArray(command.pendingServerContent))command.pendingServerContent=[];
+    const bytes=bufferedGeminiResponseBytes(event);
+    const now=Date.now();
+    if(!command.responseBufferStartedAt)command.responseBufferStartedAt=now;
+    const age=now-command.responseBufferStartedAt;
+    if(age>GEMINI_RESPONSE_BUFFER_MAX_MS
+      ||command.pendingServerContent.length>=GEMINI_RESPONSE_BUFFER_MAX_EVENTS
+      ||(command.pendingServerBytes||0)+bytes>GEMINI_RESPONSE_BUFFER_MAX_BYTES){
+      command.pendingServerContent=[];
+      command.pendingServerBytes=0;
+      command.responseBufferStartedAt=0;
+      command.responseBufferExpired=true;
+      if(command.responseBufferTimer)clearTimeout(command.responseBufferTimer);
+      command.responseBufferTimer=null;
+      return;
+    }
+    command.pendingServerContent.push(event);
+    command.pendingServerBytes=(command.pendingServerBytes||0)+bytes;
+    if(!command.responseBufferTimer){
+      command.responseBufferTimer=setTimeout(()=>{
+        if(live.activeCommand!==command||command.hasInputTranscript&&!command.awaitingInterruptionBoundary)return;
+        command.responseBufferTimer=null;
+        command.pendingServerContent=[];
+        command.pendingServerBytes=0;
+        command.responseBufferStartedAt=0;
+        command.responseBufferExpired=true;
+      },GEMINI_RESPONSE_BUFFER_MAX_MS);
+    }
+  }
+  function scheduleGeminiTurnFinalization(live,command){
+    if(command.finalizeTimer)clearTimeout(command.finalizeTimer);
+    command.finalizeTimer=setTimeout(()=>{
+      command.finalizeTimer=null;
+      if(live.activeCommand!==command||command.epoch!==live.commandEpoch||command.completed||!command.hasInputTranscript||!command.serverTurnComplete)return;
+      command.completed=true;
+      live.responseCommandEpoch=0;
+      const transcript=ensureVpTranscriptState(live);
+      if(transcript.hasUser&&!transcript.complete){
+        transcript.complete=true;
+        recordVpTraceTurn(live,transcript,'completed');
+      }
+      live.responseInFlight=false;
+      const panel=document.getElementById('vpanel');
+      panel?.classList.remove('thinking','answering');
+      panel?.classList.remove('mic-active');
+      panel?.classList.add('listening');
+      setVpLiveStatus(live.micStream?'계속 말씀해 주세요.':'마이크를 눌러 음성 대화를 이어가세요.','ok');
+      setVpVoiceHint(live.micStream?'말하면 입력 막대와 전사가 표시돼요.':'마이크를 누르면 음성 대화를 이어갈 수 있어요.');
+      scheduleGeminiContextRestart(live);
+    },GEMINI_RESPONSE_SETTLE_MS);
+  }
+  function handleOwnedGeminiServerResponse(live,content,command){
+    if(live.activeCommand!==command||command.epoch!==live.commandEpoch||command.completed)return;
+    const panel=document.getElementById('vpanel');
+    const modelParts=Array.isArray(content?.modelParts)?content.modelParts:[];
+    if(modelParts.length){
+      command.responseStarted=true;
+      live.outputTranscriptionQuarantineUntil=0;
+      live.responseCommandEpoch=command.epoch;
+      live.responseInFlight=true;
+      command.lastResponseAt=Date.now();
+      for(const part of modelParts)if(part.inlineData)scheduleGeminiPcm(live,part.inlineData);
+    }
+    const rawOutputText=String(content?.outputText||'');
+    const outputText=Date.now()<Number(live.outputTranscriptionQuarantineUntil||0)&&!command.responseStarted?'':rawOutputText;
+    if(outputText){
+      command.responseStarted=true;
+      live.outputTranscriptionQuarantineUntil=0;
+      live.responseCommandEpoch=command.epoch;
+      live.responseInFlight=true;
+      command.lastResponseAt=Date.now();
+      const completed=ensureVpTranscriptState(live).complete;
+      if(!completed){
+        panel?.classList.remove('thinking','listening');
+        panel?.classList.remove('mic-active');
+        panel?.classList.add('answering');
+        setVpVoiceHint('냄비가 답하고 있어요.');
+      }
+      updateVpTranscript(live,'assistant',outputText);
+    }
+    if(content?.turnComplete){
+      live.responseCommandEpoch=command.epoch;
+      command.serverTurnComplete=true;
+      command.lastResponseAt=Date.now();
+      command.turnCompleteAt=command.lastResponseAt;
+      live.responseInFlight=false;
+    }
+    if(command.serverTurnComplete&&(modelParts.length||outputText||content?.turnComplete))scheduleGeminiTurnFinalization(live,command);
+  }
+  function flushPendingGeminiResponse(live,command){
+    if(live.activeCommand!==command||command.epoch!==live.commandEpoch||command.completed||!command.hasInputTranscript||command.awaitingInterruptionBoundary||live.ignoreInterruptedTurnComplete)return;
+    if(command.responseBufferTimer)clearTimeout(command.responseBufferTimer);
+    command.responseBufferTimer=null;
+    const pending=Array.isArray(command.pendingServerContent)?command.pendingServerContent.splice(0):[];
+    command.pendingServerBytes=0;
+    command.responseBufferStartedAt=0;
+    for(const content of pending)handleOwnedGeminiServerResponse(live,content,command);
   }
   function handleGeminiServerContent(live,content){
     if(!content)return;
     const panel=document.getElementById('vpanel');
+    let suppressTurnComplete=false;
+    const wasWaitingForInterruptedTurn=!!live.ignoreInterruptedTurnComplete;
     if(content.interrupted){
       clearGeminiPlayback(live);
-      beginVpTranscriptTurn(live);
+      live.responseCommandEpoch=0;
+      const command=live.activeCommand?.epoch===live.commandEpoch?live.activeCommand:null;
+      const pendingBoundaryInput=command&&!content.inputTranscription?.text?String(command.pendingBoundaryInput||''):'';
+      if(command){
+        discardGeminiCommandResponse(command);
+        command.awaitingInterruptionBoundary=false;
+        command.pendingBoundaryInput='';
+      }
+      if(live.interruptedTurnTimer)clearTimeout(live.interruptedTurnTimer);
+      live.ignoreInterruptedTurnComplete=!content.turnComplete;
+      if(live.ignoreInterruptedTurnComplete){
+        live.interruptedTurnTimer=setTimeout(()=>{
+          live.interruptedTurnTimer=null;
+          live.ignoreInterruptedTurnComplete=false;
+          const current=live.activeCommand?.epoch===live.commandEpoch?live.activeCommand:null;
+          if(current?.hasInputTranscript)flushPendingGeminiResponse(live,current);
+        },GEMINI_RESPONSE_BUFFER_MAX_MS);
+      }else{
+        live.interruptedTurnTimer=null;
+        suppressTurnComplete=!!content.turnComplete;
+      }
+      const transcript=ensureVpTranscriptState(live);
+      if(!transcript.awaitingInput&&!live.vadSpeaking&&!transcript.hasUser)beginVpTranscriptTurn(live,{awaitingInput:true});
       live.responseInFlight=false;
+      if(command&&pendingBoundaryInput){
+        // Live 전사에는 turn id가 없으므로 경계 이전 텍스트는 표시·기록만 하고,
+        // 경계 이후 전사가 확인될 때까지 도구 실행에는 사용하지 않는다.
+        command.inputTranscriptTrusted=false;
+        updateVpTranscript(live,'user',pendingBoundaryInput);
+      }
       panel?.classList.remove('thinking','answering');
       panel?.classList.add('listening');
       setVpLiveStatus('말씀을 듣고 있어요.','ok');
@@ -4963,37 +5506,39 @@
         panel?.classList.remove('thinking','answering');
         panel?.classList.add('listening');
       }
-      updateVpTranscript(live,'user',content.inputTranscription.text);
-    }
-    for(const part of content.modelTurn?.parts||[]){
-      live.responseInFlight=true;
-      if(part.inlineData)scheduleGeminiPcm(live,part.inlineData);
-    }
-    if(content.outputTranscription?.text){
-      const completed=ensureVpTranscriptState(live).complete;
-      if(!completed){
-        panel?.classList.remove('thinking','listening');
-        panel?.classList.remove('mic-active');
-        panel?.classList.add('answering');
-        setVpVoiceHint('냄비가 답하고 있어요.');
+      const active=live.activeCommand?.epoch===live.commandEpoch?live.activeCommand:null;
+      const waitingForBoundary=!!active?.awaitingInterruptionBoundary;
+      if(waitingForBoundary){
+        if(shouldDisplayGeminiInputTranscript(content.inputTranscription)){
+          active.pendingBoundaryInput=mergeVpTranscript(active.pendingBoundaryInput,geminiTranscriptText(content.inputTranscription));
+        }
+      }else if(shouldDisplayGeminiInputTranscript(content.inputTranscription)){
+        updateTrustedGeminiInputTranscript(live,active,geminiTranscriptText(content.inputTranscription));
       }
-      updateVpTranscript(live,'assistant',content.outputTranscription.text);
+      else handleUnsupportedGeminiInputTranscript(live,content.inputTranscription);
     }
-    if(content.turnComplete){
-      const transcript=ensureVpTranscriptState(live);
-      if(transcript.hasUser)transcript.complete=true;
-      live.responseInFlight=false;
-      panel?.classList.remove('thinking','answering');
-      panel?.classList.remove('mic-active');
-      panel?.classList.add('listening');
-      setVpLiveStatus(live.micStream?'계속 말씀해 주세요.':'마이크를 눌러 음성 대화를 이어가세요.','ok');
-      setVpVoiceHint(live.micStream?'말하면 입력 막대와 전사가 표시돼요.':'마이크를 누르면 음성 대화를 이어갈 수 있어요.');
-      scheduleGeminiContextRestart(live);
+    if(content.turnComplete&&wasWaitingForInterruptedTurn&&!content.interrupted){
+      suppressTurnComplete=true;
+      live.ignoreInterruptedTurnComplete=false;
+      if(live.interruptedTurnTimer)clearTimeout(live.interruptedTurnTimer);
+      live.interruptedTurnTimer=null;
+    }
+    const discardResponseContent=!!content.interrupted||wasWaitingForInterruptedTurn;
+    const command=live.activeCommand?.epoch===live.commandEpoch?live.activeCommand:null;
+    if(command&&!discardResponseContent){
+      const ownedContent={
+        modelParts:content.modelTurn?.parts||[],
+        outputText:content.outputTranscription?.text||'',
+        turnComplete:!!content.turnComplete&&!suppressTurnComplete
+      };
+      if(command.hasInputTranscript&&!command.awaitingInterruptionBoundary&&!live.ignoreInterruptedTurnComplete)handleOwnedGeminiServerResponse(live,ownedContent,command);
+      else bufferGeminiServerResponse(live,ownedContent,command);
     }
   }
   function handleGeminiLiveMessage(live,message){
     if(geminiLive!==live||live.closing)return;
     const resumption=message.sessionResumptionUpdate;
+    if(resumption?.resumable===false)live.resumeCheckpointSafe=false;
     if(resumption?.resumable&&typeof resumption.newHandle==='string'&&resumption.newHandle){
       live.sessionResumptionHandle=resumption.newHandle;
       live.resumeCheckpointSafe=true;
@@ -5110,6 +5655,7 @@
         guConnectionClosed();
         live.ready=false;
         live.responseInFlight=false;
+        resetGeminiTransportResponseLifecycle(live);
         live.socket=null;
         clearGeminiGoAwayTimer(live);
         clearGeminiPlayback(live);
@@ -5133,13 +5679,13 @@
     let live=geminiLive;
     if(!live||live.closing){
       live={
-        socket:null,ready:false,closing:false,pageSuspended:false,connectionEpoch:0,transportConnecting:null,tokenAbortController:null,reconnectTimer:null,reconnectAttempt:0,goAwayTimer:null,wakeLock:null,wakeLockRequest:null,
+        socket:null,ready:false,closing:false,closingRequested:false,pageSuspended:false,connectionEpoch:0,transportConnecting:null,tokenAbortController:null,reconnectTimer:null,reconnectAttempt:0,goAwayTimer:null,wakeLock:null,wakeLockRequest:null,
         sessionResumptionHandle:'',resumeCheckpointSafe:false,resumeFailureCount:0,
         micStream:null,micTrack:null,micStartPromise:null,micRecovering:false,inputSource:null,inputProcessor:null,inputSilence:null,inputAnalyser:null,
         audioContext:null,outputGain:null,playbackNodes:new Set(),nextAudioTime:0,pendingPcm:[],pendingPcmBytes:0,resumeReplay:[],resumeReplayBytes:0,
         vadSpeaking:false,vadStartFrames:0,vadSilenceMs:0,vadPreRoll:[],vadPreRollMs:0,
         capturedAudioFrames:0,capturedAudioBytes:0,sentAudioFrames:0,sentAudioBytes:0,activeAudioFrames:0,lastAudioAt:0,lastNonSilentAt:0,inputLevel:0,micMeterMode:'waiting',micWatchdog:null,
-        transcript:null,commandEpoch:0,cancelledToolCalls:new Set(),toolCallResults:new Map(),toolCommandResults:new Map(),toolResponsePending:false,pendingStopReason:'',responseInFlight:false,
+        transcript:null,loggedTraceTurnIds:new Set(),commandEpoch:0,activeCommand:null,responseCommandEpoch:0,ignoreInterruptedTurnComplete:false,interruptedTurnTimer:null,outputTranscriptionQuarantineUntil:0,cancelledToolCalls:new Set(),toolCallResults:new Map(),toolCommandResults:new Map(),pendingToolBatchCount:0,toolResponsePending:false,pendingStopReason:'',responseInFlight:false,
         contextKey:'',pendingContextRestart:false,contextRestartTimer:null,contextRestarting:false,answerUnavailable:false
       };
       geminiLive=live;
@@ -5226,7 +5772,7 @@
   }
   function toggleHf3(options={}){
     const panel=document.getElementById('vpanel');
-    hideCookHint();
+    hideCookHint({startPlayback:false});
     if(hf3On){
       hf3On=false;
       stopGeminiLiveSession('assistant panel closed');
@@ -5234,6 +5780,7 @@
       setVpPanelExpanded(false);
       return;
     }
+    if(geminiLive?.closingRequested)return;
     hf3On=true;
     resetVpVoicePanel();
     naembiTrack('voice_assistant_open',{entrypoint:'cook_mode',...naembiRecipeProps()});
@@ -5440,7 +5987,13 @@
   document.addEventListener('visibilitychange',()=>{
     if(document.visibilityState==='visible')restoreGeminiLiveAfterInterruption();
   });
-  window.addEventListener('pagehide',()=>suspendGeminiLiveSession('page hidden'));
+  window.addEventListener('pagehide',event=>{
+    if(!event.persisted&&geminiLive){
+      const transcript=ensureVpTranscriptState(geminiLive);
+      if(transcript.hasUser&&!transcript.complete)recordVpTraceTurn(geminiLive,transcript,'abandoned');
+    }
+    suspendGeminiLiveSession('page hidden');
+  });
   const naembiAnalyticsReady=initNaembiAnalytics();
   applyHash();
   naembiAnalyticsReady.then(()=>{
