@@ -114,6 +114,9 @@ assert.match(liveConfig.systemInstruction, /자연스러운 구어체와 음성 
 assert.match(liveConfig.systemInstruction, /도구를 먼저 호출하고 결과를 받은 뒤에만 성공 여부를 답한다/);
 assert.match(liveConfig.systemInstruction, /도구 실행 오류를 듣기 실패로 표현하지 않는다/);
 assert.match(liveConfig.systemInstruction, /한 발화에서는 가장 명확한 핵심 조작 하나만 호출한다/);
+assert.match(liveConfig.systemInstruction, /이전 대화와 이전 도구 호출은 현재 발화를 이해하기 위한 참고 정보일 뿐/);
+assert.match(liveConfig.systemInstruction, /반드시 현재 사용자 발화 하나만 근거로 매 턴 새로 판단/);
+assert.match(liveConfig.systemInstruction, /질문, 수량·재료 문의 또는 설명 요청이면 답만 하고/);
 assert.match(liveConfig.systemInstruction, /영상 도구만 호출하고 조리 단계 도구를 함께 호출하지 않는다/);
 assert.match(liveConfig.systemInstruction, /ignored: true/);
 assert.match(liveConfig.systemInstruction, /silent: true/);
@@ -123,6 +126,7 @@ assert.match(liveConfig.systemInstruction, /질문이나 불만이면 도구 없
 assert.match(liveConfig.systemInstruction, /“영상 재생해 줘”에는 set_video_playback의 state를 play/);
 assert.match(liveConfig.systemInstruction, /“다음 단계로 넘어가죠”에는 move_cooking_step의 direction을 next/);
 assert.match(liveConfig.systemInstruction, /“다음 단계로 왜 자꾸 이동하는 거야\?”는 질문이자 불만/);
+assert.match(liveConfig.systemInstruction, /현재 발화가 “옥수수 몇 개 나와야 돼\?”라면 이전 단계 도구를 호출하지 않고/);
 assert.match(liveConfig.systemInstruction, /예약 실행은 지원하지 않는다/);
 assert.match(liveConfig.systemInstruction, /영상 일시 정지만 호출하며 단계 이동은 절대 호출하지 않는다/);
 assert.match(liveConfig.systemInstruction, /“안녕”, “냄비야” 같은 인사에는 짧게 한국어로 답한다/);
