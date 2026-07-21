@@ -35,6 +35,7 @@
     --brand-soft:#E7F6EE;   /* 아주 연한 배경 틴트 */
     --brand-deep:#2C7D58;   /* soft 위 텍스트용 진한 톤 */
     --brand-rgb:70,181,129; /* 그림자·글로우용 rgb */
+    --cook-step-title-size:20px;
     /* ===== 별칭(하위호환: 기존 --green* 사용처가 브랜드에 자동 연동) ===== */
     --green:var(--brand);
     --green-l:var(--brand-l);
@@ -129,6 +130,10 @@
   .nav .ic-btn svg{width:24px;height:24px;}
   .nav .title{font-size:16px;font-weight:700;}
   .nav.dark .title{color:var(--text);}
+  .cook-nav{position:relative;display:grid;grid-template-columns:80px minmax(0,1fr) 80px;}
+  .cook-nav>.ic-btn{justify-self:start;}
+  .cook-nav .title{justify-self:center;text-align:center;font-size:var(--cook-step-title-size);font-weight:800;line-height:1.2;}
+  .cook-nav .nav-actions{justify-self:end;gap:8px;}
 
   .logo{display:flex;align-items:center;gap:7px;font-family:"Apple SD Gothic Neo","Arial Rounded MT Bold",-apple-system,BlinkMacSystemFont,sans-serif;font-size:25px;font-weight:800;color:var(--green);}
   .logo svg{width:24px;height:24px;stroke-width:2.2;}
@@ -397,27 +402,28 @@
   .scard.below .sc-arrow .ar-up{display:none;}
   .scard.static{position:static;transform:none;}
   #cook2 .cook-body{flex:none;overflow:visible;padding-top:6px;}
-  #cook3 .cook-body{justify-content:flex-start;overflow:hidden;padding:0 16px 10px;position:relative;gap:8px;}
-  #cook3 .cook-track{flex:1;min-height:0;height:auto;}
+  #cook3 .cook-body{justify-content:flex-start;overflow:hidden;padding:0 16px calc(10px + env(safe-area-inset-bottom,0));position:relative;gap:8px;transition:padding-top .22s ease;}
+  #cook3 .cook-body.timer-active{padding-top:76px;}
+  #cook3 .cook-track{flex:1;min-height:220px;height:auto;}
   .stage-timer{
-    position:absolute;left:16px;right:16px;top:50%;z-index:180;
+    position:absolute;left:16px;right:16px;top:8px;z-index:180;
     min-height:58px;box-sizing:border-box;padding:9px 11px;border-radius:16px;
     background:var(--dark2);
     border:1.5px solid var(--green);
     box-shadow:0 10px 26px rgba(0,0,0,.3),0 0 0 1px rgba(255,255,255,.06) inset;
-    transform:translateY(calc(-50% - 128px)) scale(.94);
+    transform:translateY(-8px) scale(.94);
     opacity:0;pointer-events:none;transition:opacity .24s ease,transform .32s cubic-bezier(.32,.72,0,1);
   }
-  .stage-timer.show{opacity:1;pointer-events:auto;transform:translateY(calc(-50% - 128px)) scale(1);}
+  .stage-timer.show{opacity:1;pointer-events:auto;transform:translateY(0) scale(1);}
   .stage-timer.done{background:var(--dark2);}
   /* 타이머 완료 후 계속 울리는 상태 — 부르르 흔들림 (위치 translateY 유지) */
   .stage-timer.ringing{animation:ringShake .62s ease-in-out infinite;}
   @keyframes ringShake{
-    0%,100%{transform:translateY(calc(-50% - 128px)) translateX(0) rotate(0);}
-    20%{transform:translateY(calc(-50% - 128px)) translateX(-2.5px) rotate(-.7deg);}
-    40%{transform:translateY(calc(-50% - 128px)) translateX(2.5px) rotate(.7deg);}
-    60%{transform:translateY(calc(-50% - 128px)) translateX(-1.5px) rotate(-.4deg);}
-    80%{transform:translateY(calc(-50% - 128px)) translateX(1.5px) rotate(.4deg);}
+    0%,100%{transform:translateY(0) translateX(0) rotate(0);}
+    20%{transform:translateY(0) translateX(-2.5px) rotate(-.7deg);}
+    40%{transform:translateY(0) translateX(2.5px) rotate(.7deg);}
+    60%{transform:translateY(0) translateX(-1.5px) rotate(-.4deg);}
+    80%{transform:translateY(0) translateX(1.5px) rotate(.4deg);}
   }
   .stimer-main{display:grid;grid-template-columns:38px 38px minmax(0,1fr) auto;align-items:center;gap:10px;}
   .stimer-btn{width:38px;height:38px;border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--dark3);color:var(--text);cursor:pointer;font-family:inherit;}
@@ -477,7 +483,7 @@
   .bubble.user{background:var(--green);color:#fff;border-bottom-right-radius:4px;}
   .sc-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
   .sc-title{font-size:15px;font-weight:700;color:var(--text);line-height:1.3;transition:font-size .3s ease;}
-  .scard.active .sc-title{font-size:20px;font-weight:800;color:var(--text);}
+  .scard.active .sc-title{font-size:var(--cook-step-title-size);font-weight:800;color:var(--text);}
   .phase-label{font-size:12px;font-weight:700;color:var(--green);margin:14px 0 8px;letter-spacing:.3px;}
   .step-cur{background:var(--dark2);border:1.5px solid var(--green);border-radius:18px;padding:18px;margin-bottom:14px;}
   .step-cur .num{font-size:12px;color:var(--green);font-weight:700;margin-bottom:8px;}
@@ -743,38 +749,41 @@
   .vchips span{background:var(--green-soft);color:var(--brand-deep);font-size:13px;font-weight:600;padding:8px 12px;border-radius:12px;}
 
   /* ===== 소리·재생 설정 모달 (중앙 팝업) ===== */
-  .vset{position:absolute;inset:0;z-index:200;display:none;align-items:center;justify-content:center;padding:24px;}
+  .vset{position:absolute;inset:0;z-index:200;display:none;align-items:center;justify-content:center;padding:18px 16px calc(18px + env(safe-area-inset-bottom,0));overscroll-behavior:contain;}
   .vset.show{display:flex;}
   .vset-scrim{position:absolute;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(2px);}
-  .vset-card{position:relative;z-index:1;width:100%;max-width:320px;background:var(--surface);color:var(--text);
-    border-radius:22px;padding:20px;box-shadow:0 24px 60px rgba(0,0,0,.4);animation:vsetPop .28s cubic-bezier(.18,.89,.32,1.28);}
+  .vset-card{position:relative;z-index:1;width:100%;max-width:360px;max-height:calc(100dvh - 44px - env(safe-area-inset-bottom,0));overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;background:var(--surface);color:var(--text);
+    border-radius:18px;padding:16px;box-shadow:0 24px 60px rgba(0,0,0,.4);animation:vsetPop .28s cubic-bezier(.18,.89,.32,1.28);}
+  .vset-card::-webkit-scrollbar{display:none;}
   @keyframes vsetPop{from{opacity:0;transform:scale(.9);}to{opacity:1;transform:scale(1);}}
-  .vset-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+  .vset-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
   .vset-head b{font-size:18px;font-weight:800;color:var(--text);}
-  .vset-head .x{cursor:pointer;color:var(--text-sub);display:flex;}
+  .vset-head .x{cursor:pointer;color:var(--text-sub);display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;}
   .vset-head .x svg{width:20px;height:20px;}
-  .vset-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0 8px;}
+  .vset-row{display:flex;align-items:center;justify-content:space-between;min-height:44px;padding:8px 0;}
+  .vset-row.disabled,.vset-sub.disabled{opacity:.42;}
   .vset-label{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:700;color:var(--text);}
   .vset-label svg{width:18px;height:18px;color:var(--brand);}
-  .vset-sub{display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding-bottom:8px;border-bottom:1px solid var(--border);margin-bottom:2px;}
+  .vset-sub{display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding-bottom:10px;border-bottom:1px solid var(--border);margin-bottom:2px;}
   .vset-sub.collapsed{display:none;}
   .vset-row+.vset-sub{padding-bottom:12px;}
   .vset-mini{font-size:12px;font-weight:700;color:var(--text-sub);margin-right:4px;}
   /* 토글 스위치 */
-  .vset-switch{width:44px;height:26px;border-radius:14px;border:none;background:var(--gray2);position:relative;cursor:pointer;padding:0;transition:background .2s;flex:none;}
+  .vset-switch{width:46px;height:28px;border-radius:14px;border:none;background:var(--gray2);position:relative;cursor:pointer;padding:0;transition:background .2s;flex:none;}
   .vset-switch span{position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.3);}
   .vset-switch.on{background:var(--brand);}
-  .vset-switch.on span{left:21px;}
+  .vset-switch.on span{left:23px;}
   /* 선택 칩 */
   .vchip{background:var(--surface-2);color:var(--text-sub);border:1.5px solid transparent;border-radius:11px;
     font-family:inherit;font-size:13px;font-weight:700;padding:8px 14px;cursor:pointer;transition:all .15s;}
   .vchip.on{background:var(--green-soft);color:var(--brand-deep);border-color:var(--brand);}
   .vchip:active{transform:scale(.95);}
   /* 볼륨 슬라이더 */
-  .vset-sub input[type=range]{flex:1;min-width:120px;accent-color:var(--brand);height:4px;cursor:pointer;}
+  .vset-sub input[type=range]{flex:1;min-width:120px;accent-color:var(--brand);height:28px;cursor:pointer;}
+  .vset-sub input[type=range]:disabled{cursor:not-allowed;opacity:.45;}
   .vset-sub em{font-style:normal;font-size:13px;font-weight:800;color:var(--text-sub);min-width:34px;text-align:right;}
   .vset-stepper{display:flex;align-items:center;justify-content:space-between;width:100%;gap:10px;margin-bottom:2px;}
-  .vset-stepper button{width:36px;height:36px;border:none;border-radius:50%;background:var(--green-soft);color:var(--brand-deep);display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .vset-stepper button{width:44px;height:44px;border:none;border-radius:50%;background:var(--green-soft);color:var(--brand-deep);display:flex;align-items:center;justify-content:center;cursor:pointer;}
   .vset-stepper button:disabled{opacity:.35;cursor:not-allowed;}
   .vset-stepper button svg{width:17px;height:17px;}
   .vset-speed-value{flex:1;text-align:center;font-size:18px;font-weight:900;color:var(--text);}
@@ -1313,7 +1322,7 @@
     <!-- 4-A. 조리 모드 (기본 조리 모드 복제 스냅샷) -->
     <div class="view dark" id="cook3">
       <div class="statusbar dark"><span>9:41</span><span class="icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
-      <div class="nav dark"><div class="ic-btn" onclick="show('detail')"><i data-lucide="chevron-left"></i></div><div class="title" style="font-size:14px;">조리 모드</div><div class="nav-actions"><div class="ic-btn" onclick="openVoice()"><i data-lucide="help-circle"></i></div><div class="ic-btn" onclick="openVideoSettings()"><i data-lucide="settings"></i></div></div></div>
+      <div class="nav dark cook-nav"><div class="ic-btn" onclick="show('detail')"><i data-lucide="chevron-left"></i></div><div class="title">조리 모드</div><div class="nav-actions"><div class="ic-btn" onclick="openVoice()"><i data-lucide="help-circle"></i></div><div class="ic-btn" onclick="openVideoSettings()"><i data-lucide="settings"></i></div></div></div>
       <div class="cook-video">
         <div class="youtube-mount" id="cook3Youtube" data-video-id="CgapOjKdo9I" data-title="순두부찌개 조리 영상"></div>
         <div class="video-gesture" id="videoGesture" onclick="onVideoTap(event)">
@@ -1454,24 +1463,38 @@
           <button class="vchip on" data-loop-end="stop" onclick="setVsLoopEnd('stop',this)">멈춤</button>
           <button class="vchip" data-loop-end="next" onclick="setVsLoopEnd('next',this)">다음 단계로</button>
         </div>
-        <!-- 볼륨 -->
+        <!-- 개별 음량 -->
         <div class="vset-row">
-          <div class="vset-label"><i data-lucide="volume-2"></i>볼륨</div>
+          <div class="vset-label"><i data-lucide="sliders-horizontal"></i>마스터</div>
+          <button class="vset-switch on" id="vsMasterVolSw" onclick="toggleVsMasterVol()"><span></span></button>
+        </div>
+        <div class="vset-sub" id="vsMasterVolWrap">
+          <input type="range" min="0" max="100" value="100" id="vsMasterVolRange" oninput="setVsMasterVol(this.value)">
+          <em id="vsMasterVolVal">100</em>
+        </div>
+        <div class="vset-row">
+          <div class="vset-label"><i data-lucide="video"></i>영상</div>
           <button class="vset-switch on" id="vsVolSw" onclick="toggleVsVol()"><span></span></button>
         </div>
         <div class="vset-sub" id="vsVolWrap">
           <input type="range" min="0" max="100" value="100" id="vsVolRange" oninput="setVsVol(this.value)">
           <em id="vsVolVal">100</em>
         </div>
-        <!-- 요리비서 볼륨 -->
         <div class="vset-row">
-          <div class="vset-label"><i data-lucide="bot"></i>요리비서 볼륨</div>
+          <div class="vset-label"><i data-lucide="bot"></i>요리 비서</div>
           <button class="vset-switch on" id="vsVoiceVolSw" onclick="toggleVsVoiceVol()"><span></span></button>
         </div>
         <div class="vset-sub" id="vsVoiceVolWrap">
-          <span class="vset-mini">알림음 포함</span>
           <input type="range" min="0" max="100" value="100" id="vsVoiceVolRange" oninput="setVsVoiceVol(this.value)">
           <em id="vsVoiceVolVal">100</em>
+        </div>
+        <div class="vset-row">
+          <div class="vset-label"><i data-lucide="alarm-clock"></i>타이머 알림</div>
+          <button class="vset-switch on" id="vsTimerVolSw" onclick="toggleVsTimerVol()"><span></span></button>
+        </div>
+        <div class="vset-sub" id="vsTimerVolWrap">
+          <input type="range" min="0" max="100" value="100" id="vsTimerVolRange" oninput="setVsTimerVol(this.value)">
+          <em id="vsTimerVolVal">100</em>
         </div>
         <!-- 재생 속도 -->
         <div class="vset-row">
@@ -2920,7 +2943,7 @@
   let cookHintDismissed=false; // "다시 보지 않기" (세션 한정, 저장 안 함)
   // 영상 조작 상태 (제스처 · 설정 모달)
   let cook3Playing=false, cook3Time=0, cook3TimeTimer=null, vgTapTimer=null;
-  let vsLoopOn=false, vsLoopCount=0, vsLoopEnd='stop', vsVol=100, vsSpeed=1, vsVoiceVol=100, vsVoiceMuted=false; // 기본: 구간 반복 OFF (켜면 무한)
+  let vsLoopOn=false, vsLoopCount=0, vsLoopEnd='stop', vsMasterVol=100, vsMasterMuted=false, vsVol=100, vsSpeed=1, vsVoiceVol=100, vsVoiceMuted=false, vsTimerVol=100, vsTimerMuted=false; // 기본: 구간 반복 OFF (켜면 무한)
   let cook3LoopPlayed=0, cook3SuppressSeek=false; // 구간 반복 완료 횟수 · 단계 자동 전환 시 seek 억제(off=영상 이어짐)
   // Gemini Live 초기화 전에도 캐러셀이 layout()을 호출하므로 기본 핸들러를 둔다.
   let onCookingStageContextChanged=()=>{};
@@ -2957,6 +2980,10 @@
       }
     }
     function layout(){
+      const max=maxIdx();
+      cur=Math.max(0,Math.min(max,cur));
+      trackEl.dataset.activeStep=String(cur);
+      viewEl.dataset.activeStep=String(cur);
       trackEl.querySelectorAll('.scard').forEach(card=>{
         const i=+card.dataset.i, o=i-cur, ao=Math.abs(o);
         let y,sc,op;
@@ -2984,7 +3011,7 @@
     viewEl.addEventListener('pointercancel',()=>{dragY=null;});
     document.addEventListener('keydown',e=>{ if(!viewEl.classList.contains('active'))return; if(e.code==='Space'||e.code==='ArrowRight'||e.code==='ArrowDown'){e.preventDefault();next();} else if(e.code==='ArrowUp'||e.code==='ArrowLeft'){e.preventDefault();prev();} });
     build();layout();
-    return {reset(){cur=0;layout();}, rebuild(){build();cur=0;layout();refreshIcons();}, layout, next, prev, advance(){cur=(cur+1)%stepsArr().length;layout();}, goTo(i){cur=Math.max(0,Math.min(maxIdx(),i));layout();}};
+    return {reset(){cur=0;layout();}, rebuild(){build();cur=0;layout();refreshIcons();}, layout, next, prev, current(){return cur;}, advance(){cur=(cur+1)%stepsArr().length;layout();}, goTo(i){cur=Math.max(0,Math.min(maxIdx(),i));layout();}};
   }
   const cook3Car=makeCarousel('cook3','cookTrack3');
   function resetCookSessionPlaybackState(){
@@ -3113,21 +3140,25 @@
     setTimeout(subscribe,360);
   }
   function effectiveCookYoutubeVolume(){
-    return cookYoutubeDucked?Math.min(vsVol,25):vsVol;
+    if(vsMasterMuted||cookYoutubeMuted)return 0;
+    const volume=Math.round(clampNumber(vsVol,0,100)*clampNumber(vsMasterVol,0,100)/100);
+    return cookYoutubeDucked?Math.min(volume,25):volume;
   }
   function applyCookYoutubeSound(){
-    if(cookYoutubeMuted){
+    const volume=effectiveCookYoutubeVolume();
+    if(volume<=0){
       postCookYoutube('mute');
     }else{
       postCookYoutube('unMute');
-      postCookYoutube('setVolume',[effectiveCookYoutubeVolume()]);
+      postCookYoutube('setVolume',[volume]);
     }
   }
   function renderCookYoutubeSoundButton(){
     const btn=document.getElementById('youtubeSoundToggle');
     if(!btn)return;
-    btn.classList.toggle('muted',cookYoutubeMuted);
-    btn.innerHTML='<i data-lucide="'+(cookYoutubeMuted?'volume-x':'volume-2')+'"></i><span>5번 영상 소리: '+(cookYoutubeMuted?'꺼짐':'켜짐')+'</span>';
+    const muted=cookYoutubeMuted||vsMasterMuted;
+    btn.classList.toggle('muted',muted);
+    btn.innerHTML='<i data-lucide="'+(muted?'volume-x':'volume-2')+'"></i><span>5번 영상 소리: '+(muted?'꺼짐':'켜짐')+'</span>';
     refreshIcons();
   }
   function toggleCookYoutubeSound(){
@@ -3195,8 +3226,7 @@
 
   /* ===== 소리·재생 설정 모달 ===== */
   function openVideoSettings(){
-    syncVsVolUI();
-    syncVsVoiceVolUI();
+    syncAllVolumeUI();
     syncVsSpeedUI();
     document.getElementById('videoSettings').classList.add('show');
     refreshIcons();
@@ -3226,27 +3256,85 @@
     if(el)el.classList.add('on');
     toast(mode==='stop'?'반복 후 멈춤':'반복 후 다음 단계로',mode==='stop'?'pause':'chevrons-down');
   }
+  function syncVolumeRow({swId,wrapId,rangeId,valId,muted,value,blockedByMaster=false}){
+    const disabled=!!muted||!!blockedByMaster;
+    const sw=document.getElementById(swId);
+    const wrap=document.getElementById(wrapId);
+    const range=document.getElementById(rangeId);
+    const val=document.getElementById(valId);
+    if(sw)sw.classList.toggle('on',!muted&&!blockedByMaster);
+    if(wrap)wrap.classList.toggle('disabled',disabled);
+    if(range){range.value=value;range.disabled=disabled;}
+    if(val)val.textContent=disabled?'OFF':value;
+  }
+  function syncAllVolumeUI(){
+    syncVsMasterVolUI();
+    syncVsVolUI();
+    syncVsVoiceVolUI();
+    syncVsTimerVolUI();
+    renderCookYoutubeSoundButton();
+  }
+  function applyAllOutputVolumes(){
+    applyCookYoutubeSound();
+    syncGeminiLiveOutputGain();
+  }
+  function toggleVsMasterVol(){
+    vsMasterMuted=!vsMasterMuted;
+    if(!vsMasterMuted&&vsMasterVol===0)vsMasterVol=60;
+    applyAllOutputVolumes();
+    syncAllVolumeUI();
+    toast(vsMasterMuted?'전체 소리 꺼짐':'전체 소리 켜짐',vsMasterMuted?'volume-x':'volume-2');
+  }
+  function setVsMasterVol(v){
+    vsMasterVol=clampNumber(parseInt(v,10)||0,0,100);
+    vsMasterMuted=vsMasterVol===0;
+    applyAllOutputVolumes();
+    syncAllVolumeUI();
+  }
+  function syncVsMasterVolUI(){
+    syncVolumeRow({
+      swId:'vsMasterVolSw',
+      wrapId:'vsMasterVolWrap',
+      rangeId:'vsMasterVolRange',
+      valId:'vsMasterVolVal',
+      muted:vsMasterMuted,
+      value:vsMasterVol
+    });
+  }
   // 볼륨 on/off + 슬라이더 (좌측 "5번 영상 소리" 토글과 동기화)
   function toggleVsVol(){
     cookYoutubeMuted=!cookYoutubeMuted;
+    if(!cookYoutubeMuted&&vsVol===0)vsVol=60;
     applyCookYoutubeSound();
     renderCookYoutubeSoundButton();
     syncVsVolUI();
     toast(cookYoutubeMuted?'볼륨 꺼짐':'볼륨 켜짐',cookYoutubeMuted?'volume-x':'volume-2');
   }
   function setVsVol(v){
-    vsVol=parseInt(v,10);
-    document.getElementById('vsVolVal').textContent=vsVol;
+    vsVol=clampNumber(parseInt(v,10)||0,0,100);
+    cookYoutubeMuted=vsVol===0;
     applyCookYoutubeSound();
+    syncVsVolUI();
+    renderCookYoutubeSoundButton();
   }
   function syncVsVolUI(){ // cookYoutubeMuted → 모달 볼륨 스위치/슬라이더 반영
-    const sw=document.getElementById('vsVolSw');const wrap=document.getElementById('vsVolWrap');
-    if(!sw)return;
-    sw.classList.toggle('on',!cookYoutubeMuted);
-    if(wrap)wrap.classList.toggle('collapsed',cookYoutubeMuted);
+    syncVolumeRow({
+      swId:'vsVolSw',
+      wrapId:'vsVolWrap',
+      rangeId:'vsVolRange',
+      valId:'vsVolVal',
+      muted:cookYoutubeMuted,
+      value:vsVol,
+      blockedByMaster:vsMasterMuted
+    });
   }
   function assistantVolumeGain(){
-    return vsVoiceMuted?0:clampNumber((parseInt(vsVoiceVol,10)||0)/100,0,1);
+    if(vsMasterMuted||vsVoiceMuted)return 0;
+    return clampNumber((parseInt(vsMasterVol,10)||0)/100,0,1)*clampNumber((parseInt(vsVoiceVol,10)||0)/100,0,1);
+  }
+  function timerAlarmVolumeGain(){
+    if(vsMasterMuted||vsTimerMuted)return 0;
+    return clampNumber((parseInt(vsMasterVol,10)||0)/100,0,1)*clampNumber((parseInt(vsTimerVol,10)||0)/100,0,1);
   }
   function toggleVsVoiceVol(){
     vsVoiceMuted=!vsVoiceMuted;
@@ -3262,14 +3350,37 @@
     syncVsVoiceVolUI();
   }
   function syncVsVoiceVolUI(){
-    const sw=document.getElementById('vsVoiceVolSw');
-    const wrap=document.getElementById('vsVoiceVolWrap');
-    const range=document.getElementById('vsVoiceVolRange');
-    const val=document.getElementById('vsVoiceVolVal');
-    if(sw)sw.classList.toggle('on',!vsVoiceMuted);
-    if(wrap)wrap.classList.toggle('collapsed',vsVoiceMuted);
-    if(range)range.value=vsVoiceVol;
-    if(val)val.textContent=vsVoiceVol;
+    syncVolumeRow({
+      swId:'vsVoiceVolSw',
+      wrapId:'vsVoiceVolWrap',
+      rangeId:'vsVoiceVolRange',
+      valId:'vsVoiceVolVal',
+      muted:vsVoiceMuted,
+      value:vsVoiceVol,
+      blockedByMaster:vsMasterMuted
+    });
+  }
+  function toggleVsTimerVol(){
+    vsTimerMuted=!vsTimerMuted;
+    if(!vsTimerMuted&&vsTimerVol===0)vsTimerVol=60;
+    syncVsTimerVolUI();
+    toast(vsTimerMuted?'타이머 알림 꺼짐':'타이머 알림 켜짐',vsTimerMuted?'bell-off':'alarm-clock');
+  }
+  function setVsTimerVol(v){
+    vsTimerVol=clampNumber(parseInt(v,10)||0,0,100);
+    vsTimerMuted=vsTimerVol===0;
+    syncVsTimerVolUI();
+  }
+  function syncVsTimerVolUI(){
+    syncVolumeRow({
+      swId:'vsTimerVolSw',
+      wrapId:'vsTimerVolWrap',
+      rangeId:'vsTimerVolRange',
+      valId:'vsTimerVolVal',
+      muted:vsTimerMuted,
+      value:vsTimerVol,
+      blockedByMaster:vsMasterMuted
+    });
   }
   // 재생 속도
   const vsSpeedOptions=[0.5,0.75,1,1.25,1.5,2];
@@ -3446,7 +3557,7 @@
   function playTimerAlarmBurst(){
     window.__timerAlarmPlayed=(window.__timerAlarmPlayed||0)+1;
     if(navigator.vibrate)navigator.vibrate([140,80,140,80,260]);
-    const peakGain=.2*assistantVolumeGain();
+    const peakGain=.2*timerAlarmVolumeGain();
     if(peakGain<=0)return;
     try{
       const ctx=getTimerAudioContext();
@@ -3494,16 +3605,23 @@
       refreshIcons();
     }
   }
+  function setCookTimerLayoutActive(active){
+    const body=document.querySelector('#cook3 .cook-body');
+    if(body)body.classList.toggle('timer-active',!!active);
+    if(document.getElementById('cook3')?.classList.contains('active'))cook3Car.layout();
+  }
   function updateStageTimer(left,total,done){
     const el=document.getElementById('stageTimer'), time=document.getElementById('stageTimerTime');
     if(!el||!time)return;
     el.classList.add('show');el.classList.toggle('done',!!done);
+    setCookTimerLayoutActive(true);
     time.textContent=done?'완료':fmtTime(Math.max(0,left));
     renderStageTimerControls(done);
   }
   function hideStageTimer(){
     const el=document.getElementById('stageTimer');
     if(el)el.classList.remove('show','done','ringing');
+    setCookTimerLayoutActive(false);
   }
   function finishTimer(){
     clearInterval(timerId);timerId=null;timerPaused=false;
