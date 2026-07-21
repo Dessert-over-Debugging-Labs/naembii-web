@@ -138,6 +138,8 @@
   .logo{display:flex;align-items:center;gap:7px;font-family:"Apple SD Gothic Neo","Arial Rounded MT Bold",-apple-system,BlinkMacSystemFont,sans-serif;font-size:25px;font-weight:800;color:var(--green);}
   .logo svg{width:24px;height:24px;stroke-width:2.2;}
   .hd-right{display:flex;align-items:center;gap:10px;}
+  .soon-badge{display:inline-flex;align-items:center;gap:4px;min-height:28px;max-width:76px;border:1px solid rgba(var(--brand-rgb),.18);border-radius:999px;background:var(--brand-soft);color:var(--brand-deep);font-size:12px;font-weight:900;padding:0 8px;white-space:nowrap;line-height:1;}
+  .soon-badge svg{width:13px;height:13px;color:var(--brand);}
 
   /* 검색 */
   .search{
@@ -216,6 +218,16 @@
   #home .hscroll{padding-bottom:16px;}
   #home .hscroll .rcard{width:146px;}
   #home .hscroll .rcard .thumb{aspect-ratio:4/3;border-radius:14px;}
+  .recipe-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 12px;padding:0 16px calc(94px + env(safe-area-inset-bottom,0));}
+  .recipe-list .rcard{min-width:0;width:100%;}
+  .recipe-list .rcard .thumb{aspect-ratio:4/3;border-radius:14px;}
+  .recipe-list .rcard .cap{padding:8px 2px 0;}
+  .recipe-list .rcard .social{font-size:11px;}
+  @media (max-width:340px){
+    .recipe-list{gap:15px 10px;padding-left:14px;padding-right:14px;}
+    .recipe-list .rcard .cap b{font-size:14px;}
+    .recipe-list .rcard .social{font-size:10.5px;}
+  }
 
   /* 레시피 그리드 */
   .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 16px 24px;}
@@ -831,9 +843,24 @@
   /* 제목행 + SNS 조회수 */
   .dhead{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;}
   .dhead h2{flex:1;margin-bottom:0;}
-  .detail-proof{display:flex;gap:8px;flex-wrap:wrap;margin:-2px 0 14px;}
-  .detail-proof span{display:inline-flex;align-items:center;gap:5px;min-height:28px;border:1px solid var(--border);border-radius:999px;background:var(--surface);color:var(--text);font-size:12px;font-weight:850;padding:0 9px;}
-  .detail-proof svg{width:14px;height:14px;color:var(--brand);fill:none;}
+  .detail-proof{display:grid;grid-template-columns:1fr;gap:8px;margin:-2px 0 14px;}
+  .detail-proof-total,.detail-proof-platforms>span{border:1px solid var(--border);background:var(--surface);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.03);}
+  .detail-proof-total{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:42px;border-radius:14px;padding:0 12px;}
+  .detail-proof-label{display:inline-flex;align-items:center;gap:6px;min-width:0;font-size:13px;font-weight:900;color:var(--text-sub);}
+  .detail-proof-label svg{width:15px;height:15px;color:var(--brand);}
+  .detail-proof-value{font-size:18px;font-weight:950;color:var(--text);font-variant-numeric:tabular-nums;white-space:nowrap;}
+  .detail-proof-platforms{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;}
+  .detail-proof-platforms>span{min-width:0;min-height:48px;border-radius:12px;padding:8px 6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-align:center;}
+  .detail-proof-platforms b{display:flex;align-items:center;justify-content:center;gap:4px;min-width:0;font-size:10.5px;font-weight:900;color:var(--text-sub);line-height:1;}
+  .detail-proof-platforms em{font-style:normal;font-size:12px;font-weight:950;color:var(--text);font-variant-numeric:tabular-nums;line-height:1;white-space:nowrap;}
+  .platform-icon{width:14px;height:14px;display:inline-block;flex:none;color:var(--brand);}
+  .platform-icon svg{width:14px;height:14px;display:block;}
+  @media (max-width:340px){
+    .detail-proof-platforms{gap:5px;}
+    .detail-proof-platforms>span{padding-left:4px;padding-right:4px;}
+    .detail-proof-platforms b{font-size:9.5px;}
+    .detail-proof-platforms em{font-size:11px;}
+  }
   /* 유튜브 스티커: 영상↔레시피 경계에 걸침(영상 우하단 = 레시피 우상단) */
   .detail-body .yt-badge-title{position:absolute;top:-13px;right:16px;z-index:3;background:#FF0000;color:#fff;font-size:12px;font-weight:700;padding:5px 9px;border-radius:8px;display:flex;align-items:center;gap:4px;box-shadow:0 2px 8px rgba(0,0,0,.25);}
   .detail-body .yt-badge-title svg{width:14px;height:14px;}
@@ -1245,12 +1272,10 @@
     <!-- 1. 홈 -->
     <div class="view active" id="home">
       <div class="statusbar"><span>9:41</span><span class="icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
-      <div class="nav"><div class="logo"><i data-lucide="cooking-pot"></i>냄비</div><div class="hd-right"><div class="ic-btn" onclick="toast('로그인 기능은 앱 출시 때 연결할 예정이에요','circle-user-round')"><i data-lucide="circle-user-round"></i></div></div></div>
+      <div class="nav"><div class="logo"><i data-lucide="cooking-pot"></i>냄비</div><div class="hd-right"><span class="soon-badge"><i data-lucide="sparkles" aria-hidden="true"></i>곧 출시</span></div></div>
       <div class="body">
-        <div class="section-t"><span class="st-l"><i data-lucide="flame"></i>SNS에서 요즘 핫한 요리</span><span class="more">종합 조회수 순</span></div>
-        <div class="hscroll" id="popScroll"></div>
-        <div class="section-t"><span class="st-l"><i data-lucide="package-check"></i>바로 따라 하기 쉬운 요리</span><span class="more">재료 적은 순</span></div>
-        <div class="hscroll" id="recScroll"></div>
+        <div class="section-t"><span class="st-l"><i data-lucide="flame"></i>SNS에서 핫했던 요리</span><span class="more">종합 조회수 순</span></div>
+        <div class="recipe-list" id="popScroll"></div>
       </div>
     </div>
 
@@ -2622,21 +2647,36 @@
   function totalViralViews(views){
     return ['youtubeViews','instagramViews','tiktokViews'].reduce((sum,key)=>sum+(Number(views[key])||0),0);
   }
-  function formatViews(value){
+  function formatViews(value,options={}){
     const n=Number(value)||0;
-    if(n>=1000000)return (Math.round(n/100000)/10).toFixed(n>=10000000?0:1).replace(/\.0$/,'')+'M';
-    if(n>=1000)return Math.round(n/1000)+'K';
-    return String(n);
+    const unit=options.unit!==false;
+    if(n>=100000000){
+      const valueText=(Math.round((n/100000000)*10)/10).toFixed(1).replace(/\.0$/,'');
+      return valueText+'억'+(unit?' 회':'');
+    }
+    if(n>=10000)return Math.round(n/10000).toLocaleString('ko-KR')+'만'+(unit?' 회':'');
+    return Math.round(n).toLocaleString('ko-KR')+(unit?'회':'');
   }
-  function platformViewsHTML(views,compact=false){
+  function platformIconHTML(platform){
+    const icons={
+      youtube:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6.5" width="18" height="11" rx="3" fill="currentColor"></rect><path d="M10 9.25v5.5l5-2.75-5-2.75z" fill="#fff"></path></svg>',
+      instagram:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="5" fill="none" stroke="currentColor" stroke-width="2"></rect><circle cx="12" cy="12" r="3.2" fill="none" stroke="currentColor" stroke-width="2"></circle><circle cx="16.7" cy="7.3" r="1.2" fill="currentColor"></circle></svg>',
+      tiktok:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.8 4c.4 2.3 1.7 3.9 4.2 4.2 v 3.1c-1.5-.1-2.8-.6-4-1.5 v 5.2c0 3.1-2.2 5-5 5-2.7 0-4.7-1.8-4.7-4.3 0-2.7 2.2-4.6 5.2-4.4 v 3.2c-1.2-.2-2 .4-2 1.3 0 .8.6 1.3 1.4 1.3 1 0 1.7-.6 1.7-2.1V4h3.2z" fill="currentColor"></path></svg>'
+    };
+    return '<span class="platform-icon platform-icon-'+platform+'" aria-hidden="true">'+icons[platform]+'</span>';
+  }
+  function platformViewsHTML(views,options={}){
+    const compact=options===true||options.compact;
+    const detail=options.detail;
     const items=[
-      {key:'youtubeViews',icon:'youtube',label:'YouTube',short:'YT'},
-      {key:'instagramViews',icon:'instagram',label:'Instagram',short:'IG'},
-      {key:'tiktokViews',icon:'music-2',label:'TikTok',short:'TT'}
+      {key:'youtubeViews',platform:'youtube',label:'YouTube',short:'YT'},
+      {key:'instagramViews',platform:'instagram',label:'Instagram',short:'IG'},
+      {key:'tiktokViews',platform:'tiktok',label:'TikTok',short:'TT'}
     ];
     return items.filter(item=>Number(views[item.key])>0).map(item=>{
       const label=compact?item.short:item.label;
-      return '<span><i data-lucide="'+item.icon+'"></i><em>'+label+' '+formatViews(views[item.key])+'</em></span>';
+      const value=formatViews(views[item.key],{unit:!detail});
+      return '<span>'+platformIconHTML(item.platform)+'<b>'+label+'</b><em>'+value+'</em></span>';
     }).join('');
   }
   function compareByViralViews(a,b){
@@ -2674,7 +2714,7 @@
     return '<div class="rcard" data-vid="'+r.id+'" onclick="goDetail(\''+r.id+'\')">'+
       '<div class="thumb '+r.food+'"><img data-recipe-thumb data-src="https://i.ytimg.com/vi/'+r.id+'/mqdefault.jpg" alt="'+esc(r.name)+' 썸네일" loading="lazy" decoding="async" width="320" height="180" onerror="this.style.display=\'none\'">'+
         '<span class="badge"><i data-lucide="clock"></i>'+r.time+'</span></div>'+
-      '<div class="cap"><b>'+esc(r.title)+'</b><small>'+esc(r.channel)+'</small><div class="social"><span class="total"><i data-lucide="trending-up"></i><em>종합 '+formatViews(total)+'</em></span></div></div></div>';
+      '<div class="cap"><b>'+esc(r.title)+'</b><small>'+esc(r.channel)+'</small><div class="social"><span class="total"><i data-lucide="trending-up"></i><em>종합 '+formatViews(total,{unit:false})+'</em></span></div></div></div>';
   }
   function creatorGroups(){
     const map=new Map();
@@ -2848,8 +2888,6 @@
   function renderHomeSections(){
     const byViews=[...RECIPES].sort(compareByViralViews);
     document.getElementById('popScroll').innerHTML=byViews.slice(0,8).map(cardHTML).join('');
-    const easyRecipes=[...RECIPES].sort((a,b)=>ingCount(a)-ingCount(b)||compareByViralViews(a,b)).slice(0,8);
-    document.getElementById('recScroll').innerHTML=easyRecipes.map(cardHTML).join('');
     refreshIcons();
     observeRecipeThumbs(document.getElementById('home'));
   }
@@ -2917,7 +2955,8 @@
   }
   function detailProofHTML(r){
     const views=viralFor(r);
-    return '<span><i data-lucide="trending-up"></i>'+formatViews(totalViralViews(views))+' 종합 조회수</span>'+platformViewsHTML(views,false);
+    return '<div class="detail-proof-total"><span class="detail-proof-label"><i data-lucide="trending-up"></i>종합 조회수</span><strong class="detail-proof-value">'+formatViews(totalViralViews(views))+'</strong></div>'+
+      '<div class="detail-proof-platforms">'+platformViewsHTML(views,{detail:true})+'</div>';
   }
   const DET_SECS=['sec-ing','sec-steps'];
   let tabLock=0;
