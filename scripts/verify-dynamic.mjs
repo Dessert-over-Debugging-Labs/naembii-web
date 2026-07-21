@@ -173,7 +173,7 @@ function coreChecks() {
       ['id="cook3"', '조리 모드'],
       ['feedbackForm', '앱 피드백 폼'],
       ['RECIPE_VIRAL_METRICS', 'SNS 조회수 수동 데이터'],
-      ['formatViews', 'K/M 조회수 포맷'],
+      ['formatViews', '한국식 조회수 포맷'],
       ['shareCompletedRecipe', '완료 후 공유 루프'],
       ['app-feedback-btn', '폰 화면 내부 플로팅 피드백'],
       ['id="ingSheet"', '재료 바텀시트'],
@@ -498,9 +498,9 @@ function buildScorecard(gates, workflows) {
   const items = [];
 
   const copySignals = [
-    appHtml.includes('SNS에서 요즘 핫한 요리'),
-    appHtml.includes('바로 따라 하기 쉬운 요리'),
+    appHtml.includes('SNS에서 핫했던 요리'),
     appHtml.includes('종합 조회수 순'),
+    appHtml.includes('recipe-list') && !appHtml.includes('id="recScroll"'),
     landingHtml.includes('SNS 요리 영상')
   ];
   items.push(scoreItem(
@@ -517,7 +517,8 @@ function buildScorecard(gates, workflows) {
     existsSync(resolve(root, 'landing.html')),
     appHtml.includes("return path==='/'||path==='/app'||path.endsWith('/index.html')"),
     !appHtml.includes('<div class="search" onclick="openSearch()'),
-    !appHtml.includes('id="communityStrip"')
+    !appHtml.includes('id="communityStrip"'),
+    appHtml.includes('soon-badge')
   ];
   items.push(scoreItem(
     '덜어내기 범위',

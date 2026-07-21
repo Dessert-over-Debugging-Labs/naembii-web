@@ -22,12 +22,12 @@ const states = [
   {
     name: 'home',
     setup: `show('home');`,
-    required: ['#home .nav', '#popScroll .rcard', '#recScroll .rcard', '.app-feedback-btn']
+    required: ['#home .nav', '#home .soon-badge', '#popScroll.recipe-list .rcard', '.app-feedback-btn']
   },
   {
     name: 'detail',
     setup: `currentRecipe=recipeById('${recipeId}'); show('detail');`,
-    required: ['#detail .nav', '#detailYoutubePlayer', '#detTitle', '.cta-bar .btn']
+    required: ['#detail .nav', '#detailYoutubePlayer', '#detTitle', '#detProof .detail-proof-total', '#detProof .detail-proof-platforms>span', '.cta-bar .btn']
   },
   {
     name: 'cook3-hint',
@@ -43,6 +43,16 @@ const states = [
     name: 'timer-sheet',
     setup: `currentRecipe=recipeById('${recipeId}'); show('cook3'); hideCookHint(); openTimer();`,
     required: ['#timerSheet.show .ing-panel', '.ts-edit-hint', '#tsMin', '#tsSec', '.ts-sec-adjusts button', '#timerSheet .btn']
+  },
+  {
+    name: 'cook3-timer-running',
+    setup: `currentRecipe=recipeById('${recipeId}'); show('cook3'); hideCookHint(); startUnifiedTimer(180, false);`,
+    required: ['#stageTimer.show', '#cook3 .cook-body.timer-active', '#cookTrack3 .scard.active', '#cook3Ctrl']
+  },
+  {
+    name: 'video-settings',
+    setup: `currentRecipe=recipeById('${recipeId}'); show('cook3'); hideCookHint(); openVideoSettings();`,
+    required: ['#videoSettings.show .vset-card', '#vsMasterVolRange', '#vsVolRange', '#vsVoiceVolRange', '#vsTimerVolRange', '#vsSpeedVal']
   },
   {
     name: 'ingredients-list',
@@ -184,6 +194,7 @@ try {
         const cleanup = () => {
           try { closeIngredients(); } catch {}
           try { closeTimer(); } catch {}
+          try { cancelStageTimer({ silent: true }); } catch {}
           try { closeVoice(); } catch {}
           try { closeVideoSettings(); } catch {}
           const vpanel = document.getElementById('vpanel');

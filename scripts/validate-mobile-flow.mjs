@@ -203,6 +203,13 @@ try {
     hideCookHint();
     await new Promise((resolve) => setTimeout(resolve, 160));
     openVideoSettings();
+    setVsMasterVol(80);
+    const masterScaled = {
+      value: document.getElementById('vsMasterVolVal')?.textContent || '',
+      range: document.getElementById('vsMasterVolRange')?.value || '',
+      switchOn: document.getElementById('vsMasterVolSw')?.classList.contains('on') || false
+    };
+    setVsMasterVol(100);
     setVsVol(42);
     const videoVolume = {
       value: document.getElementById('vsVolVal')?.textContent || '',
@@ -226,7 +233,9 @@ try {
     };
     toggleVsVoiceVol();
     const muted = {
-      collapsed: document.getElementById('vsVoiceVolWrap')?.classList.contains('collapsed') || false,
+      disabled: document.getElementById('vsVoiceVolWrap')?.classList.contains('disabled') || false,
+      rangeDisabled: document.getElementById('vsVoiceVolRange')?.disabled || false,
+      value: document.getElementById('vsVoiceVolVal')?.textContent || '',
       switchOn: document.getElementById('vsVoiceVolSw')?.classList.contains('on') || false,
       gain: assistantVolumeGain()
     };
@@ -236,6 +245,35 @@ try {
       switchOn: document.getElementById('vsVoiceVolSw')?.classList.contains('on') || false,
       gain: Number(assistantVolumeGain().toFixed(2))
     };
+    setVsTimerVol(55);
+    const timerVolume = {
+      value: document.getElementById('vsTimerVolVal')?.textContent || '',
+      range: document.getElementById('vsTimerVolRange')?.value || '',
+      switchOn: document.getElementById('vsTimerVolSw')?.classList.contains('on') || false,
+      gain: Number(timerAlarmVolumeGain().toFixed(2))
+    };
+    toggleVsTimerVol();
+    const timerMuted = {
+      disabled: document.getElementById('vsTimerVolWrap')?.classList.contains('disabled') || false,
+      rangeDisabled: document.getElementById('vsTimerVolRange')?.disabled || false,
+      value: document.getElementById('vsTimerVolVal')?.textContent || '',
+      switchOn: document.getElementById('vsTimerVolSw')?.classList.contains('on') || false,
+      gain: timerAlarmVolumeGain()
+    };
+    toggleVsTimerVol();
+    toggleVsMasterVol();
+    const masterMuted = {
+      masterValue: document.getElementById('vsMasterVolVal')?.textContent || '',
+      masterSwitchOn: document.getElementById('vsMasterVolSw')?.classList.contains('on') || false,
+      videoDisabled: document.getElementById('vsVolWrap')?.classList.contains('disabled') || false,
+      voiceDisabled: document.getElementById('vsVoiceVolWrap')?.classList.contains('disabled') || false,
+      timerDisabled: document.getElementById('vsTimerVolWrap')?.classList.contains('disabled') || false,
+      videoValue: document.getElementById('vsVolVal')?.textContent || '',
+      voiceGain: assistantVolumeGain(),
+      timerGain: timerAlarmVolumeGain(),
+      videoEffectiveVolume: effectiveCookYoutubeVolume()
+    };
+    toggleVsMasterVol();
     setVsSpeed(1);
     adjustVsSpeed(-1);
     const slower = {
@@ -251,7 +289,80 @@ try {
       downDisabled: document.getElementById('vsSpeedDown')?.disabled || false
     };
     closeVideoSettings();
-    return { videoVolume, videoRestored, voice, muted, restored, slower, slowest };
+    return { masterScaled, videoVolume, videoRestored, voice, muted, restored, timerVolume, timerMuted, masterMuted, slower, slowest };
+  })()`);
+
+  const stepRoundTrip = await evaluate(`(async () => {
+    show('cook3');
+    hideCookHint();
+    cancelStageTimer({ silent: true });
+    await new Promise((resolve) => setTimeout(resolve, 160));
+    const read = (label) => ({
+      label,
+      carousel: cook3Car.current(),
+      active: document.querySelector('#cookTrack3 .scard.active')?.dataset.i || '',
+      currentStep: cook3CurrentStep,
+      trackActive: document.getElementById('cookTrack3')?.dataset.activeStep || '',
+      viewActive: document.getElementById('cook3')?.dataset.activeStep || ''
+    });
+    cook3Car.goTo(0);
+    await new Promise((resolve) => setTimeout(resolve, 90));
+    const aStart = read('A-start');
+    cook3Car.next({ startPlayback: false });
+    await new Promise((resolve) => setTimeout(resolve, 90));
+    const bForward = read('B-forward');
+    cook3Car.next({ startPlayback: false });
+    await new Promise((resolve) => setTimeout(resolve, 90));
+    const cForward = read('C-forward');
+    cook3Car.prev({ startPlayback: false });
+    await new Promise((resolve) => setTimeout(resolve, 90));
+    const bBack = read('B-back');
+    cook3Car.prev({ startPlayback: false });
+    await new Promise((resolve) => setTimeout(resolve, 90));
+    const aBack = read('A-back');
+    const activeCard = document.querySelector('#cookTrack3 .scard.active');
+    const body = document.querySelector('#cook3 .cook-body');
+    const cardRect = activeCard.getBoundingClientRect();
+    const bodyRect = body.getBoundingClientRect();
+    return {
+      sequence: [aStart, bForward, cForward, bBack, aBack],
+      endsAtA: aBack.carousel === 0 && aBack.active === '0' && aBack.currentStep === 0,
+      cardTop: Math.round(cardRect.top),
+      cardBottom: Math.round(cardRect.bottom),
+      bodyTop: Math.round(bodyRect.top),
+      bodyBottom: Math.round(bodyRect.bottom)
+    };
+  })()`);
+
+  const timerLayout = await evaluate(`(async () => {
+    show('cook3');
+    hideCookHint();
+    cook3Car.goTo(1);
+    await new Promise((resolve) => setTimeout(resolve, 120));
+    startUnifiedTimer(180, false);
+    await new Promise((resolve) => setTimeout(resolve, 220));
+    const timerEl = document.getElementById('stageTimer');
+    const activeCard = document.querySelector('#cookTrack3 .scard.active');
+    const body = document.querySelector('#cook3 .cook-body');
+    const timerRect = timerEl.getBoundingClientRect();
+    const cardRect = activeCard.getBoundingClientRect();
+    const bodyRect = body.getBoundingClientRect();
+    const overlapX = Math.max(0, Math.min(timerRect.right, cardRect.right) - Math.max(timerRect.left, cardRect.left));
+    const overlapY = Math.max(0, Math.min(timerRect.bottom, cardRect.bottom) - Math.max(timerRect.top, cardRect.top));
+    const overlapRatio = (overlapX * overlapY) / Math.max(1, cardRect.width * cardRect.height);
+    const result = {
+      visible: timerEl.classList.contains('show'),
+      bodyActive: body.classList.contains('timer-active'),
+      activeStep: document.querySelector('#cookTrack3 .scard.active')?.dataset.i || '',
+      overlapRatio: Number(overlapRatio.toFixed(3)),
+      timerBottom: Math.round(timerRect.bottom),
+      cardTop: Math.round(cardRect.top),
+      cardBottom: Math.round(cardRect.bottom),
+      bodyTop: Math.round(bodyRect.top),
+      bodyBottom: Math.round(bodyRect.bottom)
+    };
+    cancelStageTimer({ silent: true });
+    return result;
   })()`);
 
   const cookRestart = await evaluate(`(async () => {
@@ -885,7 +996,7 @@ try {
     }
   })()`);
 
-  const result = { home, feedback, timer, ingredients, settings, cookRestart, tutorial, assistant };
+  const result = { home, feedback, timer, ingredients, settings, stepRoundTrip, timerLayout, cookRestart, tutorial, assistant };
   console.log(JSON.stringify(result, null, 2));
 
   if (home.marketing || home.active !== 'home') {
@@ -924,20 +1035,42 @@ try {
   if (ingredients.checkState.listActive || !ingredients.checkState.checkActive) {
     throw new Error('재료 체크리스트 추가 보기로 전환되지 않았습니다.');
   }
+  if (settings.masterScaled.value !== '80' || settings.masterScaled.range !== '80' || !settings.masterScaled.switchOn) {
+    throw new Error('마스터 볼륨 설정이 UI에 반영되지 않았습니다.');
+  }
   if (!settings.voice.title.includes('소리·재생') || settings.voice.value !== '35' || settings.voice.range !== '35' || settings.voice.gain !== 0.35) {
     throw new Error('소리·재생 설정의 요리비서 볼륨이 반영되지 않았습니다.');
   }
   if (settings.videoVolume.value !== '42' || settings.videoVolume.state !== 42 || !settings.videoVolume.switchOn || settings.videoRestored.state !== 42 || !settings.videoRestored.switchOn) {
     throw new Error('영상 볼륨 설정값이 음소거/복구 뒤에도 유지되지 않았습니다.');
   }
-  if (!settings.muted.collapsed || settings.muted.switchOn || settings.muted.gain !== 0 || !settings.restored.switchOn || settings.restored.gain !== 0.35) {
+  if (!settings.muted.disabled || !settings.muted.rangeDisabled || settings.muted.value !== 'OFF' || settings.muted.switchOn || settings.muted.gain !== 0 || !settings.restored.switchOn || settings.restored.gain !== 0.35) {
     throw new Error('요리비서 볼륨 스위치가 음소거/복구 상태를 반영하지 못했습니다.');
+  }
+  if (settings.timerVolume.value !== '55' || settings.timerVolume.range !== '55' || !settings.timerVolume.switchOn || settings.timerVolume.gain !== 0.55) {
+    throw new Error('타이머 알림 볼륨 설정이 반영되지 않았습니다.');
+  }
+  if (!settings.timerMuted.disabled || !settings.timerMuted.rangeDisabled || settings.timerMuted.value !== 'OFF' || settings.timerMuted.switchOn || settings.timerMuted.gain !== 0) {
+    throw new Error('타이머 알림 볼륨 스위치가 음소거 상태를 반영하지 못했습니다.');
+  }
+  if (settings.masterMuted.masterValue !== 'OFF' || settings.masterMuted.masterSwitchOn || !settings.masterMuted.videoDisabled || !settings.masterMuted.voiceDisabled || !settings.masterMuted.timerDisabled || settings.masterMuted.videoValue !== 'OFF' || settings.masterMuted.voiceGain !== 0 || settings.masterMuted.timerGain !== 0 || settings.masterMuted.videoEffectiveVolume !== 0) {
+    throw new Error('마스터 OFF 상태가 하위 음량과 실제 출력 계산에 반영되지 않았습니다.');
   }
   if (settings.slower.value !== '0.75×' || settings.slower.active !== '0.75×' || settings.slower.downDisabled || settings.slower.upDisabled) {
     throw new Error('재생속도 - 조절이 0.75× 단계로 동작하지 않았습니다.');
   }
   if (settings.slowest.value !== '0.5×' || settings.slowest.active !== '0.5×' || !settings.slowest.downDisabled) {
     throw new Error('재생속도 최저 단계와 - 버튼 비활성화가 동작하지 않았습니다.');
+  }
+  const roundTripSignature = stepRoundTrip.sequence.map((item) => item.active).join('>');
+  if (roundTripSignature !== '0>1>2>1>0' || !stepRoundTrip.endsAtA) {
+    throw new Error(`조리 단계 A→B→C→B→A 왕복이 실패했습니다: ${JSON.stringify(stepRoundTrip)}`);
+  }
+  if (stepRoundTrip.cardTop < stepRoundTrip.bodyTop - 2 || stepRoundTrip.cardBottom > stepRoundTrip.bodyBottom + 2) {
+    throw new Error(`A 단계 복귀 후 활성 카드가 조리 영역 밖으로 잘립니다: ${JSON.stringify(stepRoundTrip)}`);
+  }
+  if (!timerLayout.visible || !timerLayout.bodyActive || timerLayout.activeStep !== '1' || timerLayout.overlapRatio > 0.03 || timerLayout.cardTop < timerLayout.timerBottom - 2) {
+    throw new Error(`타이머 실행 중 활성 단계 카드가 타이머와 겹치거나 레이아웃 상태가 반영되지 않았습니다: ${JSON.stringify(timerLayout)}`);
   }
   if (cookRestart.active !== 'cook3' || cookRestart.activeStep !== '0' || cookRestart.currentStep !== 0 || cookRestart.cookTime !== 0) {
     throw new Error(`상세에서 다시 요리 시작 시 첫 단계 초기 화면으로 돌아가지 않습니다: ${JSON.stringify(cookRestart)}`);
