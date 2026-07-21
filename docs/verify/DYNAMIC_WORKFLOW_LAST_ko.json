@@ -1,24 +1,9 @@
 {
-  "startedAt": "2026-07-21T14:34:19.300Z",
+  "startedAt": "2026-07-21T18:00:50.602Z",
   "summary": "PASS",
   "visual": false,
   "baseURL": "http://127.0.0.1:4190/",
-  "files": [
-    "README.md",
-    "app.html",
-    "docs/verify/DYNAMIC_WORKFLOW_LAST_ko.html",
-    "docs/verify/DYNAMIC_WORKFLOW_LAST_ko.json",
-    "docs/verify/DYNAMIC_WORKFLOW_LAST_ko.md",
-    "scripts/check-app-script.mjs",
-    "scripts/serve-static.mjs",
-    "scripts/validate-copy-tone.mjs",
-    "scripts/validate-load-performance.mjs",
-    "scripts/verify-dynamic.mjs",
-    "scripts/verify-gemini-tool-guard.mjs",
-    "scripts/verify-langfuse-trace.mjs",
-    "vercel.json",
-    "index.html"
-  ],
+  "files": [],
   "workflows": [
     "core",
     "api",
@@ -144,7 +129,7 @@
         "weight": 15,
         "points": 15,
         "percent": 100,
-        "evidence": "6/6 신호 충족",
+        "evidence": "7/7 신호 충족",
         "fix": "루트는 웹앱 홈으로 열고, 홈 검색 UI와 후기/팁 스트립을 비활성화하며 기존 랜딩은 landing.html로 보존한다."
       },
       {

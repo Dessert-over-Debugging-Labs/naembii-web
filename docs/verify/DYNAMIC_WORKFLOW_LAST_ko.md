@@ -1,6 +1,6 @@
 # 동적 검증 워크플로우 실행 리포트
 
-- 일시: 2026-07-21T14:34:19.300Z
+- 일시: 2026-07-21T18:00:50.602Z
 - 판정: **PASS**
 - 점수: **110 / 110 (100%)**
 - 통과 기준: **96% 초과** (시각 검증 미포함 빠른 기준)
@@ -13,36 +13,23 @@
 
 ## 변경 파일
 
-- `README.md`
-- `app.html`
-- `docs/verify/DYNAMIC_WORKFLOW_LAST_ko.html`
-- `docs/verify/DYNAMIC_WORKFLOW_LAST_ko.json`
-- `docs/verify/DYNAMIC_WORKFLOW_LAST_ko.md`
-- `scripts/check-app-script.mjs`
-- `scripts/serve-static.mjs`
-- `scripts/validate-copy-tone.mjs`
-- `scripts/validate-load-performance.mjs`
-- `scripts/verify-dynamic.mjs`
-- `scripts/verify-gemini-tool-guard.mjs`
-- `scripts/verify-langfuse-trace.mjs`
-- `vercel.json`
-- `index.html`
+- 감지된 변경 없음
 
 ## 선택된 워크플로우
 
 | workflow | 선택 이유 |
 | --- | --- |
 | core | 항상 실행 |
-| api | api/app/landing 변경 감지 |
-| deploy | 배포 설정 변경 감지 |
-| docs | 검증 문서 변경 감지 |
+| api | full 실행 |
+| deploy | full 실행 |
+| docs | full 실행 |
 
 ## 점수표
 
 | 항목 | 배점 | 점수 | 달성률 | 근거 | 보정 후보 |
 | --- | ---: | ---: | ---: | --- | --- |
 | 단일 가치·카피 명확성 | 15 | 15 | 100% | 4/4 신호 충족 | 루트 앱은 SNS 요리를 바로 따라 하는 가치와 조회수 기반 탐색에 집중해야 한다. |
-| 덜어내기 범위 | 15 | 15 | 100% | 6/6 신호 충족 | 루트는 웹앱 홈으로 열고, 홈 검색 UI와 후기/팁 스트립을 비활성화하며 기존 랜딩은 landing.html로 보존한다. |
+| 덜어내기 범위 | 15 | 15 | 100% | 7/7 신호 충족 | 루트는 웹앱 홈으로 열고, 홈 검색 UI와 후기/팁 스트립을 비활성화하며 기존 랜딩은 landing.html로 보존한다. |
 | 의견 보내기 단순화 | 15 | 15 | 100% | 5/5 신호 충족 | 앱 의견은 종류/이메일 없이 입력창 하나와 보내기 버튼으로 수집한다. |
 | SNS 조회수 카드·핵심 루프 | 10 | 10 | 100% | 5/5 신호 충족 | 레시피 카드는 SNS 조회수 중심으로 보이고, 조리·공유·피드백 루프는 유지한다. |
 | 정적 앱 화면 소개 | 15 | 15 | 100% | 6/6 신호 충족 | 홈/검색/상세/조리/완료 화면 캡쳐가 랜딩에서 정적으로 제공되어야 한다. |
