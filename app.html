@@ -2310,6 +2310,14 @@
   function guModalityTokens(details,modality){
     return (details||[]).reduce((sum,item)=>sum+((item?.modality===modality&&Number(item.tokenCount))||0),0);
   }
+  function guWeightedTokens(meta){
+    const prompt=Number(meta?.promptTokenCount)||0,response=Number(meta?.responseTokenCount)||0;
+    const promptAudio=guModalityTokens(meta?.promptTokensDetails,'AUDIO');
+    const responseAudio=guModalityTokens(meta?.responseTokensDetails,'AUDIO');
+    const promptText=Math.max(0,prompt-promptAudio,guModalityTokens(meta?.promptTokensDetails,'TEXT'));
+    const responseText=Math.max(0,response-responseAudio,guModalityTokens(meta?.responseTokensDetails,'TEXT'));
+    return promptText+(promptAudio*4)+(responseText*6)+(responseAudio*16);
+  }
   function guRecordUsage(meta){
     if(!meta)return;
     const usage=guEnsure();
@@ -4076,6 +4084,7 @@
   const GEMINI_TOOL_CALL_SETTLE_MAX_MS=3500;
   const GEMINI_INTERRUPTION_BOUNDARY_MAX_MS=1800;
   const GEMINI_RECONNECT_DELAYS=[250,750,1500,3000,5000,10000,15000];
+  const GEMINI_LIVE_WEIGHTED_TOKEN_LIMIT=280000;
   let geminiLive=null, geminiLiveConnecting=null;
   function currentGeminiCookingContext(){
     const steps=currentRecipe?.steps||[];
@@ -5546,7 +5555,18 @@
       live.resumeFailureCount=0;
       if(live.pendingContextRestart)scheduleGeminiContextRestart(live);
     }
-    if(message.usageMetadata)guRecordUsage(message.usageMetadata);
+    if(message.usageMetadata){
+      guRecordUsage(message.usageMetadata);
+      live.weightedTokens=(Number(live.weightedTokens)||0)+guWeightedTokens(message.usageMetadata);
+      if(!live.tokenLimitReached&&live.weightedTokens>=GEMINI_LIVE_WEIGHTED_TOKEN_LIMIT){
+        live.tokenLimitReached=true;
+        suspendGeminiLiveSession('weighted token limit reached');
+        if(hf3On)toggleHf3();
+        else stopGeminiLiveSession('weighted token limit reached');
+        toast('요리 비서 사용 한도에 도달해 종료됐어요','bot');
+        return;
+      }
+    }
     if(message.serverContent)handleGeminiServerContent(live,message.serverContent);
     if(message.toolCall)handleGeminiToolCall(live,message.toolCall);
     if(message.toolCallCancellation?.ids){
@@ -5686,7 +5706,7 @@
         vadSpeaking:false,vadStartFrames:0,vadSilenceMs:0,vadPreRoll:[],vadPreRollMs:0,
         capturedAudioFrames:0,capturedAudioBytes:0,sentAudioFrames:0,sentAudioBytes:0,activeAudioFrames:0,lastAudioAt:0,lastNonSilentAt:0,inputLevel:0,micMeterMode:'waiting',micWatchdog:null,
         transcript:null,loggedTraceTurnIds:new Set(),commandEpoch:0,activeCommand:null,responseCommandEpoch:0,ignoreInterruptedTurnComplete:false,interruptedTurnTimer:null,outputTranscriptionQuarantineUntil:0,cancelledToolCalls:new Set(),toolCallResults:new Map(),toolCommandResults:new Map(),pendingToolBatchCount:0,toolResponsePending:false,pendingStopReason:'',responseInFlight:false,
-        contextKey:'',pendingContextRestart:false,contextRestartTimer:null,contextRestarting:false,answerUnavailable:false
+        contextKey:'',pendingContextRestart:false,contextRestartTimer:null,contextRestarting:false,answerUnavailable:false,weightedTokens:0,tokenLimitReached:false
       };
       geminiLive=live;
       setVpMicButton('busy');
