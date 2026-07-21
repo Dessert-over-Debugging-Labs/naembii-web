@@ -4,16 +4,16 @@
   "trailingSlash": false,
   "rewrites": [
     {
-      "source": "/",
-      "destination": "/app.html"
-    },
-    {
       "source": "/app",
-      "destination": "/app.html"
+      "destination": "/index.html"
     },
     {
       "source": "/app/:path*",
-      "destination": "/app.html"
+      "destination": "/index.html"
+    },
+    {
+      "source": "/landing",
+      "destination": "/landing.html"
     },
     {
       "source": "/design",

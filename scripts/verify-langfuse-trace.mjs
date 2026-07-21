@@ -105,7 +105,7 @@ assert.equal(_test.requestOriginAllowed({ headers: { origin: 'https://attacker.e
 if (previousOrigins === undefined) delete process.env.NAEMBI_ALLOWED_ORIGINS;
 else process.env.NAEMBI_ALLOWED_ORIGINS = previousOrigins;
 
-const html = readFileSync(new URL('../app.html', import.meta.url), 'utf8');
+const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 const hook = html.match(/function recordVpTraceTurn[\s\S]*?\n  function latestVpTranscriptHistoryTurn/)?.[0] || '';
 assert.match(hook, /fetch\('\/api\/ai-trace'/);
 assert.match(hook, /userText,assistantText/);

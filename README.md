@@ -5,8 +5,8 @@
 - 서비스명: 냄비 / Naembi
 - 배포 대상: Vercel
 - 공식 베타 URL: `https://naembii-web.vercel.app`
-- 웹앱 엔트리: `app.html` (`/`, `/app`)
-- 보존 랜딩: `landing.html` (현재 라우트 비활성)
+- 웹앱 엔트리: `index.html` (`/`, `/app`)
+- 보존 랜딩: `landing.html` (`/landing`, `/landing.html`)
 - 수집 API: `api/beta-signup.js`, `api/feedback.js`
 - 현재 목적: SNS 요리 영상을 바로 따라 만들 수 있는 조리 모드 경험 검증과 피드백 수집
 
@@ -97,7 +97,7 @@ npm run verify:mixpanel -- http://127.0.0.1:4873
 7. 배포 후 `/`와 `/app`이 모두 웹앱 홈으로 열리는지 확인합니다.
 8. `/api/feedback`이 동작하는지 확인합니다.
 
-`vercel.json`에서 `/`와 `/app` 요청은 `/app.html`로 rewrite됩니다. 기존 랜딩은 `landing.html`로 보존되어 있으며 현재 기본 라우트에서는 사용하지 않습니다. 이 repo는 정적 HTML + Vercel 서버리스 API 구성이므로 별도 빌드 명령이 필요 없습니다.
+Vercel에서 `/`는 루트 `index.html` 정적 엔트리로 바로 열리고, `/app` 요청은 같은 `index.html`로 rewrite됩니다. 기존 랜딩은 `landing.html`로 보존되어 `/landing` 또는 `/landing.html`에서 접근할 수 있습니다. 이 repo는 정적 HTML + Vercel 서버리스 API 구성이므로 별도 빌드 명령이 필요 없습니다.
 
 ## 환경변수
 

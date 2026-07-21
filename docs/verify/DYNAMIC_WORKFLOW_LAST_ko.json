@@ -1,5 +1,5 @@
 {
-  "startedAt": "2026-07-21T13:59:17.875Z",
+  "startedAt": "2026-07-21T14:34:19.300Z",
   "summary": "PASS",
   "visual": false,
   "baseURL": "http://127.0.0.1:4190/",
@@ -9,13 +9,15 @@
     "docs/verify/DYNAMIC_WORKFLOW_LAST_ko.html",
     "docs/verify/DYNAMIC_WORKFLOW_LAST_ko.json",
     "docs/verify/DYNAMIC_WORKFLOW_LAST_ko.md",
-    "landing.html",
+    "scripts/check-app-script.mjs",
     "scripts/serve-static.mjs",
-    "scripts/validate-app-screens.mjs",
-    "scripts/validate-mixpanel-analytics.mjs",
-    "scripts/validate-mobile-flow.mjs",
+    "scripts/validate-copy-tone.mjs",
+    "scripts/validate-load-performance.mjs",
     "scripts/verify-dynamic.mjs",
-    "vercel.json"
+    "scripts/verify-gemini-tool-guard.mjs",
+    "scripts/verify-langfuse-trace.mjs",
+    "vercel.json",
+    "index.html"
   ],
   "workflows": [
     "core",
@@ -33,7 +35,7 @@
     {
       "name": "vercel app route",
       "status": "PASS",
-      "detail": "/, /app -> /app.html, /design -> /design.html",
+      "detail": "/는 index.html 정적 엔트리, /app -> /index.html, /landing -> /landing.html",
       "fix": ""
     },
     {
@@ -45,7 +47,7 @@
     {
       "name": "app structure",
       "status": "PASS",
-      "detail": "/app 기본 앱 홈, 조리 모드, 피드백 폼 확인",
+      "detail": "루트와 /app 기본 앱 홈, 조리 모드, 피드백 폼 확인",
       "fix": ""
     },
     {
@@ -63,7 +65,7 @@
     {
       "name": "inline script syntax",
       "status": "PASS",
-      "detail": "app.html inline script 문법 통과",
+      "detail": "index.html inline script 문법 통과",
       "fix": ""
     },
     {
@@ -142,8 +144,8 @@
         "weight": 15,
         "points": 15,
         "percent": 100,
-        "evidence": "5/5 신호 충족",
-        "fix": "루트 랜딩, 홈 검색 UI, 후기/팁 스트립을 비활성화하고 기존 랜딩은 landing.html로 보존한다."
+        "evidence": "6/6 신호 충족",
+        "fix": "루트는 웹앱 홈으로 열고, 홈 검색 UI와 후기/팁 스트립을 비활성화하며 기존 랜딩은 landing.html로 보존한다."
       },
       {
         "name": "의견 보내기 단순화",
@@ -191,7 +193,7 @@
         "points": 10,
         "percent": 100,
         "evidence": "4/4 신호 충족",
-        "fix": "루트 랜딩과 /app 웹앱 라우팅, 수집 환경변수, 배포 제외, 검증 스크립트를 유지한다."
+        "fix": "루트 앱 엔트리와 /app 웹앱 라우팅, 수집 환경변수, 배포 제외, 검증 스크립트를 유지한다."
       },
       {
         "name": "검증 루프 재현성",

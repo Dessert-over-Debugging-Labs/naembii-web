@@ -134,14 +134,16 @@ function coreChecks() {
   try {
     const vercel = parseJsonFile('vercel.json');
     const rewrites = Array.isArray(vercel.rewrites) ? vercel.rewrites : [];
-    const hasAppRewrite = rewrites.some((item) => item.source === '/app' && item.destination === '/app.html');
-    const hasAppDeepRewrite = rewrites.some((item) => item.source === '/app/:path*' && item.destination === '/app.html');
+    const hasAppRewrite = rewrites.some((item) => item.source === '/app' && item.destination === '/index.html');
+    const hasAppDeepRewrite = rewrites.some((item) => item.source === '/app/:path*' && item.destination === '/index.html');
+    const hasLandingRewrite = rewrites.some((item) => item.source === '/landing' && item.destination === '/landing.html');
     const hasDesignRewrite = rewrites.some((item) => item.source === '/design' && item.destination === '/design.html');
     const hasDesignDeepRewrite = rewrites.some((item) => item.source === '/design/:path*' && item.destination === '/design.html');
-    const hasRootApp = rewrites.some((item) => item.source === '/' && item.destination === '/app.html');
-    gates.push(hasRootApp && hasAppRewrite && hasAppDeepRewrite && hasDesignRewrite && hasDesignDeepRewrite
-      ? pass('vercel app route', '/, /app -> /app.html, /design -> /design.html')
-      : fail('vercel app route', '루트/앱/디자인 라우팅이 단순화 구조가 아님', 'vercel.json은 /와 /app을 /app.html로 rewrite하고 /design을 유지한다.'));
+    const hasRootRewrite = rewrites.some((item) => item.source === '/');
+    const hasRootIndex = existsSync(resolve(root, 'index.html'));
+    gates.push(hasRootIndex && !hasRootRewrite && hasAppRewrite && hasAppDeepRewrite && hasLandingRewrite && hasDesignRewrite && hasDesignDeepRewrite
+      ? pass('vercel app route', '/는 index.html 정적 엔트리, /app -> /index.html, /landing -> /landing.html')
+      : fail('vercel app route', '루트/앱/랜딩/디자인 라우팅이 단순화 구조가 아님', '루트는 index.html 정적 엔트리로 두고 /app은 /index.html로, /landing은 /landing.html로 rewrite한다.'));
   } catch (error) {
     gates.push(fail('vercel app route', error.message, 'vercel.json JSON 형식을 복구한다.'));
   }
@@ -161,10 +163,10 @@ function coreChecks() {
       : pass('landing archive structure', '기존 랜딩 보존 파일 확인'));
   }
 
-  if (!existsSync(resolve(root, 'app.html'))) {
-    gates.push(fail('app entry', 'app.html 없음', '/app 웹앱 엔트리를 복구한다.'));
+  if (!existsSync(resolve(root, 'index.html'))) {
+    gates.push(fail('app entry', 'index.html 없음', '루트와 /app 웹앱 엔트리를 복구한다.'));
   } else {
-    const html = read('app.html');
+    const html = read('index.html');
     const required = [
       ['isStandaloneAppPath', '/app 기본 앱 홈 진입'],
       ['id="home"', '앱 홈 화면'],
@@ -181,8 +183,8 @@ function coreChecks() {
     ];
     const missing = required.filter(([needle]) => !html.includes(needle)).map(([, label]) => label);
     gates.push(missing.length
-      ? fail('app structure', `누락: ${missing.join(', ')}`, '/app 웹앱 진입과 핵심 화면 구조를 복구한다.')
-      : pass('app structure', '/app 기본 앱 홈, 조리 모드, 피드백 폼 확인'));
+      ? fail('app structure', `누락: ${missing.join(', ')}`, '루트와 /app 웹앱 진입 및 핵심 화면 구조를 복구한다.')
+      : pass('app structure', '루트와 /app 기본 앱 홈, 조리 모드, 피드백 폼 확인'));
   }
 
   if (!existsSync(resolve(root, 'design.html'))) {
@@ -206,7 +208,7 @@ function coreChecks() {
   }
 
   {
-    const publicHtml = `${existsSync(resolve(root, 'landing.html')) ? read('landing.html') : ''}\n${existsSync(resolve(root, 'app.html')) ? read('app.html') : ''}`;
+    const publicHtml = `${existsSync(resolve(root, 'landing.html')) ? read('landing.html') : ''}\n${existsSync(resolve(root, 'index.html')) ? read('index.html') : ''}`;
     const forbidden = ['Notion', 'notion', 'v2', 'v3', 'Ralph', '랄프', 'API', 'Vercel', 'GitHub', 'webhook', '환경변수', '프로토타입', 'AWS', '페이지 안에'];
     const found = forbidden.filter((term) => publicHtml.includes(term));
     gates.push(found.length
@@ -216,7 +218,7 @@ function coreChecks() {
 
   const syntax = run(process.execPath, ['scripts/check-app-script.mjs']);
   gates.push(syntax.ok
-    ? pass('inline script syntax', 'app.html inline script 문법 통과')
+    ? pass('inline script syntax', 'index.html inline script 문법 통과')
     : fail('inline script syntax', truncate(syntax.stderr || syntax.stdout), 'inline script 문법 오류를 먼저 고친다.'));
 
   return gates;
@@ -434,10 +436,10 @@ function visualChecks() {
 
 function selectedWorkflows(files) {
   const selected = ['core'];
-  const apiTouched = full || touches(files, ['api', 'app.html', 'landing.html']);
+  const apiTouched = full || touches(files, ['api', 'index.html', 'landing.html']);
   const deployTouched = full || touches(files, ['vercel.json', 'package.json', '.env.example', '.vercelignore', 'api']);
   const docsTouched = full || touches(files, ['docs/verify', 'docs/handoff', /^docs\/progress\//]);
-  const landingTouched = full || touches(files, ['landing.html', 'app.html', 'assets/screens', 'scripts/capture-landing.mjs', 'scripts/capture-app-screens.mjs']);
+  const landingTouched = full || touches(files, ['landing.html', 'index.html', 'assets/screens', 'scripts/capture-landing.mjs', 'scripts/capture-app-screens.mjs']);
 
   if (apiTouched) selected.push('api');
   if (deployTouched) selected.push('deploy');
@@ -450,7 +452,7 @@ function selectedWorkflows(files) {
 
 function workflowReason(files, workflow) {
   if (workflow === 'core') return '항상 실행';
-  if (workflow === 'api') return touches(files, ['api', 'app.html', 'landing.html']) ? 'api/app/landing 변경 감지' : 'full 실행';
+  if (workflow === 'api') return touches(files, ['api', 'index.html', 'landing.html']) ? 'api/app/landing 변경 감지' : 'full 실행';
   if (workflow === 'deploy') return touches(files, ['vercel.json', 'package.json', '.env.example', '.vercelignore', 'api']) ? '배포 설정 변경 감지' : 'full 실행';
   if (workflow === 'docs') return touches(files, ['docs/verify', 'docs/handoff', /^docs\/progress\//]) ? '검증 문서 변경 감지' : 'full 실행';
   if (workflow === 'visual') return visual ? '--visual 요청' : '비활성';
@@ -473,7 +475,7 @@ function gatePassed(gates, name) {
 
 function buildScorecard(gates, workflows) {
   const landingHtml = existsSync(resolve(root, 'landing.html')) ? read('landing.html') : '';
-  const appHtml = existsSync(resolve(root, 'app.html')) ? read('app.html') : '';
+  const appHtml = existsSync(resolve(root, 'index.html')) ? read('index.html') : '';
   const designHtml = existsSync(resolve(root, 'design.html')) ? read('design.html') : '';
   const html = `${landingHtml}\n${appHtml}`;
   const env = existsSync(resolve(root, '.env.example')) ? read('.env.example') : '';
@@ -510,9 +512,10 @@ function buildScorecard(gates, workflows) {
   ));
 
   const simplificationSignals = [
-    !existsSync(resolve(root, 'index.html')),
+    existsSync(resolve(root, 'index.html')),
+    !existsSync(resolve(root, 'app.html')),
     existsSync(resolve(root, 'landing.html')),
-    appHtml.includes("return path==='/'||path==='/app'||path.endsWith('/app.html')"),
+    appHtml.includes("return path==='/'||path==='/app'||path.endsWith('/index.html')"),
     !appHtml.includes('<div class="search" onclick="openSearch()'),
     !appHtml.includes('id="communityStrip"')
   ];
@@ -520,8 +523,8 @@ function buildScorecard(gates, workflows) {
     '덜어내기 범위',
     15,
     scoreBySignals(simplificationSignals, 15),
-    `${simplificationSignals.filter(Boolean).length}/5 신호 충족`,
-    '루트 랜딩, 홈 검색 UI, 후기/팁 스트립을 비활성화하고 기존 랜딩은 landing.html로 보존한다.'
+    `${simplificationSignals.filter(Boolean).length}/${simplificationSignals.length} 신호 충족`,
+    '루트는 웹앱 홈으로 열고, 홈 검색 UI와 후기/팁 스트립을 비활성화하며 기존 랜딩은 landing.html로 보존한다.'
   ));
 
   const feedbackSignals = [
@@ -657,8 +660,8 @@ function buildScorecard(gates, workflows) {
     '배포 준비도',
     10,
     scoreBySignals(deploySignals, 10),
-    `${deploySignals.filter(Boolean).length}/4 신호 충족`,
-    '루트 랜딩과 /app 웹앱 라우팅, 수집 환경변수, 배포 제외, 검증 스크립트를 유지한다.'
+    `${deploySignals.filter(Boolean).length}/${deploySignals.length} 신호 충족`,
+    '루트 앱 엔트리와 /app 웹앱 라우팅, 수집 환경변수, 배포 제외, 검증 스크립트를 유지한다.'
   ));
 
   const loopSignals = [
