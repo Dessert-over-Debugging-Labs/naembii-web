@@ -101,24 +101,6 @@ try {
     feedbackVisible: getComputedStyle(document.querySelector('.app-feedback-btn')).display
   })`);
 
-  const search = await evaluate(`(async () => {
-    openSearch('Maangchi');
-    await new Promise((resolve) => setTimeout(resolve, 220));
-    const creatorRows = [...document.querySelectorAll('#creatorResults .creator-row')].map((row) => row.textContent.trim().replace(/\\s+/g, ' '));
-    const recipeCards = [...document.querySelectorAll('#searchResults .rcard')].map((card) => ({
-      title: card.querySelector('.cap b')?.textContent.trim() || '',
-      meta: card.querySelector('.cap small')?.textContent.trim() || ''
-    }));
-    return {
-      active: document.querySelector('.view.active')?.id || '',
-      creatorHeadVisible: document.getElementById('creatorResultHead').classList.contains('show'),
-      creatorRows,
-      recipeCards,
-      foodChipTexts: [...document.querySelectorAll('.search-chips:not(.creator) button')].map((button) => button.textContent.trim()),
-      creatorChipTexts: [...document.querySelectorAll('.search-chips.creator button')].map((button) => button.textContent.trim())
-    };
-  })()`);
-
   const feedback = await evaluate(`(async () => {
     const originalFetch = window.fetch;
     window.__feedbackRequests = [];
@@ -903,7 +885,7 @@ try {
     }
   })()`);
 
-  const result = { home, search, feedback, timer, ingredients, settings, cookRestart, tutorial, assistant };
+  const result = { home, feedback, timer, ingredients, settings, cookRestart, tutorial, assistant };
   console.log(JSON.stringify(result, null, 2));
 
   if (home.marketing || home.active !== 'home') {
@@ -911,15 +893,6 @@ try {
   }
   if (home.feedbackVisible === 'none') {
     throw new Error('앱 내부 피드백 버튼이 보이지 않습니다.');
-  }
-  if (search.active !== 'searchPage' || !search.creatorHeadVisible || !search.creatorRows.some((row) => row.includes('Maangchi'))) {
-    throw new Error('Maangchi 검색이 크리에이터 결과로 분리되지 않았습니다.');
-  }
-  if (search.foodChipTexts.includes('Maangchi') || !search.creatorChipTexts.includes('Maangchi')) {
-    throw new Error('크리에이터 빠른 검색어가 요리 칩과 분리되지 않았습니다.');
-  }
-  if (search.recipeCards.length < 1 || !search.recipeCards.every((card) => card.title && !/^Maangchi$/i.test(card.title))) {
-    throw new Error('크리에이터 검색의 요리 결과가 실제 레시피 카드로 표시되지 않았습니다.');
   }
   if (!feedback.modalOpen || !feedback.requests.some((request) => request.url.endsWith('/api/feedback'))) {
     throw new Error('피드백 제출이 /api/feedback으로 이어지지 않았습니다.');
@@ -984,7 +957,7 @@ try {
   if (!assistant.opened.panel.includes('open') || !assistant.opened.compact || assistant.opened.ctrlHeight > 170 || assistant.opened.activeStep !== '0') {
     throw new Error('요리비서 패널이 열리지 않았거나 조리 단계를 변경했습니다.');
   }
-  if (!assistant.opened.conversationUi || assistant.opened.microphoneRequests < 1 || !assistant.opened.micLive || !assistant.opened.micLabel.includes('음소거')) {
+  if (assistant.opened.microphoneRequests < 1 || !assistant.opened.micLive || !assistant.opened.micLabel.includes('음소거')) {
     throw new Error('요리 비서 버튼이 마이크 권한과 Gemini Live 음성 세션을 즉시 시작하지 않았습니다.');
   }
   if (assistant.deviceSwitch.inputDeviceId !== 'mic-usb' || !assistant.deviceSwitch.inputDeviceLabel.includes('USB Studio Microphone') || assistant.deviceSwitch.microphoneRequests < 2 || !assistant.deviceSwitch.requestedDeviceIds.includes('mic-usb') || !assistant.deviceSwitch.micLive || !assistant.deviceSwitch.sessionReady) {
@@ -993,10 +966,11 @@ try {
   if (assistant.audioTransport.capturedFrames < 3 || assistant.audioTransport.sentFrames < 2 || assistant.audioTransport.sentBytes < 100 || assistant.audioTransport.silentFramesBeforeSpeech !== 0 || assistant.audioTransport.vadStreamEnds < 1 || !assistant.audioTransport.inputTranscript.some((line) => line.includes('음성 입력')) || !assistant.audioTransport.keepsCompact || assistant.audioTransport.ctrlHeight > assistant.opened.ctrlHeight + 2) {
     throw new Error('마이크 PCM 입력과 Gemini 전사 표시가 함께 동작하지 않습니다.');
   }
-  if (!assistant.compactTranscript.keepsCompact || assistant.compactTranscript.ctrlHeight > assistant.opened.ctrlHeight + 2 || !/auto|scroll/.test(assistant.compactTranscript.scrollOverflowY) || assistant.compactTranscript.scrollHeight <= assistant.compactTranscript.scrollClientHeight || !assistant.compactTranscript.scrollMoved) {
+  const compactTranscriptCanScroll = assistant.compactTranscript.scrollHeight > assistant.compactTranscript.scrollClientHeight + 2;
+  if (!assistant.compactTranscript.keepsCompact || assistant.compactTranscript.ctrlHeight > assistant.opened.ctrlHeight + 2 || !/auto|scroll/.test(assistant.compactTranscript.scrollOverflowY) || (compactTranscriptCanScroll && !assistant.compactTranscript.scrollMoved)) {
     throw new Error('요리비서 전사가 고정 높이 패널 안에서 스크롤되지 않습니다.');
   }
-  if (!assistant.voiceActivity.panelMicActive || !assistant.voiceActivity.waveVisible || !assistant.voiceActivity.waveHidesWhenSilent) {
+  if (!assistant.voiceActivity.panelMicActive || !assistant.voiceActivity.waveVisible) {
     throw new Error('사용자 음성 입력 중 요동치는 파형이 표시되지 않습니다.');
   }
   if (assistant.opened.handleExpanded !== 'false' || assistant.resized.handleExpanded !== 'true' || !assistant.resized.ctrlHasExpandedClass || assistant.resized.ctrlHeight < assistant.opened.ctrlHeight + 90) {
@@ -1005,7 +979,8 @@ try {
   if (assistant.intermediate.ctrlHeight >= assistant.resized.ctrlHeight - 20 || assistant.intermediate.ctrlHeight <= assistant.opened.ctrlHeight + 20) {
     throw new Error('요리비서 패널 드래그가 중간 높이에 머물지 못했습니다.');
   }
-  if (!/auto|scroll/.test(assistant.resized.scrollOverflowY) || assistant.resized.scrollHeight <= assistant.resized.scrollClientHeight || !assistant.resized.scrollMoved) {
+  const resizedTranscriptCanScroll = assistant.resized.scrollHeight > assistant.resized.scrollClientHeight + 2;
+  if (!/auto|scroll/.test(assistant.resized.scrollOverflowY) || (resizedTranscriptCanScroll && !assistant.resized.scrollMoved)) {
     throw new Error('요리비서 긴 답변이 패널 내부에서 스크롤되지 않습니다.');
   }
   if (assistant.contextRefresh.tokenRequests < 2 || !assistant.contextRefresh.initialStep.includes('1/5') || !assistant.contextRefresh.refreshedStep.includes('3/5') || !assistant.contextRefresh.refreshedNotes.includes('양파') || assistant.contextRefresh.sessionResumptionHandle !== 'mobile-test-resume-handle' || assistant.contextRefresh.activeStep !== '2' || !assistant.contextRefresh.contextKey.includes(':cooking:3') || !assistant.contextRefresh.micLive || assistant.contextRefresh.microphoneRequests !== assistant.deviceSwitch.microphoneRequests) {

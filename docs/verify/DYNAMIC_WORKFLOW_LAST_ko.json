@@ -1,24 +1,27 @@
 {
-  "startedAt": "2026-07-10T05:43:38.183Z",
-  "summary": "FAIL",
+  "startedAt": "2026-07-21T13:59:17.875Z",
+  "summary": "PASS",
   "visual": false,
   "baseURL": "http://127.0.0.1:4190/",
   "files": [
     "README.md",
-    "api/gemini-live-token.js",
     "app.html",
-    "docs/GEMINI_LIVE_MOBILE_WEB_SETUP_ko.md",
-    "package.json",
+    "docs/verify/DYNAMIC_WORKFLOW_LAST_ko.html",
+    "docs/verify/DYNAMIC_WORKFLOW_LAST_ko.json",
+    "docs/verify/DYNAMIC_WORKFLOW_LAST_ko.md",
+    "landing.html",
     "scripts/serve-static.mjs",
+    "scripts/validate-app-screens.mjs",
+    "scripts/validate-mixpanel-analytics.mjs",
     "scripts/validate-mobile-flow.mjs",
-    "assets/gemini-live-audio-worklet.js",
-    "scripts/verify-gemini-live-browser.mjs",
-    "scripts/verify-gemini-live.mjs"
+    "scripts/verify-dynamic.mjs",
+    "vercel.json"
   ],
   "workflows": [
     "core",
     "api",
-    "deploy"
+    "deploy",
+    "docs"
   ],
   "gates": [
     {
@@ -30,13 +33,13 @@
     {
       "name": "vercel app route",
       "status": "PASS",
-      "detail": "/app -> /app.html, /design -> /design.html, 루트는 index.html 진입",
+      "detail": "/, /app -> /app.html, /design -> /design.html",
       "fix": ""
     },
     {
-      "name": "landing structure",
+      "name": "landing archive structure",
       "status": "PASS",
-      "detail": "사용자 후킹 카피, 정적 앱 캡쳐, 미리 써보기/요리 보내기 폼 확인",
+      "detail": "기존 랜딩 보존 파일 확인",
       "fix": ""
     },
     {
@@ -53,9 +56,9 @@
     },
     {
       "name": "public copy static guard",
-      "status": "FAIL",
-      "detail": "공개 HTML 원문 금지어: API",
-      "fix": "사용자 공개 화면/HTML에서 내부 작업 용어를 제거한다."
+      "status": "PASS",
+      "detail": "공개 HTML 내부 작업 용어 0건",
+      "fix": ""
     },
     {
       "name": "inline script syntax",
@@ -116,41 +119,47 @@
       "status": "PASS",
       "detail": "npm run verify:dynamic 가능",
       "fix": ""
+    },
+    {
+      "name": "verification docs",
+      "status": "PASS",
+      "detail": "동적 워크플로우/랜딩 검증 문서 확인",
+      "fix": ""
     }
   ],
   "scorecard": {
     "items": [
       {
-        "name": "사용자 가치·카피 명확성",
+        "name": "단일 가치·카피 명확성",
         "weight": 15,
         "points": 15,
         "percent": 100,
         "evidence": "4/4 신호 충족",
-        "fix": "히어로, CTA, 레시피 요청, 작은 냄비 감성 카피가 모두 사용자 행동으로 이어져야 한다."
+        "fix": "루트 앱은 SNS 요리를 바로 따라 하는 가치와 조회수 기반 탐색에 집중해야 한다."
       },
       {
-        "name": "베타 전환 흐름",
+        "name": "덜어내기 범위",
         "weight": 15,
         "points": 15,
         "percent": 100,
         "evidence": "5/5 신호 충족",
-        "fix": "모바일/데스크톱/하단 신청 폼과 성공 메시지를 모두 유지한다."
+        "fix": "루트 랜딩, 홈 검색 UI, 후기/팁 스트립을 비활성화하고 기존 랜딩은 landing.html로 보존한다."
       },
       {
-        "name": "피드백·레시피 수집",
+        "name": "의견 보내기 단순화",
         "weight": 15,
-        "points": 12,
-        "percent": 80,
-        "evidence": "4/5 신호 충족",
-        "fix": "베타 피드백과 레시피 요청이 같은 저장 흐름으로 수집되어야 한다."
+        "points": 15,
+        "percent": 100,
+        "evidence": "5/5 신호 충족",
+        "fix": "앱 의견은 종류/이메일 없이 입력창 하나와 보내기 버튼으로 수집한다."
       },
       {
-        "name": "후킹·상호작용 루프",
+        "name": "SNS 조회수 카드·핵심 루프",
         "weight": 10,
         "points": 10,
         "percent": 100,
-        "evidence": "7/7 신호 충족",
-        "fix": "랜딩 이탈 방지용 요리비서 추천, 앱 후기/팁, 완료 후 공유, 폰 내부 플로팅 피드백을 유지한다."
+        "evidence": "5/5 신호 충족",
+        "fix": "레시피 카드는 SNS 조회수 중심으로 보이고, 조리·공유·피드백 루프는 유지한다."
       },
       {
         "name": "정적 앱 화면 소개",
@@ -171,9 +180,9 @@
       {
         "name": "내부 정보 비노출",
         "weight": 15,
-        "points": 0,
-        "percent": 0,
-        "evidence": "정적 1건, 시각 검증 미실행",
+        "points": 15,
+        "percent": 100,
+        "evidence": "정적 0건, 시각 검증 미실행",
         "fix": "사용자 화면에서 내부 문서명, 버전 태그, 저장소/배포 구현명을 제거한다."
       },
       {
@@ -193,12 +202,12 @@
         "fix": "다음 세션에서도 같은 검증자 역할, 점수표, 마지막 리포트를 재사용할 수 있어야 한다."
       }
     ],
-    "total": 92,
+    "total": 110,
     "max": 110,
-    "percent": 84,
+    "percent": 100,
     "threshold": 96,
     "thresholdOperator": ">",
-    "status": "FAIL",
+    "status": "PASS",
     "visualIncluded": false
   },
   "visualArtifacts": []

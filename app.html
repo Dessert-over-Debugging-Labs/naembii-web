@@ -133,8 +133,6 @@
   .logo{display:flex;align-items:center;gap:7px;font-family:"Apple SD Gothic Neo","Arial Rounded MT Bold",-apple-system,BlinkMacSystemFont,sans-serif;font-size:25px;font-weight:800;color:var(--green);}
   .logo svg{width:24px;height:24px;stroke-width:2.2;}
   .hd-right{display:flex;align-items:center;gap:10px;}
-  .noti{display:flex;align-items:center;gap:4px;background:var(--green-soft);color:var(--green);font-size:13px;font-weight:800;padding:6px 12px;border-radius:12px;}
-  .noti svg{width:15px;height:15px;}
 
   /* 검색 */
   .search{
@@ -210,29 +208,9 @@
   .hscroll{display:flex;gap:12px;overflow-x:auto;padding:0 16px 24px;}
   .hscroll::-webkit-scrollbar{display:none;}
   .hscroll .rcard{width:152px;flex:none;}
-  .assistant-start{margin:0 16px 18px;background:linear-gradient(135deg,#1E2024,#343A42);color:#fff;border-radius:18px;padding:16px;box-shadow:0 10px 26px rgba(31,38,46,.18);}
-  .assistant-start .as-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;}
-  .assistant-start .as-ic{width:36px;height:36px;border-radius:12px;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;color:#FF7A5F;flex:none;}
-  .assistant-start .as-ic svg{width:20px;height:20px;}
-  .assistant-start b{display:block;font-size:16px;line-height:1.32;margin-bottom:4px;}
-  .assistant-start span{display:block;color:#D8DCE2;font-size:12px;line-height:1.45;font-weight:650;}
-  .as-actions{display:flex;gap:8px;overflow-x:auto;}
-  .as-actions::-webkit-scrollbar{display:none;}
-  .as-actions button{height:34px;border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(255,255,255,.1);color:#fff;font:inherit;font-size:12px;font-weight:800;padding:0 11px;white-space:nowrap;cursor:pointer;}
-  .as-pantry{display:flex;align-items:center;gap:8px;margin-top:10px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);border-radius:13px;padding:8px;}
-  .as-pantry input{flex:1;min-width:0;border:0;background:transparent;color:#fff;font:inherit;font-size:13px;font-weight:750;outline:none;}
-  .as-pantry input::placeholder{color:rgba(255,255,255,.62);}
-  .as-pantry button{width:34px;height:34px;border:0;border-radius:11px;background:#fff;color:#1E2024;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;}
-  .as-pantry button svg{width:17px;height:17px;}
-  .community-strip{display:flex;gap:10px;overflow-x:auto;padding:0 16px 24px;}
-  .community-strip::-webkit-scrollbar{display:none;}
-  .community-card{width:230px;flex:none;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:14px;cursor:pointer;}
-  .community-card .cc-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;}
-  .community-card .cc-head b{font-size:14px;line-height:1.3;}
-  .community-card .cc-pill{font-size:11px;font-weight:800;color:var(--brand-deep);background:var(--brand-soft);border-radius:999px;padding:4px 7px;white-space:nowrap;}
-  .community-card p{font-size:13px;line-height:1.48;color:var(--text);font-weight:650;margin-bottom:10px;}
-  .community-card small{display:flex;align-items:center;gap:5px;color:var(--text-sub);font-size:12px;font-weight:700;}
-  .community-card small svg{width:13px;height:13px;color:#FFB400;fill:#FFB400;}
+  #home .hscroll{padding-bottom:16px;}
+  #home .hscroll .rcard{width:146px;}
+  #home .hscroll .rcard .thumb{aspect-ratio:4/3;border-radius:14px;}
 
   /* 레시피 그리드 */
   .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 16px 24px;}
@@ -265,7 +243,7 @@
   .rcard .thumb .play svg{width:17px;height:17px;fill:#fff;color:#fff;margin-left:2px;}
   .rcard .cap{padding:8px 4px 0;}
   .rcard .cap b{font-size:15px;font-weight:700;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
-  .rcard .cap small{font-size:12px;color:var(--text-sub);}
+  .rcard .cap small{display:block;font-size:12px;color:var(--text-sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .rcard .thumb .savebtn{position:absolute;top:8px;right:8px;z-index:2;width:28px;height:28px;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);border:none;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;}
   .rcard .thumb .savebtn svg{width:15px;height:15px;color:#fff;transition:transform .2s;}
   .rcard .thumb .savebtn.liked svg{color:var(--green);fill:var(--green);}
@@ -358,21 +336,6 @@
   .ing{background:var(--surface);border-radius:12px;padding:12px;box-shadow:0 1px 4px rgba(0,0,0,.04);}
   .ing .n{font-size:15px;font-weight:700;}
   .ing .q{font-size:12px;color:var(--text-sub);margin-top:2px;}
-  .reviews{background:var(--surface);border-radius:16px;padding:8px 16px;margin-bottom:24px;}
-  .reviews .r{display:flex;gap:12px;align-items:flex-start;padding:12px 0;}
-  .reviews .r+.r{border-top:1px solid var(--line);}
-  .reviews .av{width:32px;height:32px;border-radius:50%;background:var(--green-soft);display:flex;align-items:center;justify-content:center;color:var(--green);flex:none;}
-  .reviews .av svg{width:18px;height:18px;}
-  .reviews .r .txt{font-size:15px;line-height:1.5;color:var(--text);}
-  .reviews .r .txt .rh{display:flex;align-items:center;gap:6px;margin-bottom:4px;}
-  .reviews .r .txt .rh b{font-size:13px;color:var(--ink);}
-  .reviews .stars{display:flex;gap:1px;color:#FFB400;}
-  .reviews .stars svg{width:13px;height:13px;fill:#FFB400;}
-  .tip-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:14px 16px;margin-bottom:16px;}
-  .tip-card .tip-h{display:flex;align-items:center;gap:8px;margin-bottom:8px;color:var(--brand-deep);font-size:13px;font-weight:800;}
-  .tip-card .tip-h svg{width:16px;height:16px;}
-  .tip-card p{font-size:14px;line-height:1.55;color:var(--text);font-weight:650;}
-  .tip-card button{margin-top:12px;width:100%;height:42px;border:1px solid var(--border);border-radius:12px;background:#fff;color:var(--text);font:inherit;font-size:14px;font-weight:800;cursor:pointer;}
   /* 하단 바 없이 버튼만 콘텐츠 위에 둥둥 띄움 */
   .cta-bar{position:absolute;left:0;right:0;bottom:0;padding:14px 16px;background:none;pointer-events:none;z-index:6;}
   .cta-bar .btn{pointer-events:auto;box-shadow:0 10px 28px rgba(0,0,0,.24);}
@@ -835,20 +798,11 @@
   .ds-ic svg{width:17px;height:17px;}
   .ds-card b{font-size:19px;font-weight:800;color:var(--text);line-height:1;}
   .ds-card small{font-size:11px;color:var(--text-sub);}
-  /* 후기 유도 */
-  .done-review{width:100%;max-width:320px;display:flex;align-items:center;gap:11px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:12px 14px;cursor:pointer;font-family:inherit;transition:transform .12s;}
-  .done-review:active{transform:scale(.98);}
-  .done-review .dr-stars{display:flex;gap:1px;color:#FFB400;flex:none;}
-  .done-review .dr-stars svg{width:15px;height:15px;fill:#FFB400;}
-  .done-review .dr-txt{flex:1;text-align:left;font-size:14px;font-weight:700;color:var(--text);}
-  .done-review>svg{width:18px;height:18px;color:var(--text-sub);flex:none;}
   /* 액션 버튼 */
   .done-actions{width:100%;max-width:320px;display:flex;flex-direction:column;gap:10px;margin-top:8px;}
   .done-actions .btn{margin-top:0;}
   .done-actions .btn.share{background:#1E2024;color:#fff;}
   .done-actions .btn.light{background:var(--surface);color:var(--text);border:1px solid var(--border);box-shadow:none;}
-  .done-next{width:100%;max-width:320px;display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:2px;}
-  .done-next button{min-height:42px;border:1px solid var(--border);border-radius:12px;background:var(--surface);color:var(--text);font:inherit;font-size:13px;font-weight:800;cursor:pointer;padding:0 8px;}
 
   .toast{
     position:absolute;left:50%;bottom:120px;transform:translateX(-50%) translateY(20px);
@@ -857,74 +811,28 @@
   }
   .toast svg{width:16px;height:16px;color:var(--green);}
 
-  /* ===== 소셜: 좋아요 · 후기 ===== */
+  /* ===== 카드 SNS 조회수 ===== */
   @keyframes likePop{0%{transform:scale(1);}40%{transform:scale(1.35);}100%{transform:scale(1);}}
   .pop svg{animation:likePop .35s ease;}
-  /* 홈 카드 소셜 줄 */
-  .rcard .social{display:flex;align-items:center;gap:12px;margin-top:6px;font-size:12px;color:var(--text-sub);font-weight:600;}
+  .rcard .social{display:flex;align-items:center;gap:8px;row-gap:4px;flex-wrap:wrap;margin-top:6px;font-size:12px;color:var(--text-sub);font-weight:700;}
   .rcard .social span{display:flex;align-items:center;gap:4px;}
+  .rcard .social .total{font-weight:900;color:var(--text);}
   .rcard .social em{font-style:normal;}
-  .rcard .social .like{cursor:pointer;}
   .rcard .social svg{width:15px;height:15px;color:var(--text-sub);}
-  .rcard .social .like.liked svg{color:#F2557B;fill:#F2557B;}
-  /* 상세 좋아요 바 */
-  .dsocial{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
-  .dsocial .sbtn{display:flex;align-items:center;gap:7px;background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:9px 16px;font-size:14px;font-weight:700;color:var(--ink);cursor:pointer;font-family:inherit;}
-  .dsocial .sbtn svg{width:18px;height:18px;color:var(--text-sub);}
-  .dsocial .sbtn.like.liked{border-color:var(--green);color:var(--green);background:var(--green-soft);}
-  .dsocial .sbtn.like.liked svg{color:var(--green);fill:var(--green);}
-  /* 제목행 + 저장 아이콘 + 평점 */
+  /* 제목행 + SNS 조회수 */
   .dhead{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;}
   .dhead h2{flex:1;margin-bottom:0;}
   .detail-proof{display:flex;gap:8px;flex-wrap:wrap;margin:-2px 0 14px;}
   .detail-proof span{display:inline-flex;align-items:center;gap:5px;min-height:28px;border:1px solid var(--border);border-radius:999px;background:var(--surface);color:var(--text);font-size:12px;font-weight:850;padding:0 9px;}
-  .detail-proof svg{width:14px;height:14px;color:#FFB400;fill:#FFB400;}
+  .detail-proof svg{width:14px;height:14px;color:var(--brand);fill:none;}
   /* 유튜브 스티커: 영상↔레시피 경계에 걸침(영상 우하단 = 레시피 우상단) */
   .detail-body .yt-badge-title{position:absolute;top:-13px;right:16px;z-index:3;background:#FF0000;color:#fff;font-size:12px;font-weight:700;padding:5px 9px;border-radius:8px;display:flex;align-items:center;gap:4px;box-shadow:0 2px 8px rgba(0,0,0,.25);}
   .detail-body .yt-badge-title svg{width:14px;height:14px;}
-  .dsave{flex:none;display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;cursor:pointer;font-family:inherit;padding:2px;}
-  .dsave svg{width:27px;height:27px;color:var(--text-sub);transition:transform .2s;}
-  .dsave em{font-style:normal;font-size:12px;font-weight:700;color:var(--text-sub);}
-  .dsave.liked svg{color:var(--green);fill:var(--green);}
-  .dsave.liked em{color:var(--green);}
-  .drating{display:flex;align-items:center;gap:6px;margin-bottom:20px;font-size:16px;font-weight:800;color:var(--ink);}
-  .drating svg{width:18px;height:18px;color:#FFB400;fill:#FFB400;}
-  .drating .rc{font-size:13px;font-weight:600;color:var(--text-sub);margin-left:2px;}
   /* 상세 섹션 탭바 (스티키) */
   .dtabs{position:sticky;top:0;z-index:5;display:flex;gap:4px;background:var(--bg);padding:6px 0 10px;margin-bottom:8px;border-bottom:1px solid var(--line);}
   .dtab{flex:1;border:none;background:none;font-family:inherit;font-size:14px;font-weight:700;line-height:1.2;color:var(--text-sub);padding:9px 0;cursor:pointer;position:relative;}
   .dtab.active{color:var(--ink);}
   .dtab.active::after{content:"";position:absolute;left:50%;bottom:-11px;transform:translateX(-50%);width:64%;height:3px;background:var(--green);border-radius:2px;}
-  /* 평점 요약 */
-  .rsum{background:var(--surface);border-radius:16px;padding:16px;margin-bottom:16px;display:flex;gap:16px;align-items:center;}
-  .rsum .avg{text-align:center;flex:none;min-width:72px;}
-  .rsum .avg .n{font-size:32px;font-weight:800;line-height:1;}
-  .rsum .avg .st{display:flex;gap:1px;justify-content:center;margin-top:4px;color:#FFB400;}
-  .rsum .avg .st svg{width:13px;height:13px;fill:#FFB400;}
-  .rsum .avg .cnt{font-size:12px;color:var(--text-sub);margin-top:4px;}
-  .rsum .dist{flex:1;display:flex;flex-direction:column;gap:5px;}
-  .rsum .drow{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text-sub);}
-  .rsum .drow .lab{width:26px;flex:none;font-weight:700;}
-  .rsum .drow .bar{flex:1;height:6px;background:var(--line);border-radius:3px;overflow:hidden;}
-  .rsum .drow .bar i{display:block;height:100%;background:var(--green);border-radius:3px;}
-  .rsum .drow .num{width:16px;text-align:right;flex:none;}
-  /* 후기 사진 / 전체보기 버튼 */
-  .reviews .r .txt .rphoto{margin-top:8px;width:88px;height:88px;border-radius:12px;object-fit:cover;display:block;}
-  .rev-more{width:100%;text-align:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px;font-size:14px;font-weight:700;color:var(--ink);cursor:pointer;font-family:inherit;margin-bottom:12px;}
-  .rev-empty{padding:18px 0;color:var(--text-sub);font-size:14px;text-align:center;}
-  /* 후기 작성 시트 */
-  .rv-label{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:8px;}
-  .star-input{display:flex;gap:10px;justify-content:center;margin:6px 0 18px;}
-  .star-input span{cursor:pointer;}
-  .star-input svg{width:38px;height:38px;color:var(--gray2);transition:color .12s;}
-  .star-input span.on svg{color:#FFB400;fill:#FFB400;}
-  .rv-text{width:100%;min-height:88px;border:1px solid var(--line);border-radius:12px;padding:12px;font-size:15px;font-family:inherit;color:var(--ink);background:var(--bg);resize:none;line-height:1.5;}
-  .rv-text:focus{outline:none;border-color:var(--green);}
-  .rv-photo{margin-top:12px;display:flex;gap:10px;align-items:center;}
-  .rv-photo label{width:64px;height:64px;border-radius:12px;border:1.5px dashed var(--gray2);display:flex;align-items:center;justify-content:center;color:var(--gray);cursor:pointer;flex:none;}
-  .rv-photo label svg{width:22px;height:22px;}
-  .rv-photo input{display:none;}
-  .rv-photo .prev{width:64px;height:64px;border-radius:12px;object-fit:cover;}
   /* 상세 요약 글 */
   .dsummary{font-size:15px;line-height:1.65;color:var(--text);margin-bottom:20px;}
   /* 상세 조리 순서 */
@@ -1155,7 +1063,7 @@
   }
 </style>
 </head>
-<body class="marketing-open">
+<body>
 <section class="landing" id="landingPage" data-variant="demo">
   <div class="mobile-landing-hero">
     <div class="landing-brand"><i data-lucide="cooking-pot"></i>냄비</div>
@@ -1328,39 +1236,12 @@
     <!-- 1. 홈 -->
     <div class="view active" id="home">
       <div class="statusbar"><span>9:41</span><span class="icons"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
-      <div class="nav"><div class="logo"><i data-lucide="cooking-pot"></i>냄비</div><div class="hd-right"><div class="noti" onclick="toast('준비 중인 기능이에요','bell')"><i data-lucide="bell"></i>13</div><div class="ic-btn" onclick="toast('준비 중인 기능이에요','circle-user-round')"><i data-lucide="circle-user-round"></i></div></div></div>
+      <div class="nav"><div class="logo"><i data-lucide="cooking-pot"></i>냄비</div><div class="hd-right"><div class="ic-btn" onclick="toast('로그인 기능은 앱 출시 때 연결할 예정이에요','circle-user-round')"><i data-lucide="circle-user-round"></i></div></div></div>
       <div class="body">
-        <div class="search" onclick="openSearch()"><i data-lucide="search"></i>요리, 재료, 크리에이터 이름으로 찾아보세요</div>
-        <div class="assistant-start">
-          <div class="as-top">
-            <div class="as-ic"><i data-lucide="bot"></i></div>
-            <div><b>오늘 만들 요리부터 골라보기</b><span>재료, 시간, 막히는 상황을 기준으로 따라 하기 쉬운 요리를 찾아봐요.</span></div>
-          </div>
-          <div class="as-actions">
-            <button type="button" onclick="openSearch('SNS 트렌드')">SNS에서 본 메뉴</button>
-            <button type="button" onclick="openSearch('10분')">10분 안에</button>
-            <button type="button" onclick="openSearch('재료 적게')">재료 적게</button>
-            <button type="button" onclick="goDetail('vlPqkuHIdCc')">오늘 추천 보기</button>
-          </div>
-          <form class="as-pantry" onsubmit="searchFromPantry(event)">
-            <input id="pantryInput" type="search" autocomplete="off" placeholder="있는 재료 여러 개 입력 · 김치, 달걀, 두부">
-            <button type="submit" aria-label="재료로 찾기"><i data-lucide="arrow-right"></i></button>
-          </form>
-        </div>
-        <div class="cats">
-          <div class="cat" onclick="openSearch('SNS 트렌드')"><div class="ic"><i data-lucide="sparkles"></i></div><span>요즘 뜨는</span></div>
-          <div class="cat" onclick="openSearch('많이 만드는')"><div class="ic"><i data-lucide="flame"></i></div><span>많이 만드는</span></div>
-          <div class="cat" onclick="openSearch('재료 적게')"><div class="ic"><i data-lucide="package-check"></i></div><span>재료 적게</span></div>
-          <div class="cat" onclick="openSearch('10분')"><div class="ic"><i data-lucide="timer"></i></div><span>10분 컷</span></div>
-        </div>
-        <div class="section-t"><span class="st-l"><i data-lucide="flame"></i>지금 많이 만드는 요리</span><span class="more">완주 많은 순 <i data-lucide="chevron-right"></i></span></div>
+        <div class="section-t"><span class="st-l"><i data-lucide="flame"></i>SNS에서 요즘 핫한 요리</span><span class="more">종합 조회수 순</span></div>
         <div class="hscroll" id="popScroll"></div>
-        <div class="section-t"><span class="st-l"><i data-lucide="package-check"></i>재료 8개 이하로 시작</span><span class="more">가볍게 만들기 <i data-lucide="chevron-right"></i></span></div>
+        <div class="section-t"><span class="st-l"><i data-lucide="package-check"></i>바로 따라 하기 쉬운 요리</span><span class="more">재료 적은 순</span></div>
         <div class="hscroll" id="recScroll"></div>
-        <div class="section-t"><span class="st-l"><i data-lucide="sparkles"></i>SNS에서 자주 보이는 메뉴</span><span class="more">요청 우선 <i data-lucide="chevron-right"></i></span></div>
-        <div class="hscroll" id="trendScroll"></div>
-        <div class="section-t"><span class="st-l"><i data-lucide="messages-square"></i>먼저 만든 사람들의 팁</span><span class="more" onclick="openFeedback('home-review')">후기 남기기 <i data-lucide="chevron-right"></i></span></div>
-        <div class="community-strip" id="communityStrip"></div>
       </div>
     </div>
 
@@ -1411,7 +1292,6 @@
           </div>
           <div class="detail-proof" id="detProof"></div>
           <p class="dsummary" id="detSummary"></p>
-          <div id="detTipCard"></div>
           <div class="meta">
             <div class="chip"><i data-lucide="timer"></i><div class="v" id="detTime"></div><div class="k">조리시간</div></div>
             <div class="chip"><i data-lucide="users"></i><div class="v" id="detServings"></div><div class="k">분량</div></div>
@@ -1497,17 +1377,13 @@
         <p>레시피를 끝까지 따라 완성했어요.<br>따뜻할 때 맛있게 드세요 👏</p>
         <div class="done-stats">
           <div class="ds-card"><span class="ds-ic"><i data-lucide="timer"></i></span><b id="doneTime">-</b><small>조리 시간</small></div>
-          <div class="ds-card"><span class="ds-ic"><i data-lucide="list-checks"></i></span><b id="doneSteps">-</b><small>완주한 과정</small></div>
+          <div class="ds-card"><span class="ds-ic"><i data-lucide="list-checks"></i></span><b id="doneSteps">-</b><small>따라한 과정</small></div>
           <div class="ds-card"><span class="ds-ic"><i data-lucide="utensils"></i></span><b id="doneServings">-</b><small>완성 분량</small></div>
         </div>
         <div class="done-actions">
           <button class="btn share" onclick="shareCompletedRecipe()"><i data-lucide="share-2"></i>친구에게 공유하기</button>
-          <button class="btn light" onclick="openFeedback('complete-review')"><i data-lucide="message-square-plus"></i>후기 남기기</button>
+          <button class="btn light" onclick="show('home')"><i data-lucide="home"></i>홈으로 가기</button>
           <button class="btn ghost" onclick="startCook()">다시 요리하기</button>
-        </div>
-        <div class="done-next">
-          <button type="button" onclick="showLanding();setTimeout(scrollToBeta,120)">출시 알림 신청</button>
-          <button type="button" onclick="openFeedback('complete-recipe-request')">따라 하고 싶은 영상 보내기</button>
         </div>
       </div>
     </div>
@@ -1664,17 +1540,7 @@
     </div>
     <form class="beta-form" id="feedbackForm" onsubmit="submitFeedback(event)">
       <input type="hidden" name="source" value="landing">
-      <label>종류
-        <select name="type">
-          <option value="bug">막힌 점 / 오류</option>
-          <option value="recipe">추가했으면 하는 레시피</option>
-          <option value="voice">음성 / 핸즈프리</option>
-          <option value="video">영상 구간 / 재생</option>
-          <option value="other">기타 의견</option>
-        </select>
-      </label>
-      <label>이메일 (선택)<input name="email" type="email" autocomplete="email" placeholder="답변을 받아도 되는 이메일"></label>
-      <label>내용<textarea name="message" required placeholder="어느 화면에서 무엇이 불편했는지 적어주세요. 유튜브 링크 제안도 여기에 남길 수 있어요."></textarea></label>
+      <label>내용<textarea name="message" required placeholder="어느 화면에서 무엇이 불편했는지 편하게 적어주세요."></textarea></label>
       <button type="submit"><i data-lucide="send"></i>의견 보내기</button>
       <p class="form-status" data-status></p>
     </form>
@@ -1746,15 +1612,14 @@
   function naembiReferrerHost(){
     try{return document.referrer?new URL(document.referrer).hostname:'';}catch{return '';}
   }
-  function naembiSafeHash(){
+  function naembiHashRoute(){
     const hash=location.hash||'';
     if(!hash)return '';
     const route=hash.slice(1).split('=')[0];
-    if(route==='search'||route==='searchResults')return '#'+route;
-    return hash.slice(0,120);
+    return route.slice(0,60);
   }
   function naembiSafeProps(props={}){
-    const blocked=new Set(['email','name','note','message','url','link','recipeUrl','recipe_url','raw_query','query','page']);
+    const blocked=new Set(['email','name','note','message','url','link','recipeUrl','recipe_url','raw_query','query','page','hash']);
     return Object.entries(props).reduce((acc,[key,value])=>{
       if(blocked.has(key))return acc;
       if(value===undefined||value===null||value==='')return acc;
@@ -1767,7 +1632,7 @@
     if(document.body.classList.contains('marketing-open'))return 'landing';
     const view=currentViewId();
     if(view==='searchPage'||view==='searchResultsPage')return 'search';
-    if(view==='detail'||view==='reviews'||view==='tipWrite')return 'recipe_detail';
+    if(view==='detail')return 'recipe_detail';
     if(view==='cook3')return 'cook_mode';
     if(view==='complete')return 'complete';
     return view||'home';
@@ -1788,7 +1653,7 @@
       environment:NAEMBI_ANALYTICS.environment,
       surface:naembiCurrentSurface(),
       path:location.pathname,
-      hash:naembiSafeHash(),
+      hash_route:naembiHashRoute(),
       viewport_width:window.innerWidth,
       viewport_height:window.innerHeight,
       is_mobile:naembiIsMobile(),
@@ -1801,6 +1666,7 @@
     if(window.mixpanel&&typeof window.mixpanel.init==='function')return;
     const mixpanel=window.mixpanel=window.mixpanel||[];
     if(mixpanel.__SV)return;
+    mixpanel._i=mixpanel._i||[];
     const methods='disable time_event track track_pageview track_links track_forms register register_once alias unregister identify name_tag set_config reset opt_in_tracking opt_out_tracking has_opted_in_tracking has_opted_out_tracking clear_opt_in_out_tracking start_batch_senders people.set people.set_once people.unset people.increment people.append people.union people.track_charge people.clear_charges people.delete_user groups.set groups.set_once groups.unset groups.update groups.remove groups.union groups.delete_group'.split(' ');
     const stub=function(method){
       return function(){
@@ -1887,7 +1753,10 @@
       NAEMBI_ANALYTICS.enabled=false;
     }finally{
       NAEMBI_ANALYTICS.ready=true;
-      NAEMBI_ANALYTICS.queue.splice(0).forEach(item=>naembiSendToMixpanel(item.event,item.props));
+      NAEMBI_ANALYTICS.queue.splice(0).forEach(item=>{
+        item.props.environment=NAEMBI_ANALYTICS.environment;
+        naembiSendToMixpanel(item.event,item.props);
+      });
     }
   }
   function trackAppOpenIfNeeded(entrypoint='direct'){
@@ -2053,18 +1922,10 @@
     const desc=document.querySelector('.feedback-head p');
     if(form){
       form.elements.source.value=source||currentViewId();
-      const type=form.elements.type;
-      if(type){
-        if(String(source||'').includes('recipe'))type.value='recipe';
-        else if(String(source||'').includes('review')||String(source||'').includes('tip'))type.value='other';
-        else type.value='bug';
-      }
       setFormStatus(form,'','');
     }
-    if(title)title.textContent=String(source||'').includes('recipe')?'따라 하고 싶은 영상 보내기':'의견 남기기';
-    if(desc)desc.textContent=String(source||'').includes('recipe')
-      ? '따라 해보고 싶은 요리나 영상 링크를 남겨주세요. 다음 레시피를 고를 때 참고합니다.'
-      : '막힌 지점, 좋았던 흐름, 다른 사람에게 남기고 싶은 팁을 그대로 적어주세요.';
+    if(title)title.textContent='의견 남기기';
+    if(desc)desc.textContent='막힌 지점이나 헷갈린 흐름을 한 문장으로만 남겨도 됩니다.';
     naembiTrack('feedback_open',{entrypoint:source||currentViewId()});
     modal.classList.add('show');
     refreshIcons();
@@ -2163,7 +2024,7 @@
       naembiTrack('feedback_submit',{
         success:true,
         entrypoint:data.source||currentViewId(),
-        feedback_type:data.type||'other',
+        feedback_type:'general',
         message_length:message.length,
         ...naembiRecipeProps()
       });
@@ -2174,7 +2035,7 @@
       naembiTrack('feedback_submit',{
         success:false,
         entrypoint:data.source||currentViewId(),
-        feedback_type:data.type||'other',
+        feedback_type:'general',
         message_length:message.length,
         ...naembiRecipeProps()
       });
@@ -2701,7 +2562,7 @@
   function voiceScriptFor(recipe){
     return VOICE_EXAMPLES[recipe.id]||[
       {u:'이 재료 대체할 수 있어?',a:recipe.name+'은 핵심 재료만 유지하면 일부 재료는 비슷한 식감이나 간의 재료로 바꿀 수 있어요. 먼저 적은 양으로 맛을 보며 조절해보세요.'},
-      {u:'조리 팁 알려줘',a:'불 조절과 간 확인을 단계마다 나눠서 하면 실패가 줄어요. 지금 단계 설명을 보면서 한 번에 많이 넣지 않는 게 좋아요.'},
+      {u:'불 조절 알려줘',a:'불 조절과 간 확인을 단계마다 나눠서 하면 실패가 줄어요. 지금 단계 설명을 보면서 한 번에 많이 넣지 않는 게 좋아요.'},
       {u:'다음 단계로 넘어가줘',a:'네, 다음 단계로 넘어갈게요.',next:true},
       {u:'타이머 2분 맞춰줘',a:'2분 타이머를 시작했어요. 다음 재료를 미리 꺼내두면 흐름이 끊기지 않아요.',timer:120}
     ];
@@ -2714,33 +2575,49 @@
     const grp=(label,arr)=>arr.length?'<div class="ing-group-label">'+label+'</div><div class="ings">'+arr.map(x=>'<div class="ing"><div class="n">'+esc(x.n)+'</div><div class="q">'+esc(x.q)+'</div></div>').join('')+'</div>':'';
     return (grp('주재료',r.ingredients.main)+grp('양념',r.ingredients.seasoning))||'<div class="ing-empty">재료 정보 준비 중이에요</div>';
   }
-  const RECIPE_REACTIONS={
-    vlPqkuHIdCc:{made:128,likes:342,stars:4.8,tips:['치즈는 약불에서 뚜껑 덮고 1분만 녹이면 딱 좋아요.','맵찔이는 액상스프를 반 숟갈 남기면 먹기 편했어요.']},
-    vHU4_QbslRA:{made:96,likes:188,stars:4.7,tips:['명란은 처음부터 다 넣지 말고 반만 넣고 간을 봐야 덜 짜요.','면수는 꼭 한 컵 남겨두면 소스가 잘 붙어요.']},
-    l7nGCJeAqjw:{made:84,likes:176,stars:4.6,tips:['떡이 말랑해지기 전까지 바닥을 자주 저어야 덜 눌어붙어요.','우유 대신 생크림을 쓰면 물을 조금 보태야 덜 느끼해요.']},
-    eJekYxjFewM:{made:71,likes:132,stars:4.6,tips:['양파는 찬물에 5분 담그면 매운맛이 줄어요.','김가루를 넉넉히 넣으면 간장이 적어도 맛이 살아나요.']},
-    Lf44Fk7H24s:{made:118,likes:205,stars:4.7,tips:['김칫국물을 조금 넣으니 밥알에 양념이 더 잘 배었어요.','팬에 붙으면 물 한 숟갈 넣고 긁듯이 볶으면 살아나요.']},
-    kN89ewZjOR8:{made:64,likes:97,stars:4.5,tips:['윗면이 살짝 촉촉할 때 말아야 찢어지지 않아요.','다 말고 5분 식힌 뒤 썰면 모양이 훨씬 깔끔해요.']},
-    '3oFCGKmzQX8':{made:102,likes:224,stars:4.8,tips:['양념이 타려 하면 양파를 먼저 넣어 수분을 내면 좋아요.','삼겹살로 하면 기름을 중간에 조금 덜어내는 게 깔끔해요.']},
-    default:{made:52,likes:88,stars:4.6,tips:['영상보다 재료를 먼저 꺼내두면 중간에 덜 헤매요.','헷갈린 구간은 조리 모드에서 한 번 더 보고 넘어가면 좋아요.']}
+  const RECIPE_VIRAL_METRICS={
+    CgapOjKdo9I:{youtubeViews:1500000,instagramViews:830000,tiktokViews:2200000},
+    VvM59BXz6Bw:{youtubeViews:890000,instagramViews:340000,tiktokViews:510000},
+    eJekYxjFewM:{youtubeViews:760000,instagramViews:1200000,tiktokViews:970000},
+    V9KP9Qvb3lI:{youtubeViews:480000,instagramViews:210000,tiktokViews:330000},
+    sIBG0KjOcBs:{youtubeViews:620000,instagramViews:1400000,tiktokViews:1900000},
+    vHU4_QbslRA:{youtubeViews:1100000,instagramViews:730000,tiktokViews:1250000},
+    l7nGCJeAqjw:{youtubeViews:1800000,instagramViews:900000,tiktokViews:2500000},
+    vlPqkuHIdCc:{youtubeViews:2400000,instagramViews:3100000,tiktokViews:5200000},
+    Lf44Fk7H24s:{youtubeViews:1300000,instagramViews:650000,tiktokViews:880000},
+    kN89ewZjOR8:{youtubeViews:540000,instagramViews:220000,tiktokViews:410000},
+    Slj_fM1jQVo:{youtubeViews:980000,instagramViews:300000,tiktokViews:520000},
+    '3oFCGKmzQX8':{youtubeViews:1700000,instagramViews:760000,tiktokViews:1100000},
+    lLInfgl6qvI:{youtubeViews:420000,instagramViews:190000,tiktokViews:280000},
+    eXDV23iu_YY:{youtubeViews:380000,instagramViews:160000,tiktokViews:240000},
+    vmxKdVfstL4:{youtubeViews:820000,instagramViews:430000,tiktokViews:690000},
+    Tgt1A20d8JM:{youtubeViews:260000,instagramViews:120000,tiktokViews:170000},
+    U7I3OgyaXxs:{youtubeViews:510000,instagramViews:250000,tiktokViews:320000},
+    default:{youtubeViews:240000,instagramViews:120000,tiktokViews:180000}
   };
-  function reactionFor(r){return RECIPE_REACTIONS[r.id]||RECIPE_REACTIONS.default;}
-  function starsHTML(score){
-    const count=Math.round(score||4.6);
-    return Array.from({length:5},(_,i)=>'<i data-lucide="star"'+(i<count?' class="on"':'')+'></i>').join('');
+  function viralFor(r){return r.viralViews||RECIPE_VIRAL_METRICS[r.id]||RECIPE_VIRAL_METRICS.default;}
+  function totalViralViews(views){
+    return ['youtubeViews','instagramViews','tiktokViews'].reduce((sum,key)=>sum+(Number(views[key])||0),0);
   }
-  function renderCommunityStrip(){
-    const el=document.getElementById('communityStrip');
-    if(!el)return;
-    const ids=['vlPqkuHIdCc','vHU4_QbslRA','Lf44Fk7H24s','3oFCGKmzQX8'];
-    el.innerHTML=ids.map(id=>{
-      const r=recipeById(id), data=reactionFor(r), tip=data.tips[0];
-      return '<div class="community-card" onclick="goDetail(\''+r.id+'\')">'+
-        '<div class="cc-head"><b>'+esc(r.name)+'</b><span class="cc-pill">'+data.made+'명 완주</span></div>'+
-        '<p>'+esc(tip)+'</p>'+
-        '<small><i data-lucide="star"></i>'+data.stars+' · 도움이 됐어요 '+data.likes+'</small>'+
-      '</div>';
+  function formatViews(value){
+    const n=Number(value)||0;
+    if(n>=1000000)return (Math.round(n/100000)/10).toFixed(n>=10000000?0:1).replace(/\.0$/,'')+'M';
+    if(n>=1000)return Math.round(n/1000)+'K';
+    return String(n);
+  }
+  function platformViewsHTML(views,compact=false){
+    const items=[
+      {key:'youtubeViews',icon:'youtube',label:'YouTube',short:'YT'},
+      {key:'instagramViews',icon:'instagram',label:'Instagram',short:'IG'},
+      {key:'tiktokViews',icon:'music-2',label:'TikTok',short:'TT'}
+    ];
+    return items.filter(item=>Number(views[item.key])>0).map(item=>{
+      const label=compact?item.short:item.label;
+      return '<span><i data-lucide="'+item.icon+'"></i><em>'+label+' '+formatViews(views[item.key])+'</em></span>';
     }).join('');
+  }
+  function compareByViralViews(a,b){
+    return totalViralViews(viralFor(b))-totalViralViews(viralFor(a));
   }
 
   let recipeThumbObserver=null;
@@ -2769,11 +2646,12 @@
   }
 
   function cardHTML(r){
-    const reaction=reactionFor(r);
+    const views=viralFor(r);
+    const total=totalViralViews(views);
     return '<div class="rcard" data-vid="'+r.id+'" onclick="goDetail(\''+r.id+'\')">'+
       '<div class="thumb '+r.food+'"><img data-recipe-thumb data-src="https://i.ytimg.com/vi/'+r.id+'/mqdefault.jpg" alt="'+esc(r.name)+' 썸네일" loading="lazy" decoding="async" width="320" height="180" onerror="this.style.display=\'none\'">'+
         '<span class="badge"><i data-lucide="clock"></i>'+r.time+'</span></div>'+
-      '<div class="cap"><b>'+esc(r.title)+'</b><small>'+esc(r.channel+' · '+r.servings)+'</small><div class="social"><span><i data-lucide="utensils"></i><em>'+reaction.made+'</em></span><span><i data-lucide="star"></i><em>'+reaction.stars+'</em></span></div></div></div>';
+      '<div class="cap"><b>'+esc(r.title)+'</b><small>'+esc(r.channel)+'</small><div class="social"><span class="total"><i data-lucide="trending-up"></i><em>종합 '+formatViews(total)+'</em></span></div></div></div>';
   }
   function creatorGroups(){
     const map=new Map();
@@ -2856,7 +2734,7 @@
     });
     if(/재료|적게|간단/.test(query))score+=Math.max(0,14-ingCount(r));
     if(/sns|요즘|트렌드|유행/.test(query)&&/(불닭|로제|티라미수|아보카도|명란|콘치즈)/.test(title+' '+summary))score+=7;
-    if(/많이|만드는|완주/.test(query))score+=Math.min(10,Math.floor(reactionFor(r).made/18));
+    if(/많이|만드는|인기|조회/.test(query))score+=Math.min(12,Math.floor(totalViralViews(viralFor(r))/500000));
     return score;
   }
   function searchRecipes(query){
@@ -2945,14 +2823,10 @@
     if(location.hash.startsWith('#search'))history.replaceState(null,'','#search');
   }
   function renderHomeSections(){
-    const popIds=['vlPqkuHIdCc','Lf44Fk7H24s','3oFCGKmzQX8','vHU4_QbslRA','l7nGCJeAqjw','kN89ewZjOR8'];
-    document.getElementById('popScroll').innerHTML=popIds.map(id=>RECIPES.find(r=>r.id===id)).filter(Boolean).map(cardHTML).join('');
-    const recIds=['vHU4_QbslRA','kN89ewZjOR8','vlPqkuHIdCc','V9KP9Qvb3lI'];
-    document.getElementById('recScroll').innerHTML=recIds.map(id=>RECIPES.find(r=>r.id===id)).filter(Boolean).map(cardHTML).join('');
-    const trendIds=['l7nGCJeAqjw','vlPqkuHIdCc','eJekYxjFewM','sIBG0KjOcBs','vHU4_QbslRA','VvM59BXz6Bw'];
-    const trendEl=document.getElementById('trendScroll');
-    if(trendEl)trendEl.innerHTML=trendIds.map(id=>RECIPES.find(r=>r.id===id)).filter(Boolean).map(cardHTML).join('');
-    renderCommunityStrip();
+    const byViews=[...RECIPES].sort(compareByViralViews);
+    document.getElementById('popScroll').innerHTML=byViews.slice(0,8).map(cardHTML).join('');
+    const easyRecipes=[...RECIPES].sort((a,b)=>ingCount(a)-ingCount(b)||compareByViralViews(a,b)).slice(0,8);
+    document.getElementById('recScroll').innerHTML=easyRecipes.map(cardHTML).join('');
     refreshIcons();
     observeRecipeThumbs(document.getElementById('home'));
   }
@@ -2968,7 +2842,6 @@
     document.getElementById('detTitle').innerHTML=esc(r.title);
     document.getElementById('detProof').innerHTML=detailProofHTML(r);
     document.getElementById('detSummary').textContent=r.summary||'';
-    document.getElementById('detTipCard').innerHTML=detailTipHTML(r);
     document.getElementById('detTime').textContent=r.time||'-';
     document.getElementById('detServings').textContent=r.servings||'-';
     document.getElementById('detDiff').textContent=r.difficulty||'-';
@@ -3019,16 +2892,9 @@
     document.getElementById('doneSteps').textContent=r.steps.length+'단계';
     document.getElementById('doneServings').textContent=r.servings||'-';
   }
-  function detailTipHTML(r){
-    const data=reactionFor(r);
-    const tip=data.tips[0]||'먼저 만든 사람이 남긴 팁을 모으고 있어요.';
-    return '<div class="tip-card"><div class="tip-h"><i data-lucide="message-square-heart"></i>먼저 만든 사람의 팁 · '+data.made+'명 완주</div><p>'+esc(tip)+'</p><button type="button" onclick="openFeedback(\'detail-tip\')">내 팁 남기기</button></div>';
-  }
   function detailProofHTML(r){
-    const data=reactionFor(r);
-    return '<span><i data-lucide="star"></i>'+data.stars+' 평점</span>'+
-      '<span><i data-lucide="utensils"></i>'+data.made+'명 완주</span>'+
-      '<span><i data-lucide="message-square-heart"></i>팁 '+data.tips.length+'개</span>';
+    const views=viralFor(r);
+    return '<span><i data-lucide="trending-up"></i>'+formatViews(totalViralViews(views))+' 종합 조회수</span>'+platformViewsHTML(views,false);
   }
   const DET_SECS=['sec-ing','sec-steps'];
   let tabLock=0;
@@ -3744,7 +3610,7 @@
   }
   function isGeminiAnswerUnavailable(error){
     const message=String(error?.message||'');
-    return error?.configured===false||error?.data?.configured===false||Number(error?.status)===501||/Gemini.*API.*키|API.*키|답변.*준비|configured/i.test(message);
+    return error?.configured===false||error?.data?.configured===false||Number(error?.status)===501||/Gemini.*연결.*키|연결.*키|답변.*준비|configured/i.test(message);
   }
   function showGeminiAnswerUnavailable(live=geminiLive){
     if(live)live.answerUnavailable=true;
@@ -4207,7 +4073,7 @@
     live.tokenAbortController=tokenAbortController;
     const connecting=(async()=>{
       const payload=geminiLivePayload(live);
-      const data=await withGeminiLiveTimeout(postJson('/api/gemini-live-token',payload,{signal:tokenAbortController.signal}),12000,'Gemini Live 인증 정보를 받지 못했어요. 네트워크와 API 키 설정을 확인해 주세요.',()=>tokenAbortController.abort());
+      const data=await withGeminiLiveTimeout(postJson('/api/gemini-live-token',payload,{signal:tokenAbortController.signal}),12000,'Gemini Live 인증 정보를 받지 못했어요. 네트워크와 연결 설정을 확인해 주세요.',()=>tokenAbortController.abort());
       if(geminiLive!==live||live.closing||live.connectionEpoch!==epoch)throw new Error('Gemini Live 연결이 취소됐어요.');
       live.contextKey=payload.contextKey;
       live.model=data?.model||live.model||'';
@@ -5738,7 +5604,7 @@
     if(name==='NotAllowedError'||/permission|denied|권한/i.test(message))return '마이크 권한이 필요해요. 브라우저에서 허용한 뒤 마이크를 다시 누르세요.';
     if(name==='NotFoundError')return '사용할 수 있는 마이크를 찾지 못했어요.';
     if(message.includes('HTTPS')||message.includes('localhost'))return message;
-    if(message.includes('GEMINI')||message.includes('API key'))return 'Gemini Live 설정을 확인해야 해요.';
+    if(message.includes('GEMINI')||message.includes('key'))return 'Gemini Live 설정을 확인해야 해요.';
     return message||'마이크 또는 Gemini Live 연결에 실패했어요.';
   }
   async function activateGeminiLiveVoice(){
@@ -5949,7 +5815,7 @@
   }
   function isStandaloneAppPath(){
     const path=(location.pathname||'/').replace(/\/+$/,'')||'/';
-    return path==='/app'||path.endsWith('/app.html');
+    return path==='/'||path==='/app'||path.endsWith('/app.html');
   }
   function applyHash(){
     const h=location.hash.replace('#','');
@@ -5962,7 +5828,7 @@
       }
       document.body.classList.add('marketing-open');setDemoScreen('home');pinLandingTopSoon();return;
     }
-    if(h==='landing'){showLanding();return;}
+    if(h==='landing'){show('home');return;}
     document.body.classList.remove('marketing-open');
     closeVoice();closeIngredients();closeTimer();hf3Reset();
     const [route,param]=h.split('=');           // '#detail=<레시피id>' 딥링크 지원

@@ -1,13 +1,14 @@
 # Naembi Web
 
-냄비 베타테스트용 웹 랜딩과 웹앱 프로토타입입니다.
+냄비 베타테스트용 웹앱 프로토타입입니다.
 
 - 서비스명: 냄비 / Naembi
 - 배포 대상: Vercel
-- 랜딩 엔트리: `index.html`
-- 웹앱 엔트리: `app.html` (`/app`)
+- 공식 베타 URL: `https://naembii-web.vercel.app`
+- 웹앱 엔트리: `app.html` (`/`, `/app`)
+- 보존 랜딩: `landing.html` (현재 라우트 비활성)
 - 수집 API: `api/beta-signup.js`, `api/feedback.js`
-- 현재 목적: 앱 출시 전 베타 테스터 모집, 레시피 요청, 피드백 수집
+- 현재 목적: SNS 요리 영상을 바로 따라 만들 수 있는 조리 모드 경험 검증과 피드백 수집
 
 ## 로컬 실행
 
@@ -93,10 +94,10 @@ npm run verify:mixpanel -- http://127.0.0.1:4873
 
 5. `Environment Variables`에 베타 신청/피드백 저장용 값을 추가합니다.
 6. `Deploy`를 누릅니다.
-7. 배포 후 `/`가 제품 소개 랜딩으로 열리고, `/app`이 웹앱으로 열리는지 확인합니다.
-8. `/api/beta-signup`, `/api/feedback`이 동작하는지 확인합니다.
+7. 배포 후 `/`와 `/app`이 모두 웹앱 홈으로 열리는지 확인합니다.
+8. `/api/feedback`이 동작하는지 확인합니다.
 
-`vercel.json`에서 `/app` 요청은 `/app.html`로 rewrite됩니다. 루트 `/`는 `index.html` 랜딩을 그대로 사용합니다. 이 repo는 정적 HTML + Vercel 서버리스 API 구성이므로 별도 빌드 명령이 필요 없습니다.
+`vercel.json`에서 `/`와 `/app` 요청은 `/app.html`로 rewrite됩니다. 기존 랜딩은 `landing.html`로 보존되어 있으며 현재 기본 라우트에서는 사용하지 않습니다. 이 repo는 정적 HTML + Vercel 서버리스 API 구성이므로 별도 빌드 명령이 필요 없습니다.
 
 ## 환경변수
 

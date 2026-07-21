@@ -22,17 +22,7 @@ const states = [
   {
     name: 'home',
     setup: `show('home');`,
-    required: ['#home .nav', '#home .search', '.assistant-start', '.app-feedback-btn']
-  },
-  {
-    name: 'search',
-    setup: `openSearch('콘치즈');`,
-    required: ['#searchPage .nav', '#recipeSearchInput', '#searchResultTitle', '#searchResults .rcard']
-  },
-  {
-    name: 'search-creator',
-    setup: `openSearch('Maangchi');`,
-    required: ['#searchPage .nav', '#recipeSearchInput', '#creatorResultHead.show', '#creatorResults .creator-row', '#searchResults .rcard']
+    required: ['#home .nav', '#popScroll .rcard', '#recScroll .rcard', '.app-feedback-btn']
   },
   {
     name: 'detail',
@@ -82,7 +72,7 @@ const states = [
   {
     name: 'complete',
     setup: `currentRecipe=recipeById('${recipeId}'); show('complete');`,
-    required: ['#complete .done-view', '#doneTitle', '.done-actions .share', '.done-next']
+    required: ['#complete .done-view', '#doneTitle', '.done-actions .share', '.done-actions .btn.light']
   }
 ];
 
