@@ -93,6 +93,7 @@ try {
 
   await send('Page.navigate', { url: `${baseURL}/app` });
   await delay(2200);
+  await evaluate(`localStorage.setItem('naembiAssistantOnboardingSeen','1');`);
 
   const home = await evaluate(`({
     path: location.pathname,
@@ -334,6 +335,33 @@ try {
     };
   })()`);
 
+  const cookVideoLayout = await evaluate(`(async () => {
+    localStorage.setItem('naembiAssistantOnboardingSeen','1');
+    show('cook3');
+    hideCookHint({ startPlayback: false });
+    cancelStageTimer({ silent: true });
+    await new Promise((resolve) => setTimeout(resolve, 180));
+    const video = document.querySelector('#cook3 .cook-video');
+    const iframe = document.getElementById('cook3YoutubePlayer');
+    const body = document.querySelector('#cook3 .cook-body');
+    const ctrl = document.getElementById('cook3Ctrl');
+    const videoRect = video.getBoundingClientRect();
+    const bodyRect = body.getBoundingClientRect();
+    const ctrlRect = ctrl.getBoundingClientRect();
+    const iframeStyle = getComputedStyle(iframe);
+    return {
+      viewportHeight: window.innerHeight,
+      videoHeight: Math.round(videoRect.height),
+      bodyHeight: Math.round(bodyRect.height),
+      ctrlHeight: Math.round(ctrlRect.height),
+      videoRatio: Number((videoRect.height / window.innerHeight).toFixed(3)),
+      iframeTransform: iframeStyle.transform,
+      videoOverflow: getComputedStyle(video).overflow,
+      bodyUsable: bodyRect.height >= 150,
+      horizontalOverflow: document.documentElement.scrollWidth > window.innerWidth + 1 || document.body.scrollWidth > window.innerWidth + 1
+    };
+  })()`);
+
   const timerLayout = await evaluate(`(async () => {
     show('cook3');
     hideCookHint();
@@ -450,6 +478,50 @@ try {
       reopensAfterClose,
       hiddenAfterNever
     };
+  })()`);
+
+  const assistantOnboarding = await evaluate(`(async () => {
+    const originalToggle = toggleHf3;
+    localStorage.removeItem('naembiAssistantOnboardingSeen');
+    show('cook3');
+    await new Promise((resolve) => setTimeout(resolve, 180));
+    const step1 = {
+      visible: document.getElementById('assistantOnboarding').classList.contains('show'),
+      stepClass: document.getElementById('cook3').classList.contains('voice-onboarding-step-1'),
+      title: document.getElementById('assistantOnboardingTitle')?.textContent || '',
+      hintHidden: !document.getElementById('cookHint').classList.contains('show')
+    };
+    toggleHf3 = (options = {}) => originalToggle({ ...options, startLive: false });
+    document.getElementById('hf3').click();
+    await new Promise((resolve) => setTimeout(resolve, 140));
+    toggleHf3 = originalToggle;
+    const step2 = {
+      visible: document.getElementById('assistantOnboarding').classList.contains('show'),
+      stepClass: document.getElementById('cook3').classList.contains('voice-onboarding-step-2'),
+      title: document.getElementById('assistantOnboardingTitle')?.textContent || '',
+      panelOpen: document.getElementById('vpanel').classList.contains('open'),
+      voiceState: document.getElementById('vpanel').getAttribute('data-voice-state') || ''
+    };
+    nextAssistantOnboardingStep();
+    await new Promise((resolve) => setTimeout(resolve, 80));
+    const step3 = {
+      visible: document.getElementById('assistantOnboarding').classList.contains('show'),
+      stepClass: document.getElementById('cook3').classList.contains('voice-onboarding-step-3'),
+      title: document.getElementById('assistantOnboardingTitle')?.textContent || ''
+    };
+    nextAssistantOnboardingStep();
+    await new Promise((resolve) => setTimeout(resolve, 80));
+    const completed = {
+      hidden: !document.getElementById('assistantOnboarding').classList.contains('show'),
+      stored: localStorage.getItem('naembiAssistantOnboardingSeen') === '1'
+    };
+    show('detail');
+    show('cook3');
+    await new Promise((resolve) => setTimeout(resolve, 220));
+    const doesNotReopen = !document.getElementById('assistantOnboarding').classList.contains('show');
+    localStorage.setItem('naembiAssistantOnboardingSeen','1');
+    hf3Reset();
+    return { step1, step2, step3, completed, doesNotReopen };
   })()`);
 
   const assistant = await evaluate(`(async () => {
@@ -677,7 +749,7 @@ try {
       const opened = {
         panel: document.getElementById('vpanel').className,
         compact: document.getElementById('vpanel').classList.contains('compact'),
-        conversationUi: !document.querySelector('#vpVoiceTitle,#vpLiveStatus,#vpVoiceHint,#vpInputMeter,#vpInputSource,#vpInputDevice,.vp-listening,.vp-voice-kicker,.vp-idle-wave') && document.getElementById('vpIdleState')?.textContent.includes('무엇이 궁금해요?') && openingWaveStyle.visibility === 'hidden' && Number(openingWaveStyle.opacity) === 0,
+        conversationUi: !document.querySelector('#vpVoiceTitle,#vpLiveStatus,#vpVoiceHint,#vpInputMeter,#vpInputSource,#vpInputDevice,.vp-listening,.vp-voice-kicker,.vp-idle-wave') && /활성화|입력이 화면/.test(document.getElementById('vpIdleState')?.textContent || '') && openingWaveStyle.visibility === 'hidden' && Number(openingWaveStyle.opacity) === 0,
         microphoneRequests,
         micLive: !!geminiLive?.micStream && geminiLive.micStream.getAudioTracks().every((track) => track.readyState === 'live'),
         micLabel: document.querySelector('.vp-mic')?.getAttribute('aria-label') || '',
@@ -996,7 +1068,7 @@ try {
     }
   })()`);
 
-  const result = { home, feedback, timer, ingredients, settings, stepRoundTrip, timerLayout, cookRestart, tutorial, assistant };
+  const result = { home, feedback, timer, ingredients, settings, stepRoundTrip, cookVideoLayout, timerLayout, cookRestart, tutorial, assistantOnboarding, assistant };
   console.log(JSON.stringify(result, null, 2));
 
   if (home.marketing || home.active !== 'home') {
@@ -1069,6 +1141,9 @@ try {
   if (stepRoundTrip.cardTop < stepRoundTrip.bodyTop - 2 || stepRoundTrip.cardBottom > stepRoundTrip.bodyBottom + 2) {
     throw new Error(`A 단계 복귀 후 활성 카드가 조리 영역 밖으로 잘립니다: ${JSON.stringify(stepRoundTrip)}`);
   }
+  if (cookVideoLayout.videoRatio < 0.42 || cookVideoLayout.videoRatio > 0.56 || !cookVideoLayout.bodyUsable || cookVideoLayout.horizontalOverflow || !cookVideoLayout.iframeTransform.includes('matrix') || cookVideoLayout.videoOverflow !== 'hidden') {
+    throw new Error(`조리 모드 영상 영역이 모바일 viewport 기준으로 충분히 크거나 안정적으로 표시되지 않습니다: ${JSON.stringify(cookVideoLayout)}`);
+  }
   if (!timerLayout.visible || !timerLayout.bodyActive || timerLayout.activeStep !== '1' || timerLayout.overlapRatio > 0.03 || timerLayout.cardTop < timerLayout.timerBottom - 2) {
     throw new Error(`타이머 실행 중 활성 단계 카드가 타이머와 겹치거나 레이아웃 상태가 반영되지 않았습니다: ${JSON.stringify(timerLayout)}`);
   }
@@ -1086,6 +1161,18 @@ try {
   }
   if (!tutorial.reopensAfterClose || !tutorial.hiddenAfterNever) {
     throw new Error('조리 튜토리얼 다시 보기/다시 보지 않기 흐름이 동작하지 않습니다.');
+  }
+  if (!assistantOnboarding.step1.visible || !assistantOnboarding.step1.stepClass || !assistantOnboarding.step1.title.includes('요리 비서') || !assistantOnboarding.step1.hintHidden) {
+    throw new Error(`요리 비서 첫 진입 온보딩 1단계가 올바르게 표시되지 않습니다: ${JSON.stringify(assistantOnboarding.step1)}`);
+  }
+  if (!assistantOnboarding.step2.visible || !assistantOnboarding.step2.stepClass || !assistantOnboarding.step2.panelOpen || assistantOnboarding.step2.voiceState !== 'activating') {
+    throw new Error(`요리 비서 버튼 클릭으로 온보딩 2단계와 활성화 상태가 연결되지 않았습니다: ${JSON.stringify(assistantOnboarding.step2)}`);
+  }
+  if (!assistantOnboarding.step3.visible || !assistantOnboarding.step3.stepClass || !assistantOnboarding.step3.title.includes('자동')) {
+    throw new Error(`요리 비서 온보딩 3단계가 표시되지 않습니다: ${JSON.stringify(assistantOnboarding.step3)}`);
+  }
+  if (!assistantOnboarding.completed.hidden || !assistantOnboarding.completed.stored || !assistantOnboarding.doesNotReopen) {
+    throw new Error('요리 비서 온보딩 완료 후 다시 표시 방지 상태가 저장되지 않았습니다.');
   }
   if (!assistant.opened.panel.includes('open') || !assistant.opened.compact || assistant.opened.ctrlHeight > 170 || assistant.opened.activeStep !== '0') {
     throw new Error('요리비서 패널이 열리지 않았거나 조리 단계를 변경했습니다.');
@@ -1152,7 +1239,7 @@ try {
   if (assistant.transcript.length !== 2 || !assistant.transcript[0].includes('나영상 10초 앞으로 움직여줘') || !assistant.transcript[1].includes('냄비seek_video 요청을 반영했어요.')) {
     throw new Error('요리비서 전사가 현재 사용자 발화와 AI 답변 한 쌍만 유지하지 못했습니다.');
   }
-  if (assistant.ducking.duckedVolume !== 25 || !assistant.ducking.staysDucked || assistant.ducking.volumeAfterFirstChunk !== 25 || assistant.ducking.restoredVolume !== 42 || assistant.ducking.finalDucked) {
+  if (assistant.ducking.duckedVolume !== 11 || !assistant.ducking.staysDucked || assistant.ducking.volumeAfterFirstChunk !== 11 || assistant.ducking.restoredVolume !== 42 || assistant.ducking.finalDucked) {
     throw new Error('Gemini 음성 재생 중 영상 소리 자동 감소 및 복구가 동작하지 않았습니다.');
   }
   for (const name of ['set_cooking_timer', 'move_cooking_step', 'seek_video']) {

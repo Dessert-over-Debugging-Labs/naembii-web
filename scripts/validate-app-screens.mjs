@@ -9,6 +9,7 @@ const port = Number(process.argv[4] || 9394);
 const recipeId = process.argv[5] || 'vlPqkuHIdCc';
 
 const viewports = [
+  { name: 'mobile-320', width: 320, height: 568, deviceScaleFactor: 2, mobile: true },
   { name: 'mobile-390', width: 390, height: 844, deviceScaleFactor: 2, mobile: true },
   { name: 'mobile-short', width: 375, height: 667, deviceScaleFactor: 2, mobile: true },
   { name: 'iphone-16', width: 393, height: 852, deviceScaleFactor: 3, mobile: true },
@@ -31,12 +32,17 @@ const states = [
   },
   {
     name: 'cook3-hint',
-    setup: `currentRecipe=recipeById('${recipeId}'); show('cook3');`,
+    setup: `localStorage.setItem('naembiAssistantOnboardingSeen','1'); currentRecipe=recipeById('${recipeId}'); show('cook3');`,
     required: ['#cook3 .nav', '#cook3 .cook-video', '#cookTrack3 .scard.active', '#cookHint.show', '#cook3Ctrl']
   },
   {
+    name: 'assistant-onboarding',
+    setup: `localStorage.removeItem('naembiAssistantOnboardingSeen'); currentRecipe=recipeById('${recipeId}'); show('cook3'); showAssistantOnboarding({force:true});`,
+    required: ['#assistantOnboarding.show', '.assistant-onboarding-card', '#assistantOnboardingTitle', '#hf3']
+  },
+  {
     name: 'cook3-core',
-    setup: `currentRecipe=recipeById('${recipeId}'); show('cook3'); hideCookHint();`,
+    setup: `localStorage.setItem('naembiAssistantOnboardingSeen','1'); currentRecipe=recipeById('${recipeId}'); show('cook3'); hideCookHint();`,
     required: ['#cook3 .nav', '#cook3 .cook-video', '#cookTrack3 .scard.active', '#cook3Ctrl']
   },
   {
@@ -192,6 +198,8 @@ try {
       const metrics = await evaluate(`(async () => {
         const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
         const cleanup = () => {
+          try { localStorage.setItem('naembiAssistantOnboardingSeen','1'); } catch {}
+          try { hideAssistantOnboarding({ reopenHint: false }); } catch {}
           try { closeIngredients(); } catch {}
           try { closeTimer(); } catch {}
           try { cancelStageTimer({ silent: true }); } catch {}
