@@ -16,7 +16,7 @@
 </head>
 <body><main><p class="status">PASS</p><h1>동적 검증 워크플로우 실행 리포트</h1>
 
-<p>- 일시: 2026-07-21T18:00:50.602Z</p>
+<p>- 일시: 2026-07-22T08:21:16.909Z</p>
 <p>- 판정: **PASS**</p>
 <p>- 점수: **110 / 110 (100%)**</p>
 <p>- 통과 기준: **96% 초과** (시각 검증 미포함 빠른 기준)</p>
@@ -29,16 +29,19 @@
 
 <h2>변경 파일</h2>
 
-<p>- 감지된 변경 없음</p>
+<p>- `index.html`</p>
+<p>- `package.json`</p>
+<p>- `scripts/validate-app-screens.mjs`</p>
+<p>- `scripts/validate-mobile-flow.mjs`</p>
+<p>- `scripts/validate-design-system.mjs`</p>
 
 <h2>선택된 워크플로우</h2>
 
 <pre>| workflow | 선택 이유 |</pre>
 <pre>| --- | --- |</pre>
 <pre>| core | 항상 실행 |</pre>
-<pre>| api | full 실행 |</pre>
-<pre>| deploy | full 실행 |</pre>
-<pre>| docs | full 실행 |</pre>
+<pre>| api | api/app/landing 변경 감지 |</pre>
+<pre>| deploy | 배포 설정 변경 감지 |</pre>
 
 <h2>점수표</h2>
 
@@ -74,7 +77,6 @@
 <pre>| deploy env contract | PASS | Google Form/webhook/GitHub 수집 환경변수 문서화 확인 | - |</pre>
 <pre>| vercel ignore hygiene | PASS | docs/scripts/.env 배포 제외 확인 | - |</pre>
 <pre>| workflow script hook | PASS | npm run verify:dynamic 가능 | - |</pre>
-<pre>| verification docs | PASS | 동적 워크플로우/랜딩 검증 문서 확인 | - |</pre>
 
 <h2>루프 규칙</h2>
 

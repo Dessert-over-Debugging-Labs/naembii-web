@@ -1,6 +1,6 @@
 # 동적 검증 워크플로우 실행 리포트
 
-- 일시: 2026-07-21T18:00:50.602Z
+- 일시: 2026-07-22T08:21:16.909Z
 - 판정: **PASS**
 - 점수: **110 / 110 (100%)**
 - 통과 기준: **96% 초과** (시각 검증 미포함 빠른 기준)
@@ -13,16 +13,19 @@
 
 ## 변경 파일
 
-- 감지된 변경 없음
+- `index.html`
+- `package.json`
+- `scripts/validate-app-screens.mjs`
+- `scripts/validate-mobile-flow.mjs`
+- `scripts/validate-design-system.mjs`
 
 ## 선택된 워크플로우
 
 | workflow | 선택 이유 |
 | --- | --- |
 | core | 항상 실행 |
-| api | full 실행 |
-| deploy | full 실행 |
-| docs | full 실행 |
+| api | api/app/landing 변경 감지 |
+| deploy | 배포 설정 변경 감지 |
 
 ## 점수표
 
@@ -58,7 +61,6 @@
 | deploy env contract | PASS | Google Form/webhook/GitHub 수집 환경변수 문서화 확인 | - |
 | vercel ignore hygiene | PASS | docs/scripts/.env 배포 제외 확인 | - |
 | workflow script hook | PASS | npm run verify:dynamic 가능 | - |
-| verification docs | PASS | 동적 워크플로우/랜딩 검증 문서 확인 | - |
 
 ## 루프 규칙
 

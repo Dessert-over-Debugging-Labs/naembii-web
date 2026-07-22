@@ -1,14 +1,19 @@
 {
-  "startedAt": "2026-07-21T18:00:50.602Z",
+  "startedAt": "2026-07-22T08:21:16.909Z",
   "summary": "PASS",
   "visual": false,
   "baseURL": "http://127.0.0.1:4190/",
-  "files": [],
+  "files": [
+    "index.html",
+    "package.json",
+    "scripts/validate-app-screens.mjs",
+    "scripts/validate-mobile-flow.mjs",
+    "scripts/validate-design-system.mjs"
+  ],
   "workflows": [
     "core",
     "api",
-    "deploy",
-    "docs"
+    "deploy"
   ],
   "gates": [
     {
@@ -105,12 +110,6 @@
       "name": "workflow script hook",
       "status": "PASS",
       "detail": "npm run verify:dynamic 가능",
-      "fix": ""
-    },
-    {
-      "name": "verification docs",
-      "status": "PASS",
-      "detail": "동적 워크플로우/랜딩 검증 문서 확인",
       "fix": ""
     }
   ],
