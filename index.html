@@ -35,7 +35,28 @@
     --brand-soft:#E7F6EE;   /* 아주 연한 배경 틴트 */
     --brand-deep:#2C7D58;   /* soft 위 텍스트용 진한 톤 */
     --brand-rgb:70,181,129; /* 그림자·글로우용 rgb */
-    --cook-step-title-size:20px;
+    --font-size-xs:11px;
+    --font-size-sm:12px;
+    --font-size-compact:14px;
+    --font-size-md:15px;
+    --font-size-base:16px;
+    --font-size-lg:18px;
+    --font-size-xl:20px;
+    --font-size-2xl:24px;
+    --font-weight-strong:800;
+    --icon-size-xs:14px;
+    --icon-size-sm:16px;
+    --icon-size-panel:17px;
+    --icon-size-label:18px;
+    --icon-size-md:20px;
+    --icon-size-control:22px;
+    --icon-size-lg:24px;
+    --icon-size-xl:30px;
+    --touch-target:44px;
+    --cook-step-title-size:var(--font-size-xl);
+    --cook-video-height:clamp(248px, 48dvh, 430px);
+    --cook-video-height-compact:clamp(214px, 43dvh, 288px);
+    --cook-video-scale:1.045;
     /* ===== 별칭(하위호환: 기존 --green* 사용처가 브랜드에 자동 연동) ===== */
     --green:var(--brand);
     --green-l:var(--brand-l);
@@ -76,7 +97,7 @@
     padding:0;margin:0 auto;background:var(--bg);
   }
   /* Lucide 아이콘 기본 크기 */
-  svg.lucide{width:22px;height:22px;stroke-width:2;vertical-align:middle;flex:none;}
+  svg.lucide{width:var(--icon-size-control);height:var(--icon-size-control);stroke-width:2;vertical-align:middle;flex:none;}
 
   /* ===== 모바일 웹앱 쉘 (실제 폰 전체화면) ===== */
   .device{
@@ -127,8 +148,8 @@
   .nav-actions{display:flex;align-items:center;gap:10px;}
   .nav .ic-btn{width:32px;height:32px;display:flex;align-items:center;justify-content:center;color:var(--ink);cursor:pointer;}
   .nav.dark .ic-btn{color:var(--text);}
-  .nav .ic-btn svg{width:24px;height:24px;}
-  .nav .title{font-size:16px;font-weight:700;}
+  .nav .ic-btn svg{width:var(--icon-size-lg);height:var(--icon-size-lg);}
+  .nav .title{font-size:var(--font-size-base);font-weight:700;}
   .nav.dark .title{color:var(--text);}
   .cook-nav{position:relative;display:grid;grid-template-columns:80px minmax(0,1fr) 80px;}
   .cook-nav>.ic-btn{justify-self:start;}
@@ -138,8 +159,8 @@
   .logo{display:flex;align-items:center;gap:7px;font-family:"Apple SD Gothic Neo","Arial Rounded MT Bold",-apple-system,BlinkMacSystemFont,sans-serif;font-size:25px;font-weight:800;color:var(--green);}
   .logo svg{width:24px;height:24px;stroke-width:2.2;}
   .hd-right{display:flex;align-items:center;gap:10px;}
-  .soon-badge{display:inline-flex;align-items:center;gap:4px;min-height:28px;max-width:76px;border:1px solid rgba(var(--brand-rgb),.18);border-radius:999px;background:var(--brand-soft);color:var(--brand-deep);font-size:12px;font-weight:900;padding:0 8px;white-space:nowrap;line-height:1;}
-  .soon-badge svg{width:13px;height:13px;color:var(--brand);}
+  .soon-badge{display:inline-flex;align-items:center;gap:4px;min-height:28px;max-width:76px;border:1px solid rgba(var(--brand-rgb),.18);border-radius:999px;background:var(--brand-soft);color:var(--brand-deep);font-size:var(--font-size-sm);font-weight:900;padding:0 8px;white-space:nowrap;line-height:1;}
+  .soon-badge svg{width:var(--icon-size-xs);height:var(--icon-size-xs);color:var(--brand);}
 
   /* 검색 */
   .search{
@@ -207,7 +228,7 @@
   .cat .ic svg{width:24px;height:24px;}
   .cat span{font-size:12px;font-weight:600;color:var(--text-sub);}
 
-  .section-t{font-size:18px;font-weight:800;padding:0 16px 12px;display:flex;align-items:center;justify-content:space-between;}
+  .section-t{font-size:var(--font-size-lg);font-weight:800;padding:0 16px 12px;display:flex;align-items:center;justify-content:space-between;}
   .section-t .more{font-size:13px;color:var(--gray);font-weight:500;display:flex;align-items:center;gap:2px;}
   .section-t .more svg{width:15px;height:15px;}
   .section-t .st-l{display:flex;align-items:center;gap:7px;}
@@ -241,6 +262,10 @@
   }
   .cook-video iframe{
     position:absolute;inset:0;width:100%;height:100%;border:0;display:block;pointer-events:none; /* 조리 모드: 컨트롤 없이 표시 전용(음성·단계로 제어) */
+  }
+  #cook3 .cook-video iframe{
+    transform:scale(var(--cook-video-scale));
+    transform-origin:center;
   }
   .hero iframe{
     position:absolute;inset:0;width:100%;height:100%;border:0;display:block; /* 상세 영상은 직접 조작 가능 */
@@ -358,9 +383,8 @@
   .cta-bar .btn{pointer-events:auto;box-shadow:0 10px 28px rgba(0,0,0,.24);}
 
   /* ===== 조리 (다크) ===== */
-  /* 영상: 짧은 뷰포트(크롬 툴바 노출 등)에서 자동 축소 — 긴 화면 200px, 짧은 화면 130px까지 */
-  .cook-video{width:100%;height:clamp(130px, 22dvh, 200px);position:relative;background:#000;}
-  .youtube-mount{position:absolute;inset:0;}
+  .cook-video{width:100%;height:var(--cook-video-height);position:relative;background:#000;overflow:hidden;}
+  .youtube-mount{position:absolute;inset:0;overflow:hidden;}
   .video-fallback{
     position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
     gap:6px;padding:18px;text-align:center;color:#fff;background:#242426;
@@ -416,7 +440,8 @@
   #cook2 .cook-body{flex:none;overflow:visible;padding-top:6px;}
   #cook3 .cook-body{justify-content:flex-start;overflow:hidden;padding:0 16px calc(10px + env(safe-area-inset-bottom,0));position:relative;gap:8px;transition:padding-top .22s ease;}
   #cook3 .cook-body.timer-active{padding-top:76px;}
-  #cook3 .cook-track{flex:1;min-height:220px;height:auto;}
+  #cook3 .cook-track{flex:1;min-height:210px;height:auto;}
+  #cook3 .cook-body:has(.cook-hint.show) .cook-track{min-height:150px;}
   .stage-timer{
     position:absolute;left:16px;right:16px;top:8px;z-index:180;
     min-height:58px;box-sizing:border-box;padding:9px 11px;border-radius:16px;
@@ -466,14 +491,40 @@
   .hint-gesture .hand{width:22px;height:22px;color:var(--text);animation:hintSwipeHand 1.55s ease-in-out infinite;}
   .hint-gesture .ar{position:absolute;top:4px;left:50%;width:20px;height:20px;color:var(--green);transform:translateX(-50%);animation:hintSwipeArrow 1.55s ease-in-out infinite;}
   .hint-copy{grid-area:copy;min-width:0;display:flex;flex-direction:column;gap:4px;line-height:1.25;}
-  .hint-copy b{font-size:16px;font-weight:900;color:var(--text);}
-  .hint-copy span{font-size:12px;font-weight:800;color:var(--text-sub);line-height:1.35;}
+  .hint-copy b{font-size:var(--font-size-base);font-weight:900;color:var(--text);}
+  .hint-copy span{font-size:var(--font-size-sm);font-weight:800;color:var(--text-sub);line-height:1.35;}
   .hint-never{grid-area:action;justify-self:start;display:inline-flex;align-items:center;gap:4px;background:var(--surface-2);border:none;border-radius:999px;color:var(--text-sub);font-family:inherit;font-size:11px;font-weight:800;padding:7px 9px;cursor:pointer;white-space:nowrap;}
   .hint-never svg{width:14px;height:14px;}
   .hint-never:active{transform:scale(.94);}
   .hint-dismiss{display:none;}
   @keyframes hintSwipeHand{0%,100%{transform:translateY(22px) scale(.98);opacity:.7;}45%{transform:translateY(-18px) scale(1.05);opacity:1;}}
   @keyframes hintSwipeArrow{0%,100%{transform:translateX(-50%) translateY(22px);opacity:.18;}45%{transform:translateX(-50%) translateY(-12px);opacity:1;}}
+  .assistant-onboarding{position:absolute;inset:0;z-index:205;display:none;pointer-events:none;}
+  .assistant-onboarding.show{display:block;}
+  .assistant-onboarding-blocker{position:absolute;inset:0;background:rgba(15,17,20,.58);backdrop-filter:blur(2px);pointer-events:auto;}
+  .assistant-onboarding-card{position:absolute;left:18px;right:18px;bottom:calc(122px + env(safe-area-inset-bottom,0));z-index:2;display:flex;gap:12px;align-items:flex-start;padding:15px;border-radius:18px;background:var(--surface);color:var(--text);box-shadow:0 18px 42px rgba(0,0,0,.28);pointer-events:auto;}
+  .assistant-onboarding-card::after{content:"";position:absolute;left:50%;bottom:-10px;width:20px;height:20px;background:var(--surface);transform:translateX(-50%) rotate(45deg);border-radius:4px;}
+  .assistant-onboarding-icon{width:36px;height:36px;border-radius:12px;background:var(--brand-soft);color:var(--brand);display:flex;align-items:center;justify-content:center;flex:none;}
+  .assistant-onboarding-icon svg{width:var(--icon-size-md);height:var(--icon-size-md);}
+  .assistant-onboarding-copy{position:relative;z-index:1;min-width:0;display:flex;flex-direction:column;gap:6px;}
+  .assistant-onboarding-copy b{font-size:var(--font-size-md);line-height:1.35;font-weight:900;}
+  .assistant-onboarding-copy span{font-size:var(--font-size-sm);line-height:1.45;font-weight:760;color:var(--text-sub);}
+  .assistant-onboarding-actions{position:relative;z-index:1;display:flex;gap:8px;flex-wrap:wrap;margin-top:2px;}
+  .assistant-onboarding-actions button{min-height:36px;border:none;border-radius:999px;padding:0 12px;font:inherit;font-size:var(--font-size-sm);font-weight:900;cursor:pointer;}
+  .assistant-onboarding-actions button[hidden]{display:none;}
+  .assistant-onboarding-actions .primary{background:var(--brand);color:#fff;}
+  .assistant-onboarding-actions .ghost{background:var(--surface-2);color:var(--text-sub);}
+  #cook3.voice-onboarding-active #hf3{position:relative;z-index:215;}
+  #cook3.voice-onboarding-active #hf3 .cic.ai-assistant{box-shadow:0 0 0 7px rgba(255,255,255,.92),0 0 0 13px rgba(var(--brand-rgb),.38),0 16px 40px rgba(0,0,0,.38);}
+  #cook3.voice-onboarding-step-2 .assistant-onboarding-card,
+  #cook3.voice-onboarding-step-3 .assistant-onboarding-card{bottom:calc(154px + env(safe-area-inset-bottom,0));}
+  @media (max-height:700px){
+    .assistant-onboarding-card{left:14px;right:14px;bottom:calc(104px + env(safe-area-inset-bottom,0));padding:13px;}
+    #cook3.voice-onboarding-step-2 .assistant-onboarding-card,
+    #cook3.voice-onboarding-step-3 .assistant-onboarding-card{bottom:calc(138px + env(safe-area-inset-bottom,0));}
+    .assistant-onboarding-copy b{font-size:var(--font-size-sm);}
+    .assistant-onboarding-copy span{font-size:var(--font-size-xs);}
+  }
   /* 핸즈프리 모드: 얇은 듣고있어요 바 + 대화창 */
   .hf-listen{margin:4px 16px 8px;background:var(--dark2);border-radius:12px;padding:8px 14px;display:flex;align-items:center;gap:10px;}
   .hf-listen .wave span{width:2.5px;}
@@ -524,7 +575,7 @@
   .cook-ctrl{flex:none;display:flex;align-items:center;justify-content:space-around;padding:16px 24px 24px;background:var(--surface);border-top:1px solid var(--border);}
   .cbtn{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:72px;cursor:pointer;border:none;background:none;font-family:inherit;}
   .cbtn .cic{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
-  .cbtn .cic svg{width:22px;height:22px;color:#fff;}
+  .cbtn .cic svg{width:var(--icon-size-control);height:var(--icon-size-control);color:#fff;}
   .cbtn .cic.o{background:var(--green);}
   .cbtn .cic.d{background:var(--dark3);}
   /* 보조 표면(dark3=surface-2) 위 아이콘은 모드 따라 명암 반전 */
@@ -532,7 +583,7 @@
   .cbtn .cic.mic{width:64px;height:64px;animation:pulse 2s infinite;}
   .cbtn .cic.mic svg{width:28px;height:28px;}
   @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(var(--brand-rgb),.5);}70%{box-shadow:0 0 0 16px rgba(var(--brand-rgb),0);}100%{box-shadow:0 0 0 0 rgba(var(--brand-rgb),0);}}
-  .cbtn small{font-size:12px;color:var(--text-sub);}
+  .cbtn small{font-size:var(--font-size-sm);color:var(--text-sub);}
   .cbtn .cic.mic.off{animation:none;background:var(--dark3);}
   .cbtn.ai-assistant-btn small{color:var(--green);font-weight:800;}
   .cbtn .cic.ai-assistant{
@@ -558,7 +609,7 @@
     border:1.5px solid rgba(var(--brand-rgb),.45);
     animation:aiRing 2.6s ease-out infinite;
   }
-  .cbtn .cic.ai-assistant svg{width:30px;height:30px;color:#fff;stroke-width:2.2;position:relative;z-index:1;}
+  .cbtn .cic.ai-assistant svg{width:var(--icon-size-xl);height:var(--icon-size-xl);color:#fff;stroke-width:2.2;position:relative;z-index:1;}
   @keyframes aiFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-3px);}}
   @keyframes aiDroplets{
     0%,100%{transform:translateY(0) rotate(0deg);opacity:.62;}
@@ -566,8 +617,7 @@
   }
   @keyframes aiRing{0%{transform:scale(.9);opacity:.65;}80%,100%{transform:scale(1.24);opacity:0;}}
   /* 조리 모드(신) 실시간 음성 패널 */
-  /* 하단 컨트롤바: 짧은 뷰포트에서 축소(긴 화면 156px, 짧은 화면 128px) */
-  #cook3 .cook-ctrl{display:block;padding:0;height:clamp(128px, 18dvh, 156px);width:100%;min-width:0;margin:0;align-self:stretch;box-sizing:border-box;position:relative;overflow:hidden;}
+  #cook3 .cook-ctrl{display:block;padding:0;height:clamp(116px, 15dvh, 142px);width:100%;min-width:0;margin:0;align-self:stretch;box-sizing:border-box;position:relative;overflow:hidden;}
   .ctrl-buttons{display:flex;align-items:center;justify-content:space-around;height:100%;box-sizing:border-box;padding:14px 24px clamp(14px, 3dvh, 24px);}
   /* 대화 패널 열림: 둥근 상단 모서리 뒤가 흰색(surface)으로 비쳐 위 틴트 배경과 틈이 생기던 문제 →
      컨트롤바 배경을 카드영역과 같은 틴트(--dark)로 맞추고 상단 경계선도 감춰 이음새 제거 */
@@ -621,11 +671,11 @@
   .vp-size-handle:active span{background:#fff;}
   .vpanel.expanded .vp-size-handle span{width:72px;background:#fff;}
   .vp-close{position:absolute;top:8px;right:12px;z-index:2;width:32px;height:32px;border:none;background:rgba(255,255,255,.14);border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;}
-  .vp-close svg{width:17px;height:17px;}
+  .vp-close svg{width:var(--icon-size-panel);height:var(--icon-size-panel);}
   .vp-close:active{transform:translateY(1px);}
   /* 마이크(음소거) 버튼 — X 왼쪽 */
   .vp-mic{position:absolute;top:8px;right:52px;z-index:2;width:32px;height:32px;border:none;background:rgba(255,255,255,.14);border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;}
-  .vp-mic svg{width:17px;height:17px;}
+  .vp-mic svg{width:var(--icon-size-panel);height:var(--icon-size-panel);}
   .vpanel.mic-muted .vp-mic{color:#FF8A8A;} /* 음소거 시 붉은 톤 */
   .vp-notice{position:absolute;z-index:5;left:20px;right:20px;top:42px;display:flex;align-items:center;justify-content:center;min-height:36px;padding:8px 12px;box-sizing:border-box;border-radius:14px;background:rgba(28,28,30,.82);backdrop-filter:blur(10px);color:#fff;font-size:12px;font-weight:850;line-height:1.35;text-align:center;text-shadow:0 1px 4px rgba(0,0,0,.28);opacity:0;visibility:hidden;transform:translateY(-8px) scale(.98);transition:opacity .18s ease,transform .22s cubic-bezier(.2,.8,.2,1),visibility 0s linear .22s;pointer-events:none;}
   .vp-notice.show{opacity:1;visibility:visible;transform:translateY(0) scale(1);transition-delay:0s;}
@@ -640,12 +690,12 @@
   .vp-idle-state{position:relative;z-index:1;display:flex;flex:1;flex-direction:column;align-items:center;justify-content:center;min-height:0;color:#fff;text-align:center;}
   .vp-scroll:not(.has-transcript) .vp-idle-state{position:absolute;left:0;right:0;top:40%;min-height:0;transform:translateY(-50%);}
   .vpanel.notice-open .vp-idle-state{opacity:0;visibility:hidden;}
-  .vp-idle-state p{margin:0;font-size:18px;font-weight:850;line-height:1.35;text-shadow:0 1px 6px rgba(0,0,0,.2);}
+  .vp-idle-state p{margin:0;font-size:var(--font-size-lg);font-weight:850;line-height:1.35;text-shadow:0 1px 6px rgba(0,0,0,.2);}
   .vp-scroll.has-transcript .vp-idle-state{display:none;}
   .vp-transcript{position:relative;z-index:1;display:grid;align-content:start;gap:14px;margin:auto 0 6px;padding:0;border:0;}
   .vp-scroll.has-transcript{padding-top:32px;}
-  .vp-scroll.has-transcript .vp-transcript{height:100%;max-height:100%;overflow:hidden;width:100%;margin:0;}
-  .vpanel.mic-active .vp-scroll.has-transcript .vp-transcript{width:calc(100% - 70px);margin:0 70px 0 0;}
+  .vp-scroll.has-transcript .vp-transcript{height:100%;max-height:100%;overflow:hidden;width:100%;margin:0;padding-right:74px;box-sizing:border-box;}
+  .vpanel.mic-active .vp-scroll.has-transcript .vp-transcript{width:100%;margin:0;}
   .vp-transcript.turn-pair{grid-template-rows:auto minmax(0,1fr);}
   .vp-transcript.assistant-only{grid-template-rows:minmax(0,1fr);}
   .vp-transcript:empty{display:none;}
@@ -657,9 +707,10 @@
   .vp-transcript-entry.assistant span{display:block;max-height:100%;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;scrollbar-width:none;font-size:17px;line-height:1.38;font-weight:850;}
   .vp-transcript-entry.assistant span::-webkit-scrollbar{display:none;}
   .vpanel.compact .vp-transcript{gap:5px;margin:0;width:100%;}
-  .vpanel.compact.mic-active .vp-scroll.has-transcript .vp-transcript{margin:0 52px 0 0;width:calc(100% - 52px);}
+  .vpanel.compact .vp-scroll.has-transcript .vp-transcript{padding-right:58px;}
+  .vpanel.compact.mic-active .vp-scroll.has-transcript .vp-transcript{margin:0;width:100%;}
   .vpanel.compact .vp-transcript-entry{font-size:15px;line-height:1.3;}
-  .vpanel.compact .vp-transcript-entry.assistant span{max-height:66px;font-size:16px;line-height:1.375;-webkit-mask-image:linear-gradient(to bottom,#000 calc(100% - 8px),transparent 100%);mask-image:linear-gradient(to bottom,#000 calc(100% - 8px),transparent 100%);}
+  .vpanel.compact .vp-transcript-entry.assistant span{max-height:72px;padding-bottom:4px;font-size:var(--font-size-md);line-height:1.45;}
   .vpanel.compact .vp-input-wave{height:20px;width:54px;margin:0;}
   .vpanel.compact .vp-input-wave .wave{height:20px;}
   .vpanel.compact .vp-input-wave .wave span:nth-child(1){height:6px;}.vpanel.compact .vp-input-wave .wave span:nth-child(2){height:14px;}
@@ -674,6 +725,17 @@
   .vp-input-wave .wave span:nth-child(1){height:8px;}.vp-input-wave .wave span:nth-child(2){height:20px;}
   .vp-input-wave .wave span:nth-child(3){height:28px;}.vp-input-wave .wave span:nth-child(4){height:15px;}.vp-input-wave .wave span:nth-child(5){height:23px;}
   @media (max-height:700px){
+    #cook3{--cook-video-height:var(--cook-video-height-compact);--cook-video-scale:1.035;}
+    #cook3 .cook-track{min-height:150px;}
+    #cook3 .cook-body:has(.cook-hint.show) .cook-track{min-height:122px;}
+    #cook3 .cook-body{gap:5px;}
+    #cook3 .cook-ctrl{height:clamp(108px, 15dvh, 122px);}
+    .scard{padding:12px 14px;border-radius:14px;}
+    .scard:not(.active){padding:12px 48px 12px 14px;}
+    .scard.active .sc-title{font-size:var(--font-size-lg);}
+    .scard.active .sub-list{gap:8px;margin-top:10px;max-height:190px;}
+    .sub-list li{font-size:var(--font-size-compact);line-height:1.35;gap:9px;}
+    .sub-list li::before{width:var(--icon-size-control);height:var(--icon-size-control);font-size:var(--font-size-xs);}
     #cook3 .cook-ctrl:has(.vpanel.open),#cook3 .cook-ctrl.vpanel-open{height:var(--vp-panel-height,clamp(240px,38dvh,286px));}
     #cook3 .cook-ctrl:has(.vpanel.open.expanded),#cook3 .cook-ctrl.vpanel-open.vpanel-expanded{height:var(--vp-panel-height,clamp(360px,58dvh,430px));}
     .vp-idle-state p{font-size:16px;}
@@ -769,13 +831,13 @@
   .vset-card::-webkit-scrollbar{display:none;}
   @keyframes vsetPop{from{opacity:0;transform:scale(.9);}to{opacity:1;transform:scale(1);}}
   .vset-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
-  .vset-head b{font-size:18px;font-weight:800;color:var(--text);}
+  .vset-head b{font-size:var(--font-size-lg);font-weight:800;color:var(--text);}
   .vset-head .x{cursor:pointer;color:var(--text-sub);display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;}
-  .vset-head .x svg{width:20px;height:20px;}
+  .vset-head .x svg{width:var(--icon-size-md);height:var(--icon-size-md);}
   .vset-row{display:flex;align-items:center;justify-content:space-between;min-height:44px;padding:8px 0;}
   .vset-row.disabled,.vset-sub.disabled{opacity:.42;}
-  .vset-label{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:700;color:var(--text);}
-  .vset-label svg{width:18px;height:18px;color:var(--brand);}
+  .vset-label{display:flex;align-items:center;gap:9px;font-size:var(--font-size-md);font-weight:700;color:var(--text);}
+  .vset-label svg{width:var(--icon-size-label);height:var(--icon-size-label);color:var(--brand);}
   .vset-sub{display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding-bottom:10px;border-bottom:1px solid var(--border);margin-bottom:2px;}
   .vset-sub.collapsed{display:none;}
   .vset-row+.vset-sub{padding-bottom:12px;}
@@ -803,10 +865,10 @@
     .vset{padding:12px 16px calc(12px + env(safe-area-inset-bottom,0));}
     .vset-card{max-height:calc(100dvh - 28px - env(safe-area-inset-bottom,0));border-radius:16px;padding:13px 16px;}
     .vset-head{margin-bottom:3px;}
-    .vset-head b{font-size:17px;}
+    .vset-head b{font-size:var(--font-size-base);}
     .vset-row{min-height:38px;padding:5px 0;}
-    .vset-label{font-size:14px;gap:8px;}
-    .vset-label svg{width:17px;height:17px;}
+    .vset-label{font-size:var(--font-size-compact);gap:8px;}
+    .vset-label svg{width:var(--icon-size-sm);height:var(--icon-size-sm);}
     .vset-switch{width:42px;height:26px;border-radius:13px;}
     .vset-switch span{width:20px;height:20px;}
     .vset-switch.on span{left:19px;}
@@ -1413,10 +1475,24 @@
           <div class="vp-notice" id="vpNotice" role="status" aria-live="polite"></div>
           <div class="vp-scroll" id="vpScroll">
             <div class="vp-idle-state" id="vpIdleState">
-              <p>냄비에게 무엇이 궁금해요?</p>
+              <p>눌러서 요리 비서를 시작해 보세요</p>
             </div>
             <div class="vp-transcript" id="vpTranscript" role="log" aria-live="polite" aria-label="음성 대화 기록"></div>
             <div class="vp-input-wave" aria-hidden="true"><div class="wave"><span></span><span></span><span></span><span></span><span></span></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="assistant-onboarding" id="assistantOnboarding" role="dialog" aria-modal="true" aria-labelledby="assistantOnboardingTitle" aria-describedby="assistantOnboardingDesc">
+        <div class="assistant-onboarding-blocker" onclick="skipAssistantOnboarding()"></div>
+        <div class="assistant-onboarding-card">
+          <div class="assistant-onboarding-icon"><i data-lucide="bot"></i></div>
+          <div class="assistant-onboarding-copy">
+            <b id="assistantOnboardingTitle">요리 비서를 눌러 음성 도움을 시작해 보세요</b>
+            <span id="assistantOnboardingDesc">멈춤, 다음 단계, 타이머 설정을 말로 부탁할 수 있어요.</span>
+            <div class="assistant-onboarding-actions">
+              <button class="ghost" type="button" onclick="skipAssistantOnboarding()">건너뛰기</button>
+              <button class="primary" id="assistantOnboardingNext" type="button" onclick="nextAssistantOnboardingStep()" hidden>다음</button>
+            </div>
           </div>
         </div>
       </div>
@@ -2190,7 +2266,7 @@
     _v.classList.add('active');
     setActiveNav(id);
     if(id==='detail')renderDetail();
-    else if(id==='cook3'){cook3Car.rebuild();initCookYoutube();showCookHint();} // 선택된 레시피로 단계·영상 재구성
+    else if(id==='cook3'){cook3Car.rebuild();initCookYoutube();showCookHint();maybeShowAssistantOnboarding();} // 선택된 레시피로 단계·영상 재구성
     else if(id==='searchPage')runRecipeSearch(document.getElementById('recipeSearchInput')?.value||'');
     else{ if(id==='complete')renderComplete(); hideCookHint(); }
     // 화면 진입 시 항상 맨 위부터 보이도록 스크롤 위치 초기화 (홈↔상세 왕복 시 스크롤 유지 방지)
@@ -2998,7 +3074,7 @@
     setDetTab(cur);
   }
 
-  let cook3CurrentStep=0, cookYoutubeLoopTimer=null, cookHintTimer=null, cookYoutubeAutoplayStarted=false, cookYoutubePlayTimer=null, cookYoutubeMuted=false, cookYoutubeDucked=false; // 기본: 조리 영상 소리 켜짐
+  let cook3CurrentStep=0, cookYoutubeLoopTimer=null, cookHintTimer=null, cookYoutubeAutoplayStarted=false, cookYoutubePlayTimer=null, cookYoutubeMuted=false, cookYoutubeDucked=false, cookYoutubeLastAppliedVolume=null; // 기본: 조리 영상 소리 켜짐
   let cookYoutubeEnded=false, cookYoutubeLastReportedTime=0, cookYoutubeResetGuardAt=0;
   let cookHintDismissed=false; // "다시 보지 않기" (세션 한정, 저장 안 함)
   // 영상 조작 상태 (제스처 · 설정 모달)
@@ -3044,13 +3120,14 @@
       cur=Math.max(0,Math.min(max,cur));
       trackEl.dataset.activeStep=String(cur);
       viewEl.dataset.activeStep=String(cur);
+      const cook3CardBias=isCook3?18:0;
       trackEl.querySelectorAll('.scard').forEach(card=>{
         const i=+card.dataset.i, o=i-cur, ao=Math.abs(o);
         let y,sc,op;
-        if(o===0){y=0;sc=1;op=1;}
-        else{const dir=o<0?-1:1;const dist=ao===1?128:128+(ao-1)*52;y=dir*dist;sc=ao===1?0.9:0.82;op=ao===1?0.62:(ao===2?0.16:0);}
+        if(o===0){y=cook3CardBias;sc=1;op=1;}
+        else{const dir=o<0?-1:1;const dist=ao===1?128:128+(ao-1)*52;y=dir*dist+cook3CardBias;sc=ao===1?0.9:0.82;op=ao===1?0.62:(ao===2?0.16:0);}
         // 완료 버튼: 바로 다음 카드일 때만 흐림 없이 온전한 버튼으로 노출(가리는 느낌 제거). 완료 카드는 항상 현재 단계 아래(양수 y).
-        if(card.dataset.finish && ao===1){op=1;sc=1;y=138;}
+        if(card.dataset.finish && ao===1){op=1;sc=1;y=138+cook3CardBias;}
         card.style.transform='translateY(calc(-50% + '+y+'px)) scale('+sc+')';
         card.style.opacity=op;card.style.zIndex=100-ao;card.style.pointerEvents=op>0?'auto':'none';
         card.classList.toggle('active',o===0);card.classList.toggle('above',o<0);card.classList.toggle('below',o>0);
@@ -3100,6 +3177,7 @@
     syncVsSpeedUI();
   }
   function resetCookSessionOverlays(){
+    hideAssistantOnboarding({reopenHint:false});
     hf3Reset();
     closeVoice();
     closeIngredients();
@@ -3199,19 +3277,33 @@
     frame.addEventListener('load',()=>setTimeout(subscribe,160),{once:true});
     setTimeout(subscribe,360);
   }
-  function effectiveCookYoutubeVolume(){
+  const COOK_YOUTUBE_DUCKING_RATIO=.25;
+  function baseCookYoutubeVolume(){
     if(vsMasterMuted||cookYoutubeMuted)return 0;
-    const volume=Math.round(clampNumber(vsVol,0,100)*clampNumber(vsMasterVol,0,100)/100);
-    return cookYoutubeDucked?Math.min(volume,25):volume;
+    return Math.round(clampNumber(vsVol,0,100)*clampNumber(vsMasterVol,0,100)/100);
+  }
+  function duckedCookYoutubeVolume(volume){
+    if(volume<=0)return 0;
+    return Math.max(1,Math.round(volume*COOK_YOUTUBE_DUCKING_RATIO));
+  }
+  function effectiveCookYoutubeVolume(){
+    const volume=baseCookYoutubeVolume();
+    return cookYoutubeDucked?duckedCookYoutubeVolume(volume):volume;
+  }
+  function setCookYoutubeVolume(volume){
+    const next=clampNumber(Math.round(Number(volume)||0),0,100);
+    postCookYoutube('setVolume',[next]);
+    cookYoutubeLastAppliedVolume=next;
   }
   function applyCookYoutubeSound(){
     const volume=effectiveCookYoutubeVolume();
     if(volume<=0){
       postCookYoutube('mute');
-    }else{
-      postCookYoutube('unMute');
-      postCookYoutube('setVolume',[volume]);
+      cookYoutubeLastAppliedVolume=0;
+      return;
     }
+    postCookYoutube('unMute');
+    setCookYoutubeVolume(volume);
   }
   function renderCookYoutubeSoundButton(){
     const btn=document.getElementById('youtubeSoundToggle');
@@ -3546,6 +3638,82 @@
     cookHintDismissed=true;
     hideCookHint();
   }
+  const ASSISTANT_ONBOARDING_STORAGE_KEY='naembiAssistantOnboardingSeen';
+  let assistantOnboardingStep=0;
+  const ASSISTANT_ONBOARDING_STEPS=[
+    {
+      title:'요리 비서를 눌러 음성 도움을 시작해 보세요',
+      desc:'멈춤, 다음 단계, 타이머 설정을 말로 부탁할 수 있어요.',
+      action:''
+    },
+    {
+      title:'이제 음성으로 요청할 수 있어요',
+      desc:'“멈춰 줘”, “다음 단계”, “타이머 1분”처럼 말하면 조리 흐름에 맞춰 도와줘요.',
+      action:'다음'
+    },
+    {
+      title:'대화가 끝나면 비서가 자동으로 쉬어요',
+      desc:'필요할 때 다시 누르면 이어서 물어볼 수 있어요.',
+      action:'완료'
+    }
+  ];
+  function readAssistantOnboardingSeen(){
+    try{return localStorage.getItem(ASSISTANT_ONBOARDING_STORAGE_KEY)==='1';}catch{return true;}
+  }
+  function writeAssistantOnboardingSeen(){
+    try{localStorage.setItem(ASSISTANT_ONBOARDING_STORAGE_KEY,'1');}catch{}
+  }
+  function renderAssistantOnboarding(){
+    const overlay=document.getElementById('assistantOnboarding');
+    const cook=document.getElementById('cook3');
+    const title=document.getElementById('assistantOnboardingTitle');
+    const desc=document.getElementById('assistantOnboardingDesc');
+    const next=document.getElementById('assistantOnboardingNext');
+    if(!overlay||!cook||!title||!desc||!next)return;
+    const step=ASSISTANT_ONBOARDING_STEPS[Math.max(0,Math.min(assistantOnboardingStep-1,ASSISTANT_ONBOARDING_STEPS.length-1))];
+    title.textContent=step.title;
+    desc.textContent=step.desc;
+    next.textContent=step.action||'';
+    next.hidden=!step.action;
+    overlay.classList.toggle('show',assistantOnboardingStep>0);
+    cook.classList.toggle('voice-onboarding-active',assistantOnboardingStep>0);
+    cook.classList.toggle('voice-onboarding-step-1',assistantOnboardingStep===1);
+    cook.classList.toggle('voice-onboarding-step-2',assistantOnboardingStep===2);
+    cook.classList.toggle('voice-onboarding-step-3',assistantOnboardingStep===3);
+    refreshIcons();
+  }
+  function showAssistantOnboarding(options={}){
+    if(!document.getElementById('cook3')?.classList.contains('active'))return;
+    if(!options.force&&readAssistantOnboardingSeen())return;
+    hideCookHint({startPlayback:false});
+    assistantOnboardingStep=1;
+    renderAssistantOnboarding();
+  }
+  function hideAssistantOnboarding(options={}){
+    assistantOnboardingStep=0;
+    renderAssistantOnboarding();
+    if(options.remember)writeAssistantOnboardingSeen();
+    if(options.reopenHint!==false&&!hf3On&&!cookHintDismissed&&document.getElementById('cook3')?.classList.contains('active'))showCookHint();
+  }
+  function skipAssistantOnboarding(){
+    hideAssistantOnboarding({remember:true});
+  }
+  function nextAssistantOnboardingStep(){
+    if(!assistantOnboardingStep)return;
+    if(assistantOnboardingStep>=ASSISTANT_ONBOARDING_STEPS.length){
+      hideAssistantOnboarding({remember:true});
+      return;
+    }
+    assistantOnboardingStep+=1;
+    renderAssistantOnboarding();
+  }
+  function maybeShowAssistantOnboarding(){
+    setTimeout(()=>showAssistantOnboarding(),90);
+  }
+  window.showAssistantOnboarding=showAssistantOnboarding;
+  window.hideAssistantOnboarding=hideAssistantOnboarding;
+  window.skipAssistantOnboarding=skipAssistantOnboarding;
+  window.nextAssistantOnboardingStep=nextAssistantOnboardingStep;
   let tsDraftSeconds=180, timerId=null, timerLeft=0, timerTotal=0, timerPaused=false, stageTimerHideId=null;
   let timerAudioCtx=null, timerAlarmTimeouts=[], timerAlarmNodes=[], timerAlarmRepeatId=null, timerAlarmStopId=null;
   let timerAlarmAutoStopMs=60000;
@@ -3749,7 +3917,45 @@
     toast(handsfree?'핸즈프리 모드 켜짐 — 음성으로 진행해요':'핸즈프리 모드 꺼짐',handsfree?'mic':'mic-off');
   }
   /* 조리 모드(신) 실시간 음성 패널 */
-  let hf3On=false, vpMicMuted=false, vpResizeDrag=null, vpSuppressResizeClick=false;
+  let hf3On=false, vpMicMuted=false, vpResizeDrag=null, vpSuppressResizeClick=false, voiceAssistantState='idle', voiceAssistantAutoEndTimer=null;
+  const VOICE_ASSISTANT_AUTO_END_MS=12000;
+  const VOICE_ASSISTANT_STATES=new Set(['idle','activating','listening','userSpeaking','thinking','assistantSpeaking','ending']);
+  function setVpIdleCopy(message){
+    const node=document.querySelector('#vpIdleState p');
+    if(node)node.textContent=message||'눌러서 요리 비서를 시작해 보세요';
+  }
+  function setVoiceAssistantState(state){
+    const next=VOICE_ASSISTANT_STATES.has(state)?state:'idle';
+    voiceAssistantState=next;
+    document.getElementById('vpanel')?.setAttribute('data-voice-state',next);
+    document.getElementById('hf3')?.setAttribute('data-voice-state',next);
+  }
+  function clearVoiceAssistantAutoEnd(){
+    if(voiceAssistantAutoEndTimer){clearTimeout(voiceAssistantAutoEndTimer);voiceAssistantAutoEndTimer=null;}
+  }
+  function closeVoiceAssistantUiAfterTurn(live=geminiLive){
+    if(!hf3On||geminiLive!==live||live?.closing)return;
+    const busy=!!(live?.vadSpeaking||live?.responseInFlight||live?.toolResponsePending||live?.playbackNodes?.size);
+    if(busy)return;
+    setVoiceAssistantState('ending');
+    releaseGeminiMicrophone(live,true);
+    hf3On=false;
+    vpMicMuted=false;
+    const panel=document.getElementById('vpanel');
+    panel?.classList.remove('open','connecting','mic-active','idle','listening','thinking','answering','expanded','compact','mic-muted');
+    setVpPanelExpanded(false);
+    clearVpNotice();
+    setVpIdleCopy('눌러서 요리 비서를 시작해 보세요');
+    setTimeout(()=>setVoiceAssistantState('idle'),160);
+  }
+  function scheduleVoiceAssistantAutoEnd(live=geminiLive,command=null){
+    clearVoiceAssistantAutoEnd();
+    if(!hf3On||!live||geminiLive!==live||command?.source!=='audio')return;
+    voiceAssistantAutoEndTimer=setTimeout(()=>{
+      voiceAssistantAutoEndTimer=null;
+      closeVoiceAssistantUiAfterTurn(live);
+    },VOICE_ASSISTANT_AUTO_END_MS);
+  }
   function setVpLiveStatus(message,type){
     const node=document.getElementById('vpLiveStatus');
     if(!node)return;
@@ -3958,6 +4164,10 @@
       live.lastNonSilentAt=live.lastAudioAt;
     }
     document.getElementById('vpanel')?.classList.toggle('mic-active',voiceActive);
+    if(hf3On&&geminiLive===live&&!live.closing){
+      if(voiceActive)setVoiceAssistantState('userSpeaking');
+      else if(voiceAssistantState==='userSpeaking')setVoiceAssistantState(live.ready?'listening':'activating');
+    }
     const displayLevel=Math.min(1,Math.max(.03,Math.log10(1+smoothed*1200)/Math.log10(1201)));
     const mode=active?'active':weak?'weak':'waiting';
     if(live.micMeterMode!==mode){
@@ -4541,6 +4751,8 @@
     const shouldDuck=!!(live&&!live.closing&&live.playbackNodes?.size&&assistantVolumeGain()>0);
     if(cookYoutubeDucked===shouldDuck)return;
     cookYoutubeDucked=shouldDuck;
+    if(shouldDuck)setVoiceAssistantState('assistantSpeaking');
+    else if(hf3On&&voiceAssistantState==='assistantSpeaking'&&!live?.responseInFlight)setVoiceAssistantState('listening');
     applyCookYoutubeSound();
   }
   function syncGeminiLiveOutputGain(){
@@ -4592,6 +4804,8 @@
     return preserveReplayCommand;
   }
   function createGeminiActiveCommand(live,source,text=''){
+    clearVoiceAssistantAutoEnd();
+    if(hf3On)setVoiceAssistantState(source==='audio'?'userSpeaking':'thinking');
     const previous=live.activeCommand;
     if(previous?.serverTurnComplete&&previous.hasInputTranscript&&!previous.completed){
       if(previous.finalizeTimer)clearTimeout(previous.finalizeTimer);
@@ -5047,8 +5261,10 @@
   function stopGeminiMicrophone(){
     const live=geminiLive;
     if(!live?.micStream)return;
+    clearVoiceAssistantAutoEnd();
     releaseGeminiMicrophone(live,true);
     vpMicMuted=true;
+    setVoiceAssistantState('idle');
     document.getElementById('vpanel')?.classList.add('mic-muted');
     setVpMicButton('muted');
     setVpLiveStatus('마이크를 껐어요. 다시 누르면 음성 대화를 이어갈 수 있어요.','');
@@ -5069,6 +5285,7 @@
   function suspendGeminiLiveSession(reason='page hidden'){
     const live=geminiLive;
     if(!live||live.closing)return;
+    clearVoiceAssistantAutoEnd();
     live.connectionEpoch=(live.connectionEpoch||0)+1;
     live.pageSuspended=true;
     clearGeminiReconnectTimer(live);
@@ -5089,6 +5306,7 @@
   function stopGeminiLiveSession(reason=''){
     const live=geminiLive;
     if(!live)return;
+    clearVoiceAssistantAutoEnd();
     if(live.toolResponsePending){live.pendingStopReason=reason;live.closingRequested=true;return;}
     const transcript=ensureVpTranscriptState(live);
     if(transcript.hasUser&&!transcript.complete)recordVpTraceTurn(live,transcript,'abandoned');
@@ -5459,8 +5677,10 @@
       panel?.classList.remove('thinking','answering');
       panel?.classList.remove('mic-active');
       panel?.classList.add('listening');
+      setVoiceAssistantState('listening');
       setVpLiveStatus(live.micStream?'계속 말씀해 주세요.':'마이크를 눌러 음성 대화를 이어가세요.','ok');
       setVpVoiceHint(live.micStream?'말하면 입력 막대와 전사가 표시돼요.':'마이크를 누르면 음성 대화를 이어갈 수 있어요.');
+      scheduleVoiceAssistantAutoEnd(live,command);
       scheduleGeminiContextRestart(live);
     },GEMINI_RESPONSE_SETTLE_MS);
   }
@@ -5473,6 +5693,7 @@
       live.outputTranscriptionQuarantineUntil=0;
       live.responseCommandEpoch=command.epoch;
       live.responseInFlight=true;
+      setVoiceAssistantState('assistantSpeaking');
       command.lastResponseAt=Date.now();
       for(const part of modelParts)if(part.inlineData)scheduleGeminiPcm(live,part.inlineData);
     }
@@ -5489,6 +5710,7 @@
         panel?.classList.remove('thinking','listening');
         panel?.classList.remove('mic-active');
         panel?.classList.add('answering');
+        setVoiceAssistantState('assistantSpeaking');
         setVpVoiceHint('냄비가 답하고 있어요.');
       }
       updateVpTranscript(live,'assistant',outputText);
@@ -5550,6 +5772,7 @@
       }
       panel?.classList.remove('thinking','answering');
       panel?.classList.add('listening');
+      setVoiceAssistantState('listening');
       setVpLiveStatus('말씀을 듣고 있어요.','ok');
       setVpVoiceHint('말하면 입력 막대와 전사가 표시돼요.');
     }
@@ -5688,6 +5911,8 @@
           const panel=document.getElementById('vpanel');
           panel?.classList.remove('connecting','thinking','answering');
           panel?.classList.add('listening');
+          setVoiceAssistantState('listening');
+          setVpIdleCopy('말하면 입력이 화면에 보여요');
           setVpLiveStatus(live.micStream?'Gemini Live가 듣고 있어요. 말씀해 주세요.':'Gemini Live가 연결됐어요. 마이크를 눌러 말씀해 주세요.','ok');
           setVpVoiceHint(live.micStream?'말하면 입력 막대와 전사가 표시돼요.':'마이크를 누르면 음성 대화를 시작할 수 있어요.');
           const inputActive=(live.inputLevel||0)>=.012;
@@ -5792,6 +6017,8 @@
         const panel=document.getElementById('vpanel');
         panel?.classList.remove('connecting','mic-muted');
         panel?.classList.add('listening');
+        setVoiceAssistantState('listening');
+        setVpIdleCopy('말하면 입력이 화면에 보여요');
         setVpLiveStatus('Gemini Live가 듣고 있어요. 말씀해 주세요.','ok');
         setVpVoiceHint('말하면 입력 막대와 전사가 표시돼요.');
       }
@@ -5823,6 +6050,8 @@
     vpMicMuted=false;
     panel.classList.remove('mic-muted','mic-active','idle','listening','thinking','answering','expanded');
     panel.classList.add('open','connecting','compact');
+    setVoiceAssistantState('activating');
+    setVpIdleCopy('지금부터 요리 비서가 활성화됩니다');
     setVpPanelExpanded(false);
     clearVpTranscript();
     clearVpNotice();
@@ -5839,24 +6068,33 @@
     hideCookHint({startPlayback:false});
     if(hf3On){
       hf3On=false;
+      clearVoiceAssistantAutoEnd();
+      setVoiceAssistantState('ending');
       stopGeminiLiveSession('assistant panel closed');
       panel.classList.remove('open','connecting','mic-active','idle','listening','thinking','answering','expanded','compact');
       setVpPanelExpanded(false);
+      setVoiceAssistantState('idle');
+      setVpIdleCopy('눌러서 요리 비서를 시작해 보세요');
       return;
     }
     if(geminiLive?.closingRequested)return;
     hf3On=true;
     resetVpVoicePanel();
+    if(assistantOnboardingStep===1)nextAssistantOnboardingStep();
     naembiTrack('voice_assistant_open',{entrypoint:'cook_mode',...naembiRecipeProps()});
     // This starts getUserMedia within the original button click, preserving the
     // browser user-activation requirement for microphone permission.
     if(options.startLive!==false)void activateGeminiLiveVoice();
   }
   function hf3Reset(){
+    hideAssistantOnboarding({reopenHint:false});
+    clearVoiceAssistantAutoEnd();
     stopGeminiLiveSession('leaving cooking mode');
     const panel=document.getElementById('vpanel');if(panel)panel.classList.remove('open','connecting','mic-active','idle','listening','thinking','answering','expanded','compact');
     setVpPanelExpanded(false);
     hf3On=false;
+    setVoiceAssistantState('idle');
+    setVpIdleCopy('눌러서 요리 비서를 시작해 보세요');
     closeVideoSettings();
     cook3StopTimeTracking();cook3Playing=false;
   }
