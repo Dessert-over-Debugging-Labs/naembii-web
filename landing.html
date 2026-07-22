@@ -1,0 +1,695 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#F6F3EF">
+    <title>냄비 - SNS 요리 영상 따라하기 쉽게</title>
+    <meta name="description" content="SNS와 유튜브에서 본 요리를 주방에서 막히지 않고 따라할 수 있게 도와주는 냄비 베타입니다. 미리 써볼 분과 레시피 요청을 모집합니다.">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+    <style>
+      :root{
+        --bg:#F6F3EF;
+        --paper:#FFFFFF;
+        --paper-2:#FAFAF8;
+        --ink:#1E2024;
+        --muted:#62676F;
+        --line:#E5DED7;
+        --brand:#EF5A3C;
+        --brand-dark:#B23A26;
+        --brand-soft:#FDEBE6;
+        --green:#167A57;
+        --green-soft:#E8F5EE;
+        --shadow:0 20px 60px rgba(31,38,46,.12);
+      }
+      *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+      html{scroll-behavior:smooth;background:var(--bg);}
+      body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Pretendard","Segoe UI",sans-serif;background:var(--bg);color:var(--ink);overflow-x:hidden;}
+      button,input,select,textarea{font:inherit;}
+      a{color:inherit;text-decoration:none;}
+      img{display:block;max-width:100%;}
+      svg.lucide{width:20px;height:20px;stroke-width:2.2;}
+      .nav{position:sticky;top:0;z-index:20;background:rgba(246,243,239,.9);backdrop-filter:blur(16px);border-bottom:1px solid rgba(229,222,215,.72);}
+      .nav-inner{max-width:1180px;margin:0 auto;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;}
+      .brand{display:flex;align-items:center;gap:10px;font-family:'Jua',sans-serif;font-size:30px;color:var(--brand);}
+      .brand svg{width:28px;height:28px;}
+      .nav-links{display:flex;align-items:center;gap:6px;}
+      .nav-link{border:0;background:transparent;color:#4E5259;font-size:14px;font-weight:850;padding:10px 12px;border-radius:999px;cursor:pointer;}
+      .nav-link:hover{background:#FFF;}
+      .nav-cta{display:inline-flex;align-items:center;gap:8px;background:var(--ink);color:#fff;border-radius:999px;padding:11px 16px;font-size:14px;font-weight:950;box-shadow:0 10px 24px rgba(31,38,46,.18);}
+      .hero{max-width:1180px;margin:0 auto;padding:58px 24px 74px;display:grid;grid-template-columns:minmax(0,1fr) minmax(320px,430px);gap:54px;align-items:center;}
+      .eyebrow{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:8px 12px;color:#7A4331;font-size:14px;font-weight:950;box-shadow:0 8px 22px rgba(31,38,46,.05);}
+      .eyebrow svg{color:var(--brand);}
+      h1{margin-top:20px;font-size:clamp(44px,7vw,82px);line-height:1.02;letter-spacing:0;font-weight:950;}
+      h1 span{color:var(--brand);}
+      .hero-copy{margin-top:20px;max-width:660px;color:#555A61;font-size:20px;line-height:1.65;font-weight:700;}
+      .copy-mobile{display:none;}
+      .hero-helper{max-width:650px;margin-top:18px;background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px 16px;display:flex;align-items:flex-start;gap:12px;box-shadow:0 10px 28px rgba(31,38,46,.06);}
+      .hero-helper i{width:36px;height:36px;border-radius:12px;background:var(--brand-soft);color:var(--brand);display:flex;align-items:center;justify-content:center;flex:none;}
+      .hero-helper b{display:block;font-size:16px;margin-bottom:4px;}
+      .hero-helper span{display:block;color:#62676F;font-size:14px;line-height:1.45;font-weight:750;}
+      .hero-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:28px;}
+      .btn{border:0;border-radius:16px;min-height:54px;padding:0 20px;display:inline-flex;align-items:center;justify-content:center;gap:9px;font-size:16px;font-weight:950;cursor:pointer;}
+      .btn.primary{background:linear-gradient(135deg,#F5836B,var(--brand));color:#fff;box-shadow:0 18px 36px rgba(239,90,60,.24);}
+      .btn.dark{background:var(--ink);color:#fff;}
+      .btn.light{background:#fff;color:var(--ink);border:1px solid var(--line);}
+      .hero-proof{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:28px;max-width:720px;}
+      .proof{background:#fff;border:1px solid var(--line);border-radius:8px;padding:15px;min-height:116px;}
+      .proof i{width:34px;height:34px;border-radius:8px;background:var(--brand-soft);color:var(--brand);display:flex;align-items:center;justify-content:center;margin-bottom:11px;}
+      .proof b{display:block;font-size:15px;margin-bottom:5px;}
+      .proof span{display:block;color:#686D74;font-size:13px;line-height:1.45;font-weight:700;}
+      .phone-showcase{position:relative;justify-self:end;width:min(100%,410px);}
+      .phone-frame{background:#1E2024;border-radius:36px;padding:10px;box-shadow:var(--shadow);}
+      .phone-frame img{width:100%;height:auto;object-fit:contain;border-radius:28px;background:#F5F5F7;}
+      .band{background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+      .section{max-width:1180px;margin:0 auto;padding:72px 24px;}
+      .section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:28px;margin-bottom:28px;}
+      .section-kicker{display:inline-flex;align-items:center;border-radius:999px;background:var(--ink);color:#fff;padding:7px 10px;font-size:12px;font-weight:950;margin-bottom:12px;}
+      h2{font-size:clamp(32px,4.8vw,52px);line-height:1.1;letter-spacing:0;font-weight:950;}
+      .section-head p{max-width:560px;color:#62676F;font-size:16px;line-height:1.6;font-weight:700;}
+      .screens{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px;}
+      .screen-card{background:var(--paper-2);border:1px solid #E7E8EA;border-radius:8px;padding:14px;}
+      .screen-shot{background:#1E2024;border-radius:24px;padding:7px;margin-bottom:14px;box-shadow:0 12px 34px rgba(31,38,46,.12);}
+      .screen-shot img{width:100%;height:auto;object-fit:contain;border-radius:18px;background:#F5F5F7;}
+      .screen-card b{display:block;font-size:16px;margin-bottom:6px;}
+      .screen-card span{display:block;color:#686D74;font-size:13px;line-height:1.5;font-weight:700;}
+      .flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;}
+      .flow-item{background:#fff;border:1px solid var(--line);border-radius:8px;padding:22px;min-height:210px;}
+      .flow-item i{width:42px;height:42px;border-radius:10px;background:var(--green-soft);color:var(--green);display:flex;align-items:center;justify-content:center;margin-bottom:16px;}
+      .flow-item b{display:block;font-size:20px;line-height:1.32;margin-bottom:10px;}
+      .flow-item span{display:block;color:#62676F;font-size:15px;line-height:1.55;font-weight:700;}
+      .assistant-grid{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:24px;align-items:stretch;}
+      .assistant-copy{padding:6px 0;}
+      .assistant-copy p{margin-top:16px;color:#5E636B;font-size:18px;line-height:1.65;font-weight:700;}
+      .assistant-choice{background:#fff;border:1px solid var(--line);border-radius:8px;padding:24px;box-shadow:0 14px 40px rgba(31,38,46,.07);}
+      .assistant-choice h3{font-size:28px;line-height:1.22;margin-bottom:8px;}
+      .assistant-choice>p{color:#62676F;font-size:15px;line-height:1.55;font-weight:760;margin-bottom:16px;}
+      .choice-group{display:grid;gap:10px;margin-bottom:16px;}
+      .choice-label{font-size:12px;font-weight:950;color:#8A4434;text-transform:uppercase;}
+      .choice-row{display:flex;flex-wrap:wrap;gap:8px;}
+      .choice-chip{border:1px solid #E1D8D1;background:#FBFAF8;color:#34373C;border-radius:999px;min-height:38px;padding:0 13px;font-size:13px;font-weight:900;cursor:pointer;}
+      .choice-chip.active{background:var(--ink);border-color:var(--ink);color:#fff;}
+      .assistant-result{border-radius:8px;background:#1E2024;color:#fff;padding:16px;margin-top:8px;}
+      .assistant-result small{display:inline-flex;margin-bottom:8px;color:#FFB39D;font-size:12px;font-weight:950;}
+      .assistant-result b{display:block;font-size:20px;line-height:1.3;margin-bottom:7px;}
+      .assistant-result span{display:block;color:#D4D8DD;font-size:14px;line-height:1.5;font-weight:760;margin-bottom:12px;}
+      .assistant-result a{display:inline-flex;align-items:center;gap:7px;min-height:42px;border-radius:12px;background:var(--brand);color:#fff;padding:0 13px;font-size:14px;font-weight:950;}
+      .assistant-demo{background:#1E2024;color:#fff;border-radius:8px;padding:24px;border:1px solid rgba(255,255,255,.08);}
+      .assistant-head{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
+      .assistant-head i{width:40px;height:40px;border-radius:9px;background:rgba(255,255,255,.1);color:#FF7258;display:flex;align-items:center;justify-content:center;flex:none;}
+      .assistant-head b{display:block;font-size:21px;line-height:1.25;}
+      .assistant-head span{display:block;margin-top:3px;color:#BFC4CA;font-size:13px;font-weight:750;}
+      .thread{display:grid;gap:12px;}
+      .bubble{border-radius:8px;padding:13px 14px;font-size:15px;line-height:1.52;font-weight:750;}
+      .bubble.user{margin-left:42px;background:#fff;color:#1E2024;}
+      .bubble.answer{margin-right:42px;background:#2D323A;color:#F6F7F8;border:1px solid rgba(255,255,255,.08);}
+      .bubble em{display:block;margin-bottom:4px;color:#FFB39D;font-style:normal;font-size:12px;font-weight:950;}
+      .roadmap{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;}
+      .roadmap-item{background:#fff;border:1px solid var(--line);border-radius:8px;padding:18px;min-height:154px;}
+      .roadmap-item i{width:36px;height:36px;border-radius:8px;background:#F2FBF7;color:#227551;display:flex;align-items:center;justify-content:center;margin-bottom:12px;}
+      .roadmap-item b{display:block;font-size:16px;margin-bottom:7px;}
+      .roadmap-item span{display:block;color:#686D74;font-size:13px;line-height:1.45;font-weight:700;}
+      .forms{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;}
+      .form-panel{background:#fff;border:1px solid var(--line);border-radius:24px;padding:24px;box-shadow:0 14px 40px rgba(31,38,46,.06);}
+      .form-panel h3{font-size:26px;line-height:1.25;margin-bottom:10px;}
+      .form-panel p{color:#60656C;line-height:1.55;font-weight:700;margin-bottom:18px;}
+      .beta-form{display:grid;gap:12px;}
+      .beta-form label{display:grid;gap:7px;font-size:13px;font-weight:850;color:#3A3D42;}
+      .beta-form input,.beta-form select,.beta-form textarea{width:100%;border:1px solid #DFE2E7;background:#F8F9FB;border-radius:14px;padding:13px 14px;color:#1E2024;font-size:15px;}
+      .beta-form textarea{min-height:104px;resize:vertical;line-height:1.55;}
+      .beta-form input:focus,.beta-form select:focus,.beta-form textarea:focus{outline:2px solid rgba(239,90,60,.22);border-color:var(--brand);}
+      .beta-form button{height:52px;border:0;border-radius:16px;background:var(--brand);color:#fff;font-size:16px;font-weight:950;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
+      .beta-form button[disabled]{opacity:.62;cursor:not-allowed;}
+      .form-status{min-height:20px;font-size:13px;font-weight:850;color:#596069;}
+      .form-status.ok{color:#1D8A57;}
+      .form-status.bad{color:#C8402A;}
+      .footer{max-width:1180px;margin:0 auto;padding:30px 24px 44px;display:flex;align-items:center;justify-content:space-between;gap:16px;color:#6A6E75;font-size:13px;font-weight:750;}
+      .footer a{color:var(--ink);font-weight:900;}
+      @media (max-width:980px){
+        .nav-links .nav-link{display:none;}
+        .hero{grid-template-columns:1fr;padding-top:38px;gap:34px;}
+        .phone-showcase{justify-self:center;width:min(100%,360px);}
+        .hero-proof,.flow,.forms,.assistant-grid{grid-template-columns:1fr;}
+        .screens{grid-template-columns:repeat(2,minmax(0,1fr));}
+        .roadmap{grid-template-columns:repeat(2,minmax(0,1fr));}
+        .section-head{display:grid;gap:12px;}
+      }
+      @media (min-width:621px) and (max-width:980px){
+        .hero{padding:28px 24px 42px;gap:24px;}
+        h1{font-size:clamp(42px,8vw,58px);}
+        .hero-copy{margin-top:14px;font-size:17px;line-height:1.5;}
+        .hero-helper{margin-top:14px;}
+        .hero-actions{margin-top:18px;}
+        .hero-proof{display:none;}
+        .phone-showcase{width:min(48vw,270px);}
+        .phone-frame{border-radius:30px;padding:8px;}
+        .phone-frame img{border-radius:23px;}
+        .mobile-condense-hide{display:none;}
+        .section{padding:48px 24px;}
+        .section-head{margin-bottom:20px;}
+        .screens{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;overscroll-behavior-x:contain;margin-right:-24px;padding:0 24px 8px 0;}
+        .screens::-webkit-scrollbar{display:none;}
+        .screen-card{flex:0 0 210px;scroll-snap-align:start;}
+        .assistant-examples{display:none;}
+        .forms{grid-template-columns:1fr 1fr;}
+        .form-panel{padding:20px;border-radius:18px;}
+        .form-panel h3{font-size:22px;}
+        .beta-form input,.beta-form select,.beta-form textarea{padding:11px 12px;font-size:14px;}
+        .beta-form textarea{min-height:82px;}
+      }
+      @media (max-width:620px){
+        .nav-inner{padding:13px 16px;}
+        .brand{font-size:28px;}
+        .nav-cta{padding:10px 13px;font-size:13px;}
+        .hero{padding:18px 16px 28px;gap:14px;align-items:start;}
+        .eyebrow{font-size:12px;padding:7px 10px;}
+        h1{margin-top:10px;font-size:34px;line-height:1.04;word-break:keep-all;}
+        .hero-copy{margin-top:10px;font-size:13px;line-height:1.43;word-break:keep-all;}
+        .copy-desktop{display:none;}
+        .copy-mobile{display:inline;}
+        .hero-helper{margin-top:10px;padding:10px 12px;border-radius:14px;}
+        .hero-helper i{width:30px;height:30px;border-radius:10px;}
+        .hero-helper b{font-size:15px;}
+        .hero-helper span{display:none;}
+        .hero-actions{display:grid;grid-template-columns:1fr;gap:8px;margin-top:12px;}
+        .hero-actions .primary{grid-column:auto;}
+        .hero-actions .btn.light svg{display:none;}
+        .btn{width:100%;min-height:46px;border-radius:14px;padding:0 10px;font-size:14px;}
+        .phone-showcase{width:min(50vw,160px);margin:0 auto;}
+        .phone-frame{border-radius:26px;padding:6px;}
+        .phone-frame img{border-radius:20px;}
+        .hero-proof{display:none;}
+        .section{padding:34px 16px;}
+        .mobile-condense-hide{display:none;}
+        .section-head{gap:8px;margin-bottom:16px;}
+        .section-kicker{font-size:11px;margin-bottom:9px;}
+        h2{font-size:27px;line-height:1.12;}
+        .section-head p{font-size:13px;line-height:1.45;}
+        #screens .section{padding:30px 16px 26px;}
+        .screens{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;overscroll-behavior-x:contain;margin-right:-16px;padding:0 16px 8px 0;}
+        .screens::-webkit-scrollbar{display:none;}
+        .screen-card{display:block;flex:0 0 142px;scroll-snap-align:start;padding:10px;}
+        .screen-shot{width:100%;margin:0 auto 9px;border-radius:14px;padding:4px;}
+        .screen-shot img{border-radius:10px;}
+        .screen-card b{font-size:13px;margin-bottom:0;}
+        .screen-card span{display:none;}
+        .roadmap{grid-template-columns:1fr;}
+        #assistant .section{padding:34px 16px;}
+        .assistant-grid{gap:14px;}
+        .assistant-copy p{margin-top:10px;font-size:14px;line-height:1.45;}
+        .assistant-copy .hero-actions{display:none;}
+        .assistant-demo{padding:18px;}
+        .assistant-examples{display:none;}
+        .assistant-choice{padding:14px;}
+        .assistant-choice h3{font-size:20px;}
+        .assistant-choice>p{display:none;}
+        .choice-group{gap:7px;margin-bottom:10px;}
+        .choice-row{display:grid;grid-template-columns:1fr 1fr;}
+        .choice-chip{width:100%;min-height:34px;padding:0 8px;font-size:12px;}
+        .assistant-result{padding:12px;}
+        .assistant-result b{font-size:18px;}
+        .assistant-result span{font-size:13px;line-height:1.42;margin-bottom:10px;}
+        .assistant-result a{min-height:38px;font-size:13px;}
+        #beta .section{padding:32px 16px 34px;}
+        .forms{gap:12px;}
+        .form-panel{border-radius:16px;padding:16px;}
+        .form-panel h3{font-size:21px;}
+        .form-panel p{font-size:13px;line-height:1.45;margin-bottom:12px;}
+        .beta-form{gap:9px;}
+        .beta-form label.mobile-optional{display:none;}
+        .beta-form input,.beta-form select,.beta-form textarea{border-radius:12px;padding:11px 12px;font-size:14px;}
+        .beta-form button{height:46px;border-radius:14px;font-size:14px;}
+        .bubble.user{margin-left:18px;}
+        .bubble.answer{margin-right:18px;}
+        .footer{padding:26px 16px 38px;display:grid;}
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="nav" aria-label="냄비 랜딩 내비게이션">
+      <div class="nav-inner">
+        <a class="brand" href="/" aria-label="냄비 홈"><i data-lucide="cooking-pot"></i>냄비</a>
+        <div class="nav-links">
+          <a class="nav-link" href="#screens">화면 보기</a>
+          <a class="nav-link" href="#assistant">요리비서</a>
+          <a class="nav-link" href="#beta">베타 신청</a>
+          <a class="nav-cta" href="/app"><i data-lucide="smartphone"></i>먼저 경험해보기</a>
+        </div>
+      </div>
+    </nav>
+
+    <main>
+      <section class="hero" aria-label="냄비 소개">
+        <div>
+          <div class="eyebrow"><i data-lucide="sparkles"></i>요즘 뜨는 요리, 직접 해보고 싶다면</div>
+          <h1>SNS 요리 영상,<br><span>따라 하다 막혔죠?</span></h1>
+          <p class="hero-copy"><span class="copy-desktop">냄비는 유튜브와 SNS에서 본 요리를 주방에서 따라 하기 쉽게 정리해줍니다. 재료는 한눈에 보고, 조리 중에는 지금 할 일과 타이밍을 놓치지 않게 챙겨요.</span><span class="copy-mobile">냄비는 SNS와 유튜브 요리를 재료, 순서, 타이밍으로 정리해 주방에서 덜 헤매게 도와줍니다.</span></p>
+          <div class="hero-helper">
+            <i data-lucide="cooking-pot"></i>
+            <div><b>작은 냄비가 옆에서 챙겨요</b><span>영상 찾고 되감는 시간은 줄이고, 지금 해야 할 요리에 집중하게 도와줍니다.</span></div>
+          </div>
+          <div class="hero-actions">
+            <a class="btn primary" href="/app"><i data-lucide="play-circle"></i>먼저 경험해보기</a>
+            <a class="btn light" href="#beta"><i data-lucide="mail-plus"></i>출시 소식 받기</a>
+          </div>
+          <div class="hero-proof">
+            <div class="proof"><i data-lucide="sparkles"></i><b>요즘 메뉴를 더 쉽게</b><span>릴스, 쇼츠, 유튜브에서 본 요리를 주방용 순서로 정리합니다.</span></div>
+            <div class="proof"><i data-lucide="timer-reset"></i><b>중간에 덜 헤매게</b><span>지금 넣을 재료, 기다릴 시간, 다음 행동을 보기 쉽게 챙깁니다.</span></div>
+            <div class="proof"><i data-lucide="messages-square"></i><b>보고 싶은 요리 반영</b><span>먼저 따라 해보고 싶은 영상과 메뉴를 받아 다음 메뉴를 고를 때 참고합니다.</span></div>
+          </div>
+        </div>
+        <div class="phone-showcase">
+          <div class="phone-frame">
+            <img src="/assets/screens/naembi-core-flow.gif" alt="콘치즈 불닭볶음면을 고르고 음성비서로 질문하며 따라하는 냄비 핵심 기능 흐름" width="390" height="844">
+          </div>
+        </div>
+      </section>
+
+      <section class="band" id="screens">
+        <div class="section">
+          <div class="section-head">
+            <div>
+              <span class="section-kicker">화면 미리보기</span>
+              <h2>어떻게 따라 하는지<br>화면으로 먼저 보세요</h2>
+            </div>
+            <p>처음 보는 사람도 어떤 식으로 요리를 따라가게 되는지 바로 상상할 수 있도록 실제 화면을 그대로 보여줍니다.</p>
+          </div>
+          <div class="screens" aria-label="냄비 화면 캡쳐">
+            <article class="screen-card">
+              <div class="screen-shot"><img src="/assets/screens/app-home.png" alt="홈 화면 캡쳐" width="390" height="844"></div>
+              <div><b>요리 고르기</b><span>요즘 많이 만드는 메뉴, 재료가 적은 메뉴, SNS에서 자주 보이는 요리를 빠르게 둘러봅니다.</span></div>
+            </article>
+            <article class="screen-card">
+              <div class="screen-shot"><img src="/assets/screens/app-search.png" alt="검색 화면 캡쳐" width="390" height="844"></div>
+              <div><b>요리 찾기</b><span>요리 이름, 재료, 크리에이터 이름을 함께 보고 가까운 레시피를 먼저 보여줍니다.</span></div>
+            </article>
+            <article class="screen-card">
+              <div class="screen-shot"><img src="/assets/screens/app-detail.png" alt="레시피 상세 화면 캡쳐" width="390" height="844"></div>
+              <div><b>재료 먼저 보기</b><span>시작 전에 필요한 재료와 대략적인 흐름을 보고, 바로 요리를 시작합니다.</span></div>
+            </article>
+            <article class="screen-card">
+              <div class="screen-shot"><img src="/assets/screens/app-cook.png" alt="조리 모드 화면 캡쳐" width="390" height="844"></div>
+              <div><b>같이 따라 하기</b><span>지금 할 일, 다음 순서, 기다릴 시간을 한 화면에서 확인합니다.</span></div>
+            </article>
+            <article class="screen-card">
+              <div class="screen-shot"><img src="/assets/screens/app-complete.png" alt="완료 화면 캡쳐" width="390" height="844"></div>
+              <div><b>끝나고 남기기</b><span>어려웠던 점이나 다음에 보고 싶은 요리를 가볍게 남길 수 있습니다.</span></div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section mobile-condense-hide" aria-label="서비스 사용 흐름">
+        <div class="section-head">
+          <div>
+            <span class="section-kicker">이럴 때 필요해요</span>
+            <h2>영상은 쉬워 보이는데<br>막상 하면 바쁘니까</h2>
+          </div>
+          <p>손은 젖어 있고, 팬은 달궈졌고, 영상은 지나가버립니다. 냄비는 그런 순간에 필요한 순서와 팁을 더 쉽게 꺼내보게 해줍니다.</p>
+        </div>
+        <div class="flow">
+          <div class="flow-item"><i data-lucide="search"></i><b>보고 싶은 요리를 고릅니다</b><span>쇼츠에서 본 메뉴, 유튜브 레시피, 요즘 뜨는 음식을 먼저 모아봅니다.</span></div>
+          <div class="flow-item"><i data-lucide="book-open-check"></i><b>재료와 큰 순서를 훑습니다</b><span>시작 전에 필요한 재료와 놓치기 쉬운 준비를 가볍게 확인합니다.</span></div>
+          <div class="flow-item"><i data-lucide="chef-hat"></i><b>주방에서는 한 단계씩 봅니다</b><span>조리 중에는 지금 할 일만 크게 보고, 필요한 팁은 바로 꺼내봅니다.</span></div>
+        </div>
+      </section>
+
+      <section class="band" id="assistant">
+        <div class="section">
+          <div class="assistant-grid">
+            <div class="assistant-copy">
+              <span class="section-kicker">요리비서와 시작하기</span>
+              <h2>뭘 만들지부터<br>냄비에게 물어보세요</h2>
+              <p>오늘 먹고 싶은 분위기와 필요한 도움을 고르면, 냄비가 지금 만들기 좋은 요리를 하나 골라 바로 따라할 수 있게 이어줍니다.</p>
+              <div class="hero-actions">
+                <a class="btn dark" href="/app#cook3"><i data-lucide="mic"></i>따라하기 화면 보기</a>
+              </div>
+            </div>
+            <div class="assistant-choice" data-assistant-survey="true">
+              <h3>오늘 어떤 요리를 따라 해볼까요?</h3>
+              <p>버튼 몇 개만 골라도 냄비가 지금 만들기 좋은 레시피를 골라줍니다.</p>
+              <div class="choice-group">
+                <div class="choice-label">지금 상황</div>
+                <div class="choice-row" data-choice-group="mood">
+                  <button class="choice-chip active" type="button" data-value="trend">SNS에서 본 메뉴</button>
+                  <button class="choice-chip" type="button" data-value="quick">빨리 끝내기</button>
+                  <button class="choice-chip" type="button" data-value="light">재료 적게</button>
+                  <button class="choice-chip" type="button" data-value="comfort">집밥 느낌</button>
+                </div>
+              </div>
+              <div class="choice-group">
+                <div class="choice-label">막히는 지점</div>
+                <div class="choice-row" data-choice-group="help">
+                  <button class="choice-chip active" type="button" data-value="timing">타이밍</button>
+                  <button class="choice-chip" type="button" data-value="substitute">재료 대체</button>
+                  <button class="choice-chip" type="button" data-value="heat">불 조절</button>
+                  <button class="choice-chip" type="button" data-value="portion">분량 조절</button>
+                </div>
+              </div>
+              <div class="assistant-result" id="assistantSurveyResult">
+                <small>냄비 추천</small>
+                <b>콘치즈 불닭볶음면</b>
+                <span>SNS에서 자주 보이는 메뉴라 영상으로 본 맛을 바로 따라 해보기 좋고, 치즈를 녹이는 타이밍만 잡으면 실패가 적어요.</span>
+                <a href="/app#detail=vlPqkuHIdCc"><i data-lucide="play-circle"></i>바로 만들어보기</a>
+              </div>
+            </div>
+          </div>
+          <div class="assistant-grid assistant-examples" style="margin-top:24px;">
+            <div class="assistant-demo" aria-label="요리비서 답변 예시">
+              <div class="assistant-head">
+                <i data-lucide="bot"></i>
+                <div><b>요리 중에는 이렇게 답합니다</b><span>지금 요리 상황에 맞춘 짧은 답변</span></div>
+              </div>
+              <div class="thread">
+                <div class="bubble user">양념이 타는 것 같아</div>
+                <div class="bubble answer"><em>냄비</em>불을 중불로 낮추고 양파를 먼저 넣어 수분을 내주세요. 그래도 뻑뻑하면 물을 한두 숟갈만 넣어 양념을 풀면 돼요.</div>
+                <div class="bubble user">명란이 너무 짤까 봐 걱정돼</div>
+                <div class="bubble answer"><em>냄비</em>명란은 먼저 조금만 넣고 맛을 본 뒤 추가하세요. 면수도 짠 편이면 소금 간은 생략하는 게 좋아요.</div>
+              </div>
+            </div>
+            <div class="assistant-demo" aria-label="요리비서 답변 예시">
+              <div class="assistant-head">
+                <i data-lucide="messages-square"></i>
+                <div><b>이런 질문을 모으고 있어요</b><span>후기와 요청이 다음 기능의 우선순위가 됩니다</span></div>
+              </div>
+              <div class="thread">
+                <div class="bubble user">영상 속 불 세기를 모르겠어요</div>
+                <div class="bubble answer"><em>냄비</em>이런 지점은 조리 단계마다 “중불로 낮추기”, “뚜껑 덮기”처럼 더 크게 보여줄 수 있게 모아둡니다.</div>
+                <div class="bubble user">다른 사람이 성공한 팁도 보고 싶어요</div>
+                <div class="bubble answer"><em>냄비</em>처음에는 후기와 팁을 모아 운영자가 고르고, 이후에는 레시피별 팁 모음으로 확장할 수 있어요.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section mobile-condense-hide" aria-label="출시 기대 기능">
+        <div class="section-head">
+          <div>
+            <span class="section-kicker">앞으로 더 하고 싶은 것</span>
+            <h2>내 주방에 맞게<br>조금씩 똑똑하게</h2>
+          </div>
+          <p>먼저 써본 사람들의 요청을 보고, 실제로 자주 막히는 순간부터 차례대로 다듬으려고 합니다.</p>
+        </div>
+        <div class="roadmap">
+          <div class="roadmap-item"><i data-lucide="carrot"></i><b>냉장고 재료 대체</b><span>집에 있는 재료로 바꿔도 되는지, 맛이 어떻게 달라지는지 알려주는 방향입니다.</span></div>
+          <div class="roadmap-item"><i data-lucide="shopping-basket"></i><b>장보기 목록</b><span>보고 싶은 레시피를 고르면 부족한 재료만 모아 장보기 목록으로 정리합니다.</span></div>
+          <div class="roadmap-item"><i data-lucide="sparkles"></i><b>취향 맞춤 추천</b><span>맵기, 조리 시간, 난이도, 자주 쓰는 재료를 기준으로 한 끼 메뉴를 제안합니다.</span></div>
+          <div class="roadmap-item"><i data-lucide="notebook-tabs"></i><b>나만의 조리 기록</b><span>다음에 다시 만들 때 참고할 간 조절, 대체 재료, 성공한 팁을 남깁니다.</span></div>
+        </div>
+      </section>
+
+      <section class="band" id="beta">
+        <div class="section">
+          <div class="section-head">
+            <div>
+              <span class="section-kicker">참여하기</span>
+              <h2>먼저 써볼 분과<br>보고 싶은 요리를 찾습니다</h2>
+            </div>
+            <p>이메일을 남기면 준비되는 순서대로 안내드리고, 보내주신 요리와 영상은 다음 메뉴를 고를 때 참고합니다.</p>
+          </div>
+          <div class="forms">
+            <div class="form-panel">
+              <h3>출시 소식 받기</h3>
+              <p>준비되면 안내를 받을 이메일을 남겨주세요.</p>
+              <form class="beta-form" id="betaForm" onsubmit="submitBeta(event)">
+                <label>이메일<input name="email" type="email" autocomplete="email" placeholder="you@example.com" required></label>
+                <label class="mobile-optional">이름 또는 닉네임<input name="name" type="text" autocomplete="name" placeholder="예: 민지"></label>
+                <label class="mobile-optional">요리 스타일
+                  <select name="profile">
+                    <option value="beginner">요리 초보</option>
+                    <option value="busy">빠른 한 끼가 필요한 사람</option>
+                    <option value="creator">요리 영상/레시피 크리에이터</option>
+                    <option value="guardian">가족 식사를 챙기는 사람</option>
+                  </select>
+                </label>
+                <label class="mobile-optional">요리할 때 자주 막히는 상황<textarea name="note" placeholder="예: 영상 보면서 타이밍을 놓쳐요, 재료 대체가 늘 헷갈려요, 퇴근 후 빨리 따라 하고 싶어요"></textarea></label>
+                <button type="submit"><i data-lucide="mail-check"></i>신청 보내기</button>
+                <p class="form-status" data-status></p>
+              </form>
+            </div>
+            <div class="form-panel" id="recipe">
+              <h3>영상 제보하기</h3>
+              <p>따라 하고 싶은 요리나 자주 보는 영상 링크를 제보해주세요.</p>
+              <form class="beta-form" id="recipeRequestForm" onsubmit="submitRecipeRequest(event)">
+                <label>요리 이름<input name="recipeName" type="text" placeholder="예: 류수영 어남선생 제육볶음" required></label>
+                <label>유튜브 링크 (선택)<input name="recipeUrl" type="url" placeholder="https://youtube.com/watch?v=..."></label>
+                <label class="mobile-optional">이메일 (선택)<input name="email" type="email" autocomplete="email" placeholder="반영 소식을 받아도 되는 이메일"></label>
+                <label class="mobile-optional">왜 보고 싶은가요?<textarea name="message" placeholder="예: 영상은 쉬워 보이는데 불 조절이 어려워요, 재료가 많아서 헷갈려요"></textarea></label>
+                <button type="submit"><i data-lucide="send"></i>요리 보내기</button>
+                <p class="form-status" data-status></p>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>냄비 베타 - SNS 요리 영상 따라하기 쉽게</span>
+      <a href="/app">먼저 경험해보기</a>
+    </footer>
+
+    <script>
+      function setFormStatus(form,msg,type){
+        const node=form&&form.querySelector('[data-status]');
+        if(!node)return;
+        node.textContent=msg||'';
+        node.classList.remove('ok','bad');
+        if(type)node.classList.add(type);
+      }
+      function setFormBusy(form,busy){
+        if(!form)return;
+        form.querySelectorAll('button[type="submit"]').forEach(btn=>{btn.disabled=!!busy;});
+      }
+      async function postJson(url,payload){
+        const res=await fetch(url,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload)});
+        const data=await res.json().catch(()=>({}));
+        if(!res.ok)throw new Error(data.error||'전송 설정을 확인해야 합니다.');
+        return data;
+      }
+      const NAEMBI_ANALYTICS={
+        ready:false,
+        enabled:false,
+        environment:'local',
+        queue:[],
+        once:new Set()
+      };
+      function naembiIsMobile(){
+        return matchMedia('(max-width: 720px), (pointer: coarse)').matches;
+      }
+      function naembiUtmProps(){
+        const params=new URLSearchParams(location.search);
+        const props={};
+        ['utm_source','utm_medium','utm_campaign','utm_content','utm_term'].forEach(key=>{
+          const value=params.get(key);
+          if(value)props[key]=value.slice(0,120);
+        });
+        return props;
+      }
+      function naembiReferrerHost(){
+        try{return document.referrer?new URL(document.referrer).hostname:'';}catch{return '';}
+      }
+      function naembiSafeProps(props={}){
+        const blocked=new Set(['email','name','note','message','url','link','recipeUrl','recipe_url','raw_query','query','page']);
+        return Object.entries(props).reduce((acc,[key,value])=>{
+          if(blocked.has(key))return acc;
+          if(value===undefined||value===null||value==='')return acc;
+          if(typeof value==='string')acc[key]=value.slice(0,160);
+          else if(typeof value==='number'||typeof value==='boolean')acc[key]=value;
+          return acc;
+        },{});
+      }
+      function naembiBaseProps(props={}){
+        return {
+          app:'naembi-web',
+          phase:'beta',
+          environment:NAEMBI_ANALYTICS.environment,
+          surface:'landing',
+          path:location.pathname,
+          hash:location.hash.slice(0,120),
+          viewport_width:window.innerWidth,
+          viewport_height:window.innerHeight,
+          is_mobile:naembiIsMobile(),
+          ...naembiUtmProps(),
+          ...naembiSafeProps(props)
+        };
+      }
+      function naembiSendToMixpanel(event,props){
+        if(!NAEMBI_ANALYTICS.enabled||!window.mixpanel||typeof window.mixpanel.track!=='function')return;
+        try{window.mixpanel.track(event,props);}catch(error){console.warn('[naembi analytics]',error);}
+      }
+      function naembiTrack(event,props={}){
+        const payload=naembiBaseProps(props);
+        window.__naembiTrackedEvents=window.__naembiTrackedEvents||[];
+        window.__naembiTrackedEvents.push({event,props:payload});
+        if(typeof window.__naembiOnTrack==='function')window.__naembiOnTrack(event,payload);
+        if(!NAEMBI_ANALYTICS.ready){
+          NAEMBI_ANALYTICS.queue.push({event,props:payload});
+          return;
+        }
+        naembiSendToMixpanel(event,payload);
+      }
+      function naembiTrackOnce(event,props={}){
+        const key=event+':'+(props.once_key||props.surface||'landing');
+        if(NAEMBI_ANALYTICS.once.has(key))return;
+        NAEMBI_ANALYTICS.once.add(key);
+        naembiTrack(event,props);
+      }
+      function loadNaembiMixpanel(){
+        if(window.mixpanel&&typeof window.mixpanel.init==='function')return Promise.resolve();
+        return new Promise((resolve,reject)=>{
+          const script=document.createElement('script');
+          script.src='https://cdn.mxpnl.com/libs/mixpanel-2-latest.min.js';
+          script.async=true;
+          script.onload=resolve;
+          script.onerror=()=>reject(new Error('Mixpanel SDK 로드 실패'));
+          document.head.appendChild(script);
+        });
+      }
+      async function initNaembiAnalytics(){
+        try{
+          const response=await fetch('/api/public-config',{cache:'no-store'});
+          const config=response.ok?await response.json():{};
+          NAEMBI_ANALYTICS.environment=config.environment||NAEMBI_ANALYTICS.environment;
+          const mp=config.mixpanel||{};
+          NAEMBI_ANALYTICS.enabled=Boolean(mp.enabled&&mp.token);
+          if(NAEMBI_ANALYTICS.enabled){
+            await loadNaembiMixpanel();
+            window.mixpanel.init(mp.token,{
+              debug:Boolean(mp.debug),
+              track_pageview:false,
+              persistence:'localStorage'
+            });
+            window.mixpanel.register({
+              app:'naembi-web',
+              phase:'beta',
+              environment:NAEMBI_ANALYTICS.environment
+            });
+          }
+        }catch(error){
+          console.warn('[naembi analytics] disabled',error);
+          NAEMBI_ANALYTICS.enabled=false;
+        }finally{
+          NAEMBI_ANALYTICS.ready=true;
+          NAEMBI_ANALYTICS.queue.splice(0).forEach(item=>naembiSendToMixpanel(item.event,item.props));
+        }
+      }
+      window.naembiTrack=naembiTrack;
+      window.naembiTrackOnce=naembiTrackOnce;
+      const assistantSurveyRecipes={
+        trend:{title:'콘치즈 불닭볶음면',id:'vlPqkuHIdCc',text:'SNS에서 자주 보이는 메뉴라 영상으로 본 맛을 바로 따라 해보기 좋고, 치즈를 녹이는 타이밍만 잡으면 실패가 적어요.'},
+        quick:{title:'명란 버터 파스타',id:'vHU4_QbslRA',text:'면수만 남겨두면 10분대에 끝낼 수 있어요. 짠맛이 걱정될 때는 냄비가 간 조절 포인트를 먼저 보여줍니다.'},
+        light:{title:'아보카도 계란 비빔밥',id:'eJekYxjFewM',text:'재료가 적고 불을 오래 쓰지 않아 시작하기 쉽습니다. 양파 매운맛 줄이는 팁처럼 작은 막힘을 바로 챙길 수 있어요.'},
+        comfort:{title:'김치볶음밥',id:'Lf44Fk7H24s',text:'집에 있는 재료로 만들기 좋고, 김치 신맛과 팬에 눌어붙는 순간을 냄비가 단계별로 잡아줍니다.'}
+      };
+      function updateAssistantSurvey(){
+        const mood=document.querySelector('[data-choice-group="mood"] .choice-chip.active')?.dataset.value||'trend';
+        const help=document.querySelector('[data-choice-group="help"] .choice-chip.active')?.dataset.value||'timing';
+        const base=assistantSurveyRecipes[mood]||assistantSurveyRecipes.trend;
+        const helpText={
+          timing:' 타이밍이 헷갈리는 구간은 조리 모드에서 더 크게 보여줍니다.',
+          substitute:' 없는 재료는 비슷한 맛과 식감 기준으로 바꿔볼 수 있게 안내합니다.',
+          heat:' 불 조절이 필요한 순간을 짧은 문장으로 다시 짚어줍니다.',
+          portion:' 1인분과 2인분 사이에서 양을 바꿀 때 헷갈리는 부분을 줄여줍니다.'
+        }[help]||'';
+        const result=document.getElementById('assistantSurveyResult');
+        if(!result)return;
+        result.innerHTML='<small>냄비 추천</small><b>'+base.title+'</b><span>'+base.text+helpText+'</span><a href="/app#detail='+base.id+'"><i data-lucide="play-circle"></i>바로 만들어보기</a>';
+        if(window.lucide)lucide.createIcons();
+      }
+      document.querySelectorAll('.choice-chip').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          const group=btn.closest('[data-choice-group]');
+          group?.querySelectorAll('.choice-chip').forEach(item=>item.classList.toggle('active',item===btn));
+          naembiTrack('assistant_survey_select',{
+            choice_group:group?.dataset.choiceGroup||'',
+            choice_value:btn.dataset.value||''
+          });
+          updateAssistantSurvey();
+        });
+      });
+      document.addEventListener('click',(event)=>{
+        const appLink=event.target.closest('a[href^="/app"]');
+        if(appLink){
+          naembiTrack('hero_cta_click',{
+            cta:'experience',
+            entrypoint:appLink.closest('.assistant-result')?'assistant_recommend':'landing',
+            target_hash:(appLink.getAttribute('href')||'').split('#')[1]||'home'
+          });
+        }
+        const betaLink=event.target.closest('a[href="#beta"]');
+        if(betaLink)naembiTrack('hero_cta_click',{cta:'beta_signup',entrypoint:'landing'});
+      });
+      async function submitBeta(event){
+        event.preventDefault();
+        const form=event.currentTarget;
+        const data=Object.fromEntries(new FormData(form).entries());
+        const payload={...data,source:'landing-root',page:location.href,createdAt:new Date().toISOString()};
+        setFormBusy(form,true);
+        setFormStatus(form,'전송 중입니다...','');
+        try{
+          await postJson('/api/beta-signup',payload);
+          form.reset();
+          setFormStatus(form,'신청이 접수됐습니다. 베타 안내를 이메일로 보내드릴게요.','ok');
+          naembiTrack('beta_signup_submit',{success:true,entrypoint:'landing',note_length:(data.note||'').length,profile:data.profile||''});
+        }catch(error){
+          setFormStatus(form,error.message||'전송에 실패했습니다. 잠시 후 다시 시도해주세요.','bad');
+          naembiTrack('beta_signup_submit',{success:false,entrypoint:'landing',profile:data.profile||''});
+        }finally{
+          setFormBusy(form,false);
+        }
+      }
+      async function submitRecipeRequest(event){
+        event.preventDefault();
+        const form=event.currentTarget;
+        const data=Object.fromEntries(new FormData(form).entries());
+        const payload={
+          type:'recipe',
+          source:'landing-root-recipe-request',
+          recipe:data.recipeName||'',
+          url:data.recipeUrl||'',
+          email:data.email||'',
+          message:data.message||'',
+          screen:'landing',
+          page:location.href,
+          createdAt:new Date().toISOString()
+        };
+        setFormBusy(form,true);
+        setFormStatus(form,'전송 중입니다...','');
+        try{
+          await postJson('/api/feedback',payload);
+          form.reset();
+          setFormStatus(form,'레시피 요청이 접수됐습니다. 요청 목록에 반영하겠습니다.','ok');
+          naembiTrack('recipe_request_submit',{
+            success:true,
+            entrypoint:'landing',
+            has_youtube_url:Boolean(data.recipeUrl),
+            recipe_length:(data.recipeName||'').length,
+            request_length:(data.message||'').length
+          });
+        }catch(error){
+          setFormStatus(form,error.message||'전송에 실패했습니다. 잠시 후 다시 시도해주세요.','bad');
+          naembiTrack('recipe_request_submit',{
+            success:false,
+            entrypoint:'landing',
+            has_youtube_url:Boolean(data.recipeUrl),
+            recipe_length:(data.recipeName||'').length
+          });
+        }finally{
+          setFormBusy(form,false);
+        }
+      }
+      initNaembiAnalytics().then(()=>{
+        naembiTrackOnce('landing_view',{
+          once_key:'root',
+          referrer_host:naembiReferrerHost()
+        });
+      });
+      if(window.lucide)lucide.createIcons();
+    </script>
+  </body>
+</html>

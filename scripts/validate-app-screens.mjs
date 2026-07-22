@@ -9,6 +9,7 @@ const port = Number(process.argv[4] || 9394);
 const recipeId = process.argv[5] || 'vlPqkuHIdCc';
 
 const viewports = [
+  { name: 'mobile-320', width: 320, height: 568, deviceScaleFactor: 2, mobile: true },
   { name: 'mobile-390', width: 390, height: 844, deviceScaleFactor: 2, mobile: true },
   { name: 'mobile-short', width: 375, height: 667, deviceScaleFactor: 2, mobile: true },
   { name: 'iphone-16', width: 393, height: 852, deviceScaleFactor: 3, mobile: true },
@@ -22,37 +23,42 @@ const states = [
   {
     name: 'home',
     setup: `show('home');`,
-    required: ['#home .nav', '#home .search', '.assistant-start', '.app-feedback-btn']
-  },
-  {
-    name: 'search',
-    setup: `openSearch('콘치즈');`,
-    required: ['#searchPage .nav', '#recipeSearchInput', '#searchResultTitle', '#searchResults .rcard']
-  },
-  {
-    name: 'search-creator',
-    setup: `openSearch('Maangchi');`,
-    required: ['#searchPage .nav', '#recipeSearchInput', '#creatorResultHead.show', '#creatorResults .creator-row', '#searchResults .rcard']
+    required: ['#home .nav', '#home .soon-badge', '#popScroll.recipe-list .rcard', '.app-feedback-btn']
   },
   {
     name: 'detail',
     setup: `currentRecipe=recipeById('${recipeId}'); show('detail');`,
-    required: ['#detail .nav', '#detailYoutubePlayer', '#detTitle', '.cta-bar .btn']
+    required: ['#detail .nav', '#detailYoutubePlayer', '#detTitle', '#detProof .detail-proof-total', '#detProof .detail-proof-platforms>span', '.cta-bar .btn']
   },
   {
     name: 'cook3-hint',
-    setup: `currentRecipe=recipeById('${recipeId}'); show('cook3');`,
+    setup: `localStorage.setItem('naembiAssistantOnboardingSeen','1'); currentRecipe=recipeById('${recipeId}'); show('cook3');`,
     required: ['#cook3 .nav', '#cook3 .cook-video', '#cookTrack3 .scard.active', '#cookHint.show', '#cook3Ctrl']
   },
   {
+    name: 'assistant-onboarding',
+    setup: `localStorage.removeItem('naembiAssistantOnboardingSeen'); currentRecipe=recipeById('${recipeId}'); show('cook3'); showAssistantOnboarding({force:true});`,
+    required: ['#assistantOnboarding.show', '.assistant-onboarding-card', '#assistantOnboardingTitle', '#hf3']
+  },
+  {
     name: 'cook3-core',
-    setup: `currentRecipe=recipeById('${recipeId}'); show('cook3'); hideCookHint();`,
+    setup: `localStorage.setItem('naembiAssistantOnboardingSeen','1'); currentRecipe=recipeById('${recipeId}'); show('cook3'); hideCookHint();`,
     required: ['#cook3 .nav', '#cook3 .cook-video', '#cookTrack3 .scard.active', '#cook3Ctrl']
   },
   {
     name: 'timer-sheet',
     setup: `currentRecipe=recipeById('${recipeId}'); show('cook3'); hideCookHint(); openTimer();`,
     required: ['#timerSheet.show .ing-panel', '.ts-edit-hint', '#tsMin', '#tsSec', '.ts-sec-adjusts button', '#timerSheet .btn']
+  },
+  {
+    name: 'cook3-timer-running',
+    setup: `currentRecipe=recipeById('${recipeId}'); show('cook3'); hideCookHint(); startUnifiedTimer(180, false);`,
+    required: ['#stageTimer.show', '#cook3 .cook-body.timer-active', '#cookTrack3 .scard.active', '#cook3Ctrl']
+  },
+  {
+    name: 'video-settings',
+    setup: `currentRecipe=recipeById('${recipeId}'); show('cook3'); hideCookHint(); openVideoSettings();`,
+    required: ['#videoSettings.show .vset-card', '#vsMasterVolRange', '#vsVolRange', '#vsVoiceVolRange', '#vsTimerVolRange', '#vsSpeedVal']
   },
   {
     name: 'ingredients-list',
@@ -82,7 +88,7 @@ const states = [
   {
     name: 'complete',
     setup: `currentRecipe=recipeById('${recipeId}'); show('complete');`,
-    required: ['#complete .done-view', '#doneTitle', '.done-actions .share', '.done-next']
+    required: ['#complete .done-view', '#doneTitle', '.done-actions .share', '.done-actions .btn.light']
   }
 ];
 
@@ -192,8 +198,11 @@ try {
       const metrics = await evaluate(`(async () => {
         const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
         const cleanup = () => {
+          try { localStorage.setItem('naembiAssistantOnboardingSeen','1'); } catch {}
+          try { hideAssistantOnboarding({ reopenHint: false }); } catch {}
           try { closeIngredients(); } catch {}
           try { closeTimer(); } catch {}
+          try { cancelStageTimer({ silent: true }); } catch {}
           try { closeVoice(); } catch {}
           try { closeVideoSettings(); } catch {}
           const vpanel = document.getElementById('vpanel');

@@ -68,7 +68,14 @@ function changedFiles() {
       const path = line.slice(3).trim();
       return path.includes(' -> ') ? path.split(' -> ').pop().trim() : path;
     })
-    .filter((path) => path && !path.endsWith('.DS_Store') && path !== 'node_modules' && !path.startsWith('node_modules/'));
+    .filter((path) => path
+      && !path.endsWith('.DS_Store')
+      && path !== 'AGENTS.md'
+      && path !== '.codex'
+      && !path.startsWith('.codex/')
+      && path !== 'node_modules'
+      && !path.startsWith('node_modules/')
+      && !path.startsWith('android-wrapper/.DS_Store'));
 }
 
 function touches(files, matchers) {
@@ -127,49 +134,46 @@ function coreChecks() {
   try {
     const vercel = parseJsonFile('vercel.json');
     const rewrites = Array.isArray(vercel.rewrites) ? vercel.rewrites : [];
-    const hasAppRewrite = rewrites.some((item) => item.source === '/app' && item.destination === '/app.html');
-    const hasAppDeepRewrite = rewrites.some((item) => item.source === '/app/:path*' && item.destination === '/app.html');
+    const hasAppRewrite = rewrites.some((item) => item.source === '/app' && item.destination === '/index.html');
+    const hasAppDeepRewrite = rewrites.some((item) => item.source === '/app/:path*' && item.destination === '/index.html');
+    const hasLandingRewrite = rewrites.some((item) => item.source === '/landing' && item.destination === '/landing.html');
     const hasDesignRewrite = rewrites.some((item) => item.source === '/design' && item.destination === '/design.html');
     const hasDesignDeepRewrite = rewrites.some((item) => item.source === '/design/:path*' && item.destination === '/design.html');
-    const rootNotApp = !rewrites.some((item) => item.source === '/' && item.destination === '/app.html');
-    gates.push(hasAppRewrite && hasAppDeepRewrite && hasDesignRewrite && hasDesignDeepRewrite && rootNotApp
-      ? pass('vercel app route', '/app -> /app.html, /design -> /design.html, 루트는 index.html 진입')
-      : fail('vercel app route', '루트/앱/디자인 라우팅이 랜딩+웹앱+시안 분리 구조가 아님', 'vercel.json은 /app -> /app.html, /design -> /design.html을 rewrite하고 루트는 index.html로 둔다.'));
+    const hasRootRewrite = rewrites.some((item) => item.source === '/');
+    const hasRootIndex = existsSync(resolve(root, 'index.html'));
+    gates.push(hasRootIndex && !hasRootRewrite && hasAppRewrite && hasAppDeepRewrite && hasLandingRewrite && hasDesignRewrite && hasDesignDeepRewrite
+      ? pass('vercel app route', '/는 index.html 정적 엔트리, /app -> /index.html, /landing -> /landing.html')
+      : fail('vercel app route', '루트/앱/랜딩/디자인 라우팅이 단순화 구조가 아님', '루트는 index.html 정적 엔트리로 두고 /app은 /index.html로, /landing은 /landing.html로 rewrite한다.'));
   } catch (error) {
     gates.push(fail('vercel app route', error.message, 'vercel.json JSON 형식을 복구한다.'));
   }
 
-  if (!existsSync(resolve(root, 'index.html'))) {
-    gates.push(fail('landing entry', 'index.html 없음', '루트 랜딩 엔트리를 복구한다.'));
+  if (!existsSync(resolve(root, 'landing.html'))) {
+    gates.push(fail('landing archive', 'landing.html 없음', '기존 랜딩은 landing.html로 보존한다.'));
   } else {
-    const html = read('index.html');
+    const html = read('landing.html');
     const required = [
-      ['href="/app"', '지금 써보기 CTA'],
-      ['data-assistant-survey="true"', '요리비서 대화형 추천'],
-      ['/assets/screens/app-home.png', '홈 정적 캡쳐'],
-      ['/assets/screens/app-search.png', '검색 정적 캡쳐'],
-      ['/assets/screens/app-detail.png', '상세 정적 캡쳐'],
-      ['/assets/screens/app-cook.png', '조리 정적 캡쳐'],
-      ['/assets/screens/app-complete.png', '완료 정적 캡쳐'],
-      ['recipeRequestForm', '레시피 요청 폼'],
-      ['betaForm', '베타 신청 폼']
+      ['SNS 요리 영상', '기존 랜딩 핵심 카피'],
+      ['recipeRequestForm', '기존 레시피 요청 폼'],
+      ['betaForm', '기존 베타 신청 폼']
     ];
     const missing = required.filter(([needle]) => !html.includes(needle)).map(([, label]) => label);
     gates.push(missing.length
-      ? fail('landing structure', `누락: ${missing.join(', ')}`, 'index.html의 사용자 후킹 카피/정적 캡쳐/미리 써보기/요리 보내기 구조를 복구한다.')
-      : pass('landing structure', '사용자 후킹 카피, 정적 앱 캡쳐, 미리 써보기/요리 보내기 폼 확인'));
+      ? fail('landing archive structure', `누락: ${missing.join(', ')}`, 'landing.html은 기존 랜딩 복구용 보존 파일로 유지한다.')
+      : pass('landing archive structure', '기존 랜딩 보존 파일 확인'));
   }
 
-  if (!existsSync(resolve(root, 'app.html'))) {
-    gates.push(fail('app entry', 'app.html 없음', '/app 웹앱 엔트리를 복구한다.'));
+  if (!existsSync(resolve(root, 'index.html'))) {
+    gates.push(fail('app entry', 'index.html 없음', '루트와 /app 웹앱 엔트리를 복구한다.'));
   } else {
-    const html = read('app.html');
+    const html = read('index.html');
     const required = [
       ['isStandaloneAppPath', '/app 기본 앱 홈 진입'],
       ['id="home"', '앱 홈 화면'],
       ['id="cook3"', '조리 모드'],
       ['feedbackForm', '앱 피드백 폼'],
-      ['id="communityStrip"', '후기/팁 스트립'],
+      ['RECIPE_VIRAL_METRICS', 'SNS 조회수 수동 데이터'],
+      ['formatViews', '한국식 조회수 포맷'],
       ['shareCompletedRecipe', '완료 후 공유 루프'],
       ['app-feedback-btn', '폰 화면 내부 플로팅 피드백'],
       ['id="ingSheet"', '재료 바텀시트'],
@@ -179,8 +183,8 @@ function coreChecks() {
     ];
     const missing = required.filter(([needle]) => !html.includes(needle)).map(([, label]) => label);
     gates.push(missing.length
-      ? fail('app structure', `누락: ${missing.join(', ')}`, '/app 웹앱 진입과 핵심 화면 구조를 복구한다.')
-      : pass('app structure', '/app 기본 앱 홈, 조리 모드, 피드백 폼 확인'));
+      ? fail('app structure', `누락: ${missing.join(', ')}`, '루트와 /app 웹앱 진입 및 핵심 화면 구조를 복구한다.')
+      : pass('app structure', '루트와 /app 기본 앱 홈, 조리 모드, 피드백 폼 확인'));
   }
 
   if (!existsSync(resolve(root, 'design.html'))) {
@@ -204,7 +208,7 @@ function coreChecks() {
   }
 
   {
-    const publicHtml = `${existsSync(resolve(root, 'index.html')) ? read('index.html') : ''}\n${existsSync(resolve(root, 'app.html')) ? read('app.html') : ''}`;
+    const publicHtml = `${existsSync(resolve(root, 'landing.html')) ? read('landing.html') : ''}\n${existsSync(resolve(root, 'index.html')) ? read('index.html') : ''}`;
     const forbidden = ['Notion', 'notion', 'v2', 'v3', 'Ralph', '랄프', 'API', 'Vercel', 'GitHub', 'webhook', '환경변수', '프로토타입', 'AWS', '페이지 안에'];
     const found = forbidden.filter((term) => publicHtml.includes(term));
     gates.push(found.length
@@ -214,7 +218,7 @@ function coreChecks() {
 
   const syntax = run(process.execPath, ['scripts/check-app-script.mjs']);
   gates.push(syntax.ok
-    ? pass('inline script syntax', 'app.html inline script 문법 통과')
+    ? pass('inline script syntax', 'index.html inline script 문법 통과')
     : fail('inline script syntax', truncate(syntax.stderr || syntax.stdout), 'inline script 문법 오류를 먼저 고친다.'));
 
   return gates;
@@ -432,10 +436,10 @@ function visualChecks() {
 
 function selectedWorkflows(files) {
   const selected = ['core'];
-  const apiTouched = full || touches(files, ['api', 'app.html', 'index.html']);
+  const apiTouched = full || touches(files, ['api', 'index.html', 'landing.html']);
   const deployTouched = full || touches(files, ['vercel.json', 'package.json', '.env.example', '.vercelignore', 'api']);
   const docsTouched = full || touches(files, ['docs/verify', 'docs/handoff', /^docs\/progress\//]);
-  const landingTouched = full || touches(files, ['index.html', 'app.html', 'assets/screens', 'scripts/capture-landing.mjs', 'scripts/capture-app-screens.mjs']);
+  const landingTouched = full || touches(files, ['landing.html', 'index.html', 'assets/screens', 'scripts/capture-landing.mjs', 'scripts/capture-app-screens.mjs']);
 
   if (apiTouched) selected.push('api');
   if (deployTouched) selected.push('deploy');
@@ -448,7 +452,7 @@ function selectedWorkflows(files) {
 
 function workflowReason(files, workflow) {
   if (workflow === 'core') return '항상 실행';
-  if (workflow === 'api') return touches(files, ['api', 'app.html', 'index.html']) ? 'api/app/landing 변경 감지' : 'full 실행';
+  if (workflow === 'api') return touches(files, ['api', 'index.html', 'landing.html']) ? 'api/app/landing 변경 감지' : 'full 실행';
   if (workflow === 'deploy') return touches(files, ['vercel.json', 'package.json', '.env.example', '.vercelignore', 'api']) ? '배포 설정 변경 감지' : 'full 실행';
   if (workflow === 'docs') return touches(files, ['docs/verify', 'docs/handoff', /^docs\/progress\//]) ? '검증 문서 변경 감지' : 'full 실행';
   if (workflow === 'visual') return visual ? '--visual 요청' : '비활성';
@@ -470,8 +474,8 @@ function gatePassed(gates, name) {
 }
 
 function buildScorecard(gates, workflows) {
-  const landingHtml = existsSync(resolve(root, 'index.html')) ? read('index.html') : '';
-  const appHtml = existsSync(resolve(root, 'app.html')) ? read('app.html') : '';
+  const landingHtml = existsSync(resolve(root, 'landing.html')) ? read('landing.html') : '';
+  const appHtml = existsSync(resolve(root, 'index.html')) ? read('index.html') : '';
   const designHtml = existsSync(resolve(root, 'design.html')) ? read('design.html') : '';
   const html = `${landingHtml}\n${appHtml}`;
   const env = existsSync(resolve(root, '.env.example')) ? read('.env.example') : '';
@@ -494,64 +498,64 @@ function buildScorecard(gates, workflows) {
   const items = [];
 
   const copySignals = [
-    includesAll(landingHtml, ['SNS 요리 영상', '따라 하다 막혔죠']),
-    (landingHtml.includes('미리 써보기 신청') || landingHtml.includes('출시 소식 받기')) && (landingHtml.includes('지금 써보기') || landingHtml.includes('먼저 경험해보기')),
-    includesAll(landingHtml, ['보고 싶은 요리', '요리 보내기']),
-    includesAll(landingHtml, ['작은 냄비가', '옆에서 챙겨요'])
+    appHtml.includes('SNS에서 핫했던 요리'),
+    appHtml.includes('종합 조회수 순'),
+    appHtml.includes('recipe-list') && !appHtml.includes('id="recScroll"'),
+    landingHtml.includes('SNS 요리 영상')
   ];
   items.push(scoreItem(
-    '사용자 가치·카피 명확성',
+    '단일 가치·카피 명확성',
     15,
     scoreBySignals(copySignals, 15),
     `${copySignals.filter(Boolean).length}/4 신호 충족`,
-    '히어로, CTA, 레시피 요청, 작은 냄비 감성 카피가 모두 사용자 행동으로 이어져야 한다.'
+    '루트 앱은 SNS 요리를 바로 따라 하는 가치와 조회수 기반 탐색에 집중해야 한다.'
   ));
 
-  const betaSignals = [
-    landingHtml.includes('id="betaForm"'),
-    landingHtml.includes('href="/app"'),
-    landingHtml.includes("postJson('/api/beta-signup'"),
-    landingHtml.includes('미리 써보기 신청') || landingHtml.includes('먼저 써보기 신청') || landingHtml.includes('출시 소식 받기'),
-    landingHtml.includes('신청이 접수됐습니다')
+  const simplificationSignals = [
+    existsSync(resolve(root, 'index.html')),
+    !existsSync(resolve(root, 'app.html')),
+    existsSync(resolve(root, 'landing.html')),
+    appHtml.includes("return path==='/'||path==='/app'||path.endsWith('/index.html')"),
+    !appHtml.includes('<div class="search" onclick="openSearch()'),
+    !appHtml.includes('id="communityStrip"'),
+    appHtml.includes('soon-badge')
   ];
   items.push(scoreItem(
-    '베타 전환 흐름',
+    '덜어내기 범위',
     15,
-    scoreBySignals(betaSignals, 15),
-    `${betaSignals.filter(Boolean).length}/5 신호 충족`,
-    '모바일/데스크톱/하단 신청 폼과 성공 메시지를 모두 유지한다.'
+    scoreBySignals(simplificationSignals, 15),
+    `${simplificationSignals.filter(Boolean).length}/${simplificationSignals.length} 신호 충족`,
+    '루트는 웹앱 홈으로 열고, 홈 검색 UI와 후기/팁 스트립을 비활성화하며 기존 랜딩은 landing.html로 보존한다.'
   ));
 
   const feedbackSignals = [
-    landingHtml.includes('id="recipeRequestForm"'),
     appHtml.includes('id="feedbackForm"'),
     appHtml.includes('openFeedback('),
-    landingHtml.includes("postJson('/api/feedback'") || appHtml.includes("postJson('/api/feedback'"),
-    appHtml.includes('피드백이 접수됐습니다') && landingHtml.includes('레시피 요청이 접수됐습니다')
+    appHtml.includes("postJson('/api/feedback'"),
+    appHtml.includes('feedback_type:\'general\''),
+    !appHtml.includes('<select name="type">')
   ];
   items.push(scoreItem(
-    '피드백·레시피 수집',
+    '의견 보내기 단순화',
     15,
     scoreBySignals(feedbackSignals, 15),
     `${feedbackSignals.filter(Boolean).length}/5 신호 충족`,
-    '베타 피드백과 레시피 요청이 같은 저장 흐름으로 수집되어야 한다.'
+    '앱 의견은 종류/이메일 없이 입력창 하나와 보내기 버튼으로 수집한다.'
   ));
 
   const interactionSignals = [
-    landingHtml.includes('data-assistant-survey="true"') && landingHtml.includes('assistantSurveyRecipes'),
-    appHtml.includes('지금 많이 만드는 요리') && appHtml.includes('SNS에서 자주 보이는 메뉴'),
+    appHtml.includes('RECIPE_VIRAL_METRICS') && appHtml.includes('youtubeViews') && appHtml.includes('instagramViews') && appHtml.includes('tiktokViews'),
+    appHtml.includes('종합 조회수') && appHtml.includes('formatViews'),
     !appHtml.includes('<span>영상 보내기</span>') && appHtml.includes('app-feedback-btn'),
-    appHtml.includes('id="communityStrip"') && appHtml.includes('RECIPE_REACTIONS'),
     appHtml.includes('shareCompletedRecipe') && appHtml.includes('from=completed-share'),
-    existsSync(resolve(root, 'assets/screens/naembi-core-flow.gif')) && appHtml.includes('물어보기') && appHtml.includes('요리비서'),
     appHtml.includes('setIngSheetView') && appHtml.includes('한눈에 보기') && appHtml.includes('체크하며 준비') && appHtml.includes('ingGroupsHTML(currentRecipe)')
   ];
   items.push(scoreItem(
-    '후킹·상호작용 루프',
+    'SNS 조회수 카드·핵심 루프',
     10,
     scoreBySignals(interactionSignals, 10),
     `${interactionSignals.filter(Boolean).length}/${interactionSignals.length} 신호 충족`,
-    '랜딩 이탈 방지용 요리비서 추천, 앱 후기/팁, 완료 후 공유, 폰 내부 플로팅 피드백을 유지한다.'
+    '레시피 카드는 SNS 조회수 중심으로 보이고, 조리·공유·피드백 루프는 유지한다.'
   ));
 
   const previewSignals = [
@@ -657,8 +661,8 @@ function buildScorecard(gates, workflows) {
     '배포 준비도',
     10,
     scoreBySignals(deploySignals, 10),
-    `${deploySignals.filter(Boolean).length}/4 신호 충족`,
-    '루트 랜딩과 /app 웹앱 라우팅, 수집 환경변수, 배포 제외, 검증 스크립트를 유지한다.'
+    `${deploySignals.filter(Boolean).length}/${deploySignals.length} 신호 충족`,
+    '루트 앱 엔트리와 /app 웹앱 라우팅, 수집 환경변수, 배포 제외, 검증 스크립트를 유지한다.'
   ));
 
   const loopSignals = [

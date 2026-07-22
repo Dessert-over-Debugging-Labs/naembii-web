@@ -5,7 +5,7 @@ const root = process.cwd();
 const strict = process.argv.includes('--strict');
 const jsonOutput = process.argv.includes('--json');
 const requestedFiles = process.argv.slice(2).filter((arg) => !arg.startsWith('--'));
-const files = requestedFiles.length ? requestedFiles : ['app.html', 'index.html'];
+const files = requestedFiles.length ? requestedFiles : ['index.html'];
 
 const rules = [
   {

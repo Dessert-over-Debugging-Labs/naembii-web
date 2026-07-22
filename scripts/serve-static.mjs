@@ -27,8 +27,8 @@ const mime = {
 function fileFor(url = '/') {
   const parsed = new URL(url, `http://${host}:${port}`);
   let pathname = parsed.pathname === '/' ? '/index.html' : parsed.pathname;
-  if (pathname === '/app') {
-    pathname = '/app.html';
+  if (pathname === '/app' || pathname.startsWith('/app/')) {
+    pathname = '/index.html';
   }
   const safePath = normalize(decodeURIComponent(pathname)).replace(/^(\.\.[/\\])+/, '');
   const candidate = resolve(join(root, safePath));

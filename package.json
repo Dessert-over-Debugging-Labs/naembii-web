@@ -19,6 +19,7 @@
     "verify:dynamic": "node scripts/verify-dynamic.mjs",
     "verify:visual": "node scripts/verify-dynamic.mjs --visual",
     "verify:app-screens": "node scripts/validate-app-screens.mjs",
+    "verify:design-system": "node scripts/validate-design-system.mjs",
     "verify:load-performance": "node scripts/validate-load-performance.mjs",
     "verify:mobile-flow": "node scripts/validate-mobile-flow.mjs",
     "verify:voice-assistant": "node scripts/validate-voice-assistant-ux.mjs",

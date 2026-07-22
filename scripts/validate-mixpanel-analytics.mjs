@@ -4,12 +4,13 @@ const require = createRequire(import.meta.url);
 const { chromium } = require(process.env.NAEMBI_PLAYWRIGHT_PATH || 'playwright');
 
 const baseURL = (process.argv[2] || 'http://127.0.0.1:4873').replace(/\/+$/, '');
-const sensitiveKeys = new Set(['email', 'name', 'note', 'message', 'url', 'link', 'recipeUrl', 'recipe_url', 'raw_query', 'query', 'page']);
+const sensitiveKeys = new Set(['email', 'name', 'note', 'message', 'url', 'link', 'recipeUrl', 'recipe_url', 'raw_query', 'query', 'page', 'hash']);
 const sensitiveSamples = [
   'tester@example.com',
   '치즈 녹이는 타이밍이 궁금해요',
   'https://youtube.com/watch?v=secret',
-  '모바일 피드백 원문입니다'
+  '모바일 피드백 원문입니다',
+  '원문 검색어 샘플'
 ];
 
 function fail(message, detail = {}) {
@@ -38,11 +39,25 @@ async function installAnalyticsRoutes(page) {
       contentType: 'text/javascript; charset=utf-8',
       body: `
         window.__mixpanelSdkCalls = [];
-        window.mixpanel = {
-          init: function(token, config) { window.__mixpanelSdkCalls.push({ type: 'init', token: token, config: config }); },
-          register: function(props) { window.__mixpanelSdkCalls.push({ type: 'register', props: props }); },
-          track: function(event, props) { window.__mixpanelSdkCalls.push({ type: 'track', event: event, props: props }); }
-        };
+        var previous = window.mixpanel;
+        if (!previous || !previous._i) {
+          window.__mixpanelSdkCalls.push({ type: 'bootstrap_missing' });
+          console.error('Mixpanel error: "mixpanel" object not initialized. Ensure you are using the latest version of the Mixpanel JS Library along with the snippet we provide.');
+        } else {
+          var initQueue = previous._i.slice();
+          var preLoadQueue = Array.isArray(previous) ? previous.slice() : [];
+          window.mixpanel = {
+            init: function(token, config) { window.__mixpanelSdkCalls.push({ type: 'init', token: token, config: config }); },
+            register: function(props) { window.__mixpanelSdkCalls.push({ type: 'register', props: props }); },
+            track: function(event, props) { window.__mixpanelSdkCalls.push({ type: 'track', event: event, props: props }); }
+          };
+          initQueue.forEach(function(item) {
+            window.__mixpanelSdkCalls.push({ type: 'init', token: item[0], config: item[1] });
+          });
+          preLoadQueue.forEach(function(item) {
+            window.__mixpanelSdkCalls.push({ type: 'queued', method: item[0], args: item.slice(1) });
+          });
+        }
       `
     });
   });
@@ -107,35 +122,6 @@ async function waitForEvent(page, name, predicate = () => true, timeout = 5000) 
   return assertHas(list, name, predicate);
 }
 
-async function runLandingChecks(page) {
-  await page.goto(`${baseURL}/`, { waitUntil: 'domcontentloaded' });
-  await waitForEvent(page, 'landing_view');
-
-  await page.evaluate(() => {
-    const cta = document.querySelector('.hero-actions .btn.primary');
-    cta?.addEventListener('click', (event) => event.preventDefault(), { capture: true, once: true });
-    cta?.click();
-  });
-  await waitForEvent(page, 'hero_cta_click');
-
-  await page.fill('#betaForm input[name="email"]', 'tester@example.com');
-  await page.locator('#betaForm button[type="submit"]').click();
-  await waitForEvent(page, 'beta_signup_submit', (props) => props.success === true);
-
-  await page.fill('#recipeRequestForm input[name="recipeName"]', '콘치즈 불닭');
-  await page.fill('#recipeRequestForm input[name="recipeUrl"]', 'https://youtube.com/watch?v=secret');
-  await page.locator('#recipeRequestForm button[type="submit"]').click();
-  await waitForEvent(page, 'recipe_request_submit', (props) => props.success === true && props.has_youtube_url === true);
-
-  await page.locator('.choice-chip[data-value="quick"]').first().click();
-  await waitForEvent(page, 'assistant_survey_select');
-
-  const list = await events(page);
-  assertHas(list, 'hero_cta_click', () => true);
-  assertNoSensitiveProps(list);
-  return list;
-}
-
 async function installVoiceMocks(page) {
   await page.evaluate(() => {
     const fakeStream = { getTracks: () => [{ stop() {} }] };
@@ -166,13 +152,9 @@ async function installVoiceMocks(page) {
 }
 
 async function runAppChecks(page) {
-  await page.goto(`${baseURL}/app`, { waitUntil: 'domcontentloaded' });
-  await page.waitForFunction(() => typeof show === 'function' && typeof executeRecipeSearch === 'function');
+  await page.goto(`${baseURL}/`, { waitUntil: 'domcontentloaded' });
+  await page.waitForFunction(() => typeof show === 'function' && typeof goDetail === 'function' && document.querySelector('#home.active'));
   await waitForEvent(page, 'open_app');
-
-  await page.evaluate(() => executeRecipeSearch('명란 파스타'));
-  await waitForEvent(page, 'search_submit', (props) => props.query_type && props.result_count >= 0);
-  await waitForEvent(page, 'search_result_view');
 
   await page.evaluate(() => goDetail('vHU4_QbslRA'));
   await waitForEvent(page, 'select_recipe', (props) => props.recipe_id === 'vHU4_QbslRA');
@@ -224,21 +206,16 @@ try {
   const page = await context.newPage();
   await installAnalyticsRoutes(page);
 
-  const landingEvents = await runLandingChecks(page);
-  const landingSdk = await sdkCalls(page);
-  if (!landingSdk.some((call) => call.type === 'init' && call.token === 'test-mixpanel-token')) {
-    fail('Mixpanel SDK init 호출이 없습니다.', { landingSdk });
-  }
-
   const appEvents = await runAppChecks(page);
   const appSdk = await sdkCalls(page);
+  if (appSdk.some((call) => call.type === 'bootstrap_missing')) {
+    fail('앱 화면 Mixpanel SDK bootstrap stub이 없습니다.', { appSdk });
+  }
+  if (!appSdk.some((call) => call.type === 'init' && call.token === 'test-mixpanel-token')) {
+    fail('Mixpanel SDK init 호출이 없습니다.', { appSdk });
+  }
   const required = [
-    'landing_view',
-    'beta_signup_submit',
-    'recipe_request_submit',
     'open_app',
-    'search_submit',
-    'search_result_view',
     'select_recipe',
     'start_cook',
     'open_ingredients',
@@ -249,14 +226,13 @@ try {
     'share_click',
     'feedback_submit'
   ];
-  const combined = [...landingEvents, ...appEvents];
+  const combined = [...appEvents];
   const names = new Set(eventNames(combined));
   const missing = required.filter((name) => !names.has(name));
   if (missing.length) fail('필수 이벤트 누락', { missing, names: [...names] });
 
   console.log(JSON.stringify({
     ok: true,
-    landingEvents: landingEvents.length,
     appEvents: appEvents.length,
     sdkTrackCalls: appSdk.filter((call) => call.type === 'track').length,
     requiredEvents: required.length

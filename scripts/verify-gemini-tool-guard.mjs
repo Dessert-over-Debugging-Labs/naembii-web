@@ -5,9 +5,9 @@ import vm from 'node:vm';
 
 const require = createRequire(import.meta.url);
 const { _test: tokenPolicy } = require('../api/gemini-live-token');
-const html = readFileSync(new URL('../app.html', import.meta.url), 'utf8');
+const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 const guardSource = html.match(/  function geminiToolDomain[\s\S]*?(?=\n  function noteVpToolDecision)/)?.[0];
-assert.ok(guardSource, 'Gemini tool schema guard source was not found in app.html');
+assert.ok(guardSource, 'Gemini tool schema guard source was not found in index.html');
 
 const context = vm.createContext({
   currentGeminiCookingContext: () => ({ key: 'recipe:cooking:1', stepIndex: 2, totalSteps: 5 })

@@ -106,7 +106,7 @@ try {
     const active = document.querySelector('.view.active')?.id || '';
     const homeReady = !!document.querySelector('#home.view.active .rcard');
     const appBytes = resources
-      .filter((entry) => entry.name.includes('/app') || entry.name.includes('/app.html'))
+      .filter((entry) => entry.name.includes('/app') || entry.name.includes('/index.html'))
       .reduce((sum, entry) => sum + (entry.transferSize || 0), 0);
     return {
       active,
