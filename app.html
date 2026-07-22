@@ -2272,7 +2272,15 @@
   // ===== Gemini Live 사용량 계측 (UI 없음) — usageMetadata·연결시간·전송 오디오량을 모아 /api/usage로 업로드 =====
   // usageMetadata가 턴 단위 값인지 세션 누적 값인지 문서가 모호해 Sum과 Last/Max를 모두 기록한다.
   // 분석할 때는 usageId별로 seq가 가장 큰 행만 사용한다(중간 플러시는 같은 usageId의 누적 스냅샷).
+  //
+  // 같은 usageMetadata를 Langfuse에도 흘려보낸다(→ /api/ai-trace). 시트는 세션 누적 스냅샷이 필요하고
+  // Langfuse는 generation(대화 턴)별 값이 필요하므로, 누적 카운터(billed)와 "어디까지 Langfuse로 보냈는지"를
+  // 가리키는 커서(billedCursor)를 따로 두고 그 차분만 턴에 붙인다. 커서는 실제로 전송할 때만 전진하므로
+  // 대화로 기록되지 않은 구간(도구 호출만 있던 구간 등)의 토큰도 유실되지 않고 다음 턴에 합산된다.
   let guSession=null, guLastFlushAt=0, guLastFlushMark='', guMemoryUid='';
+  function guBilledZero(){
+    return {prompt:0,response:0,total:0,promptAudio:0,promptText:0,responseAudio:0,responseText:0,weighted:0,updates:0};
+  }
   function guUid(){
     try{
       let id=localStorage.getItem('naembiUid');
@@ -2294,7 +2302,8 @@
       turns:0,conversationTurns:0,promptTokensLast:0,promptTokensMax:0,promptTokensSum:0,
       responseTokensLast:0,responseTokensMax:0,responseTokensSum:0,
       totalTokensLast:0,totalTokensMax:0,
-      promptAudioTokensSum:0,promptTextTokensSum:0,responseAudioTokensSum:0,responseTextTokensSum:0
+      promptAudioTokensSum:0,promptTextTokensSum:0,responseAudioTokensSum:0,responseTextTokensSum:0,
+      traceSessionId:'',billed:guBilledZero(),billedCursor:guBilledZero()
     };
     // 진행 중인 연결이 있는 상태에서 새 계측 세션이 시작되면(직전 세션 final 이후) 이미 보낸 바이트는 제외한다.
     if(geminiLive&&!geminiLive.closing){
@@ -2310,13 +2319,23 @@
   function guModalityTokens(details,modality){
     return (details||[]).reduce((sum,item)=>sum+((item?.modality===modality&&Number(item.tokenCount))||0),0);
   }
-  function guWeightedTokens(meta){
+  // usageMetadata 한 건을 과금 단위(텍스트/오디오)로 정규화한다.
+  // TEXT 상세가 비어 오는 경우가 있어 "전체 - 오디오"를 하한으로 써서 텍스트 토큰이 0으로 새지 않게 한다.
+  // (AUDIO·TEXT 외 모달리티가 섞이면 그 몫이 텍스트로 잡히지만, 가중치 한도 계산과 같은 기준이라 일관된다.)
+  function guUsageBreakdown(meta){
     const prompt=Number(meta?.promptTokenCount)||0,response=Number(meta?.responseTokenCount)||0;
     const promptAudio=guModalityTokens(meta?.promptTokensDetails,'AUDIO');
     const responseAudio=guModalityTokens(meta?.responseTokensDetails,'AUDIO');
     const promptText=Math.max(0,prompt-promptAudio,guModalityTokens(meta?.promptTokensDetails,'TEXT'));
     const responseText=Math.max(0,response-responseAudio,guModalityTokens(meta?.responseTokensDetails,'TEXT'));
-    return promptText+(promptAudio*4)+(responseText*6)+(responseAudio*16);
+    return {
+      prompt,response,total:Number(meta?.totalTokenCount)||prompt+response,
+      promptAudio,promptText,responseAudio,responseText,
+      weighted:promptText+(promptAudio*4)+(responseText*6)+(responseAudio*16)
+    };
+  }
+  function guWeightedTokens(meta){
+    return guUsageBreakdown(meta).weighted;
   }
   function guRecordUsage(meta){
     if(!meta)return;
@@ -2330,6 +2349,37 @@
     usage.promptTextTokensSum+=guModalityTokens(meta.promptTokensDetails,'TEXT');
     usage.responseAudioTokensSum+=guModalityTokens(meta.responseTokensDetails,'AUDIO');
     usage.responseTextTokensSum+=guModalityTokens(meta.responseTokensDetails,'TEXT');
+    const breakdown=guUsageBreakdown(meta);
+    for(const key of Object.keys(usage.billed))usage.billed[key]+=key==='updates'?1:breakdown[key];
+  }
+  // 커서 이후 누적분을 반환하고 커서를 전진시킨다. 실제로 전송이 확정된 지점에서만 호출한다.
+  function guTakeBilledDelta(usage){
+    const delta=guBilledZero();
+    for(const key of Object.keys(delta))delta[key]=Math.max(0,(usage.billed[key]||0)-(usage.billedCursor?.[key]||0));
+    usage.billedCursor={...usage.billed};
+    return delta;
+  }
+  function guTraceUsagePayload(delta){
+    if(!delta||!(delta.prompt+delta.response+delta.total))return null;
+    return {
+      promptTokens:delta.prompt,responseTokens:delta.response,totalTokens:delta.total,
+      promptAudioTokens:delta.promptAudio,promptTextTokens:delta.promptText,
+      responseAudioTokens:delta.responseAudio,responseTextTokens:delta.responseText,
+      weightedTokens:delta.weighted,updates:delta.updates
+    };
+  }
+  // 대화 턴 trace와 세션 잔여 사용량이 Langfuse에서 같은 세션으로 묶이도록 id를 한 번만 만들어 재사용한다.
+  function guTraceSessionId(usage,recipeIdHint){
+    if(usage.traceSessionId)return usage.traceSessionId;
+    const recipeKey=String(recipeIdHint||usage.recipeId||'recipe').replace(/[^A-Za-z0-9_-]/g,'').slice(0,48)||'recipe';
+    usage.traceSessionId='cook:'+recipeKey+':'+usage.usageId;
+    return usage.traceSessionId;
+  }
+  function guPost(url,payload){
+    const body=JSON.stringify(payload);
+    let sent=false;
+    try{sent=!!navigator.sendBeacon&&navigator.sendBeacon(url,new Blob([body],{type:'application/json'}));}catch{}
+    if(!sent)fetch(url,{method:'POST',headers:{'content-type':'application/json'},body,keepalive:true}).catch(()=>{});
   }
   function guConnectionOpen(model){
     const usage=guEnsure();
@@ -2380,6 +2430,23 @@
     usage.cookCompleted=true;
     guFlush({final:true,reason:'cook-complete'});
   }
+  // 마지막 대화 턴 이후에 들어온 토큰(응답 꼬리, 도구 호출만 있던 구간)은 어느 generation에도 붙지 않으므로
+  // 세션을 닫을 때 잔여분만 별도 generation으로 남긴다. 이게 있어야 Langfuse 합계가 실제 사용량과 맞는다.
+  function guFlushTraceResidual(usage,reason){
+    const delta=guTraceUsagePayload(guTakeBilledDelta(usage));
+    if(!delta)return;
+    guCaptureRecipe(usage); // 대화 턴이 한 번도 기록되지 않은 세션이면 여기서 처음 레시피가 잡힌다
+    guPost('/api/ai-trace',{
+      kind:'session-usage',
+      sessionId:guTraceSessionId(usage),usageId:usage.usageId,visitorId:usage.uid,
+      model:usage.model||'',recipeId:usage.recipeId||'',recipe:usage.recipe||'',reason:reason||'',
+      turns:usage.turns,loggedTurns:Number(usage.conversationTurns)||0,
+      usage:delta,
+      sessionStartedAt:usage.cookStartedAt||usage.sessionStartedAt,
+      startedAt:usage.cookStartedAt||usage.sessionStartedAt,
+      completedAt:new Date().toISOString(),page:location.pathname
+    });
+  }
   function guFlush({final=false,reason=''}={}){
     const usage=guSession;
     if(!usage)return;
@@ -2406,11 +2473,8 @@
       responseAudioTokensSum:usage.responseAudioTokensSum,responseTextTokensSum:usage.responseTextTokensSum,
       page:location.pathname,createdAt:new Date().toISOString()
     };
-    const body=JSON.stringify(payload);
-    let sent=false;
-    try{sent=!!navigator.sendBeacon&&navigator.sendBeacon('/api/usage',new Blob([body],{type:'application/json'}));}catch{}
-    if(!sent)fetch('/api/usage',{method:'POST',headers:{'content-type':'application/json'},body,keepalive:true}).catch(()=>{});
-    if(final){guSession=null;guLastFlushMark='';}
+    guPost('/api/usage',payload);
+    if(final){guFlushTraceResidual(usage,reason);guSession=null;guLastFlushMark='';}
   }
   window.addEventListener('pagehide',event=>guFlush({final:!event.persisted,reason:'pagehide'}));
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')guFlush({reason:'hidden'});});
@@ -4369,9 +4433,8 @@
     const usage=guEnsure();
     guCaptureRecipe(usage);
     usage.conversationTurns=(Number(usage.conversationTurns)||0)+1;
-    const recipeKey=String(state.traceContext?.recipeId||usage.recipeId||'recipe').replace(/[^A-Za-z0-9_-]/g,'').slice(0,48)||'recipe';
     state.traceUsageId=usage.usageId;
-    state.traceSessionId='cook:'+recipeKey+':'+usage.usageId;
+    state.traceSessionId=guTraceSessionId(usage,state.traceContext?.recipeId);
     state.traceVisitorId=usage.uid;
     state.traceSessionStartedAt=usage.cookStartedAt||usage.sessionStartedAt;
     state.traceTurnNumber=usage.conversationTurns;
@@ -4386,9 +4449,11 @@
     if(live.loggedTraceTurnIds?.has(state.traceTurnId))return;
     live.loggedTraceTurnIds?.add(state.traceTurnId);
     const context=state.traceContext||currentGeminiCookingContext();
+    // 커서 전진은 전송이 확정된 이 시점에만 — 중복 기록(loggedTraceTurnIds) 가드를 통과한 뒤다.
+    const usage=guSession?guTraceUsagePayload(guTakeBilledDelta(guSession)):null;
     const payload={
       turnId:state.traceTurnId,sessionId:state.traceSessionId,usageId:state.traceUsageId,visitorId:state.traceVisitorId,sessionStartedAt:state.traceSessionStartedAt,turnNumber:state.traceTurnNumber,
-      model:live.model||'',userText,assistantText,
+      model:live.model||'',userText,assistantText,...(usage?{usage}:{}),
       recipeId:context.recipeId||'',recipe:context.recipe||'',stepIndex:context.stepIndex||0,totalSteps:context.totalSteps||0,
       stepTitle:context.stepTitle||'',cookingStatus:context.status||'',
       turnStatus,toolCalls:Array.isArray(state.traceToolCalls)?state.traceToolCalls.slice(0,12):[],startedAt:state.traceStartedAt||'',completedAt:new Date().toISOString(),page:location.pathname

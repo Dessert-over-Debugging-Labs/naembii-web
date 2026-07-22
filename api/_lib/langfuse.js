@@ -5,6 +5,19 @@ const { propagateAttributes, startActiveObservation } = require('@langfuse/traci
 
 let tracingState = null;
 
+// Langfuse 모델 가격표는 usageDetails 키별로 단가를 매긴다.
+// Gemini Live는 텍스트/오디오 단가가 다르므로 모달리티 4개 키로 나눠 보내고, 가격은 그 4개에만 등록한다.
+// input/output/total은 Langfuse UI 합계 표시용이라 여기에 단가를 등록하면 이중 계상된다.
+const USAGE_DETAIL_KEYS = Object.freeze({
+  input: 'promptTokens',
+  output: 'responseTokens',
+  total: 'totalTokens',
+  input_audio: 'promptAudioTokens',
+  input_text: 'promptTextTokens',
+  output_audio: 'responseAudioTokens',
+  output_text: 'responseTextTokens'
+});
+
 function redactString(value) {
   return String(value || '')
     .replace(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi, '[이메일]')
@@ -107,6 +120,26 @@ function cookingContextMessage(turn) {
   ].join('\n');
 }
 
+function generationUsageDetails(usage) {
+  if (!usage || typeof usage !== 'object') return null;
+
+  const details = {};
+  for (const [detailKey, usageKey] of Object.entries(USAGE_DETAIL_KEYS)) {
+    const value = Number(usage[usageKey]);
+    if (Number.isFinite(value) && value > 0) details[detailKey] = value;
+  }
+  return Object.keys(details).length ? details : null;
+}
+
+// 토큰 자체는 식별정보가 아니므로 마스킹 대상이 아니지만, 가중치·집계 횟수는 비용 키와 섞이면 안 되어 메타데이터로 뺀다.
+function usageMetadata(usage) {
+  if (!usage || typeof usage !== 'object') return {};
+  return {
+    weightedTokens: usage.weightedTokens,
+    usageUpdates: usage.updates
+  };
+}
+
 function conversationInput(turn) {
   return [
     { role: 'system', content: cookingContextMessage(turn) },
@@ -124,6 +157,7 @@ async function recordConversationTurn(turn) {
   const startedAt = validDate(safeTurn.startedAt);
   const displayName = turnDisplayName(safeTurn);
   const propagatedMetadata = traceMetadata(safeTurn);
+  const usageDetails = generationUsageDetails(safeTurn.usage);
   try {
     await propagateAttributes(
       {
@@ -131,8 +165,8 @@ async function recordConversationTurn(turn) {
         ...(userId ? { userId } : {}),
         sessionId: safeTurn.sessionId,
         metadata: propagatedMetadata,
-        tags: ['voice-assistant', 'cooking', 'transcript-only', `turn-${safeTurn.turnStatus || 'completed'}`],
-        version: '2'
+        tags: ['voice-assistant', 'cooking', 'no-raw-audio', 'usage-metered', `turn-${safeTurn.turnStatus || 'completed'}`],
+        version: '3'
       },
       async () => startActiveObservation(
         displayName,
@@ -141,7 +175,9 @@ async function recordConversationTurn(turn) {
             model: safeTurn.model || undefined,
             input: conversationInput(safeTurn),
             output: { role: 'assistant', content: safeTurn.assistantText },
+            ...(usageDetails ? { usageDetails } : {}),
             metadata: {
+              ...usageMetadata(safeTurn.usage),
               ...(userId ? { userId } : {}),
               sessionId: safeTurn.sessionId,
               sessionStartedAt: safeTurn.sessionStartedAt,
@@ -176,14 +212,103 @@ async function recordConversationTurn(turn) {
   }
 }
 
+function sessionUsageDisplayName(session) {
+  const recipe = boundedString(session?.recipe, 80) || '현재 레시피';
+  return boundedString(`${recipe} · 세션 잔여 사용량`, 200);
+}
+
+function sessionUsageMessage(session) {
+  const recipe = boundedString(session?.recipe, 200) || '현재 레시피';
+  const turns = Number(session?.turns) || 0;
+  const loggedTurns = Number(session?.loggedTurns) || 0;
+  return [
+    '[세션 잔여 사용량 정산]',
+    `레시피: ${recipe}`,
+    `usageMetadata 수신: ${turns}회 · 대화 턴으로 기록: ${loggedTurns}회`,
+    `정산 사유: ${boundedString(session?.reason, 40) || '세션 종료'}`,
+    '마지막 대화 턴 이후 남은 토큰만 담긴 항목이라 사용자·냄비 발화는 없습니다.'
+  ].join('\n');
+}
+
+// 대화 턴에 귀속되지 않은 토큰(응답 꼬리, 도구 호출 전용 구간)을 세션 단위 generation으로 남긴다.
+// 이 항목까지 합쳐야 Langfuse 비용 집계가 실제 Gemini 사용량과 맞는다.
+async function recordSessionUsage(session) {
+  const state = getTracingState();
+  if (!state) return { stored: false, reason: 'not-configured' };
+
+  const userId = hashVisitorId(session?.visitorId);
+  const { visitorId: _visitorId, ...sessionWithoutVisitor } = session || {};
+  const safeSession = redactSensitive(sessionWithoutVisitor);
+  const usageDetails = generationUsageDetails(safeSession.usage);
+  if (!usageDetails) return { stored: false, reason: 'empty-usage' };
+
+  const startedAt = validDate(safeSession.startedAt);
+  const displayName = sessionUsageDisplayName(safeSession);
+  try {
+    await propagateAttributes(
+      {
+        traceName: displayName,
+        ...(userId ? { userId } : {}),
+        sessionId: safeSession.sessionId,
+        metadata: {
+          sessionId: boundedString(safeSession.sessionId, 200),
+          recipe: boundedString(safeSession.recipe, 200),
+          recipeId: boundedString(safeSession.recipeId, 200),
+          reason: boundedString(safeSession.reason, 200)
+        },
+        tags: ['voice-assistant', 'cooking', 'no-raw-audio', 'usage-metered', 'session-residual'],
+        version: '3'
+      },
+      async () => startActiveObservation(
+        displayName,
+        async (generation) => {
+          generation.update({
+            model: safeSession.model || undefined,
+            input: { role: 'system', content: sessionUsageMessage(safeSession) },
+            usageDetails,
+            metadata: {
+              ...usageMetadata(safeSession.usage),
+              ...(userId ? { userId } : {}),
+              sessionId: safeSession.sessionId,
+              sessionStartedAt: safeSession.sessionStartedAt,
+              usageId: safeSession.usageId,
+              recipeId: safeSession.recipeId,
+              recipe: safeSession.recipe,
+              reason: safeSession.reason,
+              usageUpdatesTotal: safeSession.turns,
+              loggedTurns: safeSession.loggedTurns,
+              startedAt: safeSession.startedAt,
+              completedAt: safeSession.completedAt,
+              receivedAt: safeSession.receivedAt,
+              page: safeSession.page,
+              redactionVersion: '2'
+            }
+          });
+        },
+        { asType: 'generation', ...(startedAt ? { startTime: startedAt } : {}) }
+      )
+    );
+    await state.processor.forceFlush();
+    return { stored: true };
+  } catch (error) {
+    try {
+      await state.processor.forceFlush();
+    } catch {}
+    throw error;
+  }
+}
+
 module.exports = {
   conversationInput,
   cookingContextMessage,
+  generationUsageDetails,
   hashVisitorId,
   langfuseConfigured,
   recordConversationTurn,
+  recordSessionUsage,
   redactSensitive,
   redactString,
+  sessionUsageMessage,
   traceMetadata,
   turnDisplayName
 };

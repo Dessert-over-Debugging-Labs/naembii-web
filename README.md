@@ -40,7 +40,7 @@ npm run verify:gemini-live-browser
 
 데스크톱의 `localhost`는 마이크 권한 테스트가 가능하지만, 휴대폰에서 로컬 서버를 열려면 HTTPS 터널 또는 배포 주소가 필요합니다.
 
-Gemini Live 대화 텍스트를 Langfuse Japan에 기록하는 방법과 Vercel 환경변수는 `docs/LANGFUSE_CONVERSATION_LOGGING_ko.md`를 확인합니다.
+Gemini Live 대화 텍스트와 토큰 사용량을 Langfuse Japan에 기록하는 방법, 비용 계산을 위한 모델 가격표 등록, Vercel 환경변수는 `docs/LANGFUSE_CONVERSATION_LOGGING_ko.md`를 확인합니다.
 
 ## 검증
 

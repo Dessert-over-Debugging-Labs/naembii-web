@@ -371,6 +371,7 @@ try {
     const requestedDeviceIds = [];
     const tokenPayloads = [];
     const tracePayloads = [];
+    const sessionUsagePayloads = [];
     const makeMicrophoneStream = (deviceId = 'mic-built-in') => {
       const label = deviceId === 'mic-usb' ? 'USB Studio Microphone' : 'MacBook Microphone';
       const listeners = new Map();
@@ -435,7 +436,21 @@ try {
       send(raw) {
         const message = JSON.parse(raw);
         window.__geminiMessages.push(message);
-        const respond = (data) => setTimeout(() => this.onmessage?.({ data: JSON.stringify(data) }), 16);
+        const emit = (data) => setTimeout(() => this.onmessage?.({ data: JSON.stringify(data) }), 16);
+        // 실제 Live API처럼 턴이 끝나기 직전에 usageMetadata를 흘려 Langfuse 토큰 계측 경로까지 검증한다.
+        const respond = (data) => {
+          if (data?.serverContent?.turnComplete) {
+            window.__geminiUsageEvents = (window.__geminiUsageEvents || 0) + 1;
+            emit({ usageMetadata: {
+              promptTokenCount: 120,
+              responseTokenCount: 45,
+              totalTokenCount: 165,
+              promptTokensDetails: [{ modality: 'AUDIO', tokenCount: 100 }, { modality: 'TEXT', tokenCount: 20 }],
+              responseTokensDetails: [{ modality: 'AUDIO', tokenCount: 40 }, { modality: 'TEXT', tokenCount: 5 }]
+            } });
+          }
+          emit(data);
+        };
         if (message.setup) {
           respond({ setupComplete: {} });
           respond({ sessionResumptionUpdate: { resumable: true, newHandle: 'mobile-test-resume-handle' } });
@@ -529,9 +544,17 @@ try {
         this.onclose?.({ code: 1000, reason: 'test closed' });
       }
     }
+    // guPost는 sendBeacon을 우선 쓴다. /api/ai-trace만 false를 돌려 아래 fetch 스텁으로 떨어뜨리면
+    // 세션 잔여 사용량 전송도 동기적으로 수집되어 경합 없이 검증할 수 있다.
+    const originalSendBeaconDescriptor = Object.getOwnPropertyDescriptor(Navigator.prototype, 'sendBeacon');
+    Object.defineProperty(navigator, 'sendBeacon', {
+      configurable: true,
+      value: (url) => !String(url).endsWith('/api/ai-trace')
+    });
     window.fetch = (url, options) => {
       if (String(url).endsWith('/api/ai-trace')) {
-        tracePayloads.push(JSON.parse(options?.body || '{}'));
+        const payload = JSON.parse(options?.body || '{}');
+        (payload.kind === 'session-usage' ? sessionUsagePayloads : tracePayloads).push(payload);
         return Promise.resolve(new Response(JSON.stringify({ ok: true, storedBy: 'test' }), {
           status: 202,
           headers: { 'content-type': 'application/json' }
@@ -879,12 +902,17 @@ try {
         timeAfterSeek,
         transcript,
         toolResponses,
-        tracePayloads
+        tracePayloads,
+        // 세션을 닫아 잔여 토큰까지 정산시킨 뒤 집계해야 "유실 없음"을 검증할 수 있다.
+        sessionUsagePayloads: (guFlush({ final: true, reason: 'test-end' }), sessionUsagePayloads),
+        usageEvents: window.__geminiUsageEvents || 0
       };
     } finally {
       hf3Reset();
       postCookYoutube = originalPostCookYoutube;
       window.fetch = originalFetch;
+      if (originalSendBeaconDescriptor) Object.defineProperty(navigator, 'sendBeacon', originalSendBeaconDescriptor);
+      else delete navigator.sendBeacon;
       window.WebSocket = OriginalWebSocket;
       window.AudioContext = OriginalAudioContext;
       window.webkitAudioContext = OriginalWebkitAudioContext;
@@ -1077,6 +1105,40 @@ try {
   }
   if (assistant.tracePayloads.some((payload) => ['audio', 'inlineData', 'pendingPcm', 'resumeReplay'].some((key) => Object.hasOwn(payload, key)))) {
     throw new Error('Langfuse payload에 원본 오디오 데이터가 포함됐습니다.');
+  }
+
+  // 토큰 사용량: 가짜 서버가 턴마다 같은 usageMetadata를 보내므로 턴별 값은 정확히 updates의 배수여야 한다.
+  // 세션 누적 값이 그대로 실리면 이 등식이 깨진다.
+  const usageTurns = assistant.tracePayloads.filter((payload) => payload.usage);
+  if (usageTurns.length < 3) {
+    throw new Error(`Langfuse 턴에 Gemini 토큰 사용량이 실리지 않았습니다(${usageTurns.length}건).`);
+  }
+  for (const { turnId, usage } of usageTurns) {
+    const expected = {
+      promptTokens: usage.updates * 120,
+      responseTokens: usage.updates * 45,
+      totalTokens: usage.updates * 165,
+      promptAudioTokens: usage.updates * 100,
+      promptTextTokens: usage.updates * 20,
+      responseAudioTokens: usage.updates * 40,
+      responseTextTokens: usage.updates * 5,
+      weightedTokens: usage.updates * 1090
+    };
+    const mismatch = Object.entries(expected).find(([key, value]) => usage[key] !== value);
+    if (mismatch) {
+      throw new Error(`Langfuse 턴 토큰이 턴별 차분과 다릅니다(${turnId} · ${mismatch[0]}: ${usage[mismatch[0]]} ≠ ${mismatch[1]}).`);
+    }
+  }
+
+  // 유실·중복 없음: 서버가 보낸 usageMetadata 건수 = 턴 + 세션 잔여로 귀속된 건수.
+  const accountedUpdates = [...assistant.tracePayloads, ...assistant.sessionUsagePayloads]
+    .reduce((sum, payload) => sum + (payload.usage?.updates || 0), 0);
+  if (!assistant.usageEvents || accountedUpdates !== assistant.usageEvents) {
+    throw new Error(`Gemini usageMetadata ${assistant.usageEvents}건 중 ${accountedUpdates}건만 Langfuse로 귀속됐습니다.`);
+  }
+  const residual = assistant.sessionUsagePayloads[0];
+  if (residual && (residual.sessionId !== [...traceSessions][0] || Object.hasOwn(residual, 'userText') || Object.hasOwn(residual, 'assistantText'))) {
+    throw new Error('세션 잔여 사용량이 같은 세션에 묶이지 않거나 전사 텍스트를 포함합니다.');
   }
 } finally {
   if (ws) ws.close();
