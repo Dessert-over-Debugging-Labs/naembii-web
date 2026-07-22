@@ -6,9 +6,11 @@ const require = createRequire(import.meta.url);
 const {
   conversationInput,
   cookingContextMessage,
+  generationUsageDetails,
   hashVisitorId,
   redactSensitive,
   redactString,
+  sessionUsageMessage,
   traceMetadata,
   turnDisplayName
 } = require('../api/_lib/langfuse');
@@ -47,6 +49,19 @@ const payload = _test.turnPayload({
     },
     { name: 'unknown_admin_tool', allowed: true, args: { token: 'must-not-pass' } }
   ],
+  usage: {
+    promptTokens: 1820,
+    responseTokens: 640,
+    totalTokens: 2460,
+    promptAudioTokens: 1500,
+    promptTextTokens: 320,
+    responseAudioTokens: 600,
+    responseTextTokens: 40,
+    weightedTokens: 16160,
+    updates: 3,
+    injectedCost: 999999,
+    promptTokensSum: 'must-not-pass'
+  },
   inlineData: 'must-not-pass',
   audio: 'must-not-pass'
 });
@@ -62,6 +77,60 @@ assert.deepEqual(payload.toolCalls, [{
 }]);
 assert.equal(Object.hasOwn(payload, 'inlineData'), false);
 assert.equal(Object.hasOwn(payload, 'audio'), false);
+
+// 토큰 사용량: 화이트리스트 키만 통과하고, 임의 키는 Langfuse 비용 집계에 끼어들 수 없어야 한다.
+assert.equal(Object.hasOwn(payload.usage, 'injectedCost'), false);
+assert.equal(Object.hasOwn(payload.usage, 'promptTokensSum'), false);
+assert.equal(payload.usage.promptAudioTokens, 1500);
+assert.equal(payload.usage.updates, 3);
+assert.equal(_test.safeUsage({ promptTokens: -5, responseTokens: 0 }), null);
+assert.equal(_test.safeUsage('1000'), null);
+assert.equal(_test.safeUsage({ promptTokens: 1e12 }).promptTokens, 20_000_000);
+assert.equal(_test.safeUsage({ promptTokens: 10.6 }).promptTokens, 11);
+assert.equal(_test.turnPayload({ userText: '질문' }).usage, null);
+
+// 가격표는 모달리티 4개 키에만 등록하므로, 그 키들이 정확히 이 이름으로 나가야 비용이 계산된다.
+const usageDetails = generationUsageDetails(payload.usage);
+assert.deepEqual(usageDetails, {
+  input: 1820,
+  output: 640,
+  total: 2460,
+  input_audio: 1500,
+  input_text: 320,
+  output_audio: 600,
+  output_text: 40
+});
+assert.equal(Object.hasOwn(usageDetails, 'weightedTokens'), false);
+assert.equal(Object.hasOwn(usageDetails, 'updates'), false);
+assert.equal(generationUsageDetails(null), null);
+assert.equal(generationUsageDetails({ promptTokens: 0 }), null);
+assert.deepEqual(generationUsageDetails({ responseAudioTokens: 12 }), { output_audio: 12 });
+
+const sessionUsage = _test.sessionUsagePayload({
+  kind: 'session-usage',
+  sessionId: 'cook:21j8SASqLJU:gu1',
+  usageId: 'gu1',
+  visitorId: 'private-browser-visitor-id',
+  model: 'gemini-3.1-flash-live-preview',
+  recipe: '순두부찌개',
+  reason: 'cook-complete',
+  turns: 40,
+  loggedTurns: 6,
+  usage: { promptTokens: 300, responseAudioTokens: 120, updates: 4 },
+  userText: 'must-not-pass',
+  assistantText: 'must-not-pass',
+  toolCalls: [{ name: 'set_video_playback', allowed: true, args: { state: 'pause' } }]
+});
+assert.equal(sessionUsage.sessionId, 'cook:21j8SASqLJU:gu1');
+assert.equal(sessionUsage.loggedTurns, 6);
+assert.deepEqual(sessionUsage.usage, { promptTokens: 300, responseAudioTokens: 120, updates: 4 });
+// 잔여 정산 항목에는 전사 텍스트도 도구 호출도 실리지 않는다.
+assert.equal(Object.hasOwn(sessionUsage, 'userText'), false);
+assert.equal(Object.hasOwn(sessionUsage, 'assistantText'), false);
+assert.equal(Object.hasOwn(sessionUsage, 'toolCalls'), false);
+assert.equal(_test.sessionUsagePayload({ sessionId: 'cook:x:gu1' }).usage, null);
+assert.match(sessionUsageMessage(sessionUsage), /세션 잔여 사용량 정산/);
+assert.equal(sessionUsageMessage(sessionUsage).includes('must-not-pass'), false);
 
 assert.deepEqual(_test.safeToolArgs('seek_video', {
   direction: 'forward', seconds: 10, token: 'must-not-pass'
@@ -113,6 +182,22 @@ assert.doesNotMatch(hook, /inlineData|pendingPcm|resumeReplay|audioStream|base64
 assert.match(html, /if\(transcript\.hasUser&&!transcript\.complete\)/);
 assert.match(html, /recordVpTraceTurn\(live,state,'interrupted'\)/);
 assert.match(html, /recordVpTraceTurn\(live,transcript,'abandoned'\)/);
+
+// 턴 사용량은 커서 차분으로 붙고, 커서 전진은 중복 기록 가드를 통과한 뒤에만 일어나야 한다.
+assert.match(hook, /guTakeBilledDelta\(guSession\)/);
+assert.match(hook, /\.\.\.\(usage\?\{usage\}:\{\}\)/);
+assert.equal(
+  hook.indexOf('loggedTraceTurnIds?.add') < hook.indexOf('guTakeBilledDelta'),
+  true,
+  '커서를 중복 기록 가드보다 먼저 전진시키면 재호출 시 토큰이 유실된다.'
+);
+
+// 세션 잔여 사용량은 final 플러시에서만, 전사 텍스트 없이 나간다.
+const residual = html.match(/function guFlushTraceResidual[\s\S]*?\n  function guFlush\(/)?.[0] || '';
+assert.match(residual, /kind:'session-usage'/);
+assert.match(residual, /guPost\('\/api\/ai-trace'/);
+assert.doesNotMatch(residual, /userText|assistantText|inlineData|base64/i);
+assert.match(html, /if\(final\)\{guFlushTraceResidual\(usage,reason\);guSession=null;/);
 
 const bounded = _test.turnTimestamps({
   startedAt: '2000-01-01T00:00:00.000Z',

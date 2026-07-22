@@ -1,7 +1,21 @@
 const { allowCors, clean, json, readBody } = require('./_lib/collect');
-const { langfuseConfigured, recordConversationTurn } = require('./_lib/langfuse');
+const { langfuseConfigured, recordConversationTurn, recordSessionUsage } = require('./_lib/langfuse');
 
 const MAX_TOOL_CALLS_PER_TURN = 12;
+// 브라우저가 보내는 값이므로 키를 화이트리스트로 고정하고 상한을 건다.
+// 상한은 Live 세션 하나가 정상적으로 도달할 수 없는 크기 — 잘못된 값이 Langfuse 비용 집계를 오염시키는 것을 막는 용도다.
+const USAGE_TOKEN_KEYS = Object.freeze([
+  'promptTokens',
+  'responseTokens',
+  'totalTokens',
+  'promptAudioTokens',
+  'promptTextTokens',
+  'responseAudioTokens',
+  'responseTextTokens',
+  'weightedTokens'
+]);
+const MAX_USAGE_TOKENS = 20_000_000;
+const MAX_USAGE_UPDATES = 100_000;
 const TOOL_ARG_RULES = Object.freeze({
   move_cooking_step: Object.freeze({ direction: ['next', 'previous'] }),
   go_to_cooking_step: Object.freeze({ step: [1, 20] }),
@@ -66,6 +80,24 @@ function safeToolCalls(value) {
   return calls;
 }
 
+function safeUsage(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+
+  const usage = {};
+  let tokenTotal = 0;
+  for (const key of USAGE_TOKEN_KEYS) {
+    const parsed = Number(value[key]);
+    if (!Number.isFinite(parsed) || parsed <= 0) continue;
+    usage[key] = Math.min(Math.round(parsed), MAX_USAGE_TOKENS);
+    tokenTotal += usage[key];
+  }
+  if (!tokenTotal) return null;
+
+  const updates = Number(value.updates);
+  if (Number.isFinite(updates) && updates > 0) usage.updates = Math.min(Math.round(updates), MAX_USAGE_UPDATES);
+  return usage;
+}
+
 function turnTimestamps(body, now = Date.now()) {
   const maxFuture = now + 5 * 60 * 1000;
   const minCompleted = now - 12 * 60 * 60 * 1000;
@@ -126,6 +158,26 @@ function turnPayload(body) {
     cookingStatus: clean(body.cookingStatus, 40),
     turnStatus: turnStatus(body.turnStatus),
     toolCalls: safeToolCalls(body.toolCalls),
+    usage: safeUsage(body.usage),
+    ...timestamps,
+    page: clean(body.page, 160)
+  };
+}
+
+// 마지막 대화 턴 이후 남은 토큰을 세션 단위로 정산하는 페이로드. 전사 텍스트는 포함하지 않는다.
+function sessionUsagePayload(body) {
+  const timestamps = turnTimestamps(body);
+  return {
+    sessionId: clean(body.sessionId, 140),
+    usageId: clean(body.usageId, 80),
+    visitorId: clean(body.visitorId, 180),
+    model: clean(body.model, 160),
+    recipeId: clean(body.recipeId, 80),
+    recipe: clean(body.recipe, 200),
+    reason: clean(body.reason, 40),
+    turns: integer(body.turns, 0, 100_000),
+    loggedTurns: integer(body.loggedTurns, 0, 10_000),
+    usage: safeUsage(body.usage),
     ...timestamps,
     page: clean(body.page, 160)
   };
@@ -148,7 +200,19 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const payload = turnPayload(await readBody(req, 16_000));
+    const body = await readBody(req, 16_000);
+    if (clean(body.kind, 40) === 'session-usage') {
+      const session = sessionUsagePayload(body);
+      if (!session.sessionId || !session.usage) {
+        json(res, 400, { error: 'sessionId와 usage가 필요합니다.' });
+        return;
+      }
+      await recordSessionUsage(session);
+      json(res, 202, { ok: true, storedBy: 'langfuse', sessionId: session.sessionId });
+      return;
+    }
+
+    const payload = turnPayload(body);
     if (!payload.turnId || !payload.sessionId || !payload.userText) {
       json(res, 400, { error: 'turnId, sessionId, userText가 필요합니다.' });
       return;
@@ -165,6 +229,8 @@ module.exports._test = {
   requestOriginAllowed,
   safeToolArgs,
   safeToolCalls,
+  safeUsage,
+  sessionUsagePayload,
   turnPayload,
   turnTimestamps
 };
